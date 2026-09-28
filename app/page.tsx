@@ -36,6 +36,9 @@ const initial: GameView = {
   lounge: false,
   shortcut: false,
   vip: false,
+  tables: false,
+  slowRound: 0,
+  dice: null,
   room: "Casino Floor",
   upgraded: false,
   message: "",
@@ -205,7 +208,7 @@ export default function Home() {
               {view.room.toUpperCase()} <span>{timeString(view.time)}</span>
             </div>
             <div className="points">
-              <span className="small-label">POINTS</span>
+              <span className="small-label">CHIPS</span>
               <strong>{view.points.toLocaleString()}</strong>
             </div>
           </div>
@@ -219,12 +222,65 @@ export default function Home() {
             <span className={view.vip ? "complete" : ""}>
               {view.vip ? "◆" : "◇"} HIGH ROLLER CLUB
             </span>
+            <span className={view.tables ? "complete" : ""}>
+              {view.tables ? "◆" : "◇"} DEVIL’S TABLES
+            </span>
             <span className={view.upgraded ? "complete" : ""}>
               {view.upgraded ? "◆" : "◇"} WEAPON UPGRADE
             </span>
           </div>
           {active && (
             <>
+              {view.slowRound > 0 && (
+                <div className="curse-badge">
+                  SEVEN’S CURSE{" "}
+                  <span>
+                    −20% movement ·{" "}
+                    {view.slowRound > view.round
+                      ? `next round (${view.slowRound})`
+                      : `round ${view.slowRound}`}
+                  </span>
+                </div>
+              )}
+              {view.dice &&
+                (!view.dice.resolved || view.dice.resultRemaining > 0) && (
+                  <div
+                    className={`dice-result ${view.dice.resolved && view.dice.values[0] + view.dice.values[1] === 7 ? "cursed" : ""}`}
+                    role="status"
+                  >
+                    <span>THE DEVIL’S TABLES</span>
+                    <div
+                      className={
+                        view.dice.resolved ? "dice-faces" : "dice-faces rolling"
+                      }
+                    >
+                      {view.dice.resolved ? (
+                        view.dice.values.map((n, i) => (
+                          <b key={i}>{["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"][n]}</b>
+                        ))
+                      ) : (
+                        <>
+                          <b>⚄</b>
+                          <b>⚂</b>
+                        </>
+                      )}
+                    </div>
+                    <strong>
+                      {!view.dice.resolved
+                        ? "Rolling…"
+                        : view.dice.values[0] + view.dice.values[1] === 7
+                          ? "SEVEN. THE HOUSE COLLECTS."
+                          : `${view.dice.values[0] + view.dice.values[1]} · +500 CHIPS`}
+                    </strong>
+                    <p>
+                      {!view.dice.resolved
+                        ? "Stay alert. The game keeps moving."
+                        : view.dice.values[0] + view.dice.values[1] === 7
+                          ? `Movement reduced 20% for round ${view.dice.round}.`
+                          : "Your luck holds. Come back next round."}
+                    </p>
+                  </div>
+                )}
               {view.roundCue && (
                 <div
                   className={`round-announcement ${view.roundCue}`}
@@ -285,7 +341,7 @@ export default function Home() {
                   <b>
                     {view.prompt.price ? (
                       <>
-                        {view.prompt.price.toLocaleString()} <small>PTS</small>
+                        {view.prompt.price.toLocaleString()} <small>CHIPS</small>
                       </>
                     ) : (
                       "VIEW MENU"
@@ -374,7 +430,7 @@ export default function Home() {
                 </p>
               </div>
               <strong>
-                {view.points.toLocaleString()} <small>POINTS</small>
+                {view.points.toLocaleString()} <small>CHIPS</small>
               </strong>
             </div>
             <div
@@ -411,7 +467,7 @@ export default function Home() {
                   </div>
                   <b>
                     {offer.price.toLocaleString()}
-                    <small>PTS</small>
+                    <small>CHIPS</small>
                   </b>
                 </button>
               ))}
@@ -459,7 +515,7 @@ export default function Home() {
                 </div>
                 <div>
                   <b>{view.earned.toLocaleString()}</b>
-                  <span>POINTS EARNED</span>
+                  <span>CHIPS EARNED</span>
                 </div>
               </div>
             )}
@@ -561,6 +617,12 @@ export default function Home() {
             ["staff", "Staff door"],
             ["workshop", "Workshop"],
             ["ammo", "Ammo rack"],
+            ["tablesGate", "Table room door"],
+            ["tables", "Table room"],
+            ["craps", "Craps table"],
+            ["roulette", "Roulette table"],
+            ["dice-seven", "Test seven"],
+            ["dice-win", "Test payout"],
             ["use", "Interact E"],
             ["left", "Turn left"],
             ["right", "Turn right"],

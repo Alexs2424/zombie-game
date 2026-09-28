@@ -1,0 +1,50 @@
+{
+  "status": "passed",
+  "assets": [
+    {
+      "file": "craps-table.glb",
+      "triangles": 23388,
+      "dimensions": [
+        4.799983501434326,
+        0.9999999937415123,
+        2.499990463256836
+      ],
+      "degenerate_triangles": 0,
+      "checks": "GLB structure, finite arrays, indices, unit normals, face winding, embedded PNGs, bounds, triangle budget: passed"
+    },
+    {
+      "file": "roulette-table.glb",
+      "triangles": 20526,
+      "dimensions": [
+        3.4000000953674316,
+        0.9999999930262564,
+        2.5
+      ],
+      "degenerate_triangles": 0,
+      "checks": "GLB structure, finite arrays, indices, unit normals, face winding, embedded PNGs, bounds, triangle budget: passed"
+    },
+    {
+      "file": "ivory-die-a.glb",
+      "triangles": 1052,
+      "dimensions": [
+        0.10013999789953232,
+        0.10013999789953232,
+        0.10013999789953232
+      ],
+      "degenerate_triangles": 0,
+      "checks": "GLB structure, finite arrays, indices, unit normals, face winding, embedded PNGs, bounds, triangle budget: passed"
+    },
+    {
+      "file": "ivory-die-b.glb",
+      "triangles": 1052,
+      "dimensions": [
+        0.10013999789953232,
+        0.10013999789953232,
+        0.10013999789953232
+      ],
+      "degenerate_triangles": 0,
+      "checks": "GLB structure, finite arrays, indices, unit normals, face winding, embedded PNGs, bounds, triangle budget: passed"
+    }
+  ],
+  "dice_quaternions": "All six expected faces map to +Y"
+}

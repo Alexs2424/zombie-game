@@ -1,0 +1,145 @@
+{
+  "provenance": "Original anatomical procedural geometry and original embedded leather textures; no imported third-party meshes, images, logos, or weapon designs.",
+  "coordinate_system": "glTF 2.0 metres; +Y up; +Z muzzle; receiver origin exactly matching supplied weapon assets. Parent weapon and hands together; keep both scales 1.",
+  "integration": "Load matching hands-*.glb as a sibling of unchanged weapon mesh under common root. Expected camera root (.29, -.25, .61), forward +Z. GLB scene has RightHand and LeftHand nodes whose local translations are anatomical wrist pivots; rotating/translating them animates separate hands with their sleeves. Rest transforms must be retained. Meshes are baked posed grips, not skinned finger rigs.",
+  "anatomy": "Every hand has separate index, middle, ring, little and opposed thumb paths. Each finger has three tapered flattened phalanges, knuckle folds, stitched side seams, dorsal reinforcement and suede fingertip. Wrists have tapered cuffs and long sleeve forearms extending behind/below camera.",
+  "preview": "Each shooter and side PNG is rasterized from actual authored triangles, plus decoded triangles from exact unchanged supplied weapon GLBs. Shooter camera matches requested root with 70 degree FOV. Side views reveal grip contact.",
+  "assets": [
+    {
+      "file": "hands-pistol.glb",
+      "triangles": 19076,
+      "vertices": 13986,
+      "bytes": 1212628,
+      "bounds": [
+        [
+          -0.4766868243282779,
+          -0.3930847051448203,
+          -0.8463848581181223
+        ],
+        [
+          0.2855227652430596,
+          0.0048065530889613494,
+          0.04462853158486565
+        ]
+      ],
+      "nodes": [
+        "RightHand",
+        "LeftHand"
+      ],
+      "wrist_pivots": {
+        "RightHand": [
+          0.062,
+          -0.145,
+          -0.14
+        ],
+        "LeftHand": [
+          -0.077,
+          -0.153,
+          -0.125
+        ]
+      }
+    },
+    {
+      "file": "hands-shotgun.glb",
+      "triangles": 19214,
+      "vertices": 14148,
+      "bytes": 1219536,
+      "bounds": [
+        [
+          -0.5185880286399844,
+          -0.3937388001916914,
+          -0.8421893866819955
+        ],
+        [
+          0.28544127785254514,
+          0.030276389566989134,
+          0.3048992625
+        ]
+      ],
+      "nodes": [
+        "RightHand",
+        "LeftHand"
+      ],
+      "wrist_pivots": {
+        "RightHand": [
+          0.067,
+          -0.092,
+          -0.201
+        ],
+        "LeftHand": [
+          -0.084,
+          -0.11199999999999999,
+          0.164
+        ]
+      }
+    },
+    {
+      "file": "hands-smg.glb",
+      "triangles": 19190,
+      "vertices": 14146,
+      "bytes": 1219152,
+      "bounds": [
+        [
+          -0.5184412400934361,
+          -0.39322539189865124,
+          -0.8434889542414493
+        ],
+        [
+          0.2854914134725541,
+          0.04757118792531299,
+          0.27089926250000007
+        ]
+      ],
+      "nodes": [
+        "RightHand",
+        "LeftHand"
+      ],
+      "wrist_pivots": {
+        "RightHand": [
+          0.062,
+          -0.152,
+          -0.14600000000000002
+        ],
+        "LeftHand": [
+          -0.084,
+          -0.075,
+          0.13
+        ]
+      }
+    },
+    {
+      "file": "hands-rifle.glb",
+      "triangles": 19178,
+      "vertices": 14134,
+      "bytes": 1218652,
+      "bounds": [
+        [
+          -0.5183110606603314,
+          -0.39340256695385983,
+          -0.8433080754762644
+        ],
+        [
+          0.2854593885034174,
+          0.0514621439291257,
+          0.2558992625
+        ]
+      ],
+      "nodes": [
+        "RightHand",
+        "LeftHand"
+      ],
+      "wrist_pivots": {
+        "RightHand": [
+          0.062,
+          -0.152,
+          -0.15400000000000003
+        ],
+        "LeftHand": [
+          -0.084,
+          -0.094,
+          0.11499999999999999
+        ]
+      }
+    }
+  ]
+}

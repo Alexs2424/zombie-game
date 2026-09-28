@@ -1,12 +1,18 @@
+## Current implementation — tables and atmosphere pass, September 27, 2026
+
+The latest requested expansion adds a 14 × 24 m table room east of the High Roller Club, expanding the map to 58 × 24 m. Pay 1,500 chips to open both entrances. The craps table offers one 250-chip roll per round: a seven applies −20% movement for its round; other totals pay 500. Intermission rolls target the next round. Roulette spins as ambient scenery. A delayed dealer spawn and table collision/navigation keep the new space part of survival.
+
+The fidelity pass adds original detailed table GLBs, four fitted glove/forearm models, layered warm/cool lighting, contact shading, filmic tone mapping, muzzle spill, zombie vocal synthesis, and room-specific casino ambience. Current rules and limits are in `README.md`. Earlier exclusions of gambling minigames and ambient work below describe the original v0 scope; the user's later request supersedes them. There are 36 regression checks, including audio pause/routing and wager/round transitions.
+
 ## Current implementation — bartender and arsenal pass, September 27, 2026
 
 The latest authorized expansion adds Marlowe’s bar menu with three run-only perks (health, reload, sprint), a per-weapon Double Down upgrade available at the bar and VIP workshop, a lounge SMG and VIP rifle, four detailed original GLB weapons, articulated casino characters, damask wallcovering, refined props and corrected signage. Round-start and round-clear announcements have distinct original synthesized stingers and a visible restocking countdown. Keys 1–4 select weapons. Solo, mouse-first and controller-later remain unchanged.
 
-There are now 29 simulation regression checks. Chrome visual QA uses development-only visible controls to exercise room views, movement, purchases, menus, firing/reloading, transitions and a 14-enemy crowd. This is not a sustained performance or final game-feel benchmark. Current playable rules and prices are documented in `game/README.md`. Earlier checkpoint counts and scope below are historical.
+There are now 29 simulation regression checks. Chrome visual QA uses development-only visible controls to exercise room views, movement, purchases, menus, firing/reloading, transitions and a 14-enemy crowd. This is not a sustained performance or final game-feel benchmark. Current playable rules and prices are documented in `README.md`. Earlier checkpoint counts and scope below are historical.
 
 ## Latest refinement — September 27, 2026
 
-User requested higher fidelity, a somewhat larger map, and a purchaseable room. Implemented a first environment pass: 44 × 24 m total footprint (37.5% larger), new High Roller Club with two linked entrances for 1,300 points, two poker islands and an upholstered banquette. The 2,000-point shotgun upgrade moves from the cashier counter into the club. Lounge and staff unlocks remain. A new private-entrance spawn activates only after the club opens, with a three-second delay. All purchases now total 6,200 points, leaving 500 from the first-five-round income model; the staff shortcut remains an optional competing purchase.
+User requested higher fidelity, a somewhat larger map, and a purchaseable room. Implemented a first environment pass: 44 × 24 m total footprint (37.5% larger), new High Roller Club with two linked entrances for 1,300 chips, two poker islands and an upholstered banquette. The 2,000-chip shotgun upgrade moves from the cashier counter into the club. Lounge and staff unlocks remain. A new private-entrance spawn activates only after the club opens, with a three-second delay. All purchases now total 6,200 chips, leaving 500 from the first-five-round income model; the staff shortcut remains an optional competing purchase.
 
 Added worn carpet texture, wall panels/trim, ceiling coffers, chandeliers, sconces, bar shelving/bottles, cards/chips, clearer room signage, shadows/bloom, and sharper rendering. This is an environment fidelity pass; weapons and enemies still use procedural models. Twenty-two simulation checks cover the expanded layout. The older first-build plan below is historical where it differs from this checkpoint.
 
@@ -16,7 +22,7 @@ Status: rough v0 implemented in `game/` following the user's request to build it
 
 ## Implementation checkpoint — 2026-09-27
 
-The browser build includes the procedural casino, mouse/keyboard input, pistol and shotgun, health/regeneration, rounds, points, ammunition purchases, lounge and staff passage unlocks, one High Roller shotgun upgrade, pause/resume, death/results, restart, sensitivity/volume, and optional frame statistics. Seventeen automated simulation checks, TypeScript checking, lint, and the production build pass. No sustained performance benchmark or completed human playtest is claimed. Focused Chrome mouse-capture and game-feel validation remain the next hands-on checkpoint.
+The browser build includes the procedural casino, mouse/keyboard input, pistol and shotgun, health/regeneration, rounds, chips, ammunition purchases, lounge and staff passage unlocks, one High Roller shotgun upgrade, pause/resume, death/results, restart, sensitivity/volume, and optional frame statistics. Seventeen automated simulation checks, TypeScript checking, lint, and the production build pass. No sustained performance benchmark or completed human playtest is claimed. Focused Chrome mouse-capture and game-feel validation remain the next hands-on checkpoint.
 
 ## Confirmed target hardware
 
@@ -38,7 +44,7 @@ The original product specification is reference material, not a commitment to im
 - A starting pistol and one buyable shotgun, with headshot feedback, limited ammunition, distinct sounds, recoil, and reload timing.
 - One zombie family with readable pursuit and attacks; escalating rounds and a provisional 12–16 concurrent enemy cap.
 - Health, delayed regeneration, death, a simple results screen, and restart.
-- Kill points, weapon/ammunition purchases, and two proposed route purchases: access to the lounge and a staff-passage shortcut.
+- Chips earned from kills, weapon/ammunition purchases, and two proposed route purchases: access to the lounge and a staff-passage shortcut.
 - One proposed shotgun upgrade, bought once per run at the outside cashier counter: a larger magazine and a modest damage boost with immediate feedback. Exact values and cost require testing; no upgrade tiers, power prerequisite, random rolls, or machine animation sequence.
 - HUD, sensitivity and volume controls, and reliable start/pause/focus behavior.
 
@@ -78,7 +84,7 @@ Exclude stairs, balconies, elevators, destructible scenery, gambling minigames, 
 ## Build checkpoints and acceptance
 
 1. **Combat:** flat blockout, movement/collision, pistol, one zombie, sound and damage feedback.
-2. **Survival:** both guns, ammunition, points, rounds, health, death, pause, and complete restart.
+2. **Survival:** both guns, ammunition, chips, rounds, health, death, pause, and complete restart.
 3. **Progression and validation:** paid lounge entrance, passage gate, navigation/spawn updates, one shotgun upgrade, early economy, and target-device testing.
 4. **Atmosphere after validation:** casino dressing, refined lighting and ambient sound, then a version to show friends.
 

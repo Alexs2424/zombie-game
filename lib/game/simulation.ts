@@ -32,7 +32,9 @@ export type PurchaseId =
   | "lounge"
   | "shortcut"
   | "vip"
-  | "upgrade";
+  | "upgrade"
+  | "tables"
+  | "craps";
 export type GameEvent = {
   type:
     | "shot"
@@ -44,6 +46,10 @@ export type GameEvent = {
     | "reload"
     | "round"
     | "roundClear"
+    | "diceRoll"
+    | "diceWin"
+    | "diceCurse"
+    | "zombieAttack"
     | "death";
   weapon?: WeaponId;
   headshot?: boolean;
@@ -145,22 +151,32 @@ export const PRICES = {
   shortcut: 1200,
   vip: 1300,
   upgrade: 2000,
+  tables: 1500,
+  craps: 250,
 };
-export const BOUNDS = { minX: -16, maxX: 28, minZ: -12, maxZ: 12 };
+export const BOUNDS = { minX: -16, maxX: 42, minZ: -12, maxZ: 12 };
 export function roomName(p: V2) {
-  return p.x > 16
-    ? "High Roller Club"
-    : p.x > 4
-      ? p.z > 3
-        ? "Staff Passage"
-        : "The Last Call Lounge"
-      : "Casino Floor";
+  return p.x > 28
+    ? "The Devil’s Tables"
+    : p.x > 16
+      ? "High Roller Club"
+      : p.x > 4
+        ? p.z > 3
+          ? "Staff Passage"
+          : "The Last Call Lounge"
+        : "Casino Floor";
 }
 export const STATIC_RECTS: Rect[] = [
   { id: "west", x: -16.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
-  { id: "east", x: 28.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
-  { id: "south", x: 6, z: -12.25, w: 44.5, d: 0.5, h: 4.8 },
-  { id: "north", x: 6, z: 12.25, w: 44.5, d: 0.5, h: 4.8 },
+  { id: "east", x: 42.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
+  { id: "south", x: 13, z: -12.25, w: 58.5, d: 0.5, h: 4.8 },
+  { id: "north", x: 13, z: 12.25, w: 58.5, d: 0.5, h: 4.8 },
+  { id: "tables-wall-s", x: 28, z: -9, w: 0.45, d: 6, h: 4.8 },
+  { id: "tables-wall-m", x: 28, z: 2.4, w: 0.45, d: 9.2, h: 4.8 },
+  { id: "tables-wall-n", x: 28, z: 11.1, w: 0.45, d: 1.8, h: 4.8 },
+  { id: "craps-table", x: 35, z: -3, w: 4.8, d: 2.5, h: 1.05 },
+  { id: "roulette-table", x: 35, z: 5, w: 3.4, d: 2.5, h: 1.05 },
+  { id: "tables-sideboard", x: 41.35, z: 1, w: 1.1, d: 3, h: 1.15 },
   { id: "vip-wall-s", x: 16, z: -9, w: 0.45, d: 6, h: 4.8 },
   { id: "vip-wall-m", x: 16, z: 2.4, w: 0.45, d: 9.2, h: 4.8 },
   { id: "vip-wall-n", x: 16, z: 11.1, w: 0.45, d: 1.8, h: 4.8 },
@@ -183,6 +199,8 @@ export const DOORS = {
   shortcut: { id: "shortcut", x: 4, z: 8.6, w: 0.45, d: 3.2, h: 4.8 },
   vip: { id: "vip", x: 16, z: -4.1, w: 0.45, d: 3.8, h: 4.8 },
   vipExit: { id: "vipExit", x: 16, z: 8.6, w: 0.45, d: 3.2, h: 4.8 },
+  tables: { id: "tables", x: 28, z: -4.1, w: 0.45, d: 3.8, h: 4.8 },
+  tablesExit: { id: "tablesExit", x: 28, z: 8.6, w: 0.45, d: 3.2, h: 4.8 },
 } satisfies Record<string, Rect>;
 export const PURCHASES: {
   id: PurchaseId;
@@ -215,7 +233,7 @@ export const PURCHASES: {
   {
     id: "rifle",
     x: 26.8,
-    z: -6.7,
+    z: -8.2,
     name: "Pit Boss",
     detail: "Heavy automatic rifle",
   },
@@ -247,6 +265,21 @@ export const PURCHASES: {
     detail: "Unlock poker room, upgrade station + staff exit",
   },
   {
+    id: "tables",
+    x: 27.2,
+    z: -4.1,
+    name: "The Devil’s Tables",
+    detail: "Craps, roulette & a new escape loop",
+  },
+  {
+    id: "craps",
+    x: 35,
+    z: -5,
+    name: "Seven’s Curse · roll the dice",
+    detail:
+      "250 chips · 7 slows you 20% this round · other rolls pay 500 chips · once per round",
+  },
+  {
     id: "upgrade",
     x: 24.7,
     z: 9.5,
@@ -260,6 +293,7 @@ export const SPAWNS: V2[] = [
   { x: 1.5, z: 10.6 },
   { x: 14.4, z: -10.6 },
   { x: 26.2, z: -10.6 },
+  { x: 39.7, z: -10.6 },
 ];
 export const dist = (a: V2, b: V2) => Math.hypot(a.x - b.x, a.z - b.z);
 export function collides(p: V2, r: number, rects: Rect[]) {
@@ -450,6 +484,25 @@ export class Simulation {
   lounge = false;
   shortcut = false;
   vip = false;
+  tables = false;
+  tablesAge = 0;
+  lastWagerRound = -1;
+  slowRound = 0;
+  dice: {
+    values: [number, number];
+    round: number;
+    remaining: number;
+    resultRemaining: number;
+    resolved: boolean;
+  } | null = null;
+  get slowed() {
+    return (
+      this.slowRound === this.round && this.round > 0 && this.intermission <= 0
+    );
+  }
+  get wagerRound() {
+    return Math.max(1, this.round + (this.intermission > 0 ? 1 : 0));
+  }
   upgrades: Record<WeaponId, boolean> = {
     pistol: false,
     shotgun: false,
@@ -512,6 +565,7 @@ export class Simulation {
       ...(!this.lounge ? [DOORS.lounge] : []),
       ...(!this.shortcut ? [DOORS.shortcut] : []),
       ...(!this.vip ? [DOORS.vip, DOORS.vipExit] : []),
+      ...(!this.tables ? [DOORS.tables, DOORS.tablesExit] : []),
     ];
     this.walkRects = this.rects.map((r) => ({
       ...r,
@@ -573,7 +627,7 @@ export class Simulation {
         : this.perks[id]
           ? "Already purchased"
           : "";
-    if (!reason && this.points < price) reason = "Not enough points";
+    if (!reason && this.points < price) reason = "Not enough chips";
     return { price, reason };
   }
   private applyUpgrade() {
@@ -641,6 +695,7 @@ export class Simulation {
       if (
         (p.id === "lounge" && this.lounge) ||
         (p.id === "vip" && this.vip) ||
+        (p.id === "tables" && this.tables) ||
         (p.id === "shortcut" && this.shortcut)
       )
         continue;
@@ -692,7 +747,19 @@ export class Simulation {
       if (!this.lounge) reason = "Open the lounge first";
       else if (this.vip) reason = "Already open";
     }
-    if (!reason && this.points < price) reason = "Not enough points";
+    if (id === "tables") {
+      price = PRICES.tables;
+      if (!this.vip) reason = "Open the High Roller Club first";
+      else if (this.tables) reason = "Already open";
+    }
+    if (id === "craps") {
+      price = PRICES.craps;
+      if (!this.tables) reason = "Open The Devil’s Tables first";
+      else if (this.dice && !this.dice.resolved) reason = "Dice are rolling";
+      else if (this.lastWagerRound >= this.wagerRound)
+        reason = "One wager per round · come back next round";
+    }
+    if (!reason && this.points < price) reason = "Not enough chips";
     return { price, reason };
   }
   purchase(id: PurchaseId) {
@@ -708,6 +775,27 @@ export class Simulation {
       return false;
     }
     this.points -= price;
+    if (id === "craps") {
+      this.lastWagerRound = this.wagerRound;
+      this.dice = {
+        values: [
+          1 + Math.floor(this.random() * 6),
+          1 + Math.floor(this.random() * 6),
+        ],
+        round: this.wagerRound,
+        remaining: 1.6,
+        resultRemaining: 0,
+        resolved: false,
+      };
+      this.events.push({ type: "diceRoll", position: { x: 35, z: -3 } });
+      this.notify("The dice are rolling… keep moving.");
+      return true;
+    }
+    if (id === "tables") {
+      this.tables = true;
+      this.tablesAge = 0;
+      this.refreshMap();
+    }
     if (id === "pistolAmmo")
       this.inventory.pistol.reserve = WEAPONS.pistol.reserve;
     if (id === "shotgun" || id === "smg" || id === "rifle") {
@@ -748,7 +836,9 @@ export class Simulation {
               ? "Cocktail lounge opened"
               : id === "vip"
                 ? "High Roller Club · both entrances unlocked"
-                : "Staff shortcut opened",
+                : id === "tables"
+                  ? "The Devil’s Tables · both entrances unlocked"
+                  : "Staff shortcut opened",
     );
     this.events.push({ type: "purchase" });
     return true;
@@ -879,11 +969,13 @@ export class Simulation {
     return (
       index < 3 ||
       (index === 3 && this.lounge && this.loungeAge > 3) ||
-      (index === 4 && this.vip && this.vipAge > 3)
+      (index === 4 && this.vip && this.vipAge > 3) ||
+      (index === 5 && this.tables && this.tablesAge > 3)
     );
   }
   beginRound() {
     this.round++;
+    if (this.slowRound < this.round) this.slowRound = 0;
     this.waveRemaining = waveStats(this.round).count;
     this.spawnTimer = 0.4;
     this.events.push({ type: "round", text: `ROUND ${this.round}` });
@@ -905,6 +997,28 @@ export class Simulation {
     this.messageRemaining = Math.max(0, this.messageRemaining - dt);
     if (this.lounge) this.loungeAge += dt;
     if (this.vip) this.vipAge += dt;
+    if (this.tables) this.tablesAge += dt;
+    if (this.dice) {
+      if (!this.dice.resolved) {
+        this.dice.remaining = Math.max(0, this.dice.remaining - dt);
+        if (!this.dice.remaining) {
+          this.dice.resolved = true;
+          this.dice.resultRemaining = 6;
+          this.dice.round = Math.max(this.dice.round, this.wagerRound);
+          this.lastWagerRound = this.dice.round;
+          const seven = this.dice.values[0] + this.dice.values[1] === 7;
+          if (seven) {
+            this.slowRound = this.dice.round;
+            this.events.push({ type: "diceCurse" });
+          } else {
+            this.points += 500;
+            this.earned += 500;
+            this.events.push({ type: "diceWin" });
+          }
+        }
+      } else
+        this.dice.resultRemaining = Math.max(0, this.dice.resultRemaining - dt);
+    }
     if (this.damageAgo > RULES.regenDelay)
       this.health = Math.min(
         this.maxHealth,
@@ -929,7 +1043,9 @@ export class Simulation {
         speed =
           (this.sprinting
             ? RULES.sprint * (this.perks.nightShift ? 1.15 : 1)
-            : RULES.walk) * dt;
+            : RULES.walk) *
+          (this.slowed ? 0.8 : 1) *
+          dt;
       moveActor(
         this.player,
         (Math.sin(this.yaw) * f + Math.cos(this.yaw) * s) * speed,
@@ -960,6 +1076,7 @@ export class Simulation {
       this.enemies.length === 0
     ) {
       this.intermission = RULES.intermission;
+      if (this.slowRound === this.round) this.slowRound = 0;
       this.roundCue = "clear";
       this.roundCueRemaining = 3.8;
       this.events.push({
@@ -1001,6 +1118,10 @@ export class Simulation {
         hasSight(e, this.player, this.rects)
       ) {
         e.attack = RULES.attackWindup;
+        this.events.push({
+          type: "zombieAttack",
+          position: { x: e.x, z: e.z },
+        });
         continue;
       }
       if (range < 0.65) continue;

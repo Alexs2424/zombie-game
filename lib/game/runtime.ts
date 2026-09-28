@@ -46,6 +46,9 @@ export type GameView = {
   lounge: boolean;
   shortcut: boolean;
   vip: boolean;
+  tables: boolean;
+  slowRound: number;
+  dice: Simulation["dice"];
   room: string;
   upgraded: boolean;
   message: string;
@@ -95,6 +98,9 @@ export const initialView: GameView = {
   lounge: false,
   shortcut: false,
   vip: false,
+  tables: false,
+  slowRound: 0,
+  dice: null,
   room: "Casino Floor",
   upgraded: false,
   message: "",
@@ -318,17 +324,46 @@ export class GameRuntime {
       bar: [12, -6.5, Math.PI, 0.03],
       shotgun: [-12.7, 1.8, -Math.PI / 2, 0],
       smg: [6.8, -0.2, -Math.PI / 2, 0],
-      rifle: [25.3, -6.7, Math.PI / 2, 0],
+      rifle: [25.3, -8.2, Math.PI / 2, 0],
       vip: [18, -8, 0.6, 0.08],
       gate: [2, -4.1, Math.PI / 2, 0],
       staff: [7, 8.6, -Math.PI / 2, 0],
       workshop: [24.7, 8.7, 0, 0.02],
       ammo: [-12.6, -9.1, Math.PI, 0],
+      tablesGate: [25.8, -4.1, Math.PI / 2, 0],
+      tables: [30, -8, 0.55, 0.1],
+      craps: [35, -5.3, 0, 0.28],
+      roulette: [35, 2.6, 0, 0.25],
     };
     if (poses[action]) {
-      if (["bar", "smg", "rifle", "vip", "staff", "workshop"].includes(action))
+      if (
+        [
+          "bar",
+          "smg",
+          "rifle",
+          "vip",
+          "staff",
+          "workshop",
+          "tablesGate",
+          "tables",
+          "craps",
+          "roulette",
+        ].includes(action)
+      )
         s.lounge = true;
-      if (["rifle", "vip", "workshop"].includes(action)) s.vip = true;
+      if (
+        [
+          "rifle",
+          "vip",
+          "workshop",
+          "tablesGate",
+          "tables",
+          "craps",
+          "roulette",
+        ].includes(action)
+      )
+        s.vip = true;
+      if (["tables", "craps", "roulette"].includes(action)) s.tables = true;
       s.closeBar();
       s.phase = "playing";
       s.intermission = 3600;
@@ -340,6 +375,14 @@ export class GameRuntime {
       s.refreshMap();
     }
     if (action === "use") this.interact();
+    if (action === "dice-seven" || action === "dice-win") {
+      s.lastWagerRound = -1;
+      s.dice = null;
+      s.points = Math.max(s.points, 250);
+      if (s.purchase("craps") && s.dice)
+        (s.dice as NonNullable<Simulation["dice"]>).values =
+          action === "dice-seven" ? [3, 4] : [5, 4];
+    }
     if (action === "left") s.yaw -= Math.PI / 4;
     if (action === "right") s.yaw += Math.PI / 4;
     if (action === "forward" || action === "back")
@@ -439,12 +482,21 @@ export class GameRuntime {
             Math.hypot(a.x - this.sim.player.x, a.z - this.sim.player.z) -
             Math.hypot(b.x - this.sim.player.x, b.z - this.sim.player.z),
         )[0];
-        if (nearby) this.audio.threat(this.sim.player, nearby, this.sim.yaw);
+        if (nearby)
+          this.audio.threat(this.sim.player, nearby, this.sim.yaw, nearby.id);
         this.threatTimer = 1.1 + Math.random();
       }
     }
     for (const event of this.sim.events) {
       this.audio.play(event);
+      if (event.type === "zombieAttack" && event.position)
+        this.audio.threat(
+          this.sim.player,
+          event.position,
+          this.sim.yaw,
+          0,
+          true,
+        );
       if (event.type === "shot") this.renderer.shot(event.weapon!);
       if (event.type === "hit") {
         this.hit = 0.16;
@@ -458,6 +510,14 @@ export class GameRuntime {
       }
     }
     this.sim.events.length = 0;
+    this.audio.update(
+      dt,
+      this.sim.phase === "playing",
+      this.sim.player,
+      this.sim.yaw,
+      this.sim.moving,
+      this.sim.sprinting,
+    );
     this.renderer.update(this.sim, dt);
     this.updateTimer -= dt;
     if (this.updateTimer <= 0) {
@@ -470,6 +530,7 @@ export class GameRuntime {
       w = s.inventory[s.weapon],
       p = s.nearestPurchase(),
       info = p ? s.purchaseInfo(p.id) : null;
+    this.audio.setActive(s.phase === "playing");
     this.onView({
       phase: s.phase,
       health: s.health,
@@ -519,6 +580,9 @@ export class GameRuntime {
       lounge: s.lounge,
       shortcut: s.shortcut,
       vip: s.vip,
+      tables: s.tables,
+      slowRound: s.slowRound,
+      dice: s.dice ? { ...s.dice, values: [...s.dice.values] } : null,
       room: roomName(s.player),
       upgraded: Object.values(s.upgrades).some(Boolean),
       message: s.messageRemaining > 0 ? s.lastMessage : "",
@@ -530,7 +594,10 @@ export class GameRuntime {
                 s.inventory[p.id].owned
                   ? `${WEAPONS[p.id].label} ammunition`
                   : p.name,
-              detail: p.detail,
+              detail:
+                p.id === "craps"
+                  ? `7 slows you 20% ${s.intermission > 0 ? "next round" : "this round"} · other rolls pay 500 chips · once per round`
+                  : p.detail,
               ...info,
             }
           : null,

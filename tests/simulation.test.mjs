@@ -298,7 +298,7 @@ test("new runs reset doors, timers, health, rewards, reload, and inventory acros
     assert.equal(s.reloadRemaining, 0);
   }
 });
-test("five-round shotgun route leaves an ammunition allowance after opening every area", () => {
+test("five-round shotgun route leaves an ammunition allowance after the original three unlocks", () => {
   const income =
     400 + [1, 2, 3, 4, 5].reduce((a, r) => a + waveStats(r).count * 100, 0);
   assert.equal(
@@ -606,4 +606,160 @@ test("round start and clear emit once, respect wave budget, and freeze when paus
   assert.equal(s.roundCue, "start");
   assert.equal(s.events.filter((e) => e.type === "roundClear").length, 1);
   assert.equal(s.events.filter((e) => e.type === "round").length, 2);
+});
+
+test("table room requires VIP, opens both gates once, and adds a delayed spawn", () => {
+  const s = quiet();
+  s.points = 10000;
+  assert.equal(buy(s, "tables"), false);
+  buy(s, "lounge");
+  buy(s, "vip");
+  for (const z of [-4.1, 8.6])
+    assert.equal(hasSight({ x: 26, z }, { x: 31, z }, s.rects), false);
+  const before = s.points;
+  assert.equal(buy(s, "tables"), true);
+  assert.equal(s.points, before - PRICES.tables);
+  assert.equal(buy(s, "tables"), false);
+  assert.equal(s.spawnEnabled(5), false);
+  for (const z of [-4.1, 8.6]) {
+    const p = { x: 26, z };
+    moveActor(p, 5, 0, 0.32, s.rects);
+    assert.ok(p.x > 30.9);
+  }
+  tick(s, 3.1);
+  assert.equal(s.spawnEnabled(5), true);
+  const p = { x: 40, z: -8 };
+  moveActor(p, 10, 0, 0.32, s.rects);
+  assert.ok(p.x > 41 && p.x < 42);
+});
+
+test("new room navigation reaches all enabled entrances around both table islands", () => {
+  const s = quiet();
+  s.lounge = s.vip = s.tables = true;
+  s.loungeAge = s.vipAge = s.tablesAge = 4;
+  s.refreshMap();
+  for (const player of [
+    { x: 30, z: -8 },
+    { x: 40, z: 9 },
+    { x: 35, z: -5 },
+    { x: 35, z: 7 },
+    { x: 30, z: 2 },
+  ]) {
+    assert.equal(collides(player, 0.32, s.rects), false);
+    s.navigation.update(player);
+    for (const spawn of SPAWNS)
+      assert.ok(
+        s.navigation.distance[s.navigation.index(spawn)] >= 0,
+        JSON.stringify({ player, spawn }),
+      );
+  }
+  s.player = { x: 35, z: 0 };
+  s.enemies = [enemy(35, -6)];
+  s.health = 1e6;
+  tick(s, 20);
+  assert.ok(dist(s.enemies[0], s.player) < 1.3);
+});
+
+function wagering() {
+  const s = quiet();
+  s.round = 3;
+  s.intermission = 0;
+  s.waveRemaining = 2;
+  s.spawnTimer = 100;
+  s.lounge = s.vip = s.tables = true;
+  s.refreshMap();
+  s.player = { x: 35, z: -5 };
+  s.points = 1000;
+  return s;
+}
+
+test("craps charges once, blocks locked/distant/paused/unaffordable attempts, and pays once", () => {
+  const s = wagering();
+  s.tables = false;
+  assert.equal(s.purchase("craps"), false);
+  s.tables = true;
+  s.player = { x: 31, z: -5 };
+  assert.equal(s.purchase("craps"), false);
+  s.player = { x: 35, z: -5 };
+  s.pause();
+  assert.equal(s.purchase("craps"), false);
+  s.resume();
+  s.points = 249;
+  assert.equal(s.purchase("craps"), false);
+  assert.equal(s.points, 249);
+  s.points = 1000;
+  s.random = () => 0.7; // two fives
+  assert.equal(s.purchase("craps"), true);
+  assert.equal(s.points, 750);
+  assert.equal(s.purchase("craps"), false);
+  s.pause();
+  tick(s, 3);
+  assert.equal(s.dice.remaining, 1.6);
+  s.resume();
+  tick(s, 1.7);
+  assert.deepEqual(s.dice.values, [5, 5]);
+  assert.equal(s.points, 1250);
+  tick(s, 4);
+  assert.equal(s.points, 1250);
+  assert.equal(s.slowRound, 0);
+  assert.equal(s.purchase("craps"), false);
+  assert.equal(s.events.filter((e) => e.type === "diceWin").length, 1);
+});
+
+test("seven slows both movement modes for one round and preserves Night Shift multiplier", () => {
+  const s = wagering();
+  let n = 0;
+  s.random = () => (n++ % 2 ? 0.51 : 0.34); // three + four
+  assert.equal(s.purchase("craps"), true);
+  tick(s, 1.7);
+  assert.equal(s.slowRound, 3);
+  assert.equal(s.slowed, true);
+  assert.equal(s.points, 750);
+  for (const sprint of [false, true]) {
+    s.player = { x: 30, z: 0 };
+    s.yaw = 0;
+    s.perks.nightShift = true;
+    s.step(0.05, { ...idle, forward: 1, sprint });
+    assert.ok(
+      Math.abs(
+        s.player.z - (sprint ? RULES.sprint * 1.15 : RULES.walk) * 0.8 * 0.05,
+      ) < 1e-8,
+    );
+  }
+  s.beginRound();
+  assert.equal(s.slowRound, 0);
+  assert.equal(s.slowed, false);
+  assert.equal(s.purchaseInfo("craps").reason, "");
+});
+
+test("intermission and boundary-crossing wagers target the next round, then clear", () => {
+  for (const finishDuringRoll of [false, true]) {
+    const s = wagering();
+    s.intermission = finishDuringRoll ? 0 : 8;
+    let n = 0;
+    s.random = () => (n++ % 2 ? 0.51 : 0.34);
+    s.purchase("craps");
+    if (finishDuringRoll) {
+      s.waveRemaining = 0;
+      s.enemies = [];
+    }
+    tick(s, 1.7);
+    assert.equal(s.slowRound, 4);
+    assert.equal(s.dice.round, 4);
+    assert.equal(s.slowed, false);
+    s.intermission = 0;
+    s.beginRound();
+    assert.equal(s.slowed, true);
+    assert.equal(s.purchase("craps"), false);
+    s.enemies = [];
+    s.waveRemaining = 0;
+    s.step(0.05, idle);
+    assert.equal(s.slowRound, 0);
+    assert.equal(s.slowed, false);
+    const fresh = new Simulation();
+    assert.equal(fresh.tables, false);
+    assert.equal(fresh.dice, null);
+    assert.equal(fresh.slowRound, 0);
+    assert.equal(fresh.lastWagerRound, -1);
+  }
 });

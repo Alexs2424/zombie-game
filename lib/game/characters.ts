@@ -1,4 +1,8 @@
 import { Scene } from "@babylonjs/core/scene";
+import { Matrix } from "@babylonjs/core/Maths/math.vector";
+import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
+import { VertexBuffer } from "@babylonjs/core/Buffers/buffer";
+import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
@@ -12,7 +16,7 @@ export function createCharacter(scene: Scene, id: number, bartender = false) {
     const m = new StandardMaterial(`${id}-${name}`, scene);
     m.diffuseColor = Color3.FromHexString(color);
     m.specularColor.set(0.07, 0.07, 0.07);
-    m.maxSimultaneousLights = 6;
+    m.maxSimultaneousLights = 8;
     owned.push(m);
     return m;
   };
@@ -116,7 +120,7 @@ export function createCharacter(scene: Scene, id: number, bartender = false) {
   sphere("shoulder", 0.21, 1.36, 0, 0.2, 0.18, 0.29, suit);
   sphere("hips", 0, 0.8, 0, 0.39, 0.22, 0.27, dark);
   capsule("neck", 0, 1.48, 0, 0.072, 0.18, skin);
-  const head = sphere("head", 0, 1.68, 0.015, 0.35, 0.43, 0.34, skin);
+  sphere("head", 0, 1.68, 0.015, 0.35, 0.43, 0.34, skin);
   sphere("jaw", 0, 1.56, 0.055, 0.28, 0.2, 0.28, skin);
   sphere("nose", 0, 1.665, 0.196, 0.075, 0.12, 0.085, skin);
   for (const side of [-1, 1]) {
@@ -239,6 +243,37 @@ export function createCharacter(scene: Scene, id: number, bartender = false) {
     brim.scaling.z = 0.85;
     brim.material = dark;
   }
+  // Keep shoulder/hip/elbow pivots, but draw each rigid material group once.
+  // MergeMeshes bakes world transforms, so restore that parent’s local space.
+  const groups = new Map<TransformNode, Map<StandardMaterial, Mesh[]>>();
+  for (const mesh of root.getChildMeshes()) {
+    if (!(mesh instanceof Mesh) || !(mesh.parent instanceof TransformNode))
+      continue;
+    const parent = mesh.parent;
+    const byMaterial =
+      groups.get(parent) ?? new Map<StandardMaterial, Mesh[]>();
+    const material = mesh.material as StandardMaterial;
+    const meshes = byMaterial.get(material) ?? [];
+    meshes.push(mesh);
+    byMaterial.set(material, meshes);
+    groups.set(parent, byMaterial);
+  }
+  for (const [parent, byMaterial] of groups)
+    for (const meshes of byMaterial.values()) {
+      if (meshes.length < 2) continue;
+      const inverse = Matrix.Invert(parent.computeWorldMatrix(true));
+      const merged = Mesh.MergeMeshes(meshes, true, true);
+      if (!merged) continue;
+      merged.bakeTransformIntoVertices(inverse);
+      merged.parent = parent;
+      // Rebuild normals after baking non-uniformly scaled sphere primitives.
+      const positions = merged.getVerticesData(VertexBuffer.PositionKind)!;
+      const normals = new Float32Array(positions.length);
+      VertexData.ComputeNormals(positions, merged.getIndices()!, normals);
+      merged.setVerticesData(VertexBuffer.NormalKind, normals);
+      merged.receiveShadows = true;
+      merged.isPickable = false;
+    }
   const shadow = MeshBuilder.CreateDisc(
     "contact shadow",
     { radius: 0.37, tessellation: 18 },
@@ -249,10 +284,8 @@ export function createCharacter(scene: Scene, id: number, bartender = false) {
   shadow.material = dark;
   return {
     root,
-    head,
     arms,
     legs,
-    body,
     shadow,
     material: suit,
     materials: owned,
