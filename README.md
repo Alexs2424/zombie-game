@@ -38,19 +38,21 @@ The start and pause screens provide mouse sensitivity, sound volume, and optiona
 
 ## First five rounds
 
-Start with a pistol and 400 points. Kills award 100 points. The first five rounds contain 6, 9, 12, 16, and 20 zombies, with a 14-enemy active cap. Health regenerates after 5.5 seconds without damage. Every run resets weapons, points, doors, and upgrades.
+Start with a pistol and 400 chips. Kills award 100 chips. The first five rounds contain 6, 9, 12, 16, and 20 zombies, with a 14-enemy active cap. Health regenerates after 5.5 seconds without damage. Every run resets weapons, chips, doors, and upgrades.
 
-- Pistol reserve: 150 points, near the starting foyer.
-- Room Service shotgun: 800 points, on the west casino wall. Return there for a 300-point reserve refill.
-- Cocktail lounge: 900 points, at the shutter on the east side of the main floor.
-- Staff passage: 1,200 points, purchased from inside the staff area after opening the lounge. It completes the second movement loop.
-- High Roller Club: 1,300 points from the lounge. Opens a 12 × 24 metre poker room and both its lounge and staff entrances. A private entrance starts spawning zombies only after the room opens.
-- Dealer’s Choice SMG: 1,100 points in the lounge; 400-point reserve refill.
-- Pit Boss rifle: 1,600 points on the east wall of the High Roller Club; 500-point reserve refill.
+- Pistol reserve: 150 chips, near the starting foyer.
+- Room Service shotgun: 800 chips, on the west casino wall. Return there for a 300-chip reserve refill.
+- Cocktail lounge: 900 chips, at the shutter on the east side of the main floor.
+- Staff passage: 1,200 chips, purchased from inside the staff area after opening the lounge. It completes the second movement loop.
+- High Roller Club: 1,300 chips from the lounge. Opens a 12 × 24 metre poker room and both its lounge and staff entrances. A private entrance starts spawning zombies only after the room opens.
+- The Devil’s Tables: 1,500 chips from the High Roller Club. Opens a 14 × 24 metre room, two connected entrances, and a delayed dealer spawn. Craps and roulette are broad training islands.
+- Seven’s Curse craps wager: 250 chips, once per round. Two fair six-sided dice roll while combat continues. A total of seven slows walking and sprinting by 20% for that round; other totals pay 500 chips (250 net). During intermission, the wager and any curse apply to the upcoming round. Roulette is animated scenery in this version.
+- Dealer’s Choice SMG: 1,100 chips in the lounge; 400-chip reserve refill.
+- Pit Boss rifle: 1,600 chips on the east wall of the High Roller Club; 500-chip reserve refill.
 - Marlowe, the lounge bartender: **E** from the customer side of the bar opens the menu and pauses the solo run. House Reserve costs 1,500 (+50 maximum health); Quick Pour costs 1,000 (reload time ×0.7); Night Shift costs 900 (sprint speed ×1.15). Perks are one-time purchases for the current run.
-- Double Down: 2,000 points per owned weapon, at Marlowe’s menu or the VIP workshop. Increases magazine capacity by 50%, damage by approximately 35%, and fills the magazine once. Select the gun to upgrade in the bar menu; the workshop upgrades your equipped gun. Both locations share upgrade state.
+- Double Down: 2,000 chips per owned weapon, at Marlowe’s menu or the VIP workshop. Increases magazine capacity by 50%, damage by approximately 35%, and fills the magazine once. Select the gun to upgrade in the bar menu; the workshop upgrades your equipped gun. Both locations share upgrade state.
 
-The five-round income model leaves 500 points for ammunition after the shotgun, every area unlock, and one weapon upgrade. Extra guns and perks are competing build choices; buying everything is a longer-run goal. Values are initial playtest tuning, not final balance. Rounds continue after five with bounded enemy speed and health.
+The five-round income model leaves 500 chips for ammunition after the shotgun, the original lounge/staff/VIP unlocks, and one weapon upgrade. Extra guns and perks are competing build choices; buying everything is a longer-run goal. Values are initial playtest tuning, not final balance. Rounds continue after five with bounded enemy speed and health.
 
 ## Architecture
 
@@ -64,7 +66,7 @@ The five-round income model leaves 500 points for ammunition after the shotgun, 
 
 ## Validation and limitations
 
-29 automated simulation checks pass, including five-round progression and three fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
+36 automated checks pass (34 simulation and two audio-routing regressions), including five-round progression and three fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
 
 This is a rough playable: stylized geometry and humanoids, synthesized audio, no aim-down-sights, melee, grenades, jump, crouch, random weapon station, persistent records, native app, controller support, or co-op. Mouse capture needs a focused browser and a genuine user gesture. The final feel and difficulty need a hands-on mouse playtest.
 
@@ -74,7 +76,7 @@ Casino geometry, characters, signs, and sounds are generated by this source. Fou
 
 ## Environment pass — September 27, 2026
 
-The footprint is now 44 × 24 metres, up from 32 × 24 (37.5% larger). The original casino, lounge, and staff loop remain; the High Roller Club adds two poker islands and a second route connecting the lounge and staff area. World bounds are shared by collisions and navigation. The room's two gates share a purchase, and its new spawn has its own opening delay.
+At this checkpoint the footprint became 44 × 24 metres, up from 32 × 24 (37.5% larger). The original casino, lounge, and staff loop remain; the High Roller Club adds two poker islands and a second route connecting the lounge and staff area. World bounds are shared by collisions and navigation. The room's two gates share a purchase, and its new spawn has its own opening delay.
 
 Visual additions include a woven carpet texture, walnut wall panels and brass trim, coffered ceilings, chandeliers and sconces, detailed slot cabinets, bar shelves and bottles, poker cards/chips, a velvet banquette, room labels, prominent door prices, two shadow-casting lights, and restrained bloom. Fixed scenery is batched by material. Rendering now uses up to 1.5 device pixels per CSS pixel, correcting the old under-resolution setting.
 
@@ -88,4 +90,14 @@ Round starts and clears have different original horror stingers, large announcem
 
 For repeatable local visual QA, `/?playtest=1` in development shows controls for a seeded run, room viewpoints, movement, purchases, firing/reloading, round transitions, and a 14-zombie crowd. These exercise the real simulation and menus without requiring automated pointer lock. They are excluded by production guards. A fresh normal URL retains standard mouse capture and starting economy.
 
-Next fidelity priorities: polished character locomotion and attack animation, bespoke hand reload animations, room-specific ambient loops, surface roughness/normal maps, and sparse environmental storytelling. These remain future work; current characters and weapons use component animation rather than full skeletal animation.
+Next fidelity priorities: polished character locomotion and attack animation, bespoke hand reload animations, surface roughness/normal maps, and sparse environmental storytelling. These remain future work; current characters and weapons use component animation rather than full skeletal animation.
+
+## Tables, hands, lighting, and sound — September 27, 2026
+
+The map now spans **58 × 24 metres**. The Devil’s Tables extends the club eastward with two connected entrances, craps and roulette furniture, numbered ivory dice, chip storage, brass/wood details, and a new spawn. The rifle display moved south along the club wall to clear the new doorway. Both table footprints participate in collisions and zombie navigation.
+
+Lighting uses warm chandelier pools, cool ambient fill, local jade/warm table-room bounce, three filtered shadow maps, subtle screen-space contact shading, ACES tone mapping, restrained bloom, and a weapon-only fill light. Gunfire briefly illuminates nearby scenery. Four original fitted glove/forearm assets replace the earlier palm placeholders, with finger grips, seams, leather textures, wrist pivots, and support-hand reload/pump motion. Character geometry is batched within rigid animation groups to reduce draw calls.
+
+Audio adds a quiet electrical/room bed, occasional distant slot notes and chips/glass, footsteps, and distance-panned zombie breath, groans, and attack calls. Round stingers duck ambience. Pause and focus loss mute the world bus immediately; purchases, denials, and death retain their separate cue path. These are original synthesized sounds, not recorded actors or licensed game audio. Audio graph tests cover pause/routing/disposal; their timbre still needs a human listening pass.
+
+New asset sources, dimensions, pivots, and geometry validation are documented under `docs/table-assets/` and `docs/hand-assets/`; generators live under `tools/`. Run these generators with Python, NumPy, SciPy, and Pillow installed. They write to ignored `outputs/table-assets/` and `outputs/hand-assets/`. Generated textures are embedded in the GLBs. Hands are fitted posed meshes, not skeletal finger animation. Roulette is visual ambience; the craps wager is the playable table mechanic.

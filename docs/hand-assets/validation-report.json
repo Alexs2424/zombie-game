@@ -1,0 +1,58 @@
+[
+  {
+    "asset": "hands-pistol.glb",
+    "triangles": 19076,
+    "bytes": 1212628,
+    "embedded_texture_count": 2,
+    "finite_unit_normals": true,
+    "index_ranges_valid": true,
+    "nondegenerate_triangles": true,
+    "minimum_triangle_area": 1.3098197371164133e-07,
+    "weapon_reference": "pistol.glb",
+    "weapon_geometry_max_error_metres": 0.0,
+    "weapon_sha256": "9a7b64c886dd8571d82022344df8bb59790848259f6a7dd6414167b56b3cf6e7",
+    "asset_sha256": "437c272336b99b2be3f0f4fea31146a964aafd3700d34d07663c36ed0ad32c07"
+  },
+  {
+    "asset": "hands-shotgun.glb",
+    "triangles": 19214,
+    "bytes": 1219536,
+    "embedded_texture_count": 2,
+    "finite_unit_normals": true,
+    "index_ranges_valid": true,
+    "nondegenerate_triangles": true,
+    "minimum_triangle_area": 1.3098328111027513e-07,
+    "weapon_reference": "shotgun.glb",
+    "weapon_geometry_max_error_metres": 0.0,
+    "weapon_sha256": "027f20aa7425e286932bc418eccb694c9eefe28ed4d82ad9146dc03b320a5851",
+    "asset_sha256": "0d050abbf617e93bd5dbb0f12a08c61793b2c4ce79b7fa19e4b2d33dab1864ec"
+  },
+  {
+    "asset": "hands-smg.glb",
+    "triangles": 19190,
+    "bytes": 1219152,
+    "embedded_texture_count": 2,
+    "finite_unit_normals": true,
+    "index_ranges_valid": true,
+    "nondegenerate_triangles": true,
+    "minimum_triangle_area": 1.3098197371164133e-07,
+    "weapon_reference": "smg.glb",
+    "weapon_geometry_max_error_metres": 0.0,
+    "weapon_sha256": "5647ed70f17624a4725e25cec784ca1f64f01edcd76050e592c1f433db0bb6bb",
+    "asset_sha256": "ea25c31e00c6b065a7eb68b555d8bf3fd8c57d97695e51e253b251a86013a0ab"
+  },
+  {
+    "asset": "hands-rifle.glb",
+    "triangles": 19178,
+    "bytes": 1218652,
+    "embedded_texture_count": 2,
+    "finite_unit_normals": true,
+    "index_ranges_valid": true,
+    "nondegenerate_triangles": true,
+    "minimum_triangle_area": 1.3098197371164133e-07,
+    "weapon_reference": "rifle.glb",
+    "weapon_geometry_max_error_metres": 0.0,
+    "weapon_sha256": "b8d761bb091c52d949ff05de6f77a92fe325e5f13022e4abe9d5f1b3e3bb4093",
+    "asset_sha256": "3fa42824eb486edb216311ece4af3b38d74cab816f7c7d9873eec79d0c268a0a"
+  }
+]

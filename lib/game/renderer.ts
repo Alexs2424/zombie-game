@@ -5,9 +5,13 @@ import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 import { PointLight } from "@babylonjs/core/Lights/pointLight";
 import { SpotLight } from "@babylonjs/core/Lights/spotLight";
 import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
+import "@babylonjs/core/Rendering/prePassRendererSceneComponent";
+import "@babylonjs/core/Rendering/geometryBufferRendererSceneComponent";
+import { SSAO2RenderingPipeline } from "@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/ssao2RenderingPipeline";
+import { ImageProcessingConfiguration } from "@babylonjs/core/Materials/imageProcessingConfiguration";
 import { DefaultRenderingPipeline } from "@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/defaultRenderingPipeline";
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent";
-import { Vector3 } from "@babylonjs/core/Maths/math.vector";
+import { Quaternion, Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
@@ -50,8 +54,17 @@ export class GameRenderer {
     Record<WeaponId, { node: TransformNode; y: number; z: number }[]>
   > = {};
   private bartender?: ZombieView;
+  private handLight: PointLight;
+  private muzzleLight: PointLight;
+  private rouletteWheel?: TransformNode;
+  private rouletteBall?: TransformNode;
+  private diceMeshes: TransformNode[] = [];
+  private handParts: Partial<
+    Record<WeaponId, { node: TransformNode; rest: Vector3 }[]>
+  > = {};
   private materials = new Map<string, StandardMaterial>();
   private zombies = new Map<number, ZombieView>();
+  private zombieShadows = new Map<number, Set<ShadowGenerator>>();
   private gates: Record<string, Mesh> = {};
   private gateSigns: Record<string, Mesh> = {};
   private shadows: ShadowGenerator[] = [];
@@ -80,8 +93,8 @@ export class GameRenderer {
     this.scene = new Scene(this.engine);
     this.scene.clearColor = new Color4(0.035, 0.049, 0.045, 1);
     this.scene.fogMode = Scene.FOGMODE_EXP2;
-    this.scene.fogDensity = 0.014;
-    this.scene.fogColor = new Color3(0.045, 0.066, 0.057);
+    this.scene.fogDensity = 0.012;
+    this.scene.fogColor = new Color3(0.027, 0.048, 0.043);
     const reflectionFaces = Array.from({ length: 6 }, (_, face) => {
       const pixels = new Uint8Array(16 * 16 * 4);
       for (let y = 0; y < 16; y++)
@@ -126,48 +139,64 @@ export class GameRenderer {
       new Vector3(0.3, 1, -0.2),
       this.scene,
     );
-    hemi.intensity = 0.65;
-    hemi.groundColor = new Color3(0.18, 0.17, 0.15);
-    hemi.diffuse = new Color3(0.79, 0.87, 0.8);
+    hemi.intensity = 0.85;
+    hemi.groundColor = new Color3(0.2, 0.23, 0.23);
+    hemi.diffuse = new Color3(0.69, 0.79, 0.77);
     const amber = new PointLight(
       "casino lamp",
       new Vector3(-8, 3.7, 3),
       this.scene,
     );
     amber.diffuse = new Color3(1, 0.73, 0.34);
-    amber.intensity = 0.85;
-    amber.range = 17;
+    amber.intensity = 0.8;
+    amber.range = 13;
     const lounge = new PointLight(
       "lounge lamp",
       new Vector3(10, 3, -5),
       this.scene,
     );
     lounge.diffuse = new Color3(0.46, 0.9, 0.72);
-    lounge.intensity = 1.1;
-    lounge.range = 14;
+    lounge.intensity = 0.95;
+    lounge.range = 12;
     for (const [x, z] of [
       [-6, 0],
       [22, 1],
+      [35, 0],
     ]) {
       const key = new SpotLight(
         "chandelier pool",
         new Vector3(x, 4.55, z),
         new Vector3(0.08, -1, 0.04),
-        2.75,
-        1.2,
+        2.35,
+        1.35,
         this.scene,
       );
       key.diffuse = new Color3(1, 0.8, 0.5);
-      key.intensity = 1.4;
-      key.range = 30;
+      key.intensity = 2.8;
+      key.range = 18;
       key.shadowMinZ = 0.3;
-      key.shadowMaxZ = 30;
+      key.shadowMaxZ = 18;
       const shadow = new ShadowGenerator(1024, key);
       shadow.usePercentageCloserFiltering = true;
+      shadow.filteringQuality = ShadowGenerator.QUALITY_MEDIUM;
       shadow.bias = 0.002;
       shadow.normalBias = 0.04;
-      shadow.setDarkness(0.35);
+      shadow.setDarkness(0.16);
       this.shadows.push(shadow);
+    }
+    if (SSAO2RenderingPipeline.IsSupported) {
+      const ao = new SSAO2RenderingPipeline(
+        "contact shadows",
+        this.scene,
+        { ssaoRatio: 0.5, blurRatio: 1 },
+        [this.camera],
+        false,
+      );
+      ao.radius = 0.35;
+      ao.totalStrength = 0.45;
+      ao.base = 0.05;
+      ao.samples = 12;
+      ao.maxZ = 45;
     }
     const pipeline = new DefaultRenderingPipeline(
       "casino finish",
@@ -177,12 +206,53 @@ export class GameRenderer {
     );
     pipeline.fxaaEnabled = true;
     pipeline.bloomEnabled = true;
-    pipeline.bloomThreshold = 0.85;
-    pipeline.bloomWeight = 0.17;
+    pipeline.bloomThreshold = 0.9;
+    pipeline.bloomWeight = 0.16;
     pipeline.bloomKernel = 40;
-    pipeline.imageProcessing.contrast = 1.14;
-    pipeline.imageProcessing.exposure = 1.12;
+    pipeline.imageProcessing.toneMappingEnabled = true;
+    pipeline.imageProcessing.toneMappingType =
+      ImageProcessingConfiguration.TONEMAPPING_ACES;
+    pipeline.imageProcessing.vignetteEnabled = true;
+    pipeline.imageProcessing.vignetteWeight = 1.1;
+    pipeline.imageProcessing.vignetteColor = new Color4(0.012, 0.019, 0.016, 1);
+    pipeline.imageProcessing.contrast = 1.02;
+    pipeline.imageProcessing.exposure = 1.55;
+    const tableBounce = new PointLight(
+      "table room warm bounce",
+      new Vector3(35, 2.8, -3),
+      this.scene,
+    );
+    tableBounce.diffuse = new Color3(1, 0.74, 0.45);
+    tableBounce.intensity = 0.65;
+    tableBounce.range = 12;
+    const rouletteGlow = new PointLight(
+      "roulette jade bounce",
+      new Vector3(39, 2.8, 7),
+      this.scene,
+    );
+    rouletteGlow.diffuse = new Color3(0.35, 0.7, 0.61);
+    rouletteGlow.intensity = 0.5;
+    rouletteGlow.range = 9;
     this.environment();
+    this.handLight = new PointLight(
+      "weapon bounce",
+      new Vector3(-0.3, 0.5, -0.1),
+      this.scene,
+    );
+    this.handLight.parent = this.camera;
+    this.handLight.diffuse = new Color3(0.83, 0.88, 0.82);
+    this.handLight.intensity = 1.4;
+    this.handLight.range = 3;
+    this.handLight.renderPriority = 20;
+    this.muzzleLight = new PointLight(
+      "muzzle spill",
+      Vector3.Zero(),
+      this.scene,
+    );
+    this.muzzleLight.diffuse = new Color3(1, 0.65, 0.25);
+    this.muzzleLight.range = 6;
+    this.muzzleLight.intensity = 0;
+    this.muzzleLight.renderPriority = 30;
     this.gun = new TransformNode("hands", this.scene);
     this.gun.parent = this.camera;
     this.guns = {
@@ -207,14 +277,19 @@ export class GameRenderer {
     );
     this.impact.material = this.mat("impact", "#e3c580", 1);
     this.impact.isVisible = false;
-    this.ready = this.loadWeaponAssets();
+    this.ready = Promise.all([
+      this.loadWeaponAssets(),
+      this.loadTableAssets(),
+    ]).then(async () => {
+      await this.scene.whenReadyAsync();
+    });
   }
   mat(name: string, hex: string, glow = 0) {
     if (this.materials.has(name)) return this.materials.get(name)!;
     const m = new StandardMaterial(name, this.scene);
     m.diffuseColor = Color3.FromHexString(hex);
     m.specularColor = new Color3(0.12, 0.12, 0.1);
-    m.maxSimultaneousLights = 6;
+    m.maxSimultaneousLights = 8;
     if (glow) m.emissiveColor = m.diffuseColor.scale(glow);
     this.materials.set(name, m);
     return m;
@@ -331,14 +406,15 @@ export class GameRenderer {
     trim.specularColor = new Color3(0.7, 0.57, 0.3);
     trim.specularPower = 48;
     const carpet = new Texture("/textures/casino-carpet.png", this.scene);
-    carpet.uScale = 11;
+    carpet.uScale = 14.5;
     carpet.vScale = 6;
     carpet.anisotropicFilteringLevel = 8;
     const floorMat = this.mat("woven carpet", "#ffffff");
     floorMat.diffuseTexture = carpet;
     floorMat.specularColor = Color3.Black();
     const width = BOUNDS.maxX - BOUNDS.minX;
-    this.box("floor", 6, -0.12, 0, width, 0.2, 24, floorMat);
+    const centerX = (BOUNDS.minX + BOUNDS.maxX) / 2;
+    this.box("floor", centerX, -0.12, 0, width, 0.2, 24, floorMat);
     const loungeMat = this.mat("lounge carpet", "#739f8b");
     const loungeTexture = carpet.clone();
     loungeTexture.uScale = 3;
@@ -362,7 +438,7 @@ export class GameRenderer {
       this.box("grout", 10, 0.014, z, 11.5, 0.005, 0.016, dark);
     this.box(
       "ceiling",
-      6,
+      centerX,
       4.94,
       0,
       width,
@@ -372,7 +448,15 @@ export class GameRenderer {
     );
     // Decorative meshes stay inside these same solid footprints used by the simulation.
     for (const r of STATIC_RECTS) {
-      if (r.id === "upgrade-machine") continue;
+      if (
+        [
+          "upgrade-machine",
+          "craps-table",
+          "roulette-table",
+          "tables-sideboard",
+        ].includes(r.id)
+      )
+        continue;
       if (r.id.startsWith("slots")) {
         this.slotIsland(r.x, r.z, r.w, r.d);
         continue;
@@ -553,7 +637,9 @@ export class GameRenderer {
           ? "THE LAST CALL"
           : id === "shortcut"
             ? "STAFF PASSAGE"
-            : "HIGH ROLLER CLUB";
+            : id.startsWith("tables")
+              ? "THE DEVIL’S TABLES"
+              : "HIGH ROLLER CLUB";
       this.label(
         id + " lintel",
         name,
@@ -569,7 +655,9 @@ export class GameRenderer {
         id + " reverse lintel",
         id === "lounge" || id === "shortcut"
           ? "CASINO FLOOR"
-          : "STAFF & LOUNGE",
+          : id.startsWith("tables")
+            ? "HIGH ROLLER CLUB"
+            : "STAFF & LOUNGE",
         r.x + 0.33,
         3.28,
         r.z,
@@ -591,11 +679,13 @@ export class GameRenderer {
       );
       this.gateSigns[id] = this.label(
         id + " price",
-        id === "vipExit"
-          ? "UNLOCK FROM LOUNGE"
-          : id === "shortcut"
-            ? "OPEN FROM STAFF SIDE"
-            : `E  •  OPEN  ${PRICES[id as "lounge" | "shortcut" | "vip"]}`,
+        id === "tablesExit"
+          ? "UNLOCK AT FRONT ENTRANCE"
+          : id === "vipExit"
+            ? "UNLOCK FROM LOUNGE"
+            : id === "shortcut"
+              ? "OPEN FROM STAFF SIDE"
+              : `E  •  OPEN  ${PRICES[id as "lounge" | "shortcut" | "vip" | "tables"]}`,
         r.x - 0.26,
         1.65,
         r.z,
@@ -724,7 +814,7 @@ export class GameRenderer {
         continue;
       }
       if (p.id === "shotgun" || p.id === "smg" || p.id === "rifle") {
-        const x = p.id === "shotgun" ? -15.95 : p.id === "smg" ? 4.27 : 27.95;
+        const x = p.id === "shotgun" ? -15.95 : p.id === "smg" ? 4.27 : 27.725;
         const facing = p.id === "rifle" ? Math.PI / 2 : -Math.PI / 2;
         const offset = p.id === "rifle" ? -0.12 : 0.12;
         this.box(p.id + " walnut display", x, 1.52, p.z, 0.1, 1.65, 2.65, wood);
@@ -761,7 +851,7 @@ export class GameRenderer {
         );
         this.label(
           p.id + " rack price",
-          `${WEAPONS[p.id].price} PTS • AMMO ${WEAPONS[p.id].refill}`,
+          `${WEAPONS[p.id].price} CHIPS • AMMO ${WEAPONS[p.id].refill}`,
           x + offset * 1.15,
           0.9,
           p.z,
@@ -876,9 +966,14 @@ export class GameRenderer {
         z = i === 1 ? p.z : i === 2 ? 11.94 : -11.94;
       this.label(
         "entrance " + i,
-        ["ENTRANCE", "SECURITY", "STAFF", "BACK OF HOUSE", "PRIVATE ENTRANCE"][
-          i
-        ],
+        [
+          "ENTRANCE",
+          "SECURITY",
+          "STAFF",
+          "BACK OF HOUSE",
+          "PRIVATE ENTRANCE",
+          "DEALER ACCESS",
+        ][i],
         x,
         2.9,
         z,
@@ -969,15 +1064,17 @@ export class GameRenderer {
       );
     }
     // Coffered ceiling and suspended fixtures establish architectural scale.
-    for (let x = -16; x <= 28; x += 4)
+    for (let x = BOUNDS.minX; x <= BOUNDS.maxX; x += 4)
       this.box("ceiling cross beam", x, 4.66, 0, 0.13, 0.22, 24, wood);
     for (let z = -12; z <= 12; z += 4)
-      this.box("ceiling cross beam", 6, 4.66, z, width, 0.22, 0.13, wood);
+      this.box("ceiling cross beam", centerX, 4.66, z, width, 0.22, 0.13, wood);
     for (const [x, z] of [
       [-7, 0],
       [-0.7, 5],
       [22, -3],
       [22, 5],
+      [35, -3],
+      [35, 5],
     ]) {
       this.cylinder("chandelier stem", x, 4.14, z, 0.045, 1.2, trim);
       const ring = MeshBuilder.CreateTorus(
@@ -1004,7 +1101,7 @@ export class GameRenderer {
         this.cylinder("pendant brass base", xx, 3.55, zz, 0.2, 0.08, trim);
       }
     }
-    for (const x of [-15.88, 27.88])
+    for (const x of [-15.88, 27.7, 41.88])
       for (const z of [-8, 0, 8]) {
         this.box("sconce backing", x, 2.85, z, 0.07, 0.8, 0.46, trim);
         this.box(
@@ -1018,7 +1115,7 @@ export class GameRenderer {
           luminous,
         );
       }
-    for (const x of [-15.83, 15.7, 27.83])
+    for (const x of [-15.83, 15.7, 27.7, 41.83])
       this.box(
         "cove light",
         x,
@@ -1050,6 +1147,83 @@ export class GameRenderer {
       0.5,
       "#dbbd78",
     );
+    this.label(
+      "tables room title",
+      "THE DEVIL’S TABLES",
+      35,
+      3.55,
+      11.9,
+      8,
+      0.65,
+      "#dfbd78",
+    );
+    this.label(
+      "tables invitation",
+      "CRAPS & ROULETTE →",
+      27.69,
+      2.7,
+      4.3,
+      3.4,
+      0.42,
+      "#dfbd78",
+      Math.PI / 2,
+    );
+    this.label(
+      "craps rules",
+      "SEVEN’S CURSE",
+      35,
+      2.5,
+      -11.9,
+      4.6,
+      0.65,
+      "#e3b875",
+      Math.PI,
+    );
+    this.label(
+      "craps cost",
+      "250 CHIPS • ONE ROLL PER ROUND",
+      35,
+      1.93,
+      -11.9,
+      5.6,
+      0.37,
+      "#c6b998",
+      Math.PI,
+    );
+    this.label(
+      "craps risk",
+      "7: −20% SPEED • OTHER ROLLS: 500 CHIPS",
+      35,
+      1.48,
+      -11.9,
+      6.5,
+      0.36,
+      "#c6b998",
+      Math.PI,
+    );
+    this.box("table room sideboard", 41.35, 0.53, 1, 1.1, 1.06, 3, wood);
+    this.box("sideboard brass top", 41.35, 1.1, 1, 1.15, 0.07, 3.05, trim);
+    for (let i = 0; i < 7; i++) {
+      this.cylinder(
+        "sideboard chip tray",
+        41.25,
+        1.18,
+        -0.1 + i * 0.34,
+        0.18,
+        0.06,
+        dark,
+      );
+      for (let j = 0; j < 4; j++)
+        this.cylinder(
+          "sideboard chips",
+          41.25,
+          1.225 + j * 0.025,
+          -0.1 + i * 0.34,
+          0.12,
+          0.02,
+          i % 2 ? burgundy : cream,
+        );
+    }
     // Batch fixed scenery by material, keeping shutters and their children movable.
     const groups = new Map<StandardMaterial, Mesh[]>();
     const gates = new Set(Object.values(this.gates));
@@ -1265,6 +1439,60 @@ export class GameRenderer {
         );
       }
   }
+  private async loadTableAssets() {
+    await Promise.all(
+      ["craps-table", "roulette-table", "ivory-die-a", "ivory-die-b"].map(
+        async (name, i) => {
+          const asset = await LoadAssetContainerAsync(
+            `/models/${name}.glb`,
+            this.scene,
+          );
+          if (this.scene.isDisposed) {
+            asset.dispose();
+            return;
+          }
+          this.weaponAssets.push(asset);
+          const imported = asset.instantiateModelsToScene(
+            (n) => `${name}:${n}`,
+            false,
+            { doNotInstantiate: true },
+          );
+          const placement = new TransformNode(name + " placement", this.scene);
+          placement.position.set(35, 0, i === 1 ? 5 : -3);
+          for (const root of imported.rootNodes) root.parent = placement;
+          if (i >= 2) {
+            // Rotate inside glTF's conversion root so the documented pip faces stay correct.
+            const conversion = imported.rootNodes[0] as TransformNode;
+            const die = new TransformNode(name + " animated", this.scene);
+            die.parent = conversion;
+            const children = conversion.getChildren();
+            for (const child of children) if (child !== die) child.parent = die;
+            die.position.set(i === 2 ? -0.27 : 0.28, 0.8601, -0.1);
+            this.diceMeshes[i - 2] = die;
+          }
+          for (const node of placement.getDescendants()) {
+            if (node.name === `${name}:roulette_wheel`)
+              this.rouletteWheel = node as TransformNode;
+            if (node.name === `${name}:roulette_ball`)
+              this.rouletteBall = node as TransformNode;
+            if (node.name.includes("Presentation red die"))
+              node.setEnabled(false);
+          }
+          for (const mesh of placement.getChildMeshes()) {
+            mesh.isPickable = false;
+            mesh.receiveShadows = true;
+            const material = mesh.material as unknown as {
+              maxSimultaneousLights?: number;
+            };
+            if (material && "maxSimultaneousLights" in material)
+              material.maxSimultaneousLights = 8;
+            for (const shadow of this.shadows)
+              shadow.addShadowCaster(mesh, false);
+          }
+        },
+      ),
+    );
+  }
   private async loadWeaponAssets() {
     await Promise.all(
       WEAPON_ORDER.map(async (id) => {
@@ -1277,14 +1505,34 @@ export class GameRenderer {
           return;
         }
         this.weaponAssets.push(asset);
-        for (const m of this.guns[id].getChildMeshes())
-          if (!m.name.startsWith("glove")) m.dispose();
         const firstPerson = asset.instantiateModelsToScene(
           (n) => `${id}-${n}`,
           false,
           { doNotInstantiate: true },
         );
         for (const root of firstPerson.rootNodes) root.parent = this.guns[id];
+        const hands = await LoadAssetContainerAsync(
+          `/models/hands-${id}.glb`,
+          this.scene,
+        );
+        if (this.scene.isDisposed) {
+          hands.dispose();
+          return;
+        }
+        this.weaponAssets.push(hands);
+        const grip = hands.instantiateModelsToScene(
+          (n) => `${id}-grip-${n}`,
+          false,
+          { doNotInstantiate: true },
+        );
+        for (const root of grip.rootNodes) root.parent = this.guns[id];
+        this.handParts[id] = this.guns[id]
+          .getDescendants()
+          .filter((n) => n.name === `${id}-grip-LeftHand`)
+          .map((n) => ({
+            node: n as TransformNode,
+            rest: (n as TransformNode).position.clone(),
+          }));
         for (const mesh of this.guns[id].getChildMeshes()) {
           mesh.renderingGroupId = 1;
           mesh.isPickable = false;
@@ -1330,56 +1578,25 @@ export class GameRenderer {
         }
       }),
     );
-    await this.scene.whenReadyAsync();
+    this.handLight.includedOnlyMeshes = WEAPON_ORDER.flatMap((id) =>
+      this.guns[id].getChildMeshes(),
+    );
+    for (const mesh of this.handLight.includedOnlyMeshes) {
+      const material = mesh.material as unknown as {
+        maxSimultaneousLights?: number;
+      };
+      if (material && "maxSimultaneousLights" in material)
+        material.maxSimultaneousLights = 8;
+    }
   }
   private weapon(id: WeaponId) {
     const root = new TransformNode(id, this.scene);
     root.parent = this.gun;
-    const glove = this.mat("tactical leather", "#403e32");
-    for (const [x, y, z] of [
-      [0.04, -0.17, -0.04],
-      [-0.035, -0.12, id === "pistol" ? -0.07 : 0.21],
-    ]) {
-      const palm = MeshBuilder.CreateSphere(
-        "glove palm",
-        { diameter: 1, segments: 12 },
-        this.scene,
-      );
-      palm.scaling.set(0.12, 0.14, 0.12);
-      palm.position.set(x, y, z);
-      palm.parent = root;
-      palm.material = glove;
-      for (let n = 0; n < 3; n++)
-        this.box(
-          "glove finger",
-          x - 0.032 + n * 0.029,
-          y + 0.024,
-          z + 0.048,
-          0.025,
-          0.08,
-          0.034,
-          glove,
-          root,
-        );
-      const cuff = MeshBuilder.CreateCapsule(
-        "glove cuff",
-        { radius: 0.064, height: 0.2, tessellation: 12 },
-        this.scene,
-      );
-      cuff.position.set(x, y - 0.1, z - 0.07);
-      cuff.rotation.x = -0.6;
-      cuff.parent = root;
-      cuff.material = glove;
-    }
-    for (const m of root.getChildMeshes()) m.renderingGroupId = 1;
     return root;
   }
   private zombie(id: number): ZombieView {
-    const view = createCharacter(this.scene, id);
-    for (const shadow of this.shadows)
-      for (const mesh of view.root.getChildMeshes())
-        shadow.addShadowCaster(mesh, false);
-    return view;
+    this.zombieShadows.set(id, new Set());
+    return createCharacter(this.scene, id);
   }
   shot(id: WeaponId) {
     this.gunKick =
@@ -1416,13 +1633,19 @@ export class GameRenderer {
     this.gunKick = Math.max(0, this.gunKick - dt * 0.7);
     this.flashTime -= dt;
     this.flash.isVisible = this.flashTime > 0 && sim.phase === "playing";
+    this.muzzleLight.position.copyFrom(
+      this.camera.position.add(
+        this.camera.getForwardRay(1).direction.scale(0.8),
+      ),
+    );
+    this.muzzleLight.intensity = this.flash.isVisible ? 3.5 : 0;
     this.impactTime -= dt;
     this.impact.isVisible = this.impactTime > 0;
     const bob =
       sim.moving && sim.phase === "playing"
         ? Math.sin(sim.time * (sim.sprinting ? 15 : 10)) * 0.012
         : 0;
-    this.gun.position.set(0.29, -0.25 + bob, 0.61 - this.gunKick);
+    this.gun.position.set(0.29, -0.21 + bob, 0.61 - this.gunKick);
     this.gun.rotation.x =
       sim.reloadRemaining > 0
         ? 0.5 + Math.sin(sim.reloadRemaining * 6) * 0.12
@@ -1448,6 +1671,49 @@ export class GameRenderer {
           ? this.gunKick * 0.5
           : 0);
     }
+    for (const hand of this.handParts[sim.weapon] ?? []) {
+      hand.node.position.copyFrom(hand.rest);
+      if (sim.reloadRemaining > 0) {
+        const reach = Math.sin(reloadProgress * Math.PI);
+        hand.node.position.y -= reach * 0.12;
+        hand.node.position.z -= reach * 0.1;
+      } else if (sim.weapon === "shotgun")
+        hand.node.position.z -= this.gunKick * 0.5;
+    }
+    if (this.rouletteWheel) {
+      this.rouletteWheel.rotationQuaternion = null;
+      this.rouletteWheel.rotation.y = sim.time * 0.32;
+    }
+    if (this.rouletteBall) {
+      this.rouletteBall.position.x =
+        -0.735 + Math.cos(sim.time * -0.68) * 0.725;
+      this.rouletteBall.position.z = Math.sin(sim.time * -0.68) * 0.725;
+    }
+    const faces = [
+      Quaternion.Identity(),
+      Quaternion.RotationAxis(Vector3.Right(), -Math.PI / 2),
+      Quaternion.RotationAxis(Vector3.Forward(), Math.PI / 2),
+      Quaternion.RotationAxis(Vector3.Forward(), -Math.PI / 2),
+      Quaternion.RotationAxis(Vector3.Right(), Math.PI / 2),
+      Quaternion.RotationAxis(Vector3.Right(), Math.PI),
+    ];
+    this.diceMeshes.forEach((die, i) => {
+      const rolling = !!sim.dice && !sim.dice.resolved;
+      const progress = sim.dice ? 1 - sim.dice.remaining / 1.6 : 1;
+      die.position.y =
+        0.8601 +
+        (rolling
+          ? Math.abs(Math.sin(progress * Math.PI * 4)) * (1 - progress) * 0.38
+          : 0);
+      die.position.z = -0.1 + (rolling ? (1 - progress) * 0.6 : 0);
+      die.rotationQuaternion = rolling
+        ? Quaternion.RotationYawPitchRoll(
+            progress * 17 + i,
+            progress * 23,
+            progress * 14,
+          )
+        : faces[(sim.dice?.values[i] ?? (i ? 4 : 3)) - 1];
+    });
     if (this.bartender) {
       this.bartender.arms[0].rotation.x =
         -1.3 + Math.sin(this.time * 1.5) * 0.045;
@@ -1456,8 +1722,16 @@ export class GameRenderer {
       this.bartender.root.rotation.y = Math.sin(this.time * 0.3) * 0.035;
     }
     this.gun.setEnabled(sim.phase !== "ready");
-    for (const id of ["lounge", "shortcut", "vip", "vipExit"] as const) {
-      const open = id === "vipExit" ? sim.vip : sim[id];
+    for (const id of [
+      "lounge",
+      "shortcut",
+      "vip",
+      "vipExit",
+      "tables",
+      "tablesExit",
+    ] as const) {
+      const open =
+        id === "vipExit" ? sim.vip : id === "tablesExit" ? sim.tables : sim[id];
       this.gates[id].setEnabled(!open);
       this.gateSigns[id].setEnabled(!open);
       this.gateSigns[id + "Back"]?.setEnabled(!open);
@@ -1474,6 +1748,7 @@ export class GameRenderer {
         v.shadow.dispose();
         for (const material of v.materials) material.dispose();
         this.zombies.delete(id);
+        this.zombieShadows.delete(id);
       }
     for (const e of sim.enemies) {
       if (e.health <= 0) continue;
@@ -1481,6 +1756,18 @@ export class GameRenderer {
       if (!v) {
         v = this.zombie(e.id);
         this.zombies.set(e.id, v);
+      }
+      const membership = this.zombieShadows.get(e.id)!;
+      for (const shadow of this.shadows) {
+        const light = shadow.getLight().position;
+        const nearby = Math.hypot(e.x - light.x, e.z - light.z) < 12;
+        if (nearby === membership.has(shadow)) continue;
+        for (const mesh of v.root.getChildMeshes()) {
+          if (nearby) shadow.addShadowCaster(mesh, false);
+          else shadow.removeShadowCaster(mesh, false);
+        }
+        if (nearby) membership.add(shadow);
+        else membership.delete(shadow);
       }
       v.root.position.set(e.x, 0, e.z);
       v.root.rotation.y = e.yaw;

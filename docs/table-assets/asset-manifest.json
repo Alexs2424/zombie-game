@@ -1,0 +1,245 @@
+{
+  "provenance": "Original procedural geometry and Pillow artwork; no imported models, photos, logos or game art.",
+  "coordinate_system": "glTF 2.0 right handed, metres, +Y up. Table origins at floor center. Dice origins at body center.",
+  "assets": [
+    {
+      "file": "craps-table.glb",
+      "nodes": 39,
+      "triangles": 23388,
+      "bounds": [
+        [
+          -2.3999916941054944,
+          0.0,
+          -1.2499952383551838
+        ],
+        [
+          2.3999916941054944,
+          1.0,
+          1.2499952383551838
+        ]
+      ],
+      "dimensions": [
+        4.799983388210989,
+        1.0,
+        2.4999904767103676
+      ],
+      "bytes": 3879488,
+      "animation_nodes": {}
+    },
+    {
+      "file": "roulette-table.glb",
+      "nodes": 46,
+      "triangles": 20526,
+      "bounds": [
+        [
+          -1.7000000000000002,
+          0.0,
+          -1.25
+        ],
+        [
+          1.7000000000000002,
+          1.0,
+          1.25
+        ]
+      ],
+      "dimensions": [
+        3.4000000000000004,
+        1.0,
+        2.5
+      ],
+      "bytes": 2321544,
+      "animation_nodes": {
+        "roulette_wheel": [
+          -0.735,
+          0.86,
+          0
+        ]
+      }
+    },
+    {
+      "file": "ivory-die-a.glb",
+      "nodes": 2,
+      "triangles": 1052,
+      "bounds": [
+        [
+          -0.05007,
+          -0.05007,
+          -0.05007
+        ],
+        [
+          0.05007,
+          0.05007,
+          0.05007
+        ]
+      ],
+      "dimensions": [
+        0.10014,
+        0.10014,
+        0.10014
+      ],
+      "bytes": 45444,
+      "animation_nodes": {}
+    },
+    {
+      "file": "ivory-die-b.glb",
+      "nodes": 2,
+      "triangles": 1052,
+      "bounds": [
+        [
+          -0.05007,
+          -0.05007,
+          -0.05007
+        ],
+        [
+          0.05007,
+          0.05007,
+          0.05007
+        ]
+      ],
+      "dimensions": [
+        0.10014,
+        0.10014,
+        0.10014
+      ],
+      "bytes": 45444,
+      "animation_nodes": {}
+    }
+  ],
+  "dice": {
+    "body_size_m": 0.1,
+    "pip_extension_m": 7e-05,
+    "faces": {
+      "+Y": 1,
+      "-Y": 6,
+      "+Z": 2,
+      "-Z": 5,
+      "+X": 3,
+      "-X": 4
+    },
+    "euler_xyz_radians_for_top_face": {
+      "1": [
+        0,
+        0,
+        0
+      ],
+      "2": [
+        -1.5707963267948966,
+        0,
+        0
+      ],
+      "3": [
+        0,
+        0,
+        1.5707963267948966
+      ],
+      "4": [
+        0,
+        0,
+        -1.5707963267948966
+      ],
+      "5": [
+        1.5707963267948966,
+        0,
+        0
+      ],
+      "6": [
+        3.141592653589793,
+        0,
+        0
+      ]
+    },
+    "quaternion_xyzw_for_top_face": {
+      "1": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "2": [
+        -0.7071067811865476,
+        0,
+        0,
+        0.7071067811865476
+      ],
+      "3": [
+        0,
+        0,
+        0.7071067811865476,
+        0.7071067811865476
+      ],
+      "4": [
+        0,
+        0,
+        -0.7071067811865476,
+        0.7071067811865476
+      ],
+      "5": [
+        0.7071067811865476,
+        0,
+        0,
+        0.7071067811865476
+      ],
+      "6": [
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    "placement_y_for_craps": 0.8601
+  },
+  "roulette": {
+    "wheel_node": "roulette_wheel",
+    "wheel_pivot_m": [
+      -0.735,
+      0.86,
+      0
+    ],
+    "spin_axis": "+Y",
+    "single_zero_order": [
+      0,
+      32,
+      15,
+      19,
+      4,
+      21,
+      2,
+      25,
+      17,
+      34,
+      6,
+      27,
+      13,
+      36,
+      11,
+      30,
+      8,
+      23,
+      10,
+      5,
+      24,
+      16,
+      33,
+      1,
+      20,
+      14,
+      31,
+      9,
+      22,
+      18,
+      29,
+      7,
+      28,
+      12,
+      35,
+      3,
+      26
+    ]
+  },
+  "tabletop": {
+    "craps_felt_y": 0.81,
+    "craps_rail_top_y": 1.0,
+    "roulette_felt_y": 0.842,
+    "roulette_spindle_top_y": 1.0
+  }
+}

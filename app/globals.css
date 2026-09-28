@@ -1056,3 +1056,89 @@ h1 i {
 .playtest-tools button:disabled {
   opacity: 0.3;
 }
+
+.curse-badge {
+  position: absolute;
+  top: 285px;
+  left: 34px;
+  padding: 10px 14px;
+  border-left: 2px solid #bd5f55;
+  background: #251512df;
+  color: #e6a096;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+.curse-badge span {
+  display: block;
+  color: #d5bdaf;
+  letter-spacing: 0.4px;
+  margin-top: 5px;
+  font-size: 13px;
+}
+.dice-result {
+  position: absolute;
+  right: 34px;
+  top: 130px;
+  width: 290px;
+  padding: 18px 20px;
+  border: 1px solid #9b825159;
+  background: linear-gradient(145deg, #162923ed, #0d1714f2);
+  box-shadow: 0 12px 30px #0007;
+  color: #ead9b0;
+  text-align: center;
+}
+.dice-result > span {
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+.dice-result strong {
+  display: block;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+.dice-result p {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 8px 0 0;
+  color: #c5c7b8;
+}
+.dice-result.cursed {
+  border-color: #a44f45;
+  background: linear-gradient(145deg, #321b19ed, #171210f2);
+}
+.dice-faces {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font:
+    52px Georgia,
+    serif;
+  margin: 10px 0;
+  color: #eee5cf;
+}
+.dice-faces.rolling b {
+  animation: dice-shake 0.22s infinite alternate;
+}
+.dice-faces.rolling b:nth-child(2) {
+  animation-delay: -0.1s;
+}
+@keyframes dice-shake {
+  from {
+    transform: rotate(-12deg) translateY(-2px);
+  }
+  to {
+    transform: rotate(15deg) translateY(2px);
+  }
+}
+@media (max-width: 900px) {
+  .dice-result {
+    right: 20px;
+    top: 110px;
+    width: 230px;
+    padding: 14px;
+  }
+  .curse-badge {
+    left: 20px;
+    top: 265px;
+  }
+}
