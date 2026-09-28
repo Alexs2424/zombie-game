@@ -931,6 +931,7 @@ export default function Home() {
           aria-label="Development playtest controls"
         >
           <strong>DEVELOPMENT PLAYTEST</strong>
+          <span>{view.zombieAudioStatus}</span>
           {[
             ["new", "Seed run"],
             ["floor", "Casino floor"],
@@ -984,6 +985,9 @@ export default function Home() {
             ["clear", "Finish round"],
             ["round", "Start round"],
             ["crowd", "Spawn 14"],
+            ["sound-chase", "Hear chase"],
+            ["sound-last", "Hear last zombie"],
+            ["sound-horde", "Hear horde"],
             ["zombies", "Zombie lineup"],
             ["zombie-wounds", "Show wounds"],
             ["zombie-limbs", "Sever limbs"],

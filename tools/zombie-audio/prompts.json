@@ -1,0 +1,47 @@
+{
+  "service": "https://huggingface.co/spaces/stabilityai/stable-audio-3",
+  "api_origin": "https://stabilityai-stable-audio-3.hf.space",
+  "model": "stabilityai/stable-audio-3-small-sfx",
+  "variant_key": "small-sfx",
+  "steps": 8,
+  "cfg_scale": 1.0,
+  "sampler_type": "pingpong",
+  "assets": [
+    {
+      "file": "chase-01.wav",
+      "duration": 3,
+      "seed": 26092801,
+      "prompt": "A close raspy zombie makes two low breathy exertion grunts followed by a tiny tired wheeze. Quiet restrained funny monster voice. Dry isolated game sound effect, no music, no words, no screaming, no reverberation, clean silence at both ends."
+    },
+    {
+      "file": "last-01.wav",
+      "duration": 3,
+      "seed": 26092803,
+      "prompt": "One lonely zombie makes a low puzzled rising groan, pauses, then gives a small disappointed raspy sigh. Subtle comic confusion. Dry isolated game sound effect, soft intensity, no music, no words, no screaming, no reverberation, clean silence at both ends."
+    },
+    {
+      "file": "horde-01.wav",
+      "duration": 4,
+      "seed": 26092805,
+      "prompt": "A small disorganized group of zombies quietly mutters overlapping low groans and tired grumbles, different throaty monster voices with one faint silly nasal snort. Restrained low crowd intensity. Dry isolated game sound effect, no music, no words, no screaming, no reverberation, clean silence at both ends."
+    },
+    {
+      "file": "chase-02.wav",
+      "duration": 3,
+      "seed": 26092802,
+      "prompt": "A husky zombie gives a short eager growl followed by two soft out of breath panting grunts. Determined but comically unfit. Dry isolated game sound effect, soft intensity, no music, no words, no screaming, no reverberation, clean silence at both ends."
+    },
+    {
+      "file": "last-02.wav",
+      "duration": 3,
+      "seed": 26092804,
+      "prompt": "A single lonely zombie attempts one confident low groan that trails off into an awkward little uncertain nasal whimper and sigh. Quiet understated humor. Dry isolated game sound effect, soft intensity, no music, no words, no screaming, no reverberation, clean silence at both ends."
+    },
+    {
+      "file": "horde-02.wav",
+      "duration": 4,
+      "seed": 26092806,
+      "prompt": "Several sleepy zombies make a brief uneven chorus of soft raspy groans, low grunts and wheezy breaths, one zombie responds a little late. A mildly comic shambling group. Dry isolated game sound effect, restrained low crowd intensity, no music, no words, no screaming, no reverberation, clean silence at both ends."
+    }
+  ]
+}

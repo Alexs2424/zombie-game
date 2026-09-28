@@ -11,6 +11,7 @@ import {
 } from "./simulation";
 import { GameRenderer } from "./renderer";
 import { GameAudio } from "./audio";
+import { ZombieAudioDirector } from "./zombie-audio-director";
 import {
   POKER_TABLES,
   bestPokerSuit,
@@ -90,6 +91,7 @@ export type GameView = {
   damage: number;
   fps: number;
   p95: number;
+  zombieAudioStatus?: string;
 };
 export const initialView: GameView = {
   grenades: 2,
@@ -157,7 +159,7 @@ export class GameRuntime {
   private hit = 0;
   private damage = 0;
   private headshot = false;
-  private threatTimer = 0;
+  private zombieAudio = new ZombieAudioDirector();
   private pendingStart = false;
   private suppressUntil = 0;
   private disposed = false;
@@ -290,6 +292,8 @@ export class GameRuntime {
     if (document.pointerLockElement === this.canvas) {
       if (this.pendingStart) {
         this.sim = new Simulation();
+        this.zombieAudio.reset();
+        this.audio.resetZombies();
         this.sim.start();
         this.pendingStart = false;
       } else this.sim.resume();
@@ -331,6 +335,8 @@ export class GameRuntime {
     if (this.playtesting) {
       if (this.pendingStart) {
         this.sim = new Simulation();
+        this.zombieAudio.reset();
+        this.audio.resetZombies();
         this.sim.start();
         this.pendingStart = false;
       } else this.sim.resume();
@@ -358,8 +364,12 @@ export class GameRuntime {
   testAction(action: string) {
     if (process.env.NODE_ENV === "production") return;
     this.playtesting = true;
-    if (action === "new") {
+    const soundScenario = ["sound-chase", "sound-last", "sound-horde"].includes(action);
+    if (action === "new" || soundScenario) {
+      this.clearInput();
       this.sim = new Simulation();
+      this.zombieAudio.reset();
+      this.audio.resetZombies();
       this.sim.start();
       this.sim.points = 12000;
       this.sim.intermission = 3600;
@@ -367,6 +377,32 @@ export class GameRuntime {
       this.sim.invulnerable = 99999;
     }
     const s = this.sim;
+    if (soundScenario) {
+      s.player = { x: -9, z: -8 };
+      s.yaw = 0;
+      s.pitch = 0;
+      s.roundCue = null;
+      s.roundCueRemaining = 0;
+      s.waveRemaining = action === "sound-chase" ? 2 : 0;
+      const positions = [
+        [-9, -4.5], [-10.5, -4.5], [-7.5, -4.5],
+        [-9, -3.4], [-10.5, -3.4], [-7.5, -3.4],
+      ];
+      const count = action === "sound-horde" ? 6 : action === "sound-last" ? 1 : 2;
+      s.enemies = positions.slice(0, count).map(([x, z], i) => ({
+        id: 100 + i,
+        x, z,
+        health: 100,
+        maxHealth: 100,
+        speed: 1.7,
+        yaw: 0,
+        attack: 0,
+        cooldown: 0,
+        stuck: 0,
+        flash: 0,
+        age: 0,
+      }));
+    }
     const poses: Record<string, [number, number, number, number]> = {
       floor: [-9, -8, 0.3, 0.06],
       slotsWest: [-11.6, -1.8, Math.PI / 2, 0.1],
@@ -608,27 +644,15 @@ export class GameRuntime {
         });
         this.accumulated -= 1 / 60;
       }
-      this.threatTimer -= dt;
-      if (this.threatTimer <= 0) {
-        const nearby = [...this.sim.enemies].sort(
-          (a, b) =>
-            Math.hypot(a.x - this.sim.player.x, a.z - this.sim.player.z) -
-            Math.hypot(b.x - this.sim.player.x, b.z - this.sim.player.z),
-        )[0];
-        if (nearby)
-          this.audio.threat(this.sim.player, nearby, this.sim.yaw, nearby.id);
-        this.threatTimer = 1.1 + Math.random();
-      }
     }
+    this.audio.setActive(this.sim.phase === "playing");
     for (const event of this.sim.events) {
       this.audio.play(event);
       if (event.type === "zombieAttack" && event.position)
-        this.audio.threat(
+        this.audio.zombieAttack(
           this.sim.player,
           event.position,
           this.sim.yaw,
-          0,
-          true,
         );
       if (event.type === "shot") this.renderer.shot(event.weapon!);
       if (event.type === "hit") {
@@ -643,6 +667,24 @@ export class GameRuntime {
       }
     }
     this.sim.events.length = 0;
+    const zombieCue = this.zombieAudio.update(dt, {
+      playing: this.sim.phase === "playing",
+      round: this.sim.round,
+      roundCueRemaining: this.sim.roundCueRemaining,
+      waveRemaining: this.sim.waveRemaining,
+      player: this.sim.player,
+      enemies: this.sim.enemies,
+    });
+    if (zombieCue) {
+      const source = this.sim.enemies.find((enemy) => enemy.id === zombieCue.enemyId);
+      this.audio.zombieCue(
+        zombieCue.kind,
+        this.sim.player,
+        source ?? zombieCue.position,
+        this.sim.yaw,
+        zombieCue.enemyId,
+      );
+    }
     this.audio.update(
       dt,
       this.sim.phase === "playing",
@@ -742,6 +784,7 @@ export class GameRuntime {
       roulette: s.roulette ? { ...s.roulette } : null,
       damageBoostRemaining: s.damageBoostRemaining,
       room: roomName(s.player),
+      zombieAudioStatus: process.env.NODE_ENV !== "production" ? this.audio.zombieStatus : undefined,
       upgraded: Object.values(s.upgrades).some(Boolean),
       message: s.messageRemaining > 0 ? s.lastMessage : "",
       prompt:
