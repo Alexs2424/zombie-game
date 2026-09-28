@@ -1,0 +1,29 @@
+{
+  "blender_version": "5.2.2 LTS",
+  "native_file": "last-jackpot-slot-machines.blend",
+  "source_object_counts": {
+    "SOURCE \u2022 BURGUNDY": 225,
+    "SOURCE \u2022 EMERALD": 225
+  },
+  "images": [
+    {
+      "name": "Original analytic walnut grain",
+      "size": [
+        1024,
+        512
+      ],
+      "packed": true
+    },
+    {
+      "name": "Original slot artwork atlas",
+      "size": [
+        2048,
+        2048
+      ],
+      "packed": true
+    }
+  ],
+  "render_device": "CPU",
+  "render_threads": 2,
+  "render_samples": 12
+}

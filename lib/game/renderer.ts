@@ -49,6 +49,10 @@ export class GameRenderer {
   flash: Mesh;
   ready: Promise<void>;
   private weaponAssets: AssetContainer[] = [];
+  private slotPlacements: {
+    root: TransformNode;
+    variant: "emerald" | "burgundy";
+  }[] = [];
   private displays: Partial<Record<WeaponId, TransformNode>> = {};
   private movingParts: Partial<
     Record<WeaponId, { node: TransformNode; y: number; z: number }[]>
@@ -280,6 +284,7 @@ export class GameRenderer {
     this.ready = Promise.all([
       this.loadWeaponAssets(),
       this.loadTableAssets(),
+      this.loadSlotAssets(),
     ]).then(async () => {
       await this.scene.whenReadyAsync();
     });
@@ -1360,84 +1365,55 @@ export class GameRenderer {
     for (const side of [-1, 1])
       for (let i = 0; i < 3; i++) {
         const zz = z - d / 2 + 0.7 + (i * (d - 1.4)) / 2;
-        this.box(
-          "slot cabinet",
-          x + side * (w / 2 - 0.7),
-          1.06,
-          zz,
-          1.4,
-          1.8,
-          0.88,
-          base,
+        const variant = (i + (side > 0 ? 1 : 0)) % 2 ? "burgundy" : "emerald";
+        const root = new TransformNode(
+          `slot ${this.slotPlacements.length + 1} ${variant}`,
+          this.scene,
         );
-        const screen = this.box(
-          "slot screen",
-          x + side * (w / 2 + 0.012),
-          1.28,
-          zz,
-          0.035,
-          0.7,
-          0.64,
-          this.mat(
-            i % 2 ? "slot mint" : "slot amber",
-            i % 2 ? "#4b9277" : "#b49d61",
-            0.35,
-          ),
-        );
-        screen.rotation.z = side * 0.06;
-        this.label(
-          "slot reels",
-          "7  7  7",
-          x + side * (w / 2 + 0.04),
-          1.29,
-          zz,
-          0.52,
-          0.22,
-          "#e3d7a2",
-          side === -1 ? Math.PI / 2 : -Math.PI / 2,
-        );
-        this.box(
-          "slot lip",
-          x + side * (w / 2 + 0.03),
-          0.72,
-          zz,
-          0.2,
-          0.075,
-          0.8,
-          brass,
-        );
-        this.box(
-          "coin return",
-          x + side * (w / 2 + 0.018),
-          0.43,
-          zz,
-          0.035,
-          0.14,
-          0.44,
-          this.mat("coin black", "#080e0b"),
-        );
-        for (let button = 0; button < 3; button++)
-          this.box(
-            "slot button",
-            x + side * (w / 2 + 0.045),
-            0.79,
-            zz - 0.2 + button * 0.2,
-            0.07,
-            0.035,
-            0.08,
-            this.mat("slot button light", "#dcc487", 0.4),
-          );
-        this.box(
-          "slot crown",
-          x + side * (w / 2 - 0.33),
-          2.03,
-          zz,
-          0.7,
-          0.13,
-          0.82,
-          brass,
-        );
+        root.position.set(x + side * (w / 2 - 0.7), 0.16, zz);
+        // Blender export faces +Z; both banks face outward toward their aisles.
+        root.rotation.y = (side * Math.PI) / 2;
+        this.slotPlacements.push({ root, variant });
       }
+  }
+  private async loadSlotAssets() {
+    await Promise.all(
+      (["emerald", "burgundy"] as const).map(async (variant) => {
+        const asset = await LoadAssetContainerAsync(
+          `/models/slot-machine-${variant}.glb`,
+          this.scene,
+        );
+        if (this.scene.isDisposed) {
+          asset.dispose();
+          return;
+        }
+        this.weaponAssets.push(asset);
+        // InstancedMesh inherits shadow reception from its source mesh.
+        for (const mesh of asset.meshes) {
+          mesh.isPickable = false;
+          mesh.receiveShadows = true;
+          const material = mesh.material as unknown as {
+            maxSimultaneousLights?: number;
+          };
+          if (material && "maxSimultaneousLights" in material)
+            material.maxSimultaneousLights = 8;
+        }
+        for (const { root, variant: placedVariant } of this.slotPlacements) {
+          if (placedVariant !== variant) continue;
+          // Share geometry and materials across the six cabinets of each style.
+          const imported = asset.instantiateModelsToScene(
+            (name) => `${root.name}:${name}`,
+            false,
+            { doNotInstantiate: false },
+          );
+          for (const node of imported.rootNodes) node.parent = root;
+          for (const mesh of root.getChildMeshes()) {
+            mesh.isPickable = false;
+            this.shadows[0].addShadowCaster(mesh, false);
+          }
+        }
+      }),
+    );
   }
   private async loadTableAssets() {
     await Promise.all(

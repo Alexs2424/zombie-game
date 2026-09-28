@@ -321,6 +321,9 @@ export class GameRuntime {
     const s = this.sim;
     const poses: Record<string, [number, number, number, number]> = {
       floor: [-9, -8, 0.3, 0.06],
+      slotsWest: [-11.6, -1.8, Math.PI / 2, 0.1],
+      slotsEast: [-3, 0, -Math.PI / 2, 0.1],
+      slotsBank: [3.2, 5, -Math.PI / 2, 0.1],
       bar: [12, -6.5, Math.PI, 0.03],
       shotgun: [-12.7, 1.8, -Math.PI / 2, 0],
       smg: [6.8, -0.2, -Math.PI / 2, 0],

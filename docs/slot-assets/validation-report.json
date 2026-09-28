@@ -1,0 +1,198 @@
+{
+  "status": "passed_with_notes",
+  "notes": [
+    "The ebony hardware batch contains 40 zero-area bevel triangles per variant (0.26%); these do not rasterize. All geometric bounds, arrays, normals, indices, winding and material/image checks pass. Frozen integration GLBs are preserved."
+  ],
+  "assets": [
+    {
+      "file": "slot-machine-emerald.glb",
+      "sha256": "a761bf3fc199d3418d109ed869ed4866ad42d008157d77dd239f76520f1309c9",
+      "bytes": 1394856,
+      "triangles": 15612,
+      "materials": 8,
+      "material_draw_calls": 8,
+      "bounds_min": [
+        -0.48099999129772186,
+        0.0,
+        -0.5817499905824661
+      ],
+      "bounds_max": [
+        0.48100000619888306,
+        1.9199999570846558,
+        0.5817499905824661
+      ],
+      "dimensions_XYZ": [
+        0.9619999974966049,
+        1.9199999570846558,
+        1.1634999811649323
+      ],
+      "origin": "center of full XZ footprint, Y=0 at feet",
+      "degenerate_triangles": 40,
+      "winding_mismatches": 0,
+      "finite_arrays": true,
+      "unit_normals": true,
+      "images": [
+        {
+          "name": "slot-walnut",
+          "size": [
+            1024,
+            512
+          ],
+          "mimeType": "image/png",
+          "embedded": true
+        },
+        {
+          "name": "slot-atlas",
+          "size": [
+            2048,
+            2048
+          ],
+          "mimeType": "image/png",
+          "embedded": true
+        }
+      ],
+      "material_triangles": {
+        "01 Polished walnut veneer": 732,
+        "02 Emerald lacquer": 812,
+        "03 Aged satin brass": 7036,
+        "04 Polished coin mechanism steel": 1936,
+        "05 Black enamel and rubber": 4152,
+        "06 Ivory printed mechanical reels": 494,
+        "07 Illuminated glass artwork": 6,
+        "08 Oxblood Bakelite control": 444
+      },
+      "uv_ranges": [
+        {
+          "material": "01 Polished walnut veneer",
+          "minimum": [
+            -0.5505931377410889,
+            -5.463800430297852
+          ],
+          "maximum": [
+            0.4702499806880951,
+            3.333199977874756
+          ]
+        },
+        {
+          "material": "06 Ivory printed mechanical reels",
+          "minimum": [
+            0.015624995343387127,
+            0.3154296875
+          ],
+          "maximum": [
+            0.984375,
+            0.984375
+          ]
+        },
+        {
+          "material": "07 Illuminated glass artwork",
+          "minimum": [
+            0.015625,
+            0.015625
+          ],
+          "maximum": [
+            0.984375,
+            0.7509765625
+          ]
+        }
+      ],
+      "required_extensions": [],
+      "generator": "Khronos glTF Blender I/O v5.2.40"
+    },
+    {
+      "file": "slot-machine-burgundy.glb",
+      "sha256": "0b6885aa1b5c822bc01f0d4ba840e379d60e7bc075a730da860d0ece88ef6eea",
+      "bytes": 1394872,
+      "triangles": 15612,
+      "materials": 8,
+      "material_draw_calls": 8,
+      "bounds_min": [
+        -0.48099999129772186,
+        0.0,
+        -0.5817499905824661
+      ],
+      "bounds_max": [
+        0.48100000619888306,
+        1.9199999570846558,
+        0.5817499905824661
+      ],
+      "dimensions_XYZ": [
+        0.9619999974966049,
+        1.9199999570846558,
+        1.1634999811649323
+      ],
+      "origin": "center of full XZ footprint, Y=0 at feet",
+      "degenerate_triangles": 40,
+      "winding_mismatches": 0,
+      "finite_arrays": true,
+      "unit_normals": true,
+      "images": [
+        {
+          "name": "slot-walnut",
+          "size": [
+            1024,
+            512
+          ],
+          "mimeType": "image/png",
+          "embedded": true
+        },
+        {
+          "name": "slot-atlas",
+          "size": [
+            2048,
+            2048
+          ],
+          "mimeType": "image/png",
+          "embedded": true
+        }
+      ],
+      "material_triangles": {
+        "01 Polished walnut veneer": 732,
+        "02 Oxblood lacquer": 812,
+        "03 Aged satin brass": 7036,
+        "04 Polished coin mechanism steel": 1936,
+        "05 Black enamel and rubber": 4152,
+        "06 Ivory printed mechanical reels": 494,
+        "07 Illuminated glass artwork": 6,
+        "08 Oxblood Bakelite control": 444
+      },
+      "uv_ranges": [
+        {
+          "material": "01 Polished walnut veneer",
+          "minimum": [
+            -0.5505931377410889,
+            -5.463800430297852
+          ],
+          "maximum": [
+            0.4702499806880951,
+            3.333199977874756
+          ]
+        },
+        {
+          "material": "06 Ivory printed mechanical reels",
+          "minimum": [
+            0.015624995343387127,
+            0.3154296875
+          ],
+          "maximum": [
+            0.984375,
+            0.984375
+          ]
+        },
+        {
+          "material": "07 Illuminated glass artwork",
+          "minimum": [
+            0.015625,
+            0.015625
+          ],
+          "maximum": [
+            0.984375,
+            0.7509765625
+          ]
+        }
+      ],
+      "required_extensions": [],
+      "generator": "Khronos glTF Blender I/O v5.2.40"
+    }
+  ]
+}
