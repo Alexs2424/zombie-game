@@ -9,6 +9,7 @@ import {
 } from "./poker.ts";
 export { POKER_RULES } from "./poker.ts";
 import { ATTACK_WINDUP, zombieHitVolumes, type HitRegion, type Limb } from "./zombie-pose.ts";
+import { LOUNGE_RECTS } from "./lounge-layout.ts";
 export type V2 = { x: number; z: number };
 export type V3 = V2 & { y: number };
 export type Rect = {
@@ -251,7 +252,7 @@ export const STATIC_RECTS: Rect[] = [
   { id: "slots-a", x: -7, z: 0, w: 3.4, d: 5, h: 2.1 },
   { id: "slots-b", x: -0.7, z: 5, w: 3.4, d: 4.4, h: 2.1 },
   { id: "cashier", x: -11, z: 10.5, w: 6, d: 2.7, h: 3.4 },
-  { id: "bar", x: 12, z: -8.7, w: 5.7, d: 1.1, h: 1.25 },
+  ...LOUNGE_RECTS,
   { id: "upgrade-machine", x: 24.7, z: 10.9, w: 1.6, d: 1.1, h: 1.8 },
   { id: "poker-a", x: 22, z: -3, w: 3.8, d: 2.4, h: 0.95 },
   { id: "poker-b", x: 22, z: 5, w: 3.8, d: 2.4, h: 0.95 },

@@ -409,6 +409,9 @@ export class GameRuntime {
       slotsEast: [-3, 0, -Math.PI / 2, 0.1],
       slotsBank: [3.2, 5, -Math.PI / 2, 0.1],
       bar: [12, -6.5, Math.PI, 0.03],
+      loungeWide: [14.8, 0.65, -2.72, 0.06],
+      loungeEntrance: [5.4, -3.4, 2.05, 0.03],
+      loungeSeating: [13.1, -4.8, -0.67, 0.08],
       shotgun: [-12.7, 1.8, -Math.PI / 2, 0],
       smg: [6.8, -0.2, -Math.PI / 2, 0],
       rifle: [25.3, -8.2, Math.PI / 2, 0],
@@ -429,6 +432,9 @@ export class GameRuntime {
       if (
         [
           "bar",
+          "loungeWide",
+          "loungeEntrance",
+          "loungeSeating",
           "smg",
           "rifle",
           "vip",
