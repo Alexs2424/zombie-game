@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { zombieHitVolumes, zombiePose, LIMBS } from "../lib/game/zombie-pose.ts";
 import {
   Simulation,
   RULES,
@@ -46,6 +47,136 @@ function buy(s, id) {
   s.player = { x: p.x, z: p.z };
   return s.purchase(id);
 }
+
+test("knife winds up, kills one close target, pays once and consumes no ammo", () => {
+  const s=quiet();s.player={x:-12,z:-7};s.yaw=0;s.pitch=0;s.random=()=>0;
+  s.enemies=[enemy(-12,-5.8),{...enemy(-12,-5.5),id:2}];
+  assert.equal(s.knife(),true);assert.equal(s.knife(),false);assert.equal(s.fire(),false);
+  tick(s,.1);assert.equal(s.kills,0);
+  tick(s,.15);assert.equal(s.kills,1);assert.equal(s.points,455);
+  assert.equal(s.inventory.pistol.mag,12);tick(s,.5);assert.equal(s.kills,1);
+});
+test("knife misses distant, behind-player, and covered enemies; pause freezes windup", () => {
+  for(const [player,target,yaw] of [
+    [{x:-12,z:-7},{x:-12,z:-4},0],
+    [{x:-12,z:-7},{x:-12,z:-8},0],
+    [{x:3.5,z:-4},{x:4.5,z:-4},Math.PI/2],
+  ]) {
+    const s=quiet();s.player=player;s.yaw=yaw;s.enemies=[enemy(target.x,target.z)];
+    s.knife();s.pause();tick(s,1);assert.equal(s.knifeRemaining,.55);
+    s.resume();tick(s,.3);assert.equal(s.enemies[0].health,80);
+  }
+});
+test("grenades have limited inventory, pause-safe fuses, and capped round replenishment", () => {
+  const s=quiet();s.player={x:-12,z:-7};s.yaw=0;
+  assert.equal(s.throwGrenade(),true);assert.equal(s.grenades,1);
+  assert.equal(s.throwGrenade(),false);assert.equal(s.knife(),false);
+  s.pause();tick(s,3);assert.equal(s.projectiles[0].fuse,2.2);
+  assert.equal(s.throwGrenade(),false);s.resume();tick(s,.7);
+  assert.equal(s.throwGrenade(),true);assert.equal(s.grenades,0);
+  tick(s,.7);assert.equal(s.throwGrenade(),false);
+  s.beginRound();assert.equal(s.grenades,0);
+  s.beginRound();assert.equal(s.grenades,2);s.beginRound();s.beginRound();assert.equal(s.grenades,4);
+  assert.equal(new Simulation().grenades,2);
+});
+test("grenade blast kills groups once, applies falloff, and can hurt the player", () => {
+  const s=quiet();s.player={x:-12,z:-7};s.random=()=>0;
+  s.enemies=[enemy(-12,-6,80),{...enemy(-12,-5.5,500),id:2}];
+  s.projectiles=[{id:1,x:-12,y:.1,z:-6,vx:0,vy:0,vz:0,fuse:.01}];
+  s.step(.05,idle);
+  assert.equal(s.kills,1);assert.equal(s.points,460);
+  assert.ok(s.enemies[0].health>280&&s.enemies[0].health<320);
+  assert.ok(s.health<100);assert.equal(s.projectiles.length,0);
+  assert.equal(s.events.filter(e=>e.type==='explosion').length,1);
+  tick(s,.7);assert.equal(s.kills,1);assert.equal(s.explosions.length,0);
+});
+test("closed doors block blast damage and bounce thrown grenades", () => {
+  const s=quiet();s.player={x:3,z:-4};s.yaw=Math.PI/2;
+  s.enemies=[enemy(4.6,-4)];
+  s.projectiles=[{id:1,x:3.4,y:.2,z:-4,vx:0,vy:0,vz:0,fuse:.01}];
+  s.step(.05,idle);assert.equal(s.enemies[0].health,80);
+  s.throwGrenade();tick(s,.25);
+  assert.ok(s.projectiles[0].x<4);assert.ok(s.projectiles[0].vx<0);
+});
+test("a thrown grenade follows its full flight and kills a nearby group", () => {
+  const s=quiet();s.player={x:-12,z:-7};s.yaw=0;s.pitch=0;
+  s.enemies=[{...enemy(-12,3),speed:0},{...enemy(-11.4,3.2),id:2,speed:0}];
+  s.throwGrenade();tick(s,2.3);
+  assert.equal(s.kills,2);assert.equal(s.projectiles.length,0);
+  assert.equal(s.events.filter(e=>e.type==='explosion').length,1);
+});
+
+test("hit payouts include both random endpoints, headshots, and one lethal bonus", () => {
+  for (const [random, hit] of [[0,5],[.999999,10]]) {
+    const s = quiet(); s.random=()=>random;
+    const e=enemy(-12,-3,500);
+    s.damageEnemy(e,10,false);
+    assert.equal(s.points,400+hit);
+    s.damageEnemy(e,10,true);
+    assert.equal(s.points,500+2*hit);
+    assert.equal(s.headshots,1);
+    s.damageEnemy(e,1000,false);
+    assert.equal(s.points,550+3*hit);
+    assert.equal(s.kills,1);
+    s.damageEnemy(e,1000,true);
+    assert.equal(s.points,550+3*hit);
+    assert.equal(s.headshots,1);
+    assert.equal(s.earned,s.points-400);
+  }
+});
+
+test("limb wounds accumulate, severed limbs never regrow or accept damage, and pauses preserve wounds", () => {
+  const s=quiet(), e=enemy(-12,-3,1000); s.enemies=[e];
+  for (const limb of LIMBS) {
+    s.damageEnemy(e,16,false,limb);
+    assert.ok(!e.missing[limb]);
+    s.damageEnemy(e,16,false,limb);
+    assert.equal(e.missing[limb],true);
+    assert.equal(e.wounds[limb],2);
+    const points=s.points, health=e.health;
+    s.damageEnemy(e,100,false,limb);
+    assert.equal(s.points,points); assert.equal(e.health,health);
+    assert.ok(!zombieHitVolumes(e).some(v=>v.region===limb));
+  }
+  s.pause();const state=JSON.stringify(e);tick(s,2);assert.equal(JSON.stringify(e),state);
+  s.resume();tick(s,2);
+  assert.deepEqual(e.missing,{leftArm:true,rightArm:true,leftLeg:true,rightLeg:true});
+});
+
+test("aimed bullets sever a visible leg and pass through its missing hit volume", () => {
+  const s=quiet();s.player={x:-12,z:-5};s.random=()=>.5;
+  const e=enemy(-12,-3,200);e.age=0;e.id=0;s.enemies=[e];
+  // Aim at the left shin, below all body and arm volumes.
+  s.yaw=Math.atan2(-.11,2);s.pitch=Math.atan2(1.65-.27,Math.hypot(.11,2));
+  s.fire();assert.equal(e.missing.leftLeg,true);
+  const health=e.health,points=s.points;
+  // A severed leg is absent even before the next simulation step.
+  assert.ok(!zombieHitVolumes(e).some(v=>v.region==='leftLeg'));
+  s.damageEnemy(e,34,false,'leftLeg');assert.equal(e.health,health);assert.equal(s.points,points);
+});
+
+test("all three attacks wind up and follow through differently; severed legs lower head volumes", () => {
+  const e=enemy(0,0);e.attack=RULES.attackWindup*.3;
+  const poses=[0,1,2].map(attackStyle=>zombiePose({...e,attackStyle}));
+  assert.equal(new Set(poses.map(p=>JSON.stringify(p.arms))).size,3);
+  const recover=zombiePose({...e,attack:0,cooldown:1});assert.ok(recover.attacking);
+  e.missing={leftLeg:true,rightLeg:true};
+  assert.ok(zombieHitVolumes(e).find(v=>v.region==='head').center[1]<1.1);
+});
+
+test("missing legs reduce actual pursuit speed and attacks cycle styles", () => {
+  const distances=[];
+  for (const missing of [{},{leftLeg:true},{leftLeg:true,rightLeg:true}]) {
+    const s=quiet();s.player={x:-12,z:-5};const e=enemy(-12,-2);e.missing=missing;s.enemies=[e];
+    s.step(.05,idle);distances.push(-2-e.z);
+  }
+  assert.ok(Math.abs(distances[1]/distances[0]-.48)<1e-8);
+  assert.ok(Math.abs(distances[2]/distances[0]-.23)<1e-8);
+  const s=quiet();s.player={x:-12,z:-5};const e=enemy(-12,-4.2);s.enemies=[e];s.invulnerable=100;
+  const styles=[];
+  for(let i=0;i<3;i++) { e.attack=0;e.cooldown=0;s.step(.05,idle);styles.push(e.attackStyle); }
+  assert.equal(new Set(styles).size,3);
+});
 
 test("unaffordable purchases preserve all inventory and currency", () => {
   const s = quiet();
@@ -129,7 +260,7 @@ test("shotgun pellet deaths pay one reward and dead enemies cannot attack", () =
   const points = s.points;
   assert.equal(s.fire(), true);
   assert.equal(s.kills, 1);
-  assert.equal(s.points, points + 100);
+  assert.ok(s.points >= points + 105 && s.points <= points + 110);
   tick(s, 0.05);
   assert.equal(s.health, 100);
   assert.equal(s.enemies.length, 0);
@@ -258,7 +389,7 @@ test("behind-bar spawn stays inactive while lounge is shut and respects its open
     assert.ok(s.enemies.every((e) => e.x < 4));
   }
 });
-test("round budgets resolve exactly, active cap holds, and five waves earn 6300 points", () => {
+test("round budgets resolve exactly, active cap holds, and five waves pay body kills plus hits", () => {
   const s = new Simulation();
   s.start();
   for (let i = 0; i < 20000 && s.round < 6; i++) {
@@ -268,8 +399,8 @@ test("round budgets resolve exactly, active cap holds, and five waves earn 6300 
   }
   assert.equal(s.round, 6);
   assert.equal(s.kills, 63);
-  assert.equal(s.earned, 6300);
-  assert.equal(s.points, 6700);
+  assert.ok(s.earned >= 63 * 55 && s.earned <= 63 * 60);
+  assert.equal(s.points, 400 + s.earned);
 });
 test("new runs reset doors, timers, health, rewards, reload, and inventory across three cycles", () => {
   for (let i = 0; i < 3; i++) {
@@ -298,16 +429,16 @@ test("new runs reset doors, timers, health, rewards, reload, and inventory acros
     assert.equal(s.reloadRemaining, 0);
   }
 });
-test("five-round shotgun route leaves an ammunition allowance after the original three unlocks", () => {
+test("five-round headshot route leaves an ammunition allowance after the original three unlocks", () => {
   const income =
-    400 + [1, 2, 3, 4, 5].reduce((a, r) => a + waveStats(r).count * 100, 0);
+    400 + [1, 2, 3, 4, 5].reduce((a, r) => a + waveStats(r).count * 105, 0);
   assert.equal(
     income -
       ["shotgun", "lounge", "shortcut", "vip", "upgrade"].reduce(
         (sum, id) => sum + PRICES[id],
         0,
       ),
-    500,
+    815,
   );
 });
 

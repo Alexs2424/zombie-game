@@ -159,6 +159,12 @@ export class GameAudio {
     };
   }
   play(event: GameEvent) {
+    if (event.type === "knife") this.burst(.18,.13,1800);
+    if (event.type === "grenadeThrow") this.burst(.12,.1,900);
+    if (event.type === "explosion") {
+      this.burst(.65,.45,220);
+      this.tone(90,.7,.3,"sine",25);
+    }
     if (event.type === "shot") {
       const heavy = event.weapon === "shotgun",
         rifle = event.weapon === "rifle",

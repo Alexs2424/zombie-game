@@ -24,6 +24,7 @@ import { RawCubeTexture } from "@babylonjs/core/Materials/Textures/rawCubeTextur
 import { Constants } from "@babylonjs/core/Engines/constants";
 import "@babylonjs/loaders/glTF";
 import { createCharacter } from "./characters";
+import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import {
   Simulation,
@@ -39,7 +40,7 @@ import {
 } from "./simulation";
 import "@babylonjs/core/Culling/ray";
 
-type ZombieView = ReturnType<typeof createCharacter>;
+type ZombieView = ReturnType<typeof createZombie>;
 export class GameRenderer {
   engine: Engine;
   scene: Scene;
@@ -57,7 +58,8 @@ export class GameRenderer {
   private movingParts: Partial<
     Record<WeaponId, { node: TransformNode; y: number; z: number }[]>
   > = {};
-  private bartender?: ZombieView;
+  private bartender?: ReturnType<typeof createCharacter>;
+  private zombieAsset?: Awaited<ReturnType<typeof loadZombieAsset>>;
   private handLight: PointLight;
   private muzzleLight: PointLight;
   private rouletteWheel?: TransformNode;
@@ -73,6 +75,9 @@ export class GameRenderer {
   private gateSigns: Record<string, Mesh> = {};
   private shadows: ShadowGenerator[] = [];
   private gunKick = 0;
+  private knifeModel?: TransformNode;
+  private grenadeMeshes = new Map<number, Mesh>();
+  private blastMeshes = new Map<number, Mesh>();
   private flashTime = 0;
   private impact: Mesh;
   private impactTime = 0;
@@ -285,6 +290,7 @@ export class GameRenderer {
       this.loadWeaponAssets(),
       this.loadTableAssets(),
       this.loadSlotAssets(),
+      loadZombieAsset().then((asset) => { this.zombieAsset = asset; }),
     ]).then(async () => {
       await this.scene.whenReadyAsync();
     });
@@ -1572,7 +1578,7 @@ export class GameRenderer {
   }
   private zombie(id: number): ZombieView {
     this.zombieShadows.set(id, new Set());
-    return createCharacter(this.scene, id);
+    return createZombie(this.scene, id, this.zombieAsset!);
   }
   shot(id: WeaponId) {
     this.gunKick =
@@ -1595,7 +1601,66 @@ export class GameRenderer {
     const ray = this.camera.getForwardRay(6);
     this.impact.position.copyFrom(ray.origin.add(ray.direction.scale(5)));
   }
+  private updateEquipment(sim: Simulation) {
+    if (!this.knifeModel) {
+      const knife = new TransformNode("combat knife", this.scene);
+      knife.parent = this.camera;
+      const part = (name: string, size: number[], pos: number[], material: StandardMaterial) => {
+        const mesh = MeshBuilder.CreateBox(name,{width:size[0],height:size[1],depth:size[2]},this.scene);
+        mesh.parent=knife;mesh.position.set(pos[0],pos[1],pos[2]);mesh.material=material;
+        mesh.isPickable=false;mesh.renderingGroupId=1;
+        return mesh;
+      };
+      part("ribbed knife grip",[.065,.07,.19],[0,0,0],this.mat("knife grip","#292d26"));
+      part("steel guard",[.18,.035,.035],[0,0,.11],this.mat("knife steel","#a6b5b3",.1));
+      const blade=MeshBuilder.CreateCylinder("tapered blade",{diameterTop:0,diameterBottom:.11,height:.34,tessellation:4},this.scene);
+      blade.parent=knife;blade.rotation.x=Math.PI/2;blade.position.z=.29;blade.scaling.z=.16;
+      blade.material=this.mat("knife steel","#a6b5b3",.1);blade.renderingGroupId=1;blade.isPickable=false;
+      part("gloved knife hand",[.105,.095,.13],[0,-.045,-.035],this.mat("knife glove","#69503a"));
+      part("knife sleeve",[.12,.13,.22],[0,-.075,-.18],this.mat("knife sleeve","#283b31"));
+      this.knifeModel=knife;
+    }
+    const slash=sim.knifeRemaining>0;
+    this.knifeModel.setEnabled(slash);
+    if (slash) {
+      const progress=1-sim.knifeRemaining/.55;
+      const swing=Math.sin(progress*Math.PI);
+      this.knifeModel.position.set(.4-swing*.62,-.3+swing*.17,.5+swing*.3);
+      this.knifeModel.rotation.set(-.2,.65-swing*1.2,-.4+swing*.65);
+    }
+    for(const [id,mesh] of this.grenadeMeshes) if(!sim.projectiles.some(g=>g.id===id)) {
+      mesh.dispose();this.grenadeMeshes.delete(id);
+    }
+    for(const g of sim.projectiles) {
+      let mesh=this.grenadeMeshes.get(g.id);
+      if(!mesh) {
+        mesh=MeshBuilder.CreateSphere("thrown grenade",{diameter:.17,segments:12},this.scene);
+        mesh.scaling.y=1.2;mesh.material=this.mat("grenade casing","#52613a");mesh.isPickable=false;
+        const cap=MeshBuilder.CreateBox("grenade fuse",{width:.05,height:.06,depth:.05},this.scene);
+        cap.parent=mesh;cap.position.y=.095;cap.material=this.mat("grenade fuse","#eb9d43",.5);cap.isPickable=false;
+        this.grenadeMeshes.set(g.id,mesh);
+      }
+      mesh.position.set(g.x,g.y,g.z);mesh.rotation.set(sim.time*7,0,sim.time*4);
+    }
+    for(const [id,mesh] of this.blastMeshes) if(!sim.explosions.some(g=>g.id===id)) {
+      mesh.material?.dispose();mesh.dispose();this.blastMeshes.delete(id);
+    }
+    for(const blast of sim.explosions) {
+      let mesh=this.blastMeshes.get(blast.id);
+      if(!mesh) {
+        mesh=MeshBuilder.CreateSphere("grenade blast",{diameter:1,segments:16},this.scene);
+        const material=new StandardMaterial("blast flash",this.scene);
+        material.emissiveColor.set(1,.35,.035);material.disableLighting=true;
+        mesh.material=material;mesh.isPickable=false;this.blastMeshes.set(blast.id,mesh);
+      }
+      const progress=1-blast.remaining/.5;
+      mesh.position.set(blast.x,Math.max(.15,blast.y),blast.z);
+      mesh.scaling.setAll(.2+progress*8);
+      (mesh.material as StandardMaterial).alpha=(1-progress)*.65;
+    }
+  }
   update(sim: Simulation, dt: number) {
+    this.updateEquipment(sim);
     this.time += dt;
     this.camera.position.set(
       sim.player.x,
@@ -1627,7 +1692,8 @@ export class GameRenderer {
         ? 0.5 + Math.sin(sim.reloadRemaining * 6) * 0.12
         : this.gunKick * 1.4;
     this.gun.rotation.z = sim.sprinting ? -0.2 : 0;
-    for (const id of WEAPON_ORDER) this.guns[id].setEnabled(sim.weapon === id);
+    this.gun.position.y -= sim.grenadeCooldown > 0 ? Math.sin(sim.grenadeCooldown/.65*Math.PI)*.25 : 0;
+    for (const id of WEAPON_ORDER) this.guns[id].setEnabled(sim.weapon === id && sim.knifeRemaining <= 0);
     const reloadProgress =
       sim.reloadRemaining > 0
         ? 1 - sim.reloadRemaining / sim.reloadDuration()
@@ -1728,6 +1794,7 @@ export class GameRenderer {
       }
     for (const e of sim.enemies) {
       if (e.health <= 0) continue;
+      if (!this.zombieAsset) continue;
       let v = this.zombies.get(e.id);
       if (!v) {
         v = this.zombie(e.id);
@@ -1745,20 +1812,7 @@ export class GameRenderer {
         if (nearby) membership.add(shadow);
         else membership.delete(shadow);
       }
-      v.root.position.set(e.x, 0, e.z);
-      v.root.rotation.y = e.yaw;
-      v.root.rotation.z = Math.sin(e.age * 3 + e.id) * 0.025;
-      const walk = Math.sin(e.age * e.speed * 4) * 0.3;
-      v.legs[0].rotation.x = walk;
-      v.legs[1].rotation.x = -walk;
-      v.arms.forEach(
-        (a, i) =>
-          (a.rotation.x =
-            e.attack > 0 ? -1.55 : -0.7 + (i ? walk : -walk) * 0.4),
-      );
-      v.material.emissiveColor =
-        e.flash > 0 ? new Color3(0.6, 0.45, 0.2) : Color3.Black();
-      v.shadow.position.set(e.x, 0.025, e.z);
+      animateZombie(v, e);
     }
     this.scene.render();
     this.fps = this.engine.getFps();

@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { GameRuntime, GameView } from "../lib/game/runtime";
 const initial: GameView = {
+  grenades: 2,
+  knifeReady: true,
   phase: "ready",
   health: 100,
   maxHealth: 100,
@@ -64,6 +66,8 @@ function Controls() {
       <br />
       <kbd>R</kbd> RELOAD <kbd>E</kbd> BUY
       <br />
+      <kbd>G</kbd> GRENADE <kbd>V</kbd> KNIFE
+      <br />
       <kbd>1–4</kbd> SWITCH <kbd>ESC</kbd> PAUSE
     </div>
   );
@@ -81,13 +85,13 @@ export default function Home() {
     [playtesting, setPlaytesting] = useState(false);
   useEffect(() => {
     let disposed = false;
-    setPlaytesting(
-      process.env.NODE_ENV !== "production" &&
-        new URLSearchParams(window.location.search).has("playtest"),
-    );
     import("../lib/game/runtime")
       .then(({ GameRuntime }) => {
         if (disposed || !canvas.current) return;
+        setPlaytesting(
+          process.env.NODE_ENV !== "production" &&
+            new URLSearchParams(window.location.search).has("playtest"),
+        );
         try {
           runtime.current = new GameRuntime(canvas.current, setView, setError);
           void runtime.current.renderer.ready
@@ -399,6 +403,7 @@ export default function Home() {
                 ))}
               </div>
               <span className="weapon-name">{view.weaponName}</span>
+              <span className="hud-hint">G GRENADE · {view.grenades} / 4 &nbsp; V KNIFE · {view.knifeReady ? "READY" : "RECOVERING"}</span>
               <div className="ammo">
                 <strong className={view.mag === 0 ? "empty" : ""}>
                   {String(view.mag).padStart(2, "0")}
@@ -633,6 +638,9 @@ export default function Home() {
             ["forward", "Walk forward"],
             ["back", "Walk back"],
             ["shoot", "Fire"],
+            ["grenade", "Throw grenade"],
+            ["knife", "Knife slash"],
+            ["melee-target", "Knife target"],
             ["reload", "Reload"],
             ["weapon-pistol", "Equip pistol"],
             ["weapon-shotgun", "Equip shotgun"],
@@ -641,6 +649,10 @@ export default function Home() {
             ["clear", "Finish round"],
             ["round", "Start round"],
             ["crowd", "Spawn 14"],
+            ["zombies", "Zombie lineup"],
+            ["zombie-wounds", "Show wounds"],
+            ["zombie-limbs", "Sever limbs"],
+            ["zombie-attacks", "Three attacks"],
           ].map(([id, label]) => (
             <button
               key={id}
