@@ -54,6 +54,8 @@ Development playtests include **Service overview**, **Service truck**, and
 | Reload              | R; an empty trigger also starts a reload   |
 | Buy/interact        | E when close to a purchase                 |
 | Switch weapons      | 1 / 2 / 3 / 4 / 5                          |
+| Hold casino chips   | C, then aim at a craps number and fire     |
+| Cash out table bets | X near the craps table                     |
 | Pause/release mouse | Escape                                     |
 
 The start and pause screens provide mouse sensitivity, sound volume, and optional frame statistics. Losing focus pauses the run and clears held input. Controller support is deferred.
@@ -70,7 +72,8 @@ Zombies use three original Blender designs: Pit Boss, Crooked Dealer, and Last S
 - Staff passage: 1,200 chips, purchased from inside the staff area after opening the lounge. It completes the second movement loop.
 - High Roller Club: 1,300 chips from the lounge. Opens a 12 × 24 metre poker room and both its lounge and staff entrances. A private entrance starts spawning zombies only after the room opens.
 - The Devil’s Tables: 1,500 chips from the High Roller Club. Opens a 14 × 24 metre room, two connected entrances, and a delayed dealer spawn. Craps and roulette are broad training islands.
-- Seven’s Curse craps wager: 250 chips, once per round. Two fair six-sided dice roll while combat continues. A total of seven slows walking and sprinting by 20% for that round; other totals pay 500 chips (250 net). During intermission, the wager and any curse apply to the upcoming round.
+- Craps: hold physical 25-chip stacks with **C**, then aim/fire at 4, 5, 6, 8, 9, or 10. Standard place-bet minimums and payouts are used (6/8 in multiples of 6; 4/10 pay 9:5, 5/9 pay 7:5, and 6/8 pay 7:6). Bets stay on the felt between rolls; **X** returns the remaining principal. A seven clears the table, while a hit number pays profit automatically.
+- Speakeasy easter egg: the crooked poker table has fixed suit/value cards. Shoot the matching suit and number sequence into the keypad hidden behind the portrait to open the secret room. The room contains a Blender-built Velvet Fortune mystery slot: 400 chips per spin, 50% chance of a gilded special version of one of the four modeled guns, otherwise no reward.
 - Lucky Four roulette: 200 chips on every spin, charged when the spin starts. A fair 0–36 wheel spins for six seconds while combat continues. **4 and 24** refill the equipped gun’s magazine and reserve; **7** refills every owned gun; **0** refills every owned gun and grants **double damage for 30 seconds**. Other numbers give no reward. There is no additional charge at the result and no refund on a win. Return to the table for another spin once the wheel stops.
 - Dealer’s Choice SMG: 1,100 chips in the lounge; 400-chip reserve refill.
 - Pit Boss rifle: 1,600 chips on the east wall of the High Roller Club; 500-chip reserve refill.

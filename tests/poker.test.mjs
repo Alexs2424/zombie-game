@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { isMelee } from "../lib/game/weapon-expansion.ts";
 import {
   CARD_SUITS,
   POKER_RULES,
@@ -563,7 +564,11 @@ test("revolver upgrades retain six chambers, improve reload and damage, and shar
     assert.equal(s.reload(), true);
     advance(s, s.reloadDuration() + 0.05);
     assert.deepEqual(s.inventory.revolver, { owned: true, mag: 6, reserve: 2 });
-    for (const weapon of WEAPON_ORDER.filter((w) => w !== "revolver")) {
+    // Melee weapons carry a fixed swing count rather than a magazine, so the
+    // +50% capacity upgrade does not apply to them.
+    for (const weapon of WEAPON_ORDER.filter(
+      (w) => w !== "revolver" && !isMelee(w),
+    )) {
       s.upgrades[weapon] = true;
       assert.equal(s.capacity(weapon), Math.round(WEAPONS[weapon].magazine * 1.5));
       assert.equal(s.reloadDuration(weapon), WEAPONS[weapon].reload * 0.7);

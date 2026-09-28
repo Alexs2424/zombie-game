@@ -1824,3 +1824,14 @@ h1 i {
     transition: none;
   }
 }
+/* Companion controls for the physical table and hidden lock. */
+.casino-betting{position:absolute;right:24px;top:140px;width:350px;padding:18px;border:1px solid #b89d64;background:rgba(9,25,21,.92);color:#eadbb4;pointer-events:none;box-shadow:0 10px 40px #0008}
+.casino-betting>strong{display:block;margin:10px 0;font:18px Georgia,serif;letter-spacing:2px}
+.casino-betting p{font-size:12px;line-height:1.7;margin:12px 0}
+.casino-betting small{font-size:10px;line-height:1.6;letter-spacing:.4px}
+.bet-number-row{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.bet-number-row>div{display:flex;flex-direction:column;align-items:center;gap:5px;border:1px solid #b89d6455;padding:8px 2px;background:#24463a}
+.bet-number-row b{font:25px Georgia,serif}.bet-number-row span{font-size:9px;color:#ecd395}
+.secret-status{position:absolute;right:24px;top:140px;max-width:330px;padding:18px;background:#101b17ed;border:1px solid #b89d64;color:#e9d5a3;letter-spacing:1px;line-height:1.5;pointer-events:none}
+.secret-status small,.secret-status p{font-size:12px;letter-spacing:.2px}
+@media(max-width:800px){.casino-betting{right:12px;top:100px;width:290px;padding:10px}.secret-status{right:12px;top:100px;width:270px}}

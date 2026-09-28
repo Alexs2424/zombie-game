@@ -17,6 +17,7 @@ import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
+import { PBRMaterial } from "@babylonjs/core/Materials/PBR/pbrMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
 import { LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader";
 import type { AssetContainer } from "@babylonjs/core/assetContainer";
@@ -32,6 +33,7 @@ import { SERVICE_RECTS } from "./service-layout";
 import { buildLoungeDecor } from "./lounge-decor";
 import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
 import { slotCabinetsForIsland } from "./slot-machines";
+import { CasinoVisuals } from "./casino-visuals";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import {
   Simulation,
@@ -70,6 +72,7 @@ export class GameRenderer {
   > = {};
   private bartender?: ReturnType<typeof createCharacter>;
   private zombieAsset?: Awaited<ReturnType<typeof loadZombieAsset>>;
+  private casino: CasinoVisuals;
   private handLight: PointLight;
   private muzzleLight: PointLight;
   private rouletteWheel?: TransformNode;
@@ -98,6 +101,7 @@ export class GameRenderer {
   private serviceShadow?: ShadowGenerator;
   private serviceFallbacks = new Map<"truck" | "props", TransformNode>();
   private gunKick = 0;
+  private relicFinishes = new Map<Mesh,{original: PBRMaterial; gilded: PBRMaterial; weapon: WeaponId}>();
   private knifeModel?: TransformNode;
   private grenadeMeshes = new Map<number, Mesh>();
   private blastMeshes = new Map<number, Mesh>();
@@ -300,13 +304,9 @@ export class GameRenderer {
     this.muzzleLight.renderPriority = 30;
     this.gun = new TransformNode("hands", this.scene);
     this.gun.parent = this.camera;
-    this.guns = {
-      pistol: this.weapon("pistol"),
-      shotgun: this.weapon("shotgun"),
-      smg: this.weapon("smg"),
-      rifle: this.weapon("rifle"),
-      revolver: this.weapon("revolver"),
-    };
+    this.guns = Object.fromEntries(
+      WEAPON_ORDER.map((id) => [id, this.weapon(id)]),
+    ) as Record<WeaponId, TransformNode>;
     this.flash = MeshBuilder.CreateSphere(
       "muzzle",
       { diameter: 0.17, segments: 4 },
@@ -323,7 +323,9 @@ export class GameRenderer {
     );
     this.impact.material = this.mat("impact", "#e3c580", 1);
     this.impact.isVisible = false;
+    this.casino = new CasinoVisuals(this.scene,this.camera);
     this.ready = Promise.all([
+      this.casino.ready,
       this.loadWeaponAssets(),
       this.loadTableAssets(),
       this.loadSlotAssets(),
@@ -506,6 +508,8 @@ export class GameRenderer {
           "craps-table",
           "roulette-table",
           "tables-sideboard",
+          "mystery-cabinet",
+          "secret-bar",
         ].includes(r.id)
       )
         continue;
@@ -1175,7 +1179,7 @@ export class GameRenderer {
     );
     this.label(
       "craps rules",
-      "SEVEN’S CURSE",
+      "PLACE YOUR CHIPS",
       35,
       2.5,
       -11.9,
@@ -1186,7 +1190,7 @@ export class GameRenderer {
     );
     this.label(
       "craps cost",
-      "250 CHIPS • ONE ROLL PER ROUND",
+      "25 MINIMUM • 6 & 8 START AT 30",
       35,
       1.93,
       -11.9,
@@ -1197,7 +1201,7 @@ export class GameRenderer {
     );
     this.label(
       "craps risk",
-      "7: −20% SPEED • OTHER ROLLS: 500 CHIPS",
+      "WINNINGS PAID • BETS STAY • SEVEN CLEARS",
       35,
       1.48,
       -11.9,
@@ -1267,7 +1271,9 @@ export class GameRenderer {
   }
   private pokerTable(x: number, z: number) {
     const table = POKER_TABLES.find((table) => table.x === x && table.z === z)!;
-    for (let i = 0; i < 5; i++) {
+    // The crooked table's fixed evidence cards come from
+    // crooked-cards.glb, so skip the generic painted hand there.
+    for (let i = 0; i < (z === 5 ? 0 : 5); i++) {
       this.box(
         `${table.id} card ${i + 1} paper edge`,
         x + (i - 2) * 0.28,
@@ -1731,7 +1737,7 @@ export class GameRenderer {
   }
   private async loadWeaponAssets() {
     await Promise.all(
-      WEAPON_ORDER.map(async (id) => {
+      (["pistol", "shotgun", "smg", "rifle"] as WeaponId[]).map(async (id) => {
         const asset = await LoadAssetContainerAsync(
           `/models/${id}.glb`,
           this.scene,
@@ -1772,6 +1778,12 @@ export class GameRenderer {
         for (const mesh of this.guns[id].getChildMeshes()) {
           mesh.renderingGroupId = 1;
           mesh.isPickable = false;
+          if(mesh instanceof Mesh && !mesh.name.includes('-grip-') && mesh.material instanceof PBRMaterial) {
+            const gilded=mesh.material.clone(`relic-${id}-${mesh.name}`);
+            gilded.albedoColor=new Color3(.7,.45,.12);gilded.metallic=.85;gilded.roughness=.26;
+            gilded.emissiveColor=new Color3(.035,.019,.002);
+            this.relicFinishes.set(mesh,{original:mesh.material,gilded,weapon:id});
+          }
         }
         this.movingParts[id] = this.guns[id]
           .getDescendants()
@@ -1922,6 +1934,7 @@ export class GameRenderer {
     }
   }
   update(sim: Simulation, dt: number) {
+    this.casino.update(sim);
     this.updateEquipment(sim);
     this.time += dt;
     this.camera.position.set(
@@ -1955,7 +1968,8 @@ export class GameRenderer {
         : this.gunKick * 1.4;
     this.gun.rotation.z = sim.sprinting ? -0.2 : 0;
     this.gun.position.y -= sim.grenadeCooldown > 0 ? Math.sin(sim.grenadeCooldown/.65*Math.PI)*.25 : 0;
-    for (const id of WEAPON_ORDER) this.guns[id].setEnabled(sim.weapon === id && sim.knifeRemaining <= 0);
+    for (const id of WEAPON_ORDER) this.guns[id].setEnabled(sim.weapon === id && sim.knifeRemaining <= 0 && !sim.holdingChips);
+    for (const [mesh,finish] of this.relicFinishes) mesh.material=sim.relics[finish.weapon]?finish.gilded:finish.original;
     const reloadProgress =
       sim.reloadRemaining > 0
         ? 1 - sim.reloadRemaining / sim.reloadDuration()
@@ -2135,6 +2149,7 @@ export class GameRenderer {
     this.engine.resize();
   }
   dispose() {
+    this.casino.dispose();
     for (const asset of this.weaponAssets) asset.dispose();
     this.scene.dispose();
     this.engine.dispose();

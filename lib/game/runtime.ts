@@ -21,7 +21,15 @@ import {
   type CardSuit,
   type PokerTableId,
 } from "./poker";
+import { PLACE_NUMBERS, KEYPAD_TARGETS } from "./casino";
+export type CasinoView = {
+  holding: boolean; chip: number; bets: Partial<Record<number,number>>;
+  nearTable: boolean; result: string; speakeasy: boolean;
+  nearPainting: boolean; paintingOpen: boolean; codeProgress: number;
+  mystery: string; nearMystery: boolean;
+};
 export type GameView = {
+  casino: CasinoView;
   grenades: number;
   knifeReady: boolean;
   phase: "ready" | "playing" | "paused" | "dead";
@@ -96,6 +104,7 @@ export type GameView = {
   slotAudioStatus?: string;
 };
 export const initialView: GameView = {
+  casino: {holding:false,chip:25,bets:{},nearTable:false,result:"",speakeasy:false,nearPainting:false,paintingOpen:false,codeProgress:0,mystery:"",nearMystery:false},
   grenades: 2,
   knifeReady: true,
   phase: "ready",
@@ -232,6 +241,8 @@ export class GameRuntime {
         "KeyE",
         "KeyG",
         "KeyV",
+        "KeyC",
+        "KeyX",
         "Digit1",
         "Digit2",
         "Digit3",
@@ -244,6 +255,13 @@ export class GameRuntime {
       e.preventDefault();
     this.keys.add(e.code);
     if (e.repeat) return;
+    if (e.code === "KeyC") {this.sim.toggleChips();this.firing=false;}
+    if (e.code === "KeyX") this.sim.takeBets();
+    if (this.sim.holdingChips) {
+      if (e.code === "KeyR") {this.sim.chipValue = this.sim.chipValue === 25 ? 50 : this.sim.chipValue === 50 ? 100 : 25;return;}
+      const number=PLACE_NUMBERS[Number(e.code.replace("Digit",""))-1];
+      if(e.code.startsWith("Digit") && number) {this.sim.placeBet(number);return;}
+    }
     if (e.code === "KeyR") this.sim.reload();
     if (e.code === "KeyG") this.sim.throwGrenade();
     if (e.code === "KeyV") this.sim.knife();
@@ -286,6 +304,7 @@ export class GameRuntime {
       performance.now() < this.suppressUntil
     )
       return;
+    if (this.sim.holdingChips) {this.sim.placeAimedBet();return;}
     this.firing = true;
   };
   private mouseUp = () => {
@@ -504,7 +523,9 @@ export class GameRuntime {
     if (action === "dice-seven" || action === "dice-win") {
       s.lastWagerRound = -1;
       s.dice = null;
-      s.points = Math.max(s.points, 250);
+      s.points = Math.max(s.points, 25);
+      s.holdingChips = true;
+      s.placeBet(9);
       if (s.purchase("craps") && s.dice)
         (s.dice as NonNullable<Simulation["dice"]>).values =
           action === "dice-seven" ? [3, 4] : [5, 4];
@@ -562,6 +583,19 @@ export class GameRuntime {
           fire: false,
         });
     if (action === "shoot") s.fire();
+    if (action === "hold-chips") s.toggleChips();
+    if (action === "take-bets") s.takeBets();
+    if (action.startsWith("bet-")) {
+      const number=PLACE_NUMBERS.find(n=>String(n)===action.slice(4));
+      if(number) s.placeBet(number);
+    }
+    if (action === "clue") {s.lounge=s.vip=true;s.refreshMap();s.player={x:22,z:3.3};s.yaw=0;s.pitch=.45;}
+    if (action === "portrait") {s.lounge=s.vip=s.tables=true;s.refreshMap();s.player={x:39.5,z:-4.1};s.yaw=Math.PI/2;s.pitch=-.12;}
+    if (action === "mystery-view" && s.speakeasy) {s.player={x:48,z:-6};s.yaw=Math.PI;s.pitch=-.05;}
+    if(action.startsWith("key-")) {
+      const key=KEYPAD_TARGETS.find(k=>k.key===action.slice(4));
+      if(key) {s.holdingChips=false;s.yaw=Math.atan2(key.x-s.player.x,key.z-s.player.z);s.pitch=-Math.atan2(key.y-1.65,Math.hypot(key.x-s.player.x,key.z-s.player.z));s.fireCooldown=0;s.fire();}
+    }
     if (action === "grenade") s.throwGrenade();
     if (action === "knife") s.knife();
     if (action === "melee-target") {
@@ -742,6 +776,9 @@ export class GameRuntime {
     const bestSuit = bestPokerSuit(pokerState?.hand ?? []);
     this.audio.setActive(s.phase === "playing");
     this.onView({
+      casino: {holding:s.holdingChips,chip:s.chipValue,bets:{...s.bets},nearTable:s.tables&&Math.hypot(s.player.x-35,s.player.z+5)<3,result:s.crapsResult,
+        speakeasy:s.speakeasy,nearPainting:s.tables&&Math.hypot(s.player.x-41,s.player.z+4.1)<4,paintingOpen:s.paintingOpen,codeProgress:s.codeProgress,
+        mystery:s.mystery?.message??"",nearMystery:s.speakeasy&&Math.hypot(s.player.x-48,s.player.z+7.3)<4},
       grenades: s.grenades,
       knifeReady: s.knifeCooldown <= 0 && s.grenadeCooldown <= 0,
       phase: s.phase,
@@ -828,10 +865,7 @@ export class GameRuntime {
                 s.inventory[p.id].owned
                   ? `${WEAPONS[p.id].label} ammunition`
                   : p.name,
-              detail:
-                p.id === "craps"
-                  ? `7 slows you 20% ${s.intermission > 0 ? "next round" : "this round"} · other rolls pay 500 chips · once per round`
-                  : p.detail,
+              detail: p.detail,
               ...info,
               actionLabel:
                 p.id === "poker-a" || p.id === "poker-b"

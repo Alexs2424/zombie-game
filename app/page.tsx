@@ -4,6 +4,7 @@ import type { GameRuntime, GameView } from "../lib/game/runtime";
 import { PRICES, ROULETTE_RULES, WEAPONS } from "../lib/game/simulation";
 import { cardName, cardRank, suitSymbol } from "../lib/game/poker";
 const initial: GameView = {
+  casino: {holding:false,chip:25,bets:{},nearTable:false,result:"",speakeasy:false,nearPainting:false,paintingOpen:false,codeProgress:0,mystery:"",nearMystery:false},
   grenades: 2,
   knifeReady: true,
   phase: "ready",
@@ -74,6 +75,10 @@ function Controls() {
       <kbd>R</kbd> RELOAD <kbd>E</kbd> INTERACT
       <br />
       <kbd>G</kbd> GRENADE <kbd>V</kbd> KNIFE
+      <br />
+      <kbd>C</kbd> HOLD CHIPS · AIM + CLICK TO BET
+      <br />
+      CHIPS: <kbd>R</kbd> VALUE <kbd>1–6</kbd> PLACE <kbd>X</kbd> TAKE BETS
       <br />
       <kbd>1–5</kbd> SWITCH <kbd>ESC</kbd> PAUSE
     </div>
@@ -487,17 +492,29 @@ export default function Home() {
                   )}
                 </div>
               )}
+              {view.casino.nearTable && (
+                <section className="casino-betting" aria-label="Craps place bets">
+                  <small>THE DEVIL’S TABLES · PLACE BETS</small>
+                  <strong>{view.casino.holding ? `HOLDING ${view.casino.chip} CHIPS` : "C · TAKE CHIPS IN HAND"}</strong>
+                  <div className="bet-number-row">{[4,5,6,8,9,10].map((n,i)=><div key={n}><b>{n}</b><span>{view.casino.bets[n]??0} ON</span><small>{i+1} · +{Math.ceil(view.casino.chip/(n===6||n===8?6:5))*(n===6||n===8?6:5)}</small></div>)}</div>
+                  <p>Aim + click to place · 1–6 quick place · R chip value<br/>E roll · X return bets · C put chips away</p>
+                  <small>4/10 pay 9:5 · 5/9 pay 7:5 · 6/8 pay 7:6<br/>Bets always work. Wins pay automatically. Seven clears all bets.</small>
+                  {view.dice && <p role="status">{view.dice.resolved ? `${view.dice.values[0]} + ${view.dice.values[1]} · ${view.casino.result}` : "⚄ ⚂ Rolling… bets locked"}</p>}
+                </section>
+              )}
+              {view.casino.nearPainting && view.casino.paintingOpen && !view.casino.speakeasy && <div className="secret-status">THE LOCK · {view.casino.codeProgress} / 8<br/><small>Read the pinned cards left to right. Shoot suit, then number.</small></div>}
+              {view.casino.nearMystery && <div className="secret-status"><strong>THE VELVET FORTUNE</strong><p>{view.casino.mystery || "400 chips · 50% special weapon / 50% nothing · E spin"}</p></div>}
               {(showDice || showRoulette) && (
                 <div
                   className="gambling-results"
                   aria-label="Table game results"
                 >
-                  {view.dice && showDice && (
+                  {view.dice && showDice && !view.casino.nearTable && (
                     <div
                       className={`gambling-card dice-result ${view.dice.resolved && view.dice.values[0] + view.dice.values[1] === 7 ? "cursed" : ""}`}
                       role="status"
                     >
-                      <span>SEVEN’S CURSE · CRAPS</span>
+                      <span>THE DEVIL’S TABLES</span>
                       <div
                         className={
                           view.dice.resolved
@@ -519,18 +536,12 @@ export default function Home() {
                         )}
                       </div>
                       <strong>
-                        {!view.dice.resolved
-                          ? "Rolling…"
-                          : view.dice.values[0] + view.dice.values[1] === 7
-                            ? "SEVEN. THE HOUSE COLLECTS."
-                            : `${view.dice.values[0] + view.dice.values[1]} · +500 CHIPS`}
+                        {!view.dice.resolved ? "Rolling…" : view.casino.result}
                       </strong>
                       <p>
                         {!view.dice.resolved
                           ? "Stay alert. The game keeps moving."
-                          : view.dice.values[0] + view.dice.values[1] === 7
-                            ? `Movement reduced 20% for round ${view.dice.round}.`
-                            : "Your luck holds. Come back next round."}
+                          : "Winnings go to your wallet. Remaining bets stay on the table."}
                       </p>
                     </div>
                   )}
@@ -657,6 +668,10 @@ export default function Home() {
                           {view.prompt.price.toLocaleString()}{" "}
                           <small>CHIPS</small>
                         </>
+                      ) : view.prompt.name.startsWith("Craps") ? (
+                        "ROLL DICE"
+                      ) : view.prompt.name === "The crooked portrait" ? (
+                        "REVEAL"
                       ) : (
                         "VIEW MENU"
                       ))}
@@ -712,10 +727,8 @@ export default function Home() {
                 ))}
               </div>
               <span className="weapon-name">{view.weaponName}</span>
-              <span className="hud-hint">
-                G GRENADE · {view.grenades} / 4 &nbsp; V KNIFE ·{" "}
-                {view.knifeReady ? "READY" : "RECOVERING"}
-              </span>
+              {view.casino.holding && <span className="hud-hint">CHIPS IN HAND · {view.casino.chip} · C TO EQUIP GUN</span>}
+              <span className="hud-hint">G GRENADE · {view.grenades} / 4 &nbsp; V KNIFE · {view.knifeReady ? "READY" : "RECOVERING"}</span>
               <div className="ammo">
                 <strong className={view.mag === 0 ? "empty" : ""}>
                   {String(view.mag).padStart(2, "0")}
@@ -965,6 +978,21 @@ export default function Home() {
             ["tablesGate", "Table room door"],
             ["tables", "Table room"],
             ["craps", "Craps table"],
+            ["hold-chips", "Hold chips"],
+            ["bet-4", "Place 4"],
+            ["bet-6", "Place 6"],
+            ["take-bets", "Take bets"],
+            ["clue", "Clue table"],
+            ["portrait", "Secret portrait"],
+            ["key-spade", "Shoot spade"],
+            ["key-7", "Shoot 7"],
+            ["key-heart", "Shoot heart"],
+            ["key-4", "Shoot 4"],
+            ["key-club", "Shoot club"],
+            ["key-9", "Shoot 9"],
+            ["key-diamond", "Shoot diamond"],
+            ["key-2", "Shoot 2"],
+            ["mystery-view", "Mystery machine"],
             ["roulette", "Roulette table"],
             ["rouletteClose", "Wheel close-up"],
             ["roulette-spin", "Spin roulette"],
