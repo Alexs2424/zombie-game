@@ -21,6 +21,15 @@ npm run build
 
 The Sites preview uses a local Worker runtime; the development process must remain running while playing locally.
 
+## Last Call lounge
+
+The cocktail lounge has original Blender-built marble and walnut furniture, an
+illuminated arched backbar, burgundy booths, cocktail tables and stools, and a
+crystal chandelier. Furniture blocks players and zombies while preserving the
+cross-room aisle and staff escape route. See [asset source and rebuild details](docs/bar-assets/README.md)
+and [validation notes](docs/bar-assets/playtest.md). Development previews offer
+**Lounge overview**, **Lounge entry view**, and **Lounge seating** camera controls.
+
 ## Controls
 
 | Action              | Control                                    |

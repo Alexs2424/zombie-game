@@ -1,0 +1,222 @@
+{
+  "coordinateSystem": "Bounds below are intended game metres, Y up; editable source Blender=(x,-z,y). Export reflects X for default Babylon left-handed glTF conversion.",
+  "assemblies": {
+    "bar_counter": {
+      "objects": 122,
+      "triangles": 23152,
+      "min": [
+        9.15,
+        0.0,
+        -9.25
+      ],
+      "max": [
+        14.85,
+        1.6965,
+        -8.143
+      ],
+      "collisionContract": {
+        "center": [
+          12,
+          -8.7
+        ],
+        "footprint": [
+          5.7,
+          1.1
+        ],
+        "bodyHeight": 1.34,
+        "solid": true,
+        "notes": "Glassware and lamps above counter are decorative; front face is positive Z."
+      }
+    },
+    "backbar": {
+      "objects": 466,
+      "triangles": 59424,
+      "min": [
+        8.93,
+        0.0,
+        -11.92
+      ],
+      "max": [
+        15.07,
+        3.545,
+        -11.16874
+      ],
+      "collisionContract": {
+        "center": [
+          12,
+          -11.6
+        ],
+        "footprint": [
+          6.1,
+          0.7
+        ],
+        "height": 3.55,
+        "solid": true
+      }
+    },
+    "west_booth": {
+      "objects": 65,
+      "triangles": 9516,
+      "min": [
+        5.925,
+        0.0,
+        -9.67
+      ],
+      "max": [
+        7.97825,
+        1.42,
+        -6.13
+      ],
+      "collisionContract": {
+        "center": [
+          7,
+          -7.9
+        ],
+        "footprint": [
+          2.2,
+          3.6
+        ],
+        "height": 1.45,
+        "solid": true
+      }
+    },
+    "north_booth": {
+      "objects": 45,
+      "triangles": 8216,
+      "min": [
+        8.63,
+        0.0,
+        -0.79892
+      ],
+      "max": [
+        11.97,
+        1.355,
+        0.98
+      ],
+      "collisionContract": {
+        "center": [
+          10.3,
+          0.1
+        ],
+        "footprint": [
+          3.4,
+          1.85
+        ],
+        "height": 1.35,
+        "solid": true
+      }
+    },
+    "cocktail_table": {
+      "objects": 22,
+      "triangles": 3892,
+      "min": [
+        13.25162,
+        0.0,
+        -1.64838
+      ],
+      "max": [
+        14.34837,
+        1.4315,
+        -0.55162
+      ],
+      "collisionContract": {
+        "center": [
+          13.8,
+          -1.1
+        ],
+        "footprint": [
+          1.1,
+          1.1
+        ],
+        "bodyHeight": 1.075,
+        "solid": true
+      }
+    },
+    "bar_stool_left": {
+      "objects": 25,
+      "triangles": 2596,
+      "min": [
+        9.686,
+        0.0,
+        -7.664
+      ],
+      "max": [
+        10.31398,
+        0.873,
+        -7.036
+      ],
+      "collisionContract": {
+        "center": [
+          10,
+          -7.35
+        ],
+        "footprint": [
+          0.65,
+          0.65
+        ],
+        "height": 0.88,
+        "solid": true
+      }
+    },
+    "bar_stool_right": {
+      "objects": 25,
+      "triangles": 2596,
+      "min": [
+        13.786,
+        0.0,
+        -7.664
+      ],
+      "max": [
+        14.41399,
+        0.873,
+        -7.036
+      ],
+      "collisionContract": {
+        "center": [
+          14.1,
+          -7.35
+        ],
+        "footprint": [
+          0.65,
+          0.65
+        ],
+        "height": 0.88,
+        "solid": true
+      }
+    },
+    "chandelier": {
+      "objects": 228,
+      "triangles": 17380,
+      "min": [
+        8.928,
+        3.08,
+        -5.672
+      ],
+      "max": [
+        11.07195,
+        4.715,
+        -3.528
+      ],
+      "collisionContract": {
+        "center": [
+          10,
+          -4.6
+        ],
+        "footprint": [
+          2.2,
+          2.2
+        ],
+        "minHeight": 3.08,
+        "maxHeight": 4.715,
+        "solid": false
+      }
+    }
+  },
+  "materials": 17,
+  "triangles": 126772,
+  "sourceObjects": 998,
+  "exportMeshes": 14,
+  "glbBytes": 6092852,
+  "runtimeCoordinateSystem": "Export Blender X is reflected; default Babylon left-handed glTF loader restores intended game X. Keep default __root__ conversion.",
+  "letteringOrientation": "Game export mirrors only lettering locally so it reads correctly when approached from positive Z in the left-handed game camera; editable Blender text remains preview-readable."
+}

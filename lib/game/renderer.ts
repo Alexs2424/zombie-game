@@ -27,6 +27,8 @@ import { createCharacter } from "./characters";
 import { RouletteMotion, ROULETTE_GEOMETRY } from "./roulette-motion";
 import { POKER_TABLES, type PokerTableId } from "./poker";
 import { paintPlayingCard } from "./card-art";
+import { LOUNGE_RECTS } from "./lounge-layout";
+import { buildLoungeDecor } from "./lounge-decor";
 import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
 import { slotCabinetsForIsland } from "./slot-machines";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
@@ -89,6 +91,8 @@ export class GameRenderer {
   private gates: Record<string, Mesh> = {};
   private gateSigns: Record<string, Mesh> = {};
   private shadows: ShadowGenerator[] = [];
+  private loungeAccentLights: (PointLight | SpotLight)[] = [];
+  private loungeShadow?: ShadowGenerator;
   private gunKick = 0;
   private knifeModel?: TransformNode;
   private grenadeMeshes = new Map<number, Mesh>();
@@ -176,16 +180,23 @@ export class GameRenderer {
     amber.range = 13;
     const lounge = new PointLight(
       "lounge lamp",
-      new Vector3(10, 3, -5),
+      new Vector3(10, 3.6, -4.6),
       this.scene,
     );
-    lounge.diffuse = new Color3(0.46, 0.9, 0.72);
-    lounge.intensity = 0.95;
+    lounge.diffuse = new Color3(1, 0.72, 0.45);
+    lounge.intensity = 1.25;
     lounge.range = 12;
+    const backbar = new PointLight("Last Call shelf glow", new Vector3(12, 2.55, -10.55), this.scene);
+    backbar.diffuse = new Color3(1, 0.67, 0.32);
+    backbar.intensity = 1.1;
+    backbar.range = 7;
+    backbar.renderPriority = 2;
+    this.loungeAccentLights.push(backbar);
     for (const [x, z] of [
       [-6, 0],
       [22, 1],
       [35, 0],
+      [10, -4.6],
     ]) {
       const key = new SpotLight(
         "chandelier pool",
@@ -195,12 +206,17 @@ export class GameRenderer {
         1.35,
         this.scene,
       );
+      if (x === 10) {
+        key.renderPriority = 1;
+        this.loungeAccentLights.push(key);
+      }
       key.diffuse = new Color3(1, 0.8, 0.5);
       key.intensity = 2.8;
       key.range = 18;
       key.shadowMinZ = 0.3;
       key.shadowMaxZ = 18;
       const shadow = new ShadowGenerator(1024, key);
+      if (x === 10) this.loungeShadow = shadow;
       shadow.usePercentageCloserFiltering = true;
       shadow.filteringQuality = ShadowGenerator.QUALITY_MEDIUM;
       shadow.bias = 0.002;
@@ -307,6 +323,7 @@ export class GameRenderer {
       this.loadTableAssets(),
       this.loadSlotAssets(),
       this.loadPokerAssets(),
+      this.loadLoungeAssets(),
       this.loadCouchAsset(),
       loadZombieAsset().then((asset) => {
         this.zombieAsset = asset;
@@ -446,13 +463,6 @@ export class GameRenderer {
     const width = BOUNDS.maxX - BOUNDS.minX;
     const centerX = (BOUNDS.minX + BOUNDS.maxX) / 2;
     this.box("floor", centerX, -0.12, 0, width, 0.2, 24, floorMat);
-    const loungeMat = this.mat("lounge carpet", "#739f8b");
-    const loungeTexture = carpet.clone();
-    loungeTexture.uScale = 3;
-    loungeTexture.vScale = 3.75;
-    loungeMat.diffuseTexture = loungeTexture;
-    loungeMat.specularColor = Color3.Black();
-    this.box("lounge carpet", 10, -0.005, -4.5, 11.5, 0.035, 14.7, loungeMat);
     this.box(
       "staff floor",
       10,
@@ -479,6 +489,7 @@ export class GameRenderer {
     );
     // Decorative meshes stay inside these same solid footprints used by the simulation.
     for (const r of STATIC_RECTS) {
+      if (LOUNGE_RECTS.some((furniture) => furniture.id === r.id)) continue;
       if (
         [
           "upgrade-machine",
@@ -573,7 +584,7 @@ export class GameRenderer {
         r.w,
         r.id === "cashier" ? 1 : r.h,
         r.d,
-        r.id === "bar" || r.id === "cashier" ? wood : wall,
+        r.id === "cashier" ? wood : wall,
       );
       if (r.h > 4) {
         this.box(
@@ -758,68 +769,14 @@ export class GameRenderer {
     this.label(
       "lounge sign",
       "THE LAST CALL",
-      11,
-      3.8,
-      -11.9,
-      4.8,
-      0.58,
+      12,
+      4.03,
+      -11.79,
+      5.5,
+      0.5,
       "#cead72",
       Math.PI,
     );
-    this.box("bar top", 12, 1.31, -8.7, 5.7, 0.14, 1.1, trim);
-    for (const y of [1.8, 2.7]) {
-      this.box("back bar shelf", 10.5, y, -11.68, 4.2, 0.08, 0.45, wood);
-      for (let i = 0; i < 9; i++) {
-        const x = 8.6 + i * 0.43,
-          height = 0.28 + (i % 3) * 0.08;
-        const bottle = this.mat(
-          i % 2 ? "amber bottle" : "green glass",
-          i % 2 ? "#8c5d2c" : "#2c7059",
-        );
-        this.cylinder(
-          "bottle body",
-          x,
-          y + height / 2 + 0.04,
-          -11.67,
-          0.14,
-          height,
-          bottle,
-          0.12,
-        );
-        this.cylinder(
-          "bottle neck",
-          x,
-          y + height + 0.1,
-          -11.67,
-          0.055,
-          0.12,
-          bottle,
-        );
-        this.box(
-          "bottle label",
-          x,
-          y + height / 2,
-          -11.57,
-          0.08,
-          0.13,
-          0.01,
-          cream,
-        );
-      }
-    }
-    for (let i = 0; i < 5; i++) {
-      this.box(
-        "bar front brass stile",
-        9.8 + i,
-        0.62,
-        -8.135,
-        0.035,
-        1.1,
-        0.025,
-        trim,
-      );
-      this.cylinder("bar glass", 10.1 + i * 0.7, 1.48, -8.7, 0.11, 0.19, cream);
-    }
     for (const p of PURCHASES) {
       if (p.id === "pistolAmmo") {
         this.box("ammo plaque", p.x, 1.5, -11.9, 2.5, 1.6, 0.12, wood);
@@ -984,28 +941,9 @@ export class GameRenderer {
       "#ddc68b",
       Math.PI,
     );
-    for (let i = 0; i < 3; i++) {
-      this.cylinder(
-        "cocktail stem",
-        13.1 + i * 0.45,
-        1.51,
-        -8.7,
-        0.025,
-        0.22,
-        trim,
-      );
-      this.cylinder(
-        "cocktail coupe",
-        13.1 + i * 0.45,
-        1.64,
-        -8.7,
-        0.06,
-        0.11,
-        this.mat("cocktail " + i, ["#b34a4a", "#d1b567", "#629d80"][i], 0.2),
-        0.2,
-      );
-    }
     SPAWNS.forEach((p, i) => {
+      // This entry is concealed behind the new back bar; its spawn lane stays open.
+      if (i === 3) return;
       const rotation = i === 1 ? -Math.PI / 2 : i === 2 ? 0 : Math.PI;
       const x = i === 1 ? -15.95 : p.x,
         z = i === 1 ? p.z : i === 2 ? 11.94 : -11.94;
@@ -1339,6 +1277,7 @@ export class GameRenderer {
           i % 2 ? burgundy : cream,
         );
     }
+    buildLoungeDecor(this.scene);
     // Batch fixed scenery by material, keeping shutters and their children movable.
     const groups = new Map<StandardMaterial, Mesh[]>();
     const gates = new Set(Object.values(this.gates));
@@ -1421,6 +1360,35 @@ export class GameRenderer {
         texture,
         material,
       });
+    }
+  }
+  private async loadLoungeAssets() {
+    const asset = await LoadAssetContainerAsync("/models/last-call-lounge.glb", this.scene);
+    if (this.scene.isDisposed) {
+      asset.dispose();
+      return;
+    }
+    this.weaponAssets.push(asset);
+    asset.addAllToScene();
+    // Accent lights affect this room only, and rank ahead of distant casino lights.
+    // Otherwise the eight-light material cap silently drops the lounge shadow light.
+    const litMeshes = [
+      ...asset.meshes,
+      ...this.scene.meshes.filter((mesh) => mesh.name.startsWith("scenery: Last Call")),
+      ...(this.bartender?.root.getChildMeshes() ?? []),
+    ];
+    for (const light of this.loungeAccentLights) light.includedOnlyMeshes = [...litMeshes];
+    // The export is baked to world placement, including glTF's handedness conversion.
+    // Retain the loader root so winding and normals remain correct.
+    for (const mesh of asset.meshes) {
+      mesh.isPickable = false;
+      mesh.receiveShadows = true;
+      const material = mesh.material as unknown as { maxSimultaneousLights?: number };
+      if (material && "maxSimultaneousLights" in material) material.maxSimultaneousLights = 8;
+      if (mesh.getTotalVertices() > 0) {
+        this.loungeShadow?.addShadowCaster(mesh, false);
+        mesh.freezeWorldMatrix();
+      }
     }
   }
   private async loadCouchAsset() {
@@ -2015,6 +1983,13 @@ export class GameRenderer {
       if (!v) {
         v = this.zombie(e.id);
         this.zombies.set(e.id, v);
+      }
+      const meshes = v.root.getChildMeshes();
+      const inLounge = e.x > 4 && e.x < 16 && e.z < 3;
+      for (const light of this.loungeAccentLights) {
+        if (inLounge === light.includedOnlyMeshes.includes(meshes[0])) continue;
+        if (inLounge) light.includedOnlyMeshes.push(...meshes);
+        else light.includedOnlyMeshes = light.includedOnlyMeshes.filter((mesh) => !meshes.includes(mesh));
       }
       const membership = this.zombieShadows.get(e.id)!;
       for (const shadow of this.shadows) {
