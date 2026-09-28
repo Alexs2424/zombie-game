@@ -92,6 +92,7 @@ export type GameView = {
   fps: number;
   p95: number;
   zombieAudioStatus?: string;
+  slotAudioStatus?: string;
 };
 export const initialView: GameView = {
   grenades: 2,
@@ -164,6 +165,7 @@ export class GameRuntime {
   private suppressUntil = 0;
   private disposed = false;
   private playtesting = false;
+  private slotWalkRemaining = 0;
   constructor(
     private canvas: HTMLCanvasElement,
     private onView: (v: GameView) => void,
@@ -196,6 +198,7 @@ export class GameRuntime {
   };
   private resize = () => this.renderer.resize();
   private clearInput() {
+    this.slotWalkRemaining = 0;
     this.keys.clear();
     this.firing = false;
     this.accumulated = 0;
@@ -294,6 +297,7 @@ export class GameRuntime {
         this.sim = new Simulation();
         this.zombieAudio.reset();
         this.audio.resetZombies();
+        this.audio.resetSlots();
         this.sim.start();
         this.pendingStart = false;
       } else this.sim.resume();
@@ -337,6 +341,7 @@ export class GameRuntime {
         this.sim = new Simulation();
         this.zombieAudio.reset();
         this.audio.resetZombies();
+        this.audio.resetSlots();
         this.sim.start();
         this.pendingStart = false;
       } else this.sim.resume();
@@ -365,11 +370,13 @@ export class GameRuntime {
     if (process.env.NODE_ENV === "production") return;
     this.playtesting = true;
     const soundScenario = ["sound-chase", "sound-last", "sound-horde"].includes(action);
-    if (action === "new" || soundScenario) {
+    const slotScenario = ["sound-slots-west", "sound-slots-east", "sound-slots-bank"].includes(action);
+    if (action === "new" || soundScenario || slotScenario) {
       this.clearInput();
       this.sim = new Simulation();
       this.zombieAudio.reset();
       this.audio.resetZombies();
+      this.audio.resetSlots();
       this.sim.start();
       this.sim.points = 12000;
       this.sim.intermission = 3600;
@@ -377,6 +384,15 @@ export class GameRuntime {
       this.sim.invulnerable = 99999;
     }
     const s = this.sim;
+    if (slotScenario) {
+      s.player = { x: action === "sound-slots-west" ? -10.2 : action === "sound-slots-east" ? -3.8 : 2.4, z: action === "sound-slots-bank" ? 0 : -5.5 };
+      s.yaw = 0;
+      s.pitch = 0.04;
+      s.roundCue = null;
+      s.roundCueRemaining = 0;
+      s.waveRemaining = 0;
+      this.slotWalkRemaining = 2.3;
+    }
     if (soundScenario) {
       s.player = { x: -9, z: -8 };
       s.yaw = 0;
@@ -633,16 +649,18 @@ export class GameRuntime {
     this.last = now;
     this.hit = Math.max(0, this.hit - dt);
     this.damage = Math.max(0, this.damage - dt);
+    const playerBeforeStep = { ...this.sim.player };
     if (this.sim.phase === "playing") {
       this.accumulated += dt;
       while (this.accumulated >= 1 / 60) {
         this.sim.step(1 / 60, {
-          forward: +this.keys.has("KeyW") - +this.keys.has("KeyS"),
+          forward: this.slotWalkRemaining > 0 ? 1 : +this.keys.has("KeyW") - +this.keys.has("KeyS"),
           strafe: +this.keys.has("KeyD") - +this.keys.has("KeyA"),
           sprint: this.keys.has("ShiftLeft") || this.keys.has("ShiftRight"),
           fire: this.firing,
         });
         this.accumulated -= 1 / 60;
+        this.slotWalkRemaining = Math.max(0, this.slotWalkRemaining - 1 / 60);
       }
     }
     this.audio.setActive(this.sim.phase === "playing");
@@ -690,7 +708,9 @@ export class GameRuntime {
       this.sim.phase === "playing",
       this.sim.player,
       this.sim.yaw,
-      this.sim.moving,
+      // Movement input can remain held against a wall; only real displacement
+      // should make footsteps or wake a nearby slot cabinet.
+      Math.hypot(this.sim.player.x - playerBeforeStep.x, this.sim.player.z - playerBeforeStep.z) > 0.0001,
       this.sim.sprinting,
     );
     this.renderer.update(this.sim, dt);
@@ -785,6 +805,7 @@ export class GameRuntime {
       damageBoostRemaining: s.damageBoostRemaining,
       room: roomName(s.player),
       zombieAudioStatus: process.env.NODE_ENV !== "production" ? this.audio.zombieStatus : undefined,
+      slotAudioStatus: process.env.NODE_ENV !== "production" ? this.audio.slotStatus : undefined,
       upgraded: Object.values(s.upgrades).some(Boolean),
       message: s.messageRemaining > 0 ? s.lastMessage : "",
       prompt:
