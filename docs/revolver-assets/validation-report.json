@@ -1,0 +1,72 @@
+{
+  "assets": [
+    {
+      "file": "revolver.glb",
+      "triangles": 10226,
+      "vertices": 13778,
+      "bounds": [
+        [
+          -0.03869999945163727,
+          -0.1654999998062849,
+          -0.12300000013411044
+        ],
+        [
+          0.03869999945163727,
+          0.12000000021606684,
+          0.3069999998062849
+        ]
+      ],
+      "bytes": 493324,
+      "sha256": "07d2ec1ef45d46ad7589085d707a0cbedeee65482f60f05b6261c5fb31ee5563",
+      "checks": {
+        "header_and_buffer_lengths": true,
+        "indices": true,
+        "finite_positions": true,
+        "unit_normals": true,
+        "face_winding": true,
+        "nondegenerate_triangles": true,
+        "self_contained": true
+      },
+      "minimum_triangle_area": 7.238891187588226e-09,
+      "inherited_hand_cap_normal_disagreements": 0
+    },
+    {
+      "file": "hands-revolver.glb",
+      "triangles": 19076,
+      "vertices": 13986,
+      "bounds": [
+        [
+          -0.4766868133544922,
+          -0.3930847090482712,
+          -0.8463848829269409
+        ],
+        [
+          0.28552276742458343,
+          0.004806560397148135,
+          0.04462853133678435
+        ]
+      ],
+      "bytes": 1212628,
+      "sha256": "437c272336b99b2be3f0f4fea31146a964aafd3700d34d07663c36ed0ad32c07",
+      "checks": {
+        "header_and_buffer_lengths": true,
+        "indices": true,
+        "finite_positions": true,
+        "unit_normals": true,
+        "face_winding": "Inherited hand mesh; source-identical",
+        "nondegenerate_triangles": true,
+        "self_contained": true
+      },
+      "minimum_triangle_area": 1.3098197082151573e-07,
+      "inherited_hand_cap_normal_disagreements": 16
+    }
+  ],
+  "grip_contact_geometry_matches_pistol": true,
+  "hands_identical_to_pistol": true,
+  "six_open_chamber_caps": true,
+  "muzzle": [
+    0,
+    0.07,
+    0.307
+  ]
+}

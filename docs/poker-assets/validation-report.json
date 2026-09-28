@@ -1,0 +1,121 @@
+{
+  "status": "passed",
+  "file": "poker-table.glb",
+  "sha256": "723935c73e09855a5a88da6252ef216b4021d82aadf09efc2d4085663c18f836",
+  "bytes": 2950072,
+  "triangles": 45330,
+  "materials": 10,
+  "material_draw_calls": 10,
+  "bounds_min": [
+    -1.899335503578186,
+    0.0,
+    -1.19950532913208
+  ],
+  "bounds_max": [
+    1.899335503578186,
+    0.949999988079071,
+    1.19950532913208
+  ],
+  "dimensions_XYZ": [
+    3.798671007156372,
+    0.949999988079071,
+    2.39901065826416
+  ],
+  "finite_arrays": true,
+  "unit_normals": true,
+  "indices_valid": true,
+  "degenerate_triangles": 0,
+  "winding_mismatches": 0,
+  "five_card_region_clear": true,
+  "five_card_region_XZ": {
+    "x": [
+      -0.78,
+      0.78
+    ],
+    "z": [
+      -0.55,
+      -0.16
+    ]
+  },
+  "felt_Y": 0.865,
+  "recommended_card_plane_Y": 0.87,
+  "images": [
+    {
+      "name": "poker-walnut",
+      "size": [
+        1024,
+        512
+      ],
+      "embedded": true
+    },
+    {
+      "name": "poker-felt",
+      "size": [
+        2048,
+        1024
+      ],
+      "embedded": true
+    },
+    {
+      "name": "poker-deck-atlas",
+      "size": [
+        1024,
+        1024
+      ],
+      "embedded": true
+    }
+  ],
+  "material_geometry": [
+    {
+      "material": "01 Polished walnut",
+      "triangles": 10120,
+      "vertices": 10575
+    },
+    {
+      "material": "02 Aged satin brass",
+      "triangles": 12328,
+      "vertices": 10740
+    },
+    {
+      "material": "03 Burgundy padded leather",
+      "triangles": 8832,
+      "vertices": 4957
+    },
+    {
+      "material": "04 Original high-roller baize",
+      "triangles": 144,
+      "vertices": 146
+    },
+    {
+      "material": "05 Ebony recesses",
+      "triangles": 1268,
+      "vertices": 1456
+    },
+    {
+      "material": "06 Cupholder brushed steel",
+      "triangles": 3328,
+      "vertices": 1980
+    },
+    {
+      "material": "07 Ivory clay and card edges",
+      "triangles": 4900,
+      "vertices": 5383
+    },
+    {
+      "material": "08 Original card backs and chip crests",
+      "triangles": 442,
+      "vertices": 1044
+    },
+    {
+      "material": "09 Emerald clay chips",
+      "triangles": 1792,
+      "vertices": 1106
+    },
+    {
+      "material": "10 Navy clay chips",
+      "triangles": 2176,
+      "vertices": 1367
+    }
+  ],
+  "generator": "Khronos glTF Blender I/O v5.2.40"
+}

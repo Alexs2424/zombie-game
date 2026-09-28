@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import type { GameRuntime, GameView } from "../lib/game/runtime";
+import { PRICES, ROULETTE_RULES, WEAPONS } from "../lib/game/simulation";
+import { cardName, cardRank, suitSymbol } from "../lib/game/poker";
 const initial: GameView = {
   phase: "ready",
   health: 100,
@@ -10,10 +12,13 @@ const initial: GameView = {
     { id: "shotgun", label: "Shotgun", owned: false },
     { id: "smg", label: "SMG", owned: false },
     { id: "rifle", label: "Rifle", owned: false },
+    { id: "revolver", label: "Revolver", owned: false },
   ],
   perks: [],
   shopOpen: false,
   shopOffers: [],
+  pokerOpen: false,
+  poker: null,
   roundCue: null,
   roundCueRemaining: 0,
   points: 400,
@@ -39,6 +44,8 @@ const initial: GameView = {
   tables: false,
   slowRound: 0,
   dice: null,
+  roulette: null,
+  damageBoostRemaining: 0,
   room: "Casino Floor",
   upgraded: false,
   message: "",
@@ -62,9 +69,189 @@ function Controls() {
       <br />
       <kbd>MOUSE</kbd> LOOK <kbd>LEFT CLICK</kbd> FIRE
       <br />
-      <kbd>R</kbd> RELOAD <kbd>E</kbd> BUY
+      <kbd>R</kbd> RELOAD <kbd>E</kbd> INTERACT
       <br />
-      <kbd>1–4</kbd> SWITCH <kbd>ESC</kbd> PAUSE
+      <kbd>1–5</kbd> SWITCH <kbd>ESC</kbd> PAUSE
+    </div>
+  );
+}
+function PokerMenu({
+  poker,
+  onSwap,
+  onClose,
+}: {
+  poker: NonNullable<GameView["poker"]>;
+  onSwap: (index: number) => void;
+  onClose: () => void;
+}) {
+  const dialog = useRef<HTMLElement>(null);
+  const [selected, setSelected] = useState<number | null>(null);
+  useEffect(() => {
+    dialog.current?.focus();
+  }, []);
+  const selectedCard = selected === null ? null : poker.hand[selected];
+  return (
+    <div className="shop-shade poker-shade">
+      <section
+        ref={dialog}
+        className={`poker-menu ${poker.completed ? "poker-completed" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="poker-title"
+        aria-describedby="poker-rules"
+        tabIndex={-1}
+        onKeyDown={(event) => {
+          if (event.key !== "Tab") return;
+          const buttons = Array.from(
+            event.currentTarget.querySelectorAll<HTMLButtonElement>(
+              "button:not(:disabled)",
+            ),
+          );
+          const first = buttons[0];
+          const last = buttons[buttons.length - 1];
+          if (
+            event.shiftKey &&
+            (document.activeElement === first ||
+              document.activeElement === dialog.current)
+          ) {
+            event.preventDefault();
+            last?.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first?.focus();
+          }
+        }}
+      >
+        <div className="poker-heading">
+          <div>
+            <p className="eyebrow">
+              {poker.name.toUpperCase()} · FIVE-CARD CHALLENGE
+            </p>
+            <h2 id="poker-title">
+              {poker.completed
+                ? "A hand the house remembers."
+                : "Make your own luck."}
+            </h2>
+          </div>
+          <span className="poker-paused">Ⅱ GAME PAUSED</span>
+        </div>
+        <p id="poker-rules" className="poker-rules">
+          Make a flush: <strong>five cards of the same suit.</strong> Ranks can
+          be in any order. One free card swap per table, per round. Your hand
+          stays with the table.
+        </p>
+        <div className="poker-hand-heading">
+          <div
+            className="poker-suit-progress"
+            aria-label={`${poker.bestCount} of 5 ${poker.bestSuit}`}
+          >
+            <span aria-hidden="true">{suitSymbol(poker.bestSuit)}</span>
+            <strong>
+              {poker.bestCount}
+              <small> / 5</small>
+            </strong>
+            <span className="poker-suit-name">{poker.bestSuit}</span>
+          </div>
+          <span
+            className={`poker-swap-status ${poker.canSwap ? "poker-swap-ready" : ""}`}
+          >
+            {poker.completed
+              ? "FLUSH COMPLETE"
+              : poker.canSwap
+                ? "FREE SWAP AVAILABLE"
+                : "SWAP USED THIS ROUND"}
+          </span>
+        </div>
+        <div
+          className="poker-hand"
+          role="group"
+          aria-label="Your five-card hand. Select one card to swap."
+        >
+          {poker.hand.map((card, index) => (
+            <button
+              key={`${index}-${card.rank}-${card.suit}`}
+              type="button"
+              className={`poker-card ${card.suit === "hearts" || card.suit === "diamonds" ? "poker-card-red" : "poker-card-black"} ${selected === index ? "poker-card-selected" : ""}`}
+              aria-label={cardName(card)}
+              aria-pressed={selected === index}
+              disabled={!poker.canSwap}
+              onClick={() => setSelected(selected === index ? null : index)}
+            >
+              <span className="poker-card-face" aria-hidden="true">
+                <span className="poker-card-corner">
+                  {cardRank(card.rank)}
+                  <small>{suitSymbol(card.suit)}</small>
+                </span>
+                <span className="poker-card-suit">{suitSymbol(card.suit)}</span>
+                <span className="poker-card-corner poker-card-corner-bottom">
+                  {cardRank(card.rank)}
+                  <small>{suitSymbol(card.suit)}</small>
+                </span>
+              </span>
+              <span className="poker-card-selection" aria-hidden="true">
+                {selected === index ? "SWAP THIS CARD" : "KEEP"}
+              </span>
+            </button>
+          ))}
+        </div>
+        <div
+          className={`poker-reward ${poker.completed ? "poker-reward-won" : ""}`}
+          role={poker.completed ? "status" : undefined}
+        >
+          <span className="poker-reward-mark" aria-hidden="true">
+            ♠
+          </span>
+          <div>
+            <span className="poker-reward-label">
+              {poker.completed
+                ? "FLUSH COMPLETE · REWARD SECURED"
+                : poker.rewardUnlocked
+                  ? "YOUR NEXT FLUSH"
+                  : "THE FLUSH REWARD"}
+            </span>
+            <strong>THE DEAD MAN’S HAND</strong>
+            <p>
+              {poker.completed
+                ? "Your revolver is ready in weapon slot 5. Press 5 on the floor to equip."
+                : poker.rewardUnlocked
+                  ? "Complete this table’s flush to refill your revolver’s magazine and reserve."
+                  : "An exclusive revolver. Complete a flush to unlock and equip weapon slot 5."}
+            </p>
+          </div>
+          <span className="poker-reward-slot" aria-label="Weapon slot 5">
+            5<small>WEAPON SLOT</small>
+          </span>
+        </div>
+        <div className="poker-footer">
+          <p className="poker-selection-hint" role="status">
+            {poker.completed
+              ? "This table’s challenge is complete."
+              : !poker.canSwap
+                ? poker.reason || "Return next round for another free swap."
+                : selectedCard
+                  ? `${cardName(selectedCard)} selected. Confirm to draw its replacement.`
+                  : "Select one card, then confirm your free swap."}
+          </p>
+          <div className="poker-actions">
+            {!poker.completed && (
+              <button
+                className="primary-button poker-swap-button"
+                disabled={!poker.canSwap || selected === null}
+                onClick={() => {
+                  if (selected === null) return;
+                  onSwap(selected);
+                  setSelected(null);
+                }}
+              >
+                SWAP CARD <span>↻</span>
+              </button>
+            )}
+            <button className="poker-back-button" onClick={onClose}>
+              BACK TO THE FLOOR <span>↗</span>
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
@@ -121,8 +308,33 @@ export default function Home() {
   };
   const active = view.phase === "playing",
     menu = view.phase === "ready",
-    paused = view.phase === "paused" && !view.shopOpen,
+    paused = view.phase === "paused" && !view.shopOpen && !view.pokerOpen,
     dead = view.phase === "dead";
+  const showDice =
+    !!view.dice && (!view.dice.resolved || view.dice.resultRemaining > 0);
+  const roulette = view.roulette;
+  const showRoulette =
+    !!roulette && (!roulette.resolved || roulette.resultRemaining > 0);
+  const rouletteOutcome =
+    roulette?.reward === "ammo"
+      ? {
+          title: "AMMO REFILLED",
+          detail: `${roulette.weapon ? WEAPONS[roulette.weapon].label : "Equipped weapon"} magazine + reserve refilled.`,
+        }
+      : roulette?.reward === "maxAmmo"
+        ? {
+            title: "MAX AMMO",
+            detail: "Every owned weapon’s magazine + reserve refilled.",
+          }
+        : roulette?.reward === "jackpot"
+          ? {
+              title: "ZERO. JACKPOT.",
+              detail: `All owned weapons refilled. Double damage for ${ROULETTE_RULES.damageDuration} seconds.`,
+            }
+          : {
+              title: "THE HOUSE HOLDS",
+              detail: "No reward this spin. Try your luck again.",
+            };
   return (
     <main className={`game-shell ${active ? "in-game" : ""}`}>
       <div className="casino-backdrop" />
@@ -132,7 +344,7 @@ export default function Home() {
         aria-label="Last Jackpot first-person casino survival game"
       />
       {menu && <div className="menu-shade" />}
-      {!active && !view.shopOpen && (
+      {!active && !view.shopOpen && !view.pokerOpen && (
         <header className="masthead">
           <div className="wordmark">
             LJ<span>LAST JACKPOT</span>
@@ -191,7 +403,10 @@ export default function Home() {
         </>
       )}
       {!menu && (
-        <div className="hud" aria-label="Game status">
+        <div
+          className={`hud ${active && (showDice || showRoulette) ? "has-wager" : ""}`}
+          aria-label="Game status"
+        >
           <div className="hud-top">
             <div className="wave-box">
               <span className="small-label">ROUND</span>
@@ -231,56 +446,149 @@ export default function Home() {
           </div>
           {active && (
             <>
-              {view.slowRound > 0 && (
-                <div className="curse-badge">
-                  SEVEN’S CURSE{" "}
-                  <span>
-                    −20% movement ·{" "}
-                    {view.slowRound > view.round
-                      ? `next round (${view.slowRound})`
-                      : `round ${view.slowRound}`}
-                  </span>
+              {(view.slowRound > 0 || view.damageBoostRemaining > 0) && (
+                <div className="status-effects">
+                  {view.slowRound > 0 && (
+                    <div className="curse-badge">
+                      SEVEN’S CURSE{" "}
+                      <span>
+                        −20% movement ·{" "}
+                        {view.slowRound > view.round
+                          ? `next round (${view.slowRound})`
+                          : `round ${view.slowRound}`}
+                      </span>
+                    </div>
+                  )}
+                  {view.damageBoostRemaining > 0 && (
+                    <div
+                      className="damage-boost-badge"
+                      aria-label={`Double damage: ${Math.ceil(view.damageBoostRemaining)} seconds remaining`}
+                    >
+                      <div>
+                        <b>{ROULETTE_RULES.damageMultiplier}×</b>
+                        <span>
+                          DOUBLE DAMAGE<small>ZERO’S BLESSING</small>
+                        </span>
+                      </div>
+                      <strong>
+                        {Math.ceil(view.damageBoostRemaining)}
+                        <small>s</small>
+                      </strong>
+                      <i
+                        style={{
+                          width: `${Math.min(1, view.damageBoostRemaining / ROULETTE_RULES.damageDuration) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
-              {view.dice &&
-                (!view.dice.resolved || view.dice.resultRemaining > 0) && (
-                  <div
-                    className={`dice-result ${view.dice.resolved && view.dice.values[0] + view.dice.values[1] === 7 ? "cursed" : ""}`}
-                    role="status"
-                  >
-                    <span>THE DEVIL’S TABLES</span>
+              {(showDice || showRoulette) && (
+                <div
+                  className="gambling-results"
+                  aria-label="Table game results"
+                >
+                  {view.dice && showDice && (
                     <div
-                      className={
-                        view.dice.resolved ? "dice-faces" : "dice-faces rolling"
-                      }
+                      className={`gambling-card dice-result ${view.dice.resolved && view.dice.values[0] + view.dice.values[1] === 7 ? "cursed" : ""}`}
+                      role="status"
                     >
-                      {view.dice.resolved ? (
-                        view.dice.values.map((n, i) => (
-                          <b key={i}>{["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"][n]}</b>
-                        ))
-                      ) : (
-                        <>
-                          <b>⚄</b>
-                          <b>⚂</b>
-                        </>
+                      <span>SEVEN’S CURSE · CRAPS</span>
+                      <div
+                        className={
+                          view.dice.resolved
+                            ? "dice-faces"
+                            : "dice-faces rolling"
+                        }
+                      >
+                        {view.dice.resolved ? (
+                          view.dice.values.map((n, i) => (
+                            <b key={i}>
+                              {["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"][n]}
+                            </b>
+                          ))
+                        ) : (
+                          <>
+                            <b>⚄</b>
+                            <b>⚂</b>
+                          </>
+                        )}
+                      </div>
+                      <strong>
+                        {!view.dice.resolved
+                          ? "Rolling…"
+                          : view.dice.values[0] + view.dice.values[1] === 7
+                            ? "SEVEN. THE HOUSE COLLECTS."
+                            : `${view.dice.values[0] + view.dice.values[1]} · +500 CHIPS`}
+                      </strong>
+                      <p>
+                        {!view.dice.resolved
+                          ? "Stay alert. The game keeps moving."
+                          : view.dice.values[0] + view.dice.values[1] === 7
+                            ? `Movement reduced 20% for round ${view.dice.round}.`
+                            : "Your luck holds. Come back next round."}
+                      </p>
+                    </div>
+                  )}
+                  {roulette && showRoulette && (
+                    <div
+                      className={`gambling-card roulette-result roulette-${roulette.resolved ? roulette.reward : "spinning"}`}
+                      role="status"
+                      key={roulette.id}
+                    >
+                      <div className="roulette-heading">
+                        <span>ROULETTE</span>
+                        <small>{PRICES.roulette} CHIPS PAID</small>
+                      </div>
+                      <div className="roulette-outcome">
+                        <div
+                          className="roulette-pocket"
+                          aria-label={
+                            roulette.resolved
+                              ? `Winning number ${roulette.number}`
+                              : "Result pending"
+                          }
+                        >
+                          <b>{roulette.resolved ? roulette.number : "?"}</b>
+                        </div>
+                        <div>
+                          <strong>
+                            {roulette.resolved
+                              ? rouletteOutcome.title
+                              : "BALL IN MOTION"}
+                          </strong>
+                          <p>
+                            {roulette.resolved
+                              ? rouletteOutcome.detail
+                              : "Stay alert. Combat continues."}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="roulette-footer">
+                        <span>
+                          {roulette.resolved
+                            ? `NEXT SPIN · ${PRICES.roulette} CHIPS`
+                            : "WAITING FOR THE BALL"}
+                        </span>
+                        {!roulette.resolved && (
+                          <b aria-hidden="true">
+                            {Math.ceil(roulette.remaining)}s
+                          </b>
+                        )}
+                      </div>
+                      {!roulette.resolved && (
+                        <div className="roulette-progress" aria-hidden="true">
+                          <i
+                            style={{
+                              width: `${Math.max(0, Math.min(1, 1 - roulette.remaining / ROULETTE_RULES.spinDuration)) * 100}%`,
+                            }}
+                          />
+                        </div>
                       )}
                     </div>
-                    <strong>
-                      {!view.dice.resolved
-                        ? "Rolling…"
-                        : view.dice.values[0] + view.dice.values[1] === 7
-                          ? "SEVEN. THE HOUSE COLLECTS."
-                          : `${view.dice.values[0] + view.dice.values[1]} · +500 CHIPS`}
-                    </strong>
-                    <p>
-                      {!view.dice.resolved
-                        ? "Stay alert. The game keeps moving."
-                        : view.dice.values[0] + view.dice.values[1] === 7
-                          ? `Movement reduced 20% for round ${view.dice.round}.`
-                          : "Your luck holds. Come back next round."}
-                    </p>
-                  </div>
-                )}
+                  )}
+                </div>
+              )}
               {view.roundCue && (
                 <div
                   className={`round-announcement ${view.roundCue}`}
@@ -339,14 +647,15 @@ export default function Home() {
                     <span>{view.prompt.reason || view.prompt.detail}</span>
                   </div>
                   <b>
-                    {view.prompt.price ? (
-                      <>
-                        {view.prompt.price.toLocaleString()}{" "}
-                        <small>CHIPS</small>
-                      </>
-                    ) : (
-                      "VIEW MENU"
-                    )}
+                    {view.prompt.actionLabel ||
+                      (view.prompt.price ? (
+                        <>
+                          {view.prompt.price.toLocaleString()}{" "}
+                          <small>CHIPS</small>
+                        </>
+                      ) : (
+                        "VIEW MENU"
+                      ))}
                   </b>
                 </div>
               )}
@@ -484,6 +793,14 @@ export default function Home() {
           </section>
         </div>
       )}
+      {view.pokerOpen && view.poker && (
+        <PokerMenu
+          key={`${view.poker.id}-${view.poker.swaps}-${view.poker.hand.map((card) => `${card.rank}${card.suit}`).join("-")}`}
+          poker={view.poker}
+          onSwap={(index) => runtime.current?.swapPoker(index)}
+          onClose={() => enter()}
+        />
+      )}
       {(paused || dead) && (
         <div className="pause-shade">
           <section className="pause-card">
@@ -538,7 +855,7 @@ export default function Home() {
           </section>
         </div>
       )}
-      {settings && !active && (
+      {settings && !active && !view.pokerOpen && (
         <section className="settings-panel" aria-label="Settings">
           <div className="settings-heading">
             <h3>Make yourself comfortable.</h3>
@@ -618,6 +935,10 @@ export default function Home() {
             ["smg", "SMG rack"],
             ["rifle", "Rifle rack"],
             ["vip", "VIP room"],
+            ["poker-a", "Card table I"],
+            ["poker-b", "Card table II"],
+            ["poker-near-flush", "Prepare flush"],
+            ["poker-swap", "Swap test card"],
             ["staff", "Staff door"],
             ["workshop", "Workshop"],
             ["ammo", "Ammo rack"],
@@ -625,6 +946,16 @@ export default function Home() {
             ["tables", "Table room"],
             ["craps", "Craps table"],
             ["roulette", "Roulette table"],
+            ["rouletteClose", "Wheel close-up"],
+            ["roulette-spin", "Spin roulette"],
+            ["roulette-4", "Test 4 ammo"],
+            ["roulette-24", "Test 24 ammo"],
+            ["roulette-7", "Test 7 ammo"],
+            ["roulette-0", "Test 0 jackpot"],
+            ["roulette-miss", "Test miss"],
+            ["roulette-expire", "Expire jackpot"],
+            ["roulette-pause", "Pause wager"],
+            ["roulette-resume", "Resume wager"],
             ["dice-seven", "Test seven"],
             ["dice-win", "Test payout"],
             ["use", "Interact E"],
@@ -638,6 +969,7 @@ export default function Home() {
             ["weapon-shotgun", "Equip shotgun"],
             ["weapon-smg", "Equip SMG"],
             ["weapon-rifle", "Equip rifle"],
+            ["weapon-revolver", "Equip revolver"],
             ["clear", "Finish round"],
             ["round", "Start round"],
             ["crowd", "Spawn 14"],

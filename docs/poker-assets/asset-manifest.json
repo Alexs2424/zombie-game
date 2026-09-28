@@ -1,0 +1,68 @@
+{
+  "file": "poker-table.glb",
+  "blender_version": "5.2.2 LTS",
+  "triangles": 45330,
+  "materials": 10,
+  "mesh_batches": 10,
+  "source_objects": 684,
+  "bytes": 2950072,
+  "gltf_bounds_min": [
+    -1.899335503578186,
+    0.0,
+    -1.19950532913208
+  ],
+  "gltf_bounds_max": [
+    1.899335503578186,
+    0.949999988079071,
+    1.19950532913208
+  ],
+  "dimensions_XYZ": [
+    3.798671007156372,
+    0.949999988079071,
+    2.39901065826416
+  ],
+  "felt_Y": 0.865,
+  "card_plane_Y": 0.87,
+  "recommended_card_size_XZ": [
+    0.22,
+    0.31
+  ],
+  "recommended_card_centers_world_relative": [
+    [
+      -0.56,
+      0.87,
+      -0.36
+    ],
+    [
+      -0.28,
+      0.87,
+      -0.36
+    ],
+    [
+      0,
+      0.87,
+      -0.36
+    ],
+    [
+      0.28,
+      0.87,
+      -0.36
+    ],
+    [
+      0.56,
+      0.87,
+      -0.36
+    ]
+  ],
+  "clear_card_region_world_relative": {
+    "x": [
+      -0.78,
+      0.78
+    ],
+    "z": [
+      -0.55,
+      -0.16
+    ]
+  },
+  "provenance": "Original Blender-authored geometry, original Pillow baize/card artwork and analytic walnut; no imported game art or static face-up hand cards."
+}
