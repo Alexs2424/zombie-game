@@ -319,7 +319,7 @@ h1 i {
   line-height: 1.7;
 }
 .run-clock {
-  font-size: 10px;
+  font-size: 14px;
   letter-spacing: 3px;
   color: #ccc4ad;
   text-align: center;
@@ -348,7 +348,7 @@ h1 i {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 1.2px;
   color: #a0a798;
 }
@@ -495,7 +495,7 @@ h1 i {
 }
 .game-message {
   position: absolute;
-  top: 24%;
+  top: 15%;
   left: 50%;
   transform: translateX(-50%);
   font: 20px Georgia;
@@ -756,4 +756,303 @@ h1 i {
   .pause-card h2 {
     font-size: 48px;
   }
+}
+
+/* Round transitions and the Last Call's in-world shop. */
+.round-announcement {
+  position: absolute;
+  top: 24%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(90%, 700px);
+  text-align: center;
+  pointer-events: none;
+  animation: round-reveal 3.8s both;
+  text-shadow: 0 3px 18px #000;
+}
+.round-announcement > span {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 5px;
+  color: #d0b985;
+  margin-bottom: 8px;
+}
+.round-announcement strong {
+  display: block;
+  font:
+    clamp(36px, 5.6vw, 76px) Georgia,
+    serif;
+  letter-spacing: 5px;
+  color: #bd3f36;
+}
+.round-announcement.clear strong {
+  color: #e1cd98;
+  font-size: clamp(30px, 4vw, 56px);
+}
+.round-announcement i {
+  display: block;
+  font-size: 14px;
+  font-style: normal;
+  letter-spacing: 1px;
+  color: #e0d8c5;
+  margin-top: 12px;
+}
+.intermission-cue {
+  position: absolute;
+  left: 50%;
+  top: 23%;
+  transform: translateX(-50%);
+  letter-spacing: 3px;
+  font-size: 14px;
+  color: #ddd0a6;
+  text-shadow: 0 2px 8px black;
+}
+.intermission-cue b {
+  font: 32px Georgia;
+  margin-left: 12px;
+}
+@keyframes round-reveal {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 12px) scale(0.94);
+  }
+  12%,
+  75% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+}
+.perk-badges {
+  position: absolute;
+  left: 35px;
+  bottom: 130px;
+  display: flex;
+  gap: 8px;
+}
+.perk-badges span {
+  font-size: 12px;
+  border: 1px solid #a7925480;
+  color: #e6d3a0;
+  background: #172c24ce;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+.shop-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: #06110ade;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  backdrop-filter: blur(7px);
+  overflow: auto;
+}
+.bar-menu {
+  width: min(850px, 100%);
+  padding: 36px;
+  background: #17251f;
+  border: 1px solid #786c46;
+  box-shadow: 0 25px 100px #0008;
+  color: #e8ddc0;
+}
+.bar-menu-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 24px;
+  border-bottom: 1px solid #6e624850;
+  padding-bottom: 20px;
+}
+.bar-menu h2 {
+  font: 36px Georgia;
+  margin: 10px 0 12px;
+}
+.bar-menu p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #b8bdad;
+  margin: 0;
+}
+.bar-menu .eyebrow {
+  color: #c9ae71;
+  font-size: 12px;
+}
+.bar-menu-heading > strong {
+  font: 32px Georgia;
+  color: #dec585;
+  text-align: right;
+  white-space: nowrap;
+}
+.bar-menu small {
+  display: block;
+  font: 12px system-ui;
+  letter-spacing: 2px;
+  margin-top: 5px;
+}
+.bar-weapon-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.bar-weapon-picker button {
+  padding: 9px 18px;
+  border: 1px solid #54604d;
+  color: #b2bda9;
+  background: #101d17;
+  font-size: 14px;
+  cursor: pointer;
+}
+.bar-weapon-picker button.selected {
+  border-color: #d6b572;
+  color: #f2d99f;
+  background: #51472b;
+}
+.cocktail-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.cocktail-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 18px 14px;
+  border: 1px solid #596049;
+  background: #22332a;
+  color: #e7dec8;
+  cursor: pointer;
+  min-height: 138px;
+}
+.cocktail-item:hover:not(:disabled) {
+  background: #304637;
+  border-color: #e0c287;
+}
+.cocktail-item:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.drink-mark {
+  font: 30px Georgia;
+  color: #d7b37d;
+  width: 30px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.cocktail-item div {
+  flex: 1;
+  min-width: 0;
+}
+.cocktail-item strong {
+  font: 20px Georgia;
+  display: block;
+}
+.cocktail-item div > span {
+  display: block;
+  font-size: 14px;
+  color: #c6cbbd;
+  line-height: 1.4;
+  margin-top: 6px;
+}
+.cocktail-item em {
+  display: block;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 9px;
+  color: #b8a576;
+}
+.cocktail-item > b {
+  font: 22px Georgia;
+  color: #d5bd7c;
+  align-self: start;
+  text-align: right;
+}
+.bar-menu-footer {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+}
+.bar-menu-footer > span {
+  font-size: 14px;
+  color: #b5bfac;
+  max-width: 45%;
+  line-height: 1.5;
+}
+.bar-menu-footer .primary-button {
+  margin: 0;
+  width: 270px;
+  flex-shrink: 0;
+}
+@media (max-width: 650px) {
+  .bar-menu {
+    padding: 22px;
+  }
+  .bar-menu-heading {
+    gap: 12px;
+  }
+  .bar-menu h2 {
+    font-size: 27px;
+  }
+  .bar-menu-heading > strong {
+    font-size: 24px;
+  }
+  .cocktail-list {
+    grid-template-columns: 1fr;
+  }
+  .cocktail-item {
+    min-height: 110px;
+  }
+  .bar-menu-footer {
+    flex-direction: column;
+  }
+  .bar-menu-footer > span {
+    max-width: none;
+  }
+  .bar-menu-footer .primary-button {
+    width: 100%;
+  }
+  .perk-badges {
+    left: 20px;
+    flex-wrap: wrap;
+    max-width: 60%;
+    bottom: 120px;
+  }
+}
+.playtest-tools {
+  position: absolute;
+  z-index: 60;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1050px, 96%);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 6px;
+  background: #07150feb;
+  border: 1px solid #88734f;
+}
+.playtest-tools strong {
+  padding: 5px;
+  font-size: 11px;
+  color: #dab96e;
+}
+.playtest-tools button {
+  font: 12px system-ui;
+  padding: 4px 8px;
+  background: #d9c58f;
+  color: #18221b;
+  border: 0;
+  cursor: pointer;
+}
+.playtest-tools button:disabled {
+  opacity: 0.3;
 }

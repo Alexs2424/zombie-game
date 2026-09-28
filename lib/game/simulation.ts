@@ -9,13 +9,29 @@ export type Rect = {
   d: number;
   h: number;
 };
-export type WeaponId = "pistol" | "shotgun";
+export type WeaponId = "pistol" | "shotgun" | "smg" | "rifle";
+export const WEAPON_ORDER: WeaponId[] = ["pistol", "shotgun", "smg", "rifle"];
+export type PerkId = "reserve" | "quickPour" | "nightShift";
+export type BarItemId = PerkId | "weaponUpgrade";
+export const PERKS: Record<
+  PerkId,
+  { name: string; price: number; detail: string }
+> = {
+  reserve: { name: "House Reserve", price: 1500, detail: "+50 maximum health" },
+  quickPour: { name: "Quick Pour", price: 1000, detail: "Reload 30% faster" },
+  nightShift: { name: "Night Shift", price: 900, detail: "Sprint 15% faster" },
+};
+export const BAR_ANCHOR = { x: 12, z: -7.3 };
 export type Phase = "ready" | "playing" | "paused" | "dead";
 export type PurchaseId =
   | "pistolAmmo"
   | "shotgun"
+  | "smg"
+  | "rifle"
+  | "bartender"
   | "lounge"
   | "shortcut"
+  | "vip"
   | "upgrade";
 export type GameEvent = {
   type:
@@ -27,6 +43,7 @@ export type GameEvent = {
     | "deny"
     | "reload"
     | "round"
+    | "roundClear"
     | "death";
   weapon?: WeaponId;
   headshot?: boolean;
@@ -65,6 +82,8 @@ export const RULES = {
 export const WEAPONS = {
   pistol: {
     name: "HOUSE SPECIAL",
+    upgradedName: "LOADED DICE",
+    price: 0,
     label: "Pistol",
     magazine: 12,
     reserve: 84,
@@ -77,6 +96,8 @@ export const WEAPONS = {
   },
   shotgun: {
     name: "ROOM SERVICE",
+    upgradedName: "HIGH ROLLER",
+    price: 800,
     label: "Shotgun",
     magazine: 6,
     reserve: 30,
@@ -87,18 +108,62 @@ export const WEAPONS = {
     spread: 0.07,
     refill: 300,
   },
+  smg: {
+    name: "DEALER’S CHOICE",
+    upgradedName: "FULL HOUSE",
+    label: "SMG",
+    price: 1100,
+    magazine: 30,
+    reserve: 180,
+    damage: 24,
+    pellets: 1,
+    interval: 0.085,
+    reload: 1.9,
+    spread: 0.013,
+    refill: 400,
+  },
+  rifle: {
+    name: "PIT BOSS",
+    upgradedName: "ROYAL FLUSH",
+    label: "Rifle",
+    price: 1600,
+    magazine: 24,
+    reserve: 120,
+    damage: 48,
+    pellets: 1,
+    interval: 0.18,
+    reload: 2.4,
+    spread: 0.007,
+    refill: 500,
+  },
 };
 export const PRICES = {
   shotgun: 800,
+  smg: 1100,
+  rifle: 1600,
   lounge: 900,
   shortcut: 1200,
+  vip: 1300,
   upgrade: 2000,
 };
+export const BOUNDS = { minX: -16, maxX: 28, minZ: -12, maxZ: 12 };
+export function roomName(p: V2) {
+  return p.x > 16
+    ? "High Roller Club"
+    : p.x > 4
+      ? p.z > 3
+        ? "Staff Passage"
+        : "The Last Call Lounge"
+      : "Casino Floor";
+}
 export const STATIC_RECTS: Rect[] = [
   { id: "west", x: -16.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
-  { id: "east", x: 16.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
-  { id: "south", x: 0, z: -12.25, w: 32.5, d: 0.5, h: 4.8 },
-  { id: "north", x: 0, z: 12.25, w: 32.5, d: 0.5, h: 4.8 },
+  { id: "east", x: 28.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
+  { id: "south", x: 6, z: -12.25, w: 44.5, d: 0.5, h: 4.8 },
+  { id: "north", x: 6, z: 12.25, w: 44.5, d: 0.5, h: 4.8 },
+  { id: "vip-wall-s", x: 16, z: -9, w: 0.45, d: 6, h: 4.8 },
+  { id: "vip-wall-m", x: 16, z: 2.4, w: 0.45, d: 9.2, h: 4.8 },
+  { id: "vip-wall-n", x: 16, z: 11.1, w: 0.45, d: 1.8, h: 4.8 },
   { id: "partition-s", x: 4, z: -9, w: 0.45, d: 6, h: 4.8 },
   { id: "partition-m", x: 4, z: 2.4, w: 0.45, d: 9.2, h: 4.8 },
   { id: "partition-n", x: 4, z: 11.1, w: 0.45, d: 1.8, h: 4.8 },
@@ -108,11 +173,17 @@ export const STATIC_RECTS: Rect[] = [
   { id: "slots-b", x: -0.7, z: 5, w: 3.4, d: 4.4, h: 1.95 },
   { id: "cashier", x: -11, z: 10.5, w: 6, d: 2.7, h: 3.4 },
   { id: "bar", x: 12, z: -8.7, w: 5.7, d: 1.1, h: 1.25 },
+  { id: "upgrade-machine", x: 24.7, z: 10.9, w: 1.6, d: 1.1, h: 1.8 },
+  { id: "poker-a", x: 22, z: -3, w: 3.8, d: 2.4, h: 0.95 },
+  { id: "poker-b", x: 22, z: 5, w: 3.8, d: 2.4, h: 0.95 },
+  { id: "vip-sofa", x: 27.35, z: 1, w: 1.1, d: 5, h: 1.2 },
 ];
-export const DOORS: Record<"lounge" | "shortcut", Rect> = {
+export const DOORS = {
   lounge: { id: "lounge", x: 4, z: -4.1, w: 0.45, d: 3.8, h: 4.8 },
   shortcut: { id: "shortcut", x: 4, z: 8.6, w: 0.45, d: 3.2, h: 4.8 },
-};
+  vip: { id: "vip", x: 16, z: -4.1, w: 0.45, d: 3.8, h: 4.8 },
+  vipExit: { id: "vipExit", x: 16, z: 8.6, w: 0.45, d: 3.2, h: 4.8 },
+} satisfies Record<string, Rect>;
 export const PURCHASES: {
   id: PurchaseId;
   x: number;
@@ -123,16 +194,36 @@ export const PURCHASES: {
   {
     id: "pistolAmmo",
     x: -12.6,
-    z: -8.6,
+    z: -10.6,
     name: "Pistol ammunition",
     detail: "Refill reserve",
   },
   {
     id: "shotgun",
-    x: -14,
+    x: -14.6,
     z: 1.8,
     name: "Room Service",
     detail: "Pump shotgun",
+  },
+  {
+    id: "smg",
+    x: 5.3,
+    z: -0.2,
+    name: "Dealer’s Choice",
+    detail: "Fast-firing SMG",
+  },
+  {
+    id: "rifle",
+    x: 26.8,
+    z: -6.7,
+    name: "Pit Boss",
+    detail: "Heavy automatic rifle",
+  },
+  {
+    id: "bartender",
+    ...BAR_ANCHOR,
+    name: "Marlowe · bartender",
+    detail: "Cocktail perks & weapon upgrades",
   },
   {
     id: "lounge",
@@ -149,11 +240,18 @@ export const PURCHASES: {
     detail: "Complete the escape loop",
   },
   {
+    id: "vip",
+    x: 15.2,
+    z: -4.1,
+    name: "High Roller Club",
+    detail: "Unlock poker room, upgrade station + staff exit",
+  },
+  {
     id: "upgrade",
-    x: -11,
-    z: 8.3,
-    name: "High Roller upgrade",
-    detail: "Shotgun · 9 shells + more damage",
+    x: 24.7,
+    z: 9.5,
+    name: "Double Down workshop",
+    detail: "Upgrade your equipped weapon",
   },
 ];
 export const SPAWNS: V2[] = [
@@ -161,10 +259,16 @@ export const SPAWNS: V2[] = [
   { x: -14.7, z: 6 },
   { x: 1.5, z: 10.6 },
   { x: 14.4, z: -10.6 },
+  { x: 26.2, z: -10.6 },
 ];
 export const dist = (a: V2, b: V2) => Math.hypot(a.x - b.x, a.z - b.z);
 export function collides(p: V2, r: number, rects: Rect[]) {
-  if (p.x < -16 + r || p.x > 16 - r || p.z < -12 + r || p.z > 12 - r)
+  if (
+    p.x < BOUNDS.minX + r ||
+    p.x > BOUNDS.maxX - r ||
+    p.z < BOUNDS.minZ + r ||
+    p.z > BOUNDS.maxZ - r
+  )
     return true;
   return rects.some((q) => {
     const dx = p.x - Math.max(q.x - q.w / 2, Math.min(p.x, q.x + q.w / 2));
@@ -231,12 +335,12 @@ export function wallDistance(o: V3, d: V3, rects: Rect[]) {
     );
   return best;
 }
-export function hasSight(a: V2, b: V2, rects: Rect[]) {
+export function hasSight(a: V2, b: V2, rects: Rect[], height = 1) {
   const len = dist(a, b);
   if (len < 0.001) return true;
   return (
     wallDistance(
-      { ...a, y: 1 },
+      { ...a, y: height },
       { x: (b.x - a.x) / len, y: 0, z: (b.z - a.z) / len },
       rects,
     ) >
@@ -255,25 +359,25 @@ export function waveStats(round: number) {
 /** A small cardinal flow field avoids corners and makes all enemies share one path search. */
 export class Navigation {
   readonly step = 0.6;
-  readonly nx = 54;
-  readonly nz = 40;
-  readonly blocked = new Uint8Array(54 * 40);
-  readonly distance = new Int32Array(54 * 40);
+  readonly nx = Math.ceil((BOUNDS.maxX - BOUNDS.minX) / this.step);
+  readonly nz = Math.ceil((BOUNDS.maxZ - BOUNDS.minZ) / this.step);
+  readonly blocked = new Uint8Array(this.nx * this.nz);
+  readonly distance = new Int32Array(this.nx * this.nz);
   index(p: V2) {
     const x = Math.max(
         0,
-        Math.min(this.nx - 1, Math.floor((p.x + 16) / this.step)),
+        Math.min(this.nx - 1, Math.floor((p.x - BOUNDS.minX) / this.step)),
       ),
       z = Math.max(
         0,
-        Math.min(this.nz - 1, Math.floor((p.z + 12) / this.step)),
+        Math.min(this.nz - 1, Math.floor((p.z - BOUNDS.minZ) / this.step)),
       );
     return z * this.nx + x;
   }
   point(i: number): V2 {
     return {
-      x: -16 + ((i % this.nx) + 0.5) * this.step,
-      z: -12 + (Math.floor(i / this.nx) + 0.5) * this.step,
+      x: BOUNDS.minX + ((i % this.nx) + 0.5) * this.step,
+      z: BOUNDS.minZ + (Math.floor(i / this.nx) + 0.5) * this.step,
     };
   }
   rebuild(rects: Rect[]) {
@@ -345,12 +449,38 @@ export class Simulation {
   spawnTimer = 0;
   lounge = false;
   shortcut = false;
-  upgraded = false;
+  vip = false;
+  upgrades: Record<WeaponId, boolean> = {
+    pistol: false,
+    shotgun: false,
+    smg: false,
+    rifle: false,
+  };
+  perks: Record<PerkId, boolean> = {
+    reserve: false,
+    quickPour: false,
+    nightShift: false,
+  };
+  shopOpen = false;
+  roundCue: "start" | "clear" | null = null;
+  roundCueRemaining = 0;
+  get upgraded() {
+    return this.upgrades.shotgun;
+  }
+  get maxHealth() {
+    return this.perks.reserve ? 150 : RULES.health;
+  }
   loungeAge = 0;
+  vipAge = 0;
   weapon: WeaponId = "pistol";
-  inventory = {
+  inventory: Record<
+    WeaponId,
+    { owned: boolean; mag: number; reserve: number }
+  > = {
     pistol: { owned: true, mag: 12, reserve: 84 },
     shotgun: { owned: false, mag: 0, reserve: 0 },
+    smg: { owned: false, mag: 0, reserve: 0 },
+    rifle: { owned: false, mag: 0, reserve: 0 },
   };
   enemies: Enemy[] = [];
   events: GameEvent[] = [];
@@ -381,6 +511,7 @@ export class Simulation {
       ...STATIC_RECTS,
       ...(!this.lounge ? [DOORS.lounge] : []),
       ...(!this.shortcut ? [DOORS.shortcut] : []),
+      ...(!this.vip ? [DOORS.vip, DOORS.vipExit] : []),
     ];
     this.walkRects = this.rects.map((r) => ({
       ...r,
@@ -402,10 +533,78 @@ export class Simulation {
     }
   }
   resume() {
-    if (this.phase === "paused") this.phase = this.priorPhase;
+    if (this.phase === "paused" && !this.shopOpen) this.phase = this.priorPhase;
   }
   capacity(w: WeaponId = this.weapon) {
-    return w === "shotgun" && this.upgraded ? 9 : WEAPONS[w].magazine;
+    return Math.round(WEAPONS[w].magazine * (this.upgrades[w] ? 1.5 : 1));
+  }
+  weaponName(w = this.weapon) {
+    return this.upgrades[w] ? WEAPONS[w].upgradedName : WEAPONS[w].name;
+  }
+  reloadDuration(w = this.weapon) {
+    return WEAPONS[w].reload * (this.perks.quickPour ? 0.7 : 1);
+  }
+  weaponDamage(w = this.weapon) {
+    return Math.round(WEAPONS[w].damage * (this.upgrades[w] ? 1.35 : 1));
+  }
+  canUseBar() {
+    return (
+      this.lounge &&
+      dist(this.player, BAR_ANCHOR) <= 2.2 &&
+      hasSight(this.player, BAR_ANCHOR, this.rects)
+    );
+  }
+  openBar() {
+    if (this.phase !== "playing" || !this.canUseBar()) return false;
+    this.pause();
+    this.shopOpen = true;
+    return true;
+  }
+  closeBar() {
+    this.shopOpen = false;
+  }
+  barInfo(id: BarItemId) {
+    const price = id === "weaponUpgrade" ? PRICES.upgrade : PERKS[id].price;
+    let reason =
+      id === "weaponUpgrade"
+        ? this.upgrades[this.weapon]
+          ? "Already upgraded"
+          : ""
+        : this.perks[id]
+          ? "Already purchased"
+          : "";
+    if (!reason && this.points < price) reason = "Not enough points";
+    return { price, reason };
+  }
+  private applyUpgrade() {
+    this.upgrades[this.weapon] = true;
+    this.inventory[this.weapon].mag = this.capacity();
+    this.reloadRemaining = 0;
+  }
+  purchaseBar(id: BarItemId) {
+    if (this.phase !== "paused" || !this.shopOpen || !this.canUseBar())
+      return false;
+    const { price, reason } = this.barInfo(id);
+    if (reason) {
+      this.notify(reason);
+      this.events.push({ type: "deny" });
+      return false;
+    }
+    this.points -= price;
+    if (id === "weaponUpgrade") this.applyUpgrade();
+    else {
+      this.perks[id] = true;
+      if (id === "reserve")
+        this.health = Math.min(this.maxHealth, this.health + 50);
+      if (id === "quickPour") this.reloadRemaining *= 0.7;
+    }
+    this.notify(
+      id === "weaponUpgrade"
+        ? `${this.weaponName()} ready`
+        : `${PERKS[id].name} · on the house rules`,
+    );
+    this.events.push({ type: "purchase" });
+    return true;
   }
   notify(text: string) {
     this.lastMessage = text;
@@ -431,7 +630,7 @@ export class Simulation {
       w.reserve <= 0
     )
       return false;
-    this.reloadRemaining = WEAPONS[this.weapon].reload;
+    this.reloadRemaining = this.reloadDuration();
     this.events.push({ type: "reload", weapon: this.weapon });
     return true;
   }
@@ -441,6 +640,7 @@ export class Simulation {
     for (const p of PURCHASES) {
       if (
         (p.id === "lounge" && this.lounge) ||
+        (p.id === "vip" && this.vip) ||
         (p.id === "shortcut" && this.shortcut)
       )
         continue;
@@ -455,17 +655,23 @@ export class Simulation {
   purchaseInfo(id: PurchaseId) {
     let price = 0;
     let reason = "";
-    const w = this.inventory.shotgun;
+
     if (id === "pistolAmmo") {
       price = 150;
       if (this.inventory.pistol.reserve >= WEAPONS.pistol.reserve)
         reason = "Reserve full";
     }
-    if (id === "shotgun") {
-      price = w.owned ? 300 : PRICES.shotgun;
-      if (w.owned && w.reserve >= WEAPONS.shotgun.reserve)
-        reason = "Reserve full";
+    if (id === "shotgun" || id === "smg" || id === "rifle") {
+      const cfg = WEAPONS[id],
+        inv = this.inventory[id];
+      price = inv.owned ? cfg.refill : cfg.price;
+      if (id === "smg" && !this.lounge) reason = "Open the lounge first";
+      else if (id === "rifle" && !this.vip)
+        reason = "Open the High Roller Club first";
+      else if (inv.owned && inv.reserve >= cfg.reserve) reason = "Reserve full";
     }
+    if (id === "bartender")
+      return { price: 0, reason: this.lounge ? "" : "Open the lounge first" };
     if (id === "lounge") {
       price = PRICES.lounge;
       if (this.lounge) reason = "Already open";
@@ -478,14 +684,20 @@ export class Simulation {
     }
     if (id === "upgrade") {
       price = PRICES.upgrade;
-      if (!w.owned) reason = "Requires Room Service";
-      else if (this.upgraded) reason = "Already upgraded";
+      if (!this.vip) reason = "Open the High Roller Club first";
+      else if (this.upgrades[this.weapon]) reason = "Already upgraded";
+    }
+    if (id === "vip") {
+      price = PRICES.vip;
+      if (!this.lounge) reason = "Open the lounge first";
+      else if (this.vip) reason = "Already open";
     }
     if (!reason && this.points < price) reason = "Not enough points";
     return { price, reason };
   }
   purchase(id: PurchaseId) {
     if (this.phase !== "playing") return false;
+    if (id === "bartender") return this.openBar();
     const p = PURCHASES.find((p) => p.id === id)!;
     if (dist(this.player, p) > 2.2 || !hasSight(this.player, p, this.rects))
       return false;
@@ -498,12 +710,17 @@ export class Simulation {
     this.points -= price;
     if (id === "pistolAmmo")
       this.inventory.pistol.reserve = WEAPONS.pistol.reserve;
-    if (id === "shotgun") {
-      if (!this.inventory.shotgun.owned) {
-        this.inventory.shotgun = { owned: true, mag: 6, reserve: 30 };
-        this.weapon = "shotgun";
+    if (id === "shotgun" || id === "smg" || id === "rifle") {
+      const cfg = WEAPONS[id];
+      if (!this.inventory[id].owned) {
+        this.inventory[id] = {
+          owned: true,
+          mag: this.capacity(id),
+          reserve: cfg.reserve,
+        };
+        this.weapon = id;
         this.reloadRemaining = 0;
-      } else this.inventory.shotgun.reserve = 30;
+      } else this.inventory[id].reserve = cfg.reserve;
     }
     if (id === "lounge") {
       this.lounge = true;
@@ -514,21 +731,24 @@ export class Simulation {
       this.shortcut = true;
       this.refreshMap();
     }
-    if (id === "upgrade") {
-      this.upgraded = true;
-      this.inventory.shotgun.mag = 9;
-      if (this.weapon === "shotgun") this.reloadRemaining = 0;
+    if (id === "upgrade") this.applyUpgrade();
+    if (id === "vip") {
+      this.vip = true;
+      this.vipAge = 0;
+      this.refreshMap();
     }
     this.notify(
-      id === "shotgun"
-        ? "Room Service ready"
+      id === "shotgun" || id === "smg" || id === "rifle"
+        ? `${WEAPONS[id].label} ready`
         : id === "upgrade"
-          ? "HIGH ROLLER · bigger magazine, heavier hits"
+          ? `${this.weaponName()} · upgraded`
           : id === "pistolAmmo"
             ? "Pistol reserve refilled"
             : id === "lounge"
               ? "Cocktail lounge opened"
-              : "Staff shortcut opened",
+              : id === "vip"
+                ? "High Roller Club · both entrances unlocked"
+                : "Staff shortcut opened",
     );
     this.events.push({ type: "purchase" });
     return true;
@@ -599,14 +819,20 @@ export class Simulation {
           this.weapon === "shotgun"
             ? Math.max(0.4, 1 - Math.max(0, nearest - 8) * 0.06)
             : 1;
-        const damage =
-          this.weapon === "shotgun" && this.upgraded ? 19 : cfg.damage;
+        const damage = this.weaponDamage();
         this.damageEnemy(target, damage * falloff * (head ? 2 : 1), head);
       }
     }
     this.pitch = Math.max(
       -1.3,
-      this.pitch - (this.weapon === "shotgun" ? 0.016 : 0.006),
+      this.pitch -
+        (this.weapon === "shotgun"
+          ? 0.016
+          : this.weapon === "rifle"
+            ? 0.011
+            : this.weapon === "smg"
+              ? 0.0035
+              : 0.006),
     );
     return true;
   }
@@ -625,7 +851,7 @@ export class Simulation {
   spawn() {
     const options = SPAWNS.filter(
       (p, i) =>
-        (i < 3 || (this.lounge && this.loungeAge > 3)) &&
+        this.spawnEnabled(i) &&
         dist(p, this.player) >= 8 &&
         !collides(p, 0.35, this.rects) &&
         this.enemies.every((e) => dist(e, p) > 0.8),
@@ -649,12 +875,20 @@ export class Simulation {
     this.waveRemaining--;
     return true;
   }
+  spawnEnabled(index: number) {
+    return (
+      index < 3 ||
+      (index === 3 && this.lounge && this.loungeAge > 3) ||
+      (index === 4 && this.vip && this.vipAge > 3)
+    );
+  }
   beginRound() {
     this.round++;
     this.waveRemaining = waveStats(this.round).count;
     this.spawnTimer = 0.4;
     this.events.push({ type: "round", text: `ROUND ${this.round}` });
-    this.notify(`ROUND ${this.round}`);
+    this.roundCue = "start";
+    this.roundCueRemaining = 3.8;
   }
   step(
     dt: number,
@@ -663,13 +897,19 @@ export class Simulation {
     if (this.phase !== "playing") return;
     dt = Math.min(0.05, Math.max(0, dt));
     this.time += dt;
+    this.roundCueRemaining = Math.max(0, this.roundCueRemaining - dt);
+    if (!this.roundCueRemaining) this.roundCue = null;
     this.damageAgo += dt;
     this.invulnerable = Math.max(0, this.invulnerable - dt);
     this.fireCooldown = Math.max(0, this.fireCooldown - dt);
     this.messageRemaining = Math.max(0, this.messageRemaining - dt);
     if (this.lounge) this.loungeAge += dt;
+    if (this.vip) this.vipAge += dt;
     if (this.damageAgo > RULES.regenDelay)
-      this.health = Math.min(100, this.health + RULES.regenRate * dt);
+      this.health = Math.min(
+        this.maxHealth,
+        this.health + RULES.regenRate * dt,
+      );
     if (this.reloadRemaining > 0) {
       this.reloadRemaining -= dt;
       if (this.reloadRemaining <= 0) {
@@ -686,7 +926,10 @@ export class Simulation {
     if (length) {
       const f = input.forward / length,
         s = input.strafe / length,
-        speed = (this.sprinting ? RULES.sprint : RULES.walk) * dt;
+        speed =
+          (this.sprinting
+            ? RULES.sprint * (this.perks.nightShift ? 1.15 : 1)
+            : RULES.walk) * dt;
       moveActor(
         this.player,
         (Math.sin(this.yaw) * f + Math.cos(this.yaw) * s) * speed,
@@ -711,8 +954,18 @@ export class Simulation {
         this.intermission = 0;
         this.beginRound();
       }
-    } else if (this.waveRemaining === 0 && this.enemies.length === 0) {
+    } else if (
+      this.round > 0 &&
+      this.waveRemaining === 0 &&
+      this.enemies.length === 0
+    ) {
       this.intermission = RULES.intermission;
+      this.roundCue = "clear";
+      this.roundCueRemaining = 3.8;
+      this.events.push({
+        type: "roundClear",
+        text: `ROUND ${this.round} SURVIVED`,
+      });
     } else {
       this.spawnTimer -= dt;
       if (
@@ -751,7 +1004,8 @@ export class Simulation {
         continue;
       }
       if (range < 0.65) continue;
-      const target = hasSight(e, this.player, this.walkRects)
+      // Walking must go around low tables even when the eye-height ray clears them.
+      const target = hasSight(e, this.player, this.walkRects, 0.1)
         ? this.player
         : this.navigation.next(e);
       let vx = target.x - e.x,
@@ -783,7 +1037,8 @@ export class Simulation {
       if (e.stuck > 7 && range > 8) {
         const replacement = SPAWNS.find(
           (p, i) =>
-            (i < 3 || this.lounge) &&
+            this.spawnEnabled(i) &&
+            !collides(p, RULES.enemyRadius, this.rects) &&
             dist(p, this.player) > 10 &&
             this.enemies.every((o) => o === e || dist(o, p) > 1),
         );

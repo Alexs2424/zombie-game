@@ -1,0 +1,82 @@
+{
+  "provenance": "Original authored procedural geometry; no imported models, textures, logos, or licensed weapon names.",
+  "coordinate_system": "Right-handed glTF; metres; +Y up; muzzle +Z; receiver at origin",
+  "assets": [
+    {
+      "file": "/private/tmp/last-jackpot-models/pistol.glb",
+      "nodes": 38,
+      "vertices": 8402,
+      "triangles": 4696,
+      "bounds": [
+        [
+          -0.035500000000000004,
+          -0.165,
+          -0.128
+        ],
+        [
+          0.02875,
+          0.09,
+          0.24
+        ]
+      ],
+      "bytes": 289852
+    },
+    {
+      "file": "/private/tmp/last-jackpot-models/shotgun.glb",
+      "nodes": 44,
+      "vertices": 14544,
+      "triangles": 7172,
+      "bounds": [
+        [
+          -0.037000000000000005,
+          -0.133,
+          -0.362
+        ],
+        [
+          0.03335,
+          0.063,
+          0.64
+        ]
+      ],
+      "bytes": 471732
+    },
+    {
+      "file": "/private/tmp/last-jackpot-models/smg.glb",
+      "nodes": 41,
+      "vertices": 16374,
+      "triangles": 9880,
+      "bounds": [
+        [
+          -0.038000000000000006,
+          -0.1845,
+          -0.29324999999999996
+        ],
+        [
+          0.064,
+          0.077,
+          0.398
+        ]
+      ],
+      "bytes": 545664
+    },
+    {
+      "file": "/private/tmp/last-jackpot-models/rifle.glb",
+      "nodes": 52,
+      "vertices": 13236,
+      "triangles": 7248,
+      "bounds": [
+        [
+          -0.0387,
+          -0.169,
+          -0.36074999999999996
+        ],
+        [
+          0.06,
+          0.082,
+          0.637
+        ]
+      ],
+      "bytes": 448012
+    }
+  ]
+}

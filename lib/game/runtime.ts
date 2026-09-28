@@ -1,9 +1,31 @@
-import { Simulation, WEAPONS, type WeaponId } from "./simulation";
+import {
+  Simulation,
+  WEAPONS,
+  WEAPON_ORDER,
+  PERKS,
+  roomName,
+  type WeaponId,
+  type PerkId,
+  type BarItemId,
+} from "./simulation";
 import { GameRenderer } from "./renderer";
 import { GameAudio } from "./audio";
 export type GameView = {
   phase: "ready" | "playing" | "paused" | "dead";
   health: number;
+  maxHealth: number;
+  inventory: { id: WeaponId; label: string; owned: boolean }[];
+  perks: { id: PerkId; name: string }[];
+  shopOpen: boolean;
+  shopOffers: {
+    id: BarItemId;
+    name: string;
+    detail: string;
+    price: number;
+    reason: string;
+  }[];
+  roundCue: "start" | "clear" | null;
+  roundCueRemaining: number;
   points: number;
   round: number;
   kills: number;
@@ -23,6 +45,8 @@ export type GameView = {
   intermission: number;
   lounge: boolean;
   shortcut: boolean;
+  vip: boolean;
+  room: string;
   upgraded: boolean;
   message: string;
   prompt: null | {
@@ -40,6 +64,17 @@ export type GameView = {
 export const initialView: GameView = {
   phase: "ready",
   health: 100,
+  maxHealth: 100,
+  inventory: WEAPON_ORDER.map((id) => ({
+    id,
+    label: WEAPONS[id].label,
+    owned: id === "pistol",
+  })),
+  perks: [],
+  shopOpen: false,
+  shopOffers: [],
+  roundCue: null,
+  roundCueRemaining: 0,
   points: 400,
   round: 0,
   kills: 0,
@@ -59,6 +94,8 @@ export const initialView: GameView = {
   intermission: 1,
   lounge: false,
   shortcut: false,
+  vip: false,
+  room: "Casino Floor",
   upgraded: false,
   message: "",
   prompt: null,
@@ -85,6 +122,7 @@ export class GameRuntime {
   private pendingStart = false;
   private suppressUntil = 0;
   private disposed = false;
+  private playtesting = false;
   constructor(
     private canvas: HTMLCanvasElement,
     private onView: (v: GameView) => void,
@@ -122,6 +160,12 @@ export class GameRuntime {
     this.accumulated = 0;
   }
   private keyDown = (e: KeyboardEvent) => {
+    if (this.sim.shopOpen && e.code === "Escape") {
+      e.preventDefault();
+      this.sim.closeBar();
+      this.publish();
+      return;
+    }
     if (this.sim.phase !== "playing") return;
     if (
       [
@@ -135,6 +179,8 @@ export class GameRuntime {
         "KeyE",
         "Digit1",
         "Digit2",
+        "Digit3",
+        "Digit4",
         "Space",
         "Tab",
       ].includes(e.code)
@@ -145,12 +191,21 @@ export class GameRuntime {
     if (e.code === "KeyR") this.sim.reload();
     if (e.code === "Digit1") this.sim.switchWeapon("pistol");
     if (e.code === "Digit2") this.sim.switchWeapon("shotgun");
-    if (e.code === "KeyE") {
-      const p = this.sim.nearestPurchase();
-      if (p) this.sim.purchase(p.id);
-    }
+    if (e.code === "Digit3") this.sim.switchWeapon("smg");
+    if (e.code === "Digit4") this.sim.switchWeapon("rifle");
+    if (e.code === "KeyE") this.interact();
     if (e.code === "Escape") this.pause();
   };
+  private interact() {
+    const p = this.sim.nearestPurchase();
+    if (p) this.sim.purchase(p.id);
+    if (this.sim.shopOpen) {
+      this.clearInput();
+      if (document.pointerLockElement === this.canvas)
+        document.exitPointerLock();
+      this.publish();
+    }
+  }
   private keyUp = (e: KeyboardEvent) => this.keys.delete(e.code);
   private mouseMove = (e: MouseEvent) => {
     if (
@@ -208,6 +263,7 @@ export class GameRuntime {
   };
   async enter(restart = false) {
     if (this.disposed) return;
+    this.sim.closeBar();
     this.pendingStart =
       restart || this.sim.phase === "ready" || this.sim.phase === "dead";
     this.clearInput();
@@ -218,6 +274,15 @@ export class GameRuntime {
           "Audio is unavailable. You can still play; check your browser sound settings.",
         ),
       );
+    if (this.playtesting) {
+      if (this.pendingStart) {
+        this.sim = new Simulation();
+        this.sim.start();
+        this.pendingStart = false;
+      } else this.sim.resume();
+      this.publish();
+      return;
+    }
     try {
       this.canvas.focus();
       await this.canvas.requestPointerLock();
@@ -233,6 +298,114 @@ export class GameRuntime {
     this.clearInput();
     this.sim.pause();
     if (document.pointerLockElement === this.canvas) document.exitPointerLock();
+    this.publish();
+  }
+  /** Development-only UI controls exercise the real simulation and shop without pointer-lock automation. */
+  testAction(action: string) {
+    if (process.env.NODE_ENV === "production") return;
+    this.playtesting = true;
+    if (action === "new") {
+      this.sim = new Simulation();
+      this.sim.start();
+      this.sim.points = 12000;
+      this.sim.intermission = 3600;
+      this.sim.round = 1;
+      this.sim.invulnerable = 99999;
+    }
+    const s = this.sim;
+    const poses: Record<string, [number, number, number, number]> = {
+      floor: [-9, -8, 0.3, 0.06],
+      bar: [12, -6.5, Math.PI, 0.03],
+      shotgun: [-12.7, 1.8, -Math.PI / 2, 0],
+      smg: [6.8, -0.2, -Math.PI / 2, 0],
+      rifle: [25.3, -6.7, Math.PI / 2, 0],
+      vip: [18, -8, 0.6, 0.08],
+      gate: [2, -4.1, Math.PI / 2, 0],
+      staff: [7, 8.6, -Math.PI / 2, 0],
+      workshop: [24.7, 8.7, 0, 0.02],
+      ammo: [-12.6, -9.1, Math.PI, 0],
+    };
+    if (poses[action]) {
+      if (["bar", "smg", "rifle", "vip", "staff", "workshop"].includes(action))
+        s.lounge = true;
+      if (["rifle", "vip", "workshop"].includes(action)) s.vip = true;
+      s.closeBar();
+      s.phase = "playing";
+      s.intermission = 3600;
+      s.invulnerable = 99999;
+      const p = poses[action];
+      s.player = { x: p[0], z: p[1] };
+      s.yaw = p[2];
+      s.pitch = p[3];
+      s.refreshMap();
+    }
+    if (action === "use") this.interact();
+    if (action === "left") s.yaw -= Math.PI / 4;
+    if (action === "right") s.yaw += Math.PI / 4;
+    if (action === "forward" || action === "back")
+      for (let i = 0; i < 30; i++)
+        s.step(1 / 60, {
+          forward: action === "forward" ? 1 : -1,
+          strafe: 0,
+          sprint: false,
+          fire: false,
+        });
+    if (action === "shoot") s.fire();
+    if (action === "reload") s.reload();
+    if (action.startsWith("weapon-"))
+      s.switchWeapon(action.slice(7) as WeaponId);
+    if (action === "clear") {
+      s.round = Math.max(1, s.round);
+      s.phase = "playing";
+      s.waveRemaining = 0;
+      s.enemies = [];
+      s.intermission = 0;
+      s.step(0.016, { forward: 0, strafe: 0, sprint: false, fire: false });
+    }
+    if (action === "round") {
+      s.phase = "playing";
+      s.intermission = 0;
+      s.beginRound();
+    }
+    if (action === "crowd") {
+      s.phase = "playing";
+      s.lounge = s.vip = true;
+      s.refreshMap();
+      s.intermission = 3600;
+      s.invulnerable = 99999;
+      s.enemies = Array.from({ length: 14 }, (_, i) => ({
+        id: 100 + i,
+        x: i % 2 ? 25 : 18,
+        z: -5 + Math.floor(i / 2) * 2,
+        health: 100,
+        maxHealth: 100,
+        speed: 1.7,
+        yaw: 0,
+        attack: 0,
+        cooldown: 0,
+        stuck: 0,
+        flash: 0,
+        age: 0,
+      }));
+    }
+    void this.audio.unlock();
+    this.publish();
+  }
+  buyBar(id: BarItemId) {
+    this.sim.purchaseBar(id);
+    this.publish();
+  }
+  selectBarWeapon(id: WeaponId) {
+    if (
+      this.sim.phase !== "paused" ||
+      !this.sim.shopOpen ||
+      !this.sim.canUseBar() ||
+      !this.sim.inventory[id].owned ||
+      id === this.sim.weapon
+    )
+      return;
+    this.sim.weapon = id;
+    this.sim.reloadRemaining = 0;
     this.publish();
   }
   setSensitivity(value: number) {
@@ -300,6 +473,32 @@ export class GameRuntime {
     this.onView({
       phase: s.phase,
       health: s.health,
+      maxHealth: s.maxHealth,
+      inventory: WEAPON_ORDER.map((id) => ({
+        id,
+        label: WEAPONS[id].label,
+        owned: s.inventory[id].owned,
+      })),
+      perks: (Object.keys(PERKS) as PerkId[])
+        .filter((id) => s.perks[id])
+        .map((id) => ({ id, name: PERKS[id].name })),
+      shopOpen: s.shopOpen,
+      shopOffers: [
+        ...(Object.keys(PERKS) as PerkId[]).map((id) => ({
+          id,
+          name: PERKS[id].name,
+          detail: PERKS[id].detail,
+          ...s.barInfo(id),
+        })),
+        {
+          id: "weaponUpgrade",
+          name: `Double Down · ${WEAPONS[s.weapon].label}`,
+          detail: "+50% magazine · heavier hits · full magazine",
+          ...s.barInfo("weaponUpgrade"),
+        },
+      ],
+      roundCue: s.roundCue,
+      roundCueRemaining: s.roundCueRemaining,
       points: s.points,
       round: s.round,
       kills: s.kills,
@@ -307,29 +506,29 @@ export class GameRuntime {
       earned: s.earned,
       time: s.time,
       weapon: s.weapon,
-      weaponName:
-        s.weapon === "shotgun" && s.upgraded
-          ? "HIGH ROLLER"
-          : WEAPONS[s.weapon].name,
+      weaponName: s.weaponName(),
       mag: w.mag,
       reserve: w.reserve,
       capacity: s.capacity(),
       hasShotgun: s.inventory.shotgun.owned,
       reload: s.reloadRemaining,
-      reloadTotal: WEAPONS[s.weapon].reload,
+      reloadTotal: s.reloadDuration(),
       enemies: s.enemies.filter((e) => e.health > 0).length,
       remaining: s.waveRemaining,
       intermission: s.intermission,
       lounge: s.lounge,
       shortcut: s.shortcut,
-      upgraded: s.upgraded,
+      vip: s.vip,
+      room: roomName(s.player),
+      upgraded: Object.values(s.upgrades).some(Boolean),
       message: s.messageRemaining > 0 ? s.lastMessage : "",
       prompt:
         p && info
           ? {
               name:
-                p.id === "shotgun" && s.inventory.shotgun.owned
-                  ? "Shotgun ammunition"
+                (p.id === "shotgun" || p.id === "smg" || p.id === "rifle") &&
+                s.inventory[p.id].owned
+                  ? `${WEAPONS[p.id].label} ammunition`
                   : p.name,
               detail: p.detail,
               ...info,

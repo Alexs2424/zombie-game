@@ -4,6 +4,18 @@ import type { GameRuntime, GameView } from "../lib/game/runtime";
 const initial: GameView = {
   phase: "ready",
   health: 100,
+  maxHealth: 100,
+  inventory: [
+    { id: "pistol", label: "Pistol", owned: true },
+    { id: "shotgun", label: "Shotgun", owned: false },
+    { id: "smg", label: "SMG", owned: false },
+    { id: "rifle", label: "Rifle", owned: false },
+  ],
+  perks: [],
+  shopOpen: false,
+  shopOffers: [],
+  roundCue: null,
+  roundCueRemaining: 0,
   points: 400,
   round: 0,
   kills: 0,
@@ -23,6 +35,8 @@ const initial: GameView = {
   intermission: 1,
   lounge: false,
   shortcut: false,
+  vip: false,
+  room: "Casino Floor",
   upgraded: false,
   message: "",
   prompt: null,
@@ -47,7 +61,7 @@ function Controls() {
       <br />
       <kbd>R</kbd> RELOAD <kbd>E</kbd> BUY
       <br />
-      <kbd>1 / 2</kbd> SWITCH <kbd>ESC</kbd> PAUSE
+      <kbd>1–4</kbd> SWITCH <kbd>ESC</kbd> PAUSE
     </div>
   );
 }
@@ -60,15 +74,29 @@ export default function Home() {
     [settings, setSettings] = useState(false),
     [sensitivity, setSensitivity] = useState(1),
     [volume, setVolume] = useState(0.45),
-    [debug, setDebug] = useState(false);
+    [debug, setDebug] = useState(false),
+    [playtesting, setPlaytesting] = useState(false);
   useEffect(() => {
     let disposed = false;
+    setPlaytesting(
+      process.env.NODE_ENV !== "production" &&
+        new URLSearchParams(window.location.search).has("playtest"),
+    );
     import("../lib/game/runtime")
       .then(({ GameRuntime }) => {
         if (disposed || !canvas.current) return;
         try {
           runtime.current = new GameRuntime(canvas.current, setView, setError);
-          setReady(true);
+          void runtime.current.renderer.ready
+            .then(() => {
+              if (!disposed) setReady(true);
+            })
+            .catch(() => {
+              if (!disposed)
+                setError(
+                  "The casino models could not load. Reload to try again.",
+                );
+            });
         } catch (e) {
           setError(
             `The 3D scene could not start. Enable graphics acceleration in Chrome and reload. ${e instanceof Error ? e.message : ""}`,
@@ -90,7 +118,7 @@ export default function Home() {
   };
   const active = view.phase === "playing",
     menu = view.phase === "ready",
-    paused = view.phase === "paused",
+    paused = view.phase === "paused" && !view.shopOpen,
     dead = view.phase === "dead";
   return (
     <main className={`game-shell ${active ? "in-game" : ""}`}>
@@ -101,7 +129,7 @@ export default function Home() {
         aria-label="Last Jackpot first-person casino survival game"
       />
       {menu && <div className="menu-shade" />}
-      {!active && (
+      {!active && !view.shopOpen && (
         <header className="masthead">
           <div className="wordmark">
             LJ<span>LAST JACKPOT</span>
@@ -174,7 +202,7 @@ export default function Home() {
               </span>
             </div>
             <div className="run-clock">
-              LAST JACKPOT <span>{timeString(view.time)}</span>
+              {view.room.toUpperCase()} <span>{timeString(view.time)}</span>
             </div>
             <div className="points">
               <span className="small-label">POINTS</span>
@@ -188,12 +216,44 @@ export default function Home() {
             <span className={view.shortcut ? "complete" : ""}>
               {view.shortcut ? "◆" : "◇"} STAFF PASSAGE
             </span>
+            <span className={view.vip ? "complete" : ""}>
+              {view.vip ? "◆" : "◇"} HIGH ROLLER CLUB
+            </span>
             <span className={view.upgraded ? "complete" : ""}>
-              {view.upgraded ? "◆" : "◇"} HIGH ROLLER
+              {view.upgraded ? "◆" : "◇"} WEAPON UPGRADE
             </span>
           </div>
           {active && (
             <>
+              {view.roundCue && (
+                <div
+                  className={`round-announcement ${view.roundCue}`}
+                  key={`${view.round}-${view.roundCue}`}
+                  role="status"
+                >
+                  <span>
+                    {view.roundCue === "start"
+                      ? "THE HOUSE WANTS YOU"
+                      : "TAKE A BREATH"}
+                  </span>
+                  <strong>
+                    {view.roundCue === "start"
+                      ? `ROUND ${String(view.round).padStart(2, "0")}`
+                      : `ROUND ${view.round} SURVIVED`}
+                  </strong>
+                  <i>
+                    {view.roundCue === "start"
+                      ? "Stay sharp. Stay moving."
+                      : "Reload. Restock. Find your next advantage."}
+                  </i>
+                </div>
+              )}
+              {view.intermission > 0 && view.round > 0 && !view.roundCue && (
+                <div className="intermission-cue">
+                  NEXT ROUND IN <b>{Math.ceil(view.intermission)}</b>
+                </div>
+              )}
+
               <div
                 className={`crosshair ${view.hit > 0 ? "hit" : ""} ${view.headshot ? "headshot" : ""}`}
               >
@@ -223,7 +283,13 @@ export default function Home() {
                     <span>{view.prompt.reason || view.prompt.detail}</span>
                   </div>
                   <b>
-                    {view.prompt.price.toLocaleString()} <small>PTS</small>
+                    {view.prompt.price ? (
+                      <>
+                        {view.prompt.price.toLocaleString()} <small>PTS</small>
+                      </>
+                    ) : (
+                      "VIEW MENU"
+                    )}
                   </b>
                 </div>
               )}
@@ -241,28 +307,39 @@ export default function Home() {
               )}
             </>
           )}
+          {view.perks.length > 0 && (
+            <div className="perk-badges">
+              {view.perks.map((p) => (
+                <span key={p.id}>{p.name}</span>
+              ))}
+            </div>
+          )}
           <div className="hud-bottom">
             <div className="health-panel">
               <span className="small-label">
                 VITALS <b>{Math.ceil(view.health)}</b>
               </span>
               <div className={`health-track ${view.health < 35 ? "low" : ""}`}>
-                <i style={{ width: `${view.health}%` }} />
+                <i
+                  style={{ width: `${(100 * view.health) / view.maxHealth}%` }}
+                />
               </div>
               <span className="hud-hint">
-                {view.health < 100
+                {view.health < view.maxHealth
                   ? "Health recovers when you avoid damage"
                   : "KEEP MOVING. STAY LUCKY."}
               </span>
             </div>
             <div className="weapon-panel">
               <div className="weapon-slots">
-                <span className={view.weapon === "pistol" ? "selected" : ""}>
-                  1 PISTOL
-                </span>
-                <span className={view.weapon === "shotgun" ? "selected" : ""}>
-                  {view.hasShotgun ? "2 SHOTGUN" : "2 —"}
-                </span>
+                {view.inventory.map((w, i) => (
+                  <span
+                    key={w.id}
+                    className={view.weapon === w.id ? "selected" : ""}
+                  >
+                    {i + 1} {w.owned ? w.label.toUpperCase() : "—"}
+                  </span>
+                ))}
               </div>
               <span className="weapon-name">{view.weaponName}</span>
               <div className="ammo">
@@ -278,6 +355,76 @@ export default function Home() {
               </span>
             </div>
           </div>
+        </div>
+      )}
+      {view.shopOpen && (
+        <div className="shop-shade">
+          <section
+            className="bar-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Marlowe’s bar menu"
+          >
+            <div className="bar-menu-heading">
+              <div>
+                <p className="eyebrow">THE LAST CALL · MARLOWE’S MENU</p>
+                <h2>A little house advantage.</h2>
+                <p>
+                  Perks last for this run. Your game is paused while you order.
+                </p>
+              </div>
+              <strong>
+                {view.points.toLocaleString()} <small>POINTS</small>
+              </strong>
+            </div>
+            <div
+              className="bar-weapon-picker"
+              aria-label="Choose weapon to upgrade"
+            >
+              {view.inventory
+                .filter((w) => w.owned)
+                .map((w) => (
+                  <button
+                    key={w.id}
+                    className={view.weapon === w.id ? "selected" : ""}
+                    onClick={() => runtime.current?.selectBarWeapon(w.id)}
+                  >
+                    {w.label}
+                  </button>
+                ))}
+            </div>
+            <div className="cocktail-list">
+              {view.shopOffers.map((offer, i) => (
+                <button
+                  key={offer.id}
+                  disabled={!!offer.reason}
+                  onClick={() => runtime.current?.buyBar(offer.id)}
+                  className={`cocktail-item cocktail-${i}`}
+                >
+                  <span className="drink-mark">
+                    {["♥", "»", "♠", "♢"][i]}
+                  </span>
+                  <div>
+                    <strong>{offer.name}</strong>
+                    <span>{offer.detail}</span>
+                    <em>{offer.reason || "Buy for this run"}</em>
+                  </div>
+                  <b>
+                    {offer.price.toLocaleString()}
+                    <small>PTS</small>
+                  </b>
+                </button>
+              ))}
+            </div>
+            <div className="bar-menu-footer">
+              <span>
+                {view.message || "Marlowe: Take what you need. Make it back."}
+              </span>
+              <button className="primary-button" onClick={() => enter()}>
+                BACK TO THE FLOOR <span>↗</span>
+              </button>
+            </div>
+          </section>
         </div>
       )}
       {(paused || dead) && (
@@ -395,6 +542,49 @@ export default function Home() {
           {Math.round(view.fps)} FPS · p95 {view.p95.toFixed(1)} ms ·{" "}
           {view.enemies} ACTIVE / {view.remaining} QUEUED
         </div>
+      )}
+      {playtesting && (
+        <nav
+          className="playtest-tools"
+          aria-label="Development playtest controls"
+        >
+          <strong>DEVELOPMENT PLAYTEST</strong>
+          {[
+            ["new", "Seed run"],
+            ["floor", "Casino floor"],
+            ["gate", "Lounge door"],
+            ["bar", "Bartender"],
+            ["shotgun", "Shotgun rack"],
+            ["smg", "SMG rack"],
+            ["rifle", "Rifle rack"],
+            ["vip", "VIP room"],
+            ["staff", "Staff door"],
+            ["workshop", "Workshop"],
+            ["ammo", "Ammo rack"],
+            ["use", "Interact E"],
+            ["left", "Turn left"],
+            ["right", "Turn right"],
+            ["forward", "Walk forward"],
+            ["back", "Walk back"],
+            ["shoot", "Fire"],
+            ["reload", "Reload"],
+            ["weapon-pistol", "Equip pistol"],
+            ["weapon-shotgun", "Equip shotgun"],
+            ["weapon-smg", "Equip SMG"],
+            ["weapon-rifle", "Equip rifle"],
+            ["clear", "Finish round"],
+            ["round", "Start round"],
+            ["crowd", "Spawn 14"],
+          ].map(([id, label]) => (
+            <button
+              key={id}
+              disabled={!ready}
+              onClick={() => runtime.current?.testAction(id)}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
       )}
       {error && (
         <div className="error-message" role="alert">

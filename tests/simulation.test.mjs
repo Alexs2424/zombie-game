@@ -10,6 +10,10 @@ import {
   moveActor,
   dist,
   waveStats,
+  hasSight,
+  WEAPONS,
+  PERKS,
+  BAR_ANCHOR,
 } from "../lib/game/simulation.ts";
 const idle = { forward: 0, strafe: 0, sprint: false, fire: false };
 const tick = (s, seconds) => {
@@ -73,16 +77,19 @@ test("full reserve refuses payment; valid refill never grants extra magazine amm
   assert.equal(s.points, 850);
   assert.deepEqual(s.inventory.pistol, { owned: true, mag: 2, reserve: 84 });
 });
-test("upgrade requires shotgun, charges once, and cannot exceed magazine capacity", () => {
+test("workshop requires VIP, charges once, and upgrades the equipped weapon", () => {
   const s = quiet();
   s.points = 10000;
   assert.equal(buy(s, "upgrade"), false);
   assert.equal(buy(s, "shotgun"), true);
+  assert.equal(buy(s, "upgrade"), false);
+  assert.equal(buy(s, "lounge"), true);
+  assert.equal(buy(s, "vip"), true);
   assert.equal(buy(s, "upgrade"), true);
   assert.equal(s.capacity("shotgun"), 9);
   assert.equal(s.inventory.shotgun.mag, 9);
   assert.equal(buy(s, "upgrade"), false);
-  assert.equal(s.points, 7200);
+  assert.equal(s.points, 5000);
 });
 test("reload conserves ammunition and pauses without advancing", () => {
   const s = quiet();
@@ -180,19 +187,33 @@ test("closed doors and wall edges resist oversized movement deltas", () => {
   assert.ok(r.x > 9);
 });
 test("every enabled spawn has a navigation route in all legal gate states", () => {
-  for (const [lounge, shortcut] of [
-    [false, false],
-    [true, false],
-    [true, true],
+  for (const [lounge, shortcut, vip] of [
+    [false, false, false],
+    [true, false, false],
+    [true, true, false],
+    [true, false, true],
+    [true, true, true],
   ]) {
     const s = quiet();
     s.lounge = lounge;
     s.shortcut = shortcut;
+    s.vip = vip;
+    s.loungeAge = s.vipAge = 4;
     s.refreshMap();
     for (const target of [
       { x: -12, z: -5 },
       { x: -5, z: -4 },
       { x: 0, z: 0 },
+      ...(vip
+        ? [
+            { x: 25, z: 9.5 },
+            { x: 19, z: -3 },
+            { x: 25, z: -3 },
+            { x: 22, z: 0 },
+            { x: 19, z: 5 },
+            { x: 25, z: 5 },
+          ]
+        : []),
       ...(lounge
         ? [
             { x: 12, z: -5 },
@@ -201,10 +222,10 @@ test("every enabled spawn has a navigation route in all legal gate states", () =
         : []),
     ]) {
       s.navigation.update(target);
-      for (const p of SPAWNS.slice(0, lounge ? 4 : 3))
+      for (const p of SPAWNS.filter((_, i) => s.spawnEnabled(i)))
         assert.ok(
           s.navigation.distance[s.navigation.index(p)] >= 0,
-          JSON.stringify({ target, p, lounge, shortcut }),
+          JSON.stringify({ target, p, lounge, shortcut, vip }),
         );
     }
   }
@@ -255,8 +276,9 @@ test("new runs reset doors, timers, health, rewards, reload, and inventory acros
     let s = quiet();
     s.points = 10000;
     buy(s, "shotgun");
-    buy(s, "upgrade");
     buy(s, "lounge");
+    buy(s, "vip");
+    buy(s, "upgrade");
     buy(s, "shortcut");
     s.reloadRemaining = 2;
     s.hurt(100);
@@ -269,13 +291,319 @@ test("new runs reset doors, timers, health, rewards, reload, and inventory acros
     assert.equal(s.enemies.length, 0);
     assert.equal(s.lounge, false);
     assert.equal(s.shortcut, false);
+    assert.equal(s.vip, false);
+    assert.equal(s.vipAge, 0);
     assert.equal(s.upgraded, false);
     assert.equal(s.inventory.shotgun.owned, false);
     assert.equal(s.reloadRemaining, 0);
   }
 });
-test("five-round economy leaves an ammunition allowance after all progression buys", () => {
+test("five-round shotgun route leaves an ammunition allowance after opening every area", () => {
   const income =
     400 + [1, 2, 3, 4, 5].reduce((a, r) => a + waveStats(r).count * 100, 0);
-  assert.equal(income - Object.values(PRICES).reduce((a, b) => a + b, 0), 1800);
+  assert.equal(
+    income -
+      ["shotgun", "lounge", "shortcut", "vip", "upgrade"].reduce(
+        (sum, id) => sum + PRICES[id],
+        0,
+      ),
+    500,
+  );
+});
+
+test("VIP purchase requires lounge and enough points, opens both gates, and charges once", () => {
+  const s = quiet();
+  s.points = 10000;
+  assert.equal(buy(s, "vip"), false);
+  buy(s, "lounge");
+  const before = s.points;
+  s.points = 1299;
+  assert.equal(buy(s, "vip"), false);
+  assert.equal(s.vip, false);
+  s.points = before;
+  for (const z of [-4.1, 8.6]) {
+    const p = { x: 14, z };
+    moveActor(p, 5, 0, 0.32, s.rects);
+    assert.ok(p.x < 16);
+    assert.equal(hasSight({ x: 14, z }, { x: 19, z }, s.rects), false);
+  }
+  assert.equal(buy(s, "vip"), true);
+  assert.equal(s.points, before - PRICES.vip);
+  assert.equal(buy(s, "vip"), false);
+  assert.equal(s.points, before - PRICES.vip);
+  for (const z of [-4.1, 8.6]) {
+    const p = { x: 14, z };
+    moveActor(p, 5, 0, 0.32, s.rects);
+    assert.ok(p.x > 18.9);
+    assert.equal(hasSight({ x: 14, z }, { x: 19, z }, s.rects), true);
+  }
+});
+test("VIP spawn obeys its own unlock delay and expanded world has solid boundaries", () => {
+  const s = quiet();
+  s.lounge = true;
+  s.loungeAge = 10;
+  assert.equal(s.spawnEnabled(4), false);
+  s.vip = true;
+  s.vipAge = 0;
+  s.refreshMap();
+  assert.equal(s.spawnEnabled(4), false);
+  tick(s, 3.1);
+  assert.equal(s.spawnEnabled(4), true);
+  const p = { x: 25, z: -8 };
+  assert.equal(collides(p, 0.32, s.rects), false);
+  moveActor(p, 20, 0, 0.32, s.rects);
+  assert.ok(p.x < 28 && p.x > 27);
+});
+test("zombies navigate into VIP past both poker islands", () => {
+  const s = quiet();
+  s.lounge = s.vip = true;
+  s.player = { x: 25, z: 9.5 };
+  s.refreshMap();
+  s.enemies = [enemy(14, -4.1)];
+  s.health = 1e6;
+  tick(s, 40);
+  assert.ok(dist(s.enemies[0], s.player) < 1.3, JSON.stringify(s.enemies[0]));
+});
+
+test("low poker tables force pursuit around the table, rather than into it", () => {
+  for (const [from, to] of [
+    [-6, 0],
+    [2, 8],
+  ]) {
+    const s = quiet();
+    s.lounge = s.vip = true;
+    s.player = { x: 22, z: to };
+    s.refreshMap();
+    s.enemies = [enemy(22, from)];
+    tick(s, 18);
+    assert.ok(dist(s.enemies[0], s.player) < 1.3, JSON.stringify(s.enemies[0]));
+  }
+});
+test("stuck-enemy recovery cannot relocate into a locked or just-opened VIP room", () => {
+  for (const vip of [false, true]) {
+    const s = quiet();
+    s.lounge = true;
+    s.loungeAge = 10;
+    s.vip = vip;
+    s.vipAge = 0;
+    s.player = { x: 10, z: -4 };
+    s.refreshMap();
+    const stuck = { ...enemy(-7, 0), stuck: 8 };
+    s.enemies = [
+      stuck,
+      ...SPAWNS.slice(0, 4).map((p, i) => ({
+        ...enemy(p.x, p.z),
+        id: i + 2,
+        speed: 0,
+      })),
+    ];
+    s.step(0.05, idle);
+    assert.ok(stuck.x < 16, JSON.stringify(stuck));
+  }
+});
+
+function bar(s) {
+  s.lounge = true;
+  s.refreshMap();
+  s.player = { ...BAR_ANCHOR };
+  assert.equal(s.openBar(), true);
+}
+
+test("new weapons require their rooms, keep separate ammo, and refill reserve only", () => {
+  const s = quiet();
+  s.points = 20000;
+  for (const id of ["smg", "rifle"]) assert.equal(buy(s, id), false);
+  s.switchWeapon("rifle");
+  assert.equal(s.weapon, "pistol");
+  buy(s, "lounge");
+  assert.equal(buy(s, "smg"), true);
+  assert.equal(s.weapon, "smg");
+  assert.deepEqual(s.inventory.smg, { owned: true, mag: 30, reserve: 180 });
+  buy(s, "vip");
+  assert.equal(buy(s, "rifle"), true);
+  for (const id of ["smg", "rifle"]) {
+    s.switchWeapon(id);
+    const before = s.points;
+    assert.equal(buy(s, id), false);
+    s.inventory[id].mag = 2;
+    s.inventory[id].reserve = 0;
+    assert.equal(buy(s, id), true);
+    assert.equal(s.points, before - WEAPONS[id].refill);
+    assert.equal(s.inventory[id].mag, 2);
+    assert.equal(s.inventory[id].reserve, WEAPONS[id].reserve);
+  }
+  assert.deepEqual(s.inventory.pistol, { owned: true, mag: 12, reserve: 84 });
+});
+
+test("bar requires an open lounge, range, sight, and an active shop session", () => {
+  const s = quiet();
+  s.points = 10000;
+  s.player = { ...BAR_ANCHOR };
+  assert.equal(s.openBar(), false);
+  s.lounge = true;
+  s.refreshMap();
+  s.player = { x: 12, z: -9.4 };
+  assert.equal(s.canUseBar(), false); // Counter blocks the back approach.
+  s.player = { x: 8, z: -6 };
+  assert.equal(s.openBar(), false);
+  s.player = { ...BAR_ANCHOR };
+  assert.equal(s.purchaseBar("reserve"), false);
+  assert.equal(s.openBar(), true);
+  s.resume();
+  assert.equal(s.phase, "paused");
+  const before = s.points;
+  s.player = { x: 5, z: -4 };
+  assert.equal(s.purchaseBar("reserve"), false);
+  assert.equal(s.points, before);
+  s.closeBar();
+  s.resume();
+  assert.equal(s.phase, "playing");
+});
+
+test("bartender pauses the entire simulation and House Reserve preserves missing health", () => {
+  const s = quiet();
+  s.points = 10000;
+  s.health = 60;
+  s.inventory.pistol.mag = 2;
+  s.reload();
+  s.roundCue = "start";
+  s.roundCueRemaining = 3;
+  bar(s);
+  const snapshot = [
+    s.time,
+    s.intermission,
+    s.reloadRemaining,
+    s.health,
+    s.roundCueRemaining,
+  ];
+  tick(s, 10);
+  assert.deepEqual(
+    [s.time, s.intermission, s.reloadRemaining, s.health, s.roundCueRemaining],
+    snapshot,
+  );
+  assert.equal(s.purchaseBar("reserve"), true);
+  assert.equal(s.maxHealth, 150);
+  assert.equal(s.health, 110);
+  const points = s.points;
+  assert.equal(s.purchaseBar("reserve"), false);
+  assert.equal(s.points, points);
+  s.closeBar();
+  s.resume();
+  tick(s, 10);
+  assert.equal(s.health, 150);
+});
+
+test("Quick Pour speeds a pending reload once without granting extra rounds", () => {
+  const s = quiet();
+  s.points = 10000;
+  s.inventory.pistol.mag = 2;
+  s.inventory.pistol.reserve = 5;
+  s.reload();
+  bar(s);
+  assert.equal(s.purchaseBar("quickPour"), true);
+  assert.ok(Math.abs(s.reloadRemaining - 1.05) < 1e-9);
+  assert.equal(s.purchaseBar("quickPour"), false);
+  s.closeBar();
+  s.resume();
+  tick(s, 1.1);
+  assert.equal(s.inventory.pistol.mag, 7);
+  assert.equal(s.inventory.pistol.reserve, 0);
+  assert.equal(s.reloadDuration("rifle"), WEAPONS.rifle.reload * 0.7);
+});
+
+test("Night Shift affects sprint only and an unaffordable perk does not charge", () => {
+  const s = quiet();
+  s.points = 899;
+  bar(s);
+  assert.equal(s.purchaseBar("nightShift"), false);
+  assert.equal(s.points, 899);
+  s.points = 900;
+  assert.equal(s.purchaseBar("nightShift"), true);
+  assert.equal(s.points, 0);
+  s.closeBar();
+  s.resume();
+  for (const sprint of [false, true]) {
+    s.player = { x: -12, z: -5 };
+    s.yaw = 0;
+    s.step(0.05, { ...idle, forward: 1, sprint });
+    assert.ok(
+      Math.abs(
+        s.player.z + 5 - (sprint ? RULES.sprint * 1.15 : RULES.walk) * 0.05,
+      ) < 1e-8,
+    );
+  }
+});
+
+test("bar and workshop share per-weapon upgrades without replenishing reserve", () => {
+  const s = quiet();
+  s.points = 30000;
+  for (const id of ["lounge", "vip", "shotgun", "smg", "rifle"]) buy(s, id);
+  for (const id of ["pistol", "shotgun", "smg", "rifle"]) {
+    s.switchWeapon(id);
+    s.inventory[id].mag = 0;
+    s.inventory[id].reserve = 3;
+    s.reload();
+    bar(s);
+    assert.equal(s.purchaseBar("weaponUpgrade"), true);
+    assert.equal(s.capacity(), Math.round(WEAPONS[id].magazine * 1.5));
+    assert.equal(s.weaponDamage(), Math.round(WEAPONS[id].damage * 1.35));
+    assert.equal(s.inventory[id].mag, s.capacity());
+    assert.equal(s.inventory[id].reserve, 3);
+    assert.equal(s.reloadRemaining, 0);
+    const points = s.points;
+    assert.equal(s.purchaseBar("weaponUpgrade"), false);
+    s.closeBar();
+    s.resume();
+    assert.equal(buy(s, "upgrade"), false);
+    assert.equal(s.points, points);
+  }
+  const fresh = new Simulation();
+  assert.equal(fresh.shopOpen, false);
+  for (const id of Object.keys(PERKS)) assert.equal(fresh.perks[id], false);
+  for (const id of Object.keys(WEAPONS)) {
+    assert.equal(fresh.upgrades[id], false);
+    assert.equal(fresh.inventory[id].owned, id === "pistol");
+  }
+});
+
+test("round start and clear emit once, respect wave budget, and freeze when paused", () => {
+  const s = new Simulation();
+  s.start();
+  assert.equal(
+    s.events.some((e) => e.type === "roundClear"),
+    false,
+  );
+  tick(s, 4);
+  assert.equal(s.round, 1);
+  assert.equal(s.events.filter((e) => e.type === "round").length, 1);
+  s.enemies = [];
+  s.waveRemaining = 1;
+  s.spawnTimer = 10;
+  s.step(0.05, idle);
+  assert.equal(
+    s.events.some((e) => e.type === "roundClear"),
+    false,
+  );
+  s.waveRemaining = 0;
+  s.enemies = [enemy(-12, -3)];
+  s.step(0.05, idle);
+  assert.equal(
+    s.events.some((e) => e.type === "roundClear"),
+    false,
+  );
+  s.damageEnemy(s.enemies[0], 1000, false);
+  s.step(0.05, idle);
+  assert.equal(s.roundCue, "clear");
+  assert.equal(s.intermission, RULES.intermission);
+  assert.equal(s.events.filter((e) => e.type === "roundClear").length, 1);
+  s.pause();
+  tick(s, 5);
+  assert.equal(s.intermission, RULES.intermission);
+  assert.equal(s.roundCueRemaining, 3.8);
+  s.resume();
+  tick(s, 8.1);
+  assert.equal(s.round, 2);
+  assert.equal(s.roundCue, "start");
+  assert.equal(s.events.filter((e) => e.type === "roundClear").length, 1);
+  assert.equal(s.events.filter((e) => e.type === "round").length, 2);
 });
