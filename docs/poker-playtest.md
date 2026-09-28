@@ -25,3 +25,7 @@ The first-pass defaults are one free swap per table per round and a revolver rew
 - The revolver fired and reloaded from 5/48 to 6/47. The final browser console contained no errors or warnings. The extra QA tab was closed afterward.
 
 Browser checks used visible development controls, including repeatable hands, and did not constitute an ordinary mouse-captured survival run. Long-run balance and subjective sound quality remain hands-on playtest work.
+
+## PR integration check
+
+Integrated current `main` (`71abd0d`), preserving its redesigned zombies, wounds, knife, grenades and revised chip rewards. The combined suite passes 93 tests; type checking, production build and diff checks pass. A separate Chrome session on port 5175 loaded all assets, completed a flush and equipped the revolver, rendered the new zombies, exercised knife damage and grenade consumption, and resolved a zero roulette jackpot with the revolver refilled. Its console had no errors or warnings. The temporary QA tab was closed after verification.

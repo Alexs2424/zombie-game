@@ -1,5 +1,6 @@
 import {
   Simulation,
+  RULES,
   WEAPONS,
   WEAPON_ORDER,
   PERKS,
@@ -19,6 +20,8 @@ import {
   type PokerTableId,
 } from "./poker";
 export type GameView = {
+  grenades: number;
+  knifeReady: boolean;
   phase: "ready" | "playing" | "paused" | "dead";
   health: number;
   maxHealth: number;
@@ -89,6 +92,8 @@ export type GameView = {
   p95: number;
 };
 export const initialView: GameView = {
+  grenades: 2,
+  knifeReady: true,
   phase: "ready",
   health: 100,
   maxHealth: 100,
@@ -219,6 +224,8 @@ export class GameRuntime {
         "ShiftRight",
         "KeyR",
         "KeyE",
+        "KeyG",
+        "KeyV",
         "Digit1",
         "Digit2",
         "Digit3",
@@ -232,6 +239,8 @@ export class GameRuntime {
     this.keys.add(e.code);
     if (e.repeat) return;
     if (e.code === "KeyR") this.sim.reload();
+    if (e.code === "KeyG") this.sim.throwGrenade();
+    if (e.code === "KeyV") this.sim.knife();
     if (e.code === "Digit1") this.sim.switchWeapon("pistol");
     if (e.code === "Digit2") this.sim.switchWeapon("shotgun");
     if (e.code === "Digit3") this.sim.switchWeapon("smg");
@@ -489,6 +498,13 @@ export class GameRuntime {
           fire: false,
         });
     if (action === "shoot") s.fire();
+    if (action === "grenade") s.throwGrenade();
+    if (action === "knife") s.knife();
+    if (action === "melee-target") {
+      s.phase="playing";s.intermission=3600;s.invulnerable=99999;
+      s.player={x:-12,z:-7};s.yaw=0;s.pitch=0;
+      s.enemies=[{id:500,x:-12,z:-5.8,health:80,maxHealth:80,speed:0,yaw:Math.PI,attack:0,cooldown:0,stuck:0,flash:0,age:0}];
+    }
     if (action === "reload") s.reload();
     if (action.startsWith("weapon-"))
       s.switchWeapon(action.slice(7) as WeaponId);
@@ -525,6 +541,24 @@ export class GameRuntime {
         flash: 0,
         age: 0,
       }));
+    }
+    if (action === "zombies") {
+      s.phase = "playing"; s.intermission = 3600; s.invulnerable = 99999;
+      s.player = { x: -12, z: -7 }; s.yaw = 0; s.pitch = .12;
+      s.enemies = Array.from({ length: 3 }, (_, i) => ({
+        id: 300 + i, x: -13 + i, z: -4, health: 1000, maxHealth: 1000,
+        speed: 0, yaw: Math.PI, attack: 0, cooldown: 0, stuck: 0, flash: 0, age: 0,
+      }));
+    }
+    if (action === "zombie-wounds") for (const e of s.enemies) {
+      s.damageEnemy(e, 10, false, "body");
+      s.damageEnemy(e, 10, true, "head");
+    }
+    if (action === "zombie-limbs") for (const e of s.enemies) {
+      s.damageEnemy(e, 34, false, e.id % 2 ? "leftLeg" : "rightArm");
+    }
+    if (action === "zombie-attacks") for (const e of s.enemies) {
+      e.attackStyle = e.id % 3; e.attack = RULES.attackWindup;
     }
     void this.audio.unlock();
     this.publish();
@@ -634,6 +668,8 @@ export class GameRuntime {
     const bestSuit = bestPokerSuit(pokerState?.hand ?? []);
     this.audio.setActive(s.phase === "playing");
     this.onView({
+      grenades: s.grenades,
+      knifeReady: s.knifeCooldown <= 0 && s.grenadeCooldown <= 0,
       phase: s.phase,
       health: s.health,
       maxHealth: s.maxHealth,

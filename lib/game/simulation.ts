@@ -8,6 +8,7 @@ import {
   type PokerTableId,
 } from "./poker.ts";
 export { POKER_RULES } from "./poker.ts";
+import { ATTACK_WINDUP, zombieHitVolumes, type HitRegion, type Limb } from "./zombie-pose.ts";
 export type V2 = { x: number; z: number };
 export type V3 = V2 & { y: number };
 export type Rect = {
@@ -55,6 +56,9 @@ export type PurchaseId =
 export type GameEvent = {
   type:
     | "shot"
+    | "knife"
+    | "grenadeThrow"
+    | "explosion"
     | "hit"
     | "kill"
     | "hurt"
@@ -90,7 +94,12 @@ export type Enemy = V2 & {
   stuck: number;
   flash: number;
   age: number;
+  attackStyle?: number;
+  missing?: Partial<Record<Limb, boolean>>;
+  limbDamage?: Partial<Record<Limb, number>>;
+  wounds?: Partial<Record<HitRegion, number>>;
 };
+export type Grenade = V3 & { id: number; vx: number; vy: number; vz: number; fuse: number };
 export const RULES = {
   playerRadius: 0.32,
   enemyRadius: 0.3,
@@ -102,9 +111,10 @@ export const RULES = {
   hurtGrace: 0.7,
   attackDamage: 20,
   attackRange: 1.05,
-  attackWindup: 0.4,
+  attackWindup: ATTACK_WINDUP,
   cap: 14,
-  reward: 100,
+  headshotReward: 100,
+  killReward: 50,
   startingPoints: 400,
   intermission: 8,
 };
@@ -613,6 +623,13 @@ export class Simulation {
     revolver: { owned: false, mag: 0, reserve: 0 },
   };
   enemies: Enemy[] = [];
+  grenades = 2;
+  projectiles: Grenade[] = [];
+  explosions: (V3 & { id: number; remaining: number })[] = [];
+  knifeRemaining = 0;
+  knifeCooldown = 0;
+  grenadeCooldown = 0;
+  private nextGrenadeId = 1;
   events: GameEvent[] = [];
   rects: Rect[] = [];
   walkRects: Rect[] = [];
@@ -839,6 +856,7 @@ export class Simulation {
     const w = this.inventory[this.weapon];
     if (
       this.phase !== "playing" ||
+      this.knifeRemaining > 0 || this.grenadeCooldown > 0 ||
       this.reloadRemaining > 0 ||
       w.mag >= this.capacity() ||
       w.reserve <= 0
@@ -1063,16 +1081,27 @@ export class Simulation {
       position: { x: 35, z: 5 },
     });
   }
-  damageEnemy(e: Enemy, damage: number, headshot: boolean) {
-    if (e.health <= 0) return;
+  damageEnemy(e: Enemy, damage: number, headshot: boolean, region: HitRegion = headshot ? "head" : "body") {
+    if (e.health <= 0 || !Number.isFinite(damage) || damage <= 0) return;
+    if (region !== "head" && region !== "body" && e.missing?.[region]) return;
+    e.wounds ??= {};
+    e.wounds[region] = (e.wounds[region] ?? 0) + 1;
+    if (region !== "head" && region !== "body") {
+      e.limbDamage ??= {};
+      e.missing ??= {};
+      e.limbDamage[region] = (e.limbDamage[region] ?? 0) + damage;
+      if (e.limbDamage[region]! >= 32) e.missing[region] = true;
+    }
     e.health -= damage;
     e.flash = 0.12;
+    const payout = 5 + Math.floor(this.random() * 6) + (headshot ? RULES.headshotReward : e.health <= 0 ? RULES.killReward : 0);
+    this.points += payout;
+    this.earned += payout;
+    if (headshot) this.headshots++;
+    this.notify(`+${payout} CHIPS · ${headshot ? "HEADSHOT" : e.health <= 0 ? "KILL" : "HIT"}`);
     this.events.push({ type: "hit", headshot, position: { x: e.x, z: e.z } });
     if (e.health <= 0) {
       this.kills++;
-      this.points += RULES.reward;
-      this.earned += RULES.reward;
-      if (headshot) this.headshots++;
       this.events.push({
         type: "kill",
         headshot,
@@ -1080,10 +1109,73 @@ export class Simulation {
       });
     }
   }
+  knife() {
+    if (this.phase !== "playing" || this.knifeCooldown > 0 || this.grenadeCooldown > 0) return false;
+    this.reloadRemaining = 0;
+    this.knifeRemaining = 0.55;
+    this.knifeCooldown = 0.75;
+    this.events.push({ type: "knife" });
+    return true;
+  }
+  private knifeContact() {
+    const direction = { x: Math.sin(this.yaw) * Math.cos(this.pitch), y: -Math.sin(this.pitch), z: Math.cos(this.yaw) * Math.cos(this.pitch) };
+    let target: Enemy | undefined, nearest = 1.65;
+    for (const e of this.enemies) {
+      if (e.health <= 0 || !hasSight(this.player, e, this.rects, 1)) continue;
+      for (const v of zombieHitVolumes(e)) {
+        const [x,y,z] = v.center;
+        const dx=e.x+x*Math.cos(e.yaw)+z*Math.sin(e.yaw)-this.player.x;
+        const dz=e.z-x*Math.sin(e.yaw)+z*Math.cos(e.yaw)-this.player.z;
+        const dy=y-1.4, distance=Math.hypot(dx,dy,dz);
+        if (distance < nearest && (dx*direction.x+dy*direction.y+dz*direction.z)/distance > .65) {
+          target=e; nearest=distance;
+        }
+      }
+    }
+    if (target) this.damageEnemy(target, 100, false);
+  }
+  throwGrenade() {
+    if (this.phase !== "playing" || this.grenades <= 0 || this.grenadeCooldown > 0 || this.knifeCooldown > 0) return false;
+    this.grenades--; this.grenadeCooldown=.65;
+    this.reloadRemaining=0;
+    this.projectiles.push({ id:this.nextGrenadeId++, ...this.player, y:1.5,
+      vx:Math.sin(this.yaw)*Math.cos(this.pitch)*8, vz:Math.cos(this.yaw)*Math.cos(this.pitch)*8,
+      vy:2.5-Math.sin(this.pitch)*8, fuse:2.2 });
+    this.events.push({type:"grenadeThrow"});
+    return true;
+  }
+  private stepGrenades(dt: number) {
+    this.explosions.forEach(e=>e.remaining-=dt);
+    this.explosions=this.explosions.filter(e=>e.remaining>0);
+    for (const g of this.projectiles) {
+      g.fuse-=dt; g.vy-=9.8*dt;
+      const length=Math.hypot(g.vx,g.vy,g.vz)*dt;
+      if (length>0) {
+        const direction={x:g.vx*dt/length,y:g.vy*dt/length,z:g.vz*dt/length};
+        const hit=wallDistance(g,direction,this.rects);
+        const travel=Math.max(0,Math.min(length,hit-.09));
+        g.x+=direction.x*travel;g.y+=direction.y*travel;g.z+=direction.z*travel;
+        if (hit<length+.09) { g.vx*=-.45;g.vz*=-.45;g.vy*=-.35; }
+      }
+      if(g.y<.09) { g.y=.09;g.vy=Math.abs(g.vy)*.4;g.vx*=.65;g.vz*=.65; }
+      if(g.fuse>0) continue;
+      this.explosions.push({id:g.id,x:g.x,y:g.y,z:g.z,remaining:.5});
+      this.events.push({type:"explosion",position:{x:g.x,z:g.z}});
+      for (const e of this.enemies) {
+        const distance=dist(g,e);
+        if(e.health>0 && distance<4.5 && hasSight(g,e,this.rects,Math.max(.2,g.y)))
+          this.damageEnemy(e,220*(1-distance/5.5),false);
+      }
+      const distance=dist(g,this.player);
+      if(distance<4.5 && hasSight(g,this.player,this.rects,Math.max(.2,g.y))) this.hurt(70*(1-distance/4.5));
+    }
+    this.projectiles=this.projectiles.filter(g=>g.fuse>0);
+  }
   fire() {
     if (
       this.phase !== "playing" ||
       this.reloadRemaining > 0 ||
+      this.knifeRemaining > 0 || this.grenadeCooldown > 0 ||
       this.fireCooldown > 0
     )
       return false;
@@ -1107,21 +1199,18 @@ export class Simulation {
       const o = { ...this.player, y: 1.65 };
       let nearest = wallDistance(o, d, this.rects),
         target: Enemy | undefined,
-        head = false;
+        region: HitRegion = "body";
       for (const e of this.enemies) {
         if (e.health <= 0) continue;
-        const h = raySphere(o, d, { x: e.x, y: 1.63, z: e.z }, 0.235),
-          b = rayBox(
-            o,
-            d,
-            { x: e.x - 0.28, y: 0.35, z: e.z - 0.28 },
-            { x: e.x + 0.28, y: 1.4, z: e.z + 0.28 },
-          );
-        const n = Math.min(h, b);
-        if (n < nearest) {
-          nearest = n;
-          target = e;
-          head = h < b;
+        for (const volume of zombieHitVolumes(e)) {
+          const [x, y, z] = volume.center;
+          const n = raySphere(o, d, { x: e.x + x * Math.cos(e.yaw) + z * Math.sin(e.yaw), y,
+            z: e.z - x * Math.sin(e.yaw) + z * Math.cos(e.yaw) }, volume.radius);
+          if (n < nearest) {
+            nearest = n;
+            target = e;
+            region = volume.region;
+          }
         }
       }
       if (target) {
@@ -1130,7 +1219,7 @@ export class Simulation {
             ? Math.max(0.4, 1 - Math.max(0, nearest - 8) * 0.06)
             : 1;
         const damage = this.weaponDamage();
-        this.damageEnemy(target, damage * falloff * (head ? 2 : 1), head);
+        this.damageEnemy(target, damage * falloff * (region === "head" ? 2 : 1), region === "head", region);
       }
     }
     this.pitch = Math.max(
@@ -1195,6 +1284,7 @@ export class Simulation {
   }
   beginRound() {
     this.round++;
+    if (this.round > 1) this.grenades = Math.min(4, this.grenades + 2);
     if (this.slowRound < this.round) this.slowRound = 0;
     this.waveRemaining = waveStats(this.round).count;
     this.spawnTimer = 0.4;
@@ -1214,6 +1304,13 @@ export class Simulation {
     this.damageAgo += dt;
     this.invulnerable = Math.max(0, this.invulnerable - dt);
     this.fireCooldown = Math.max(0, this.fireCooldown - dt);
+    this.knifeCooldown = Math.max(0, this.knifeCooldown - dt);
+    this.grenadeCooldown = Math.max(0, this.grenadeCooldown - dt);
+    const knifeBefore = this.knifeRemaining;
+    this.knifeRemaining = Math.max(0, this.knifeRemaining - dt);
+    if (knifeBefore > .37 && this.knifeRemaining <= .37) this.knifeContact();
+    this.stepGrenades(dt);
+    if (this.phase !== "playing") return;
     this.messageRemaining = Math.max(0, this.messageRemaining - dt);
     this.damageBoostRemaining = Math.max(0, this.damageBoostRemaining - dt);
     if (this.lounge) this.loungeAge += dt;
@@ -1348,6 +1445,7 @@ export class Simulation {
         e.cooldown <= 0 &&
         hasSight(e, this.player, this.rects)
       ) {
+        e.attackStyle = ((e.attackStyle ?? e.id % 3) + 1) % 3;
         e.attack = RULES.attackWindup;
         this.events.push({
           type: "zombieAttack",
@@ -1375,12 +1473,13 @@ export class Simulation {
           vz += ((e.z - other.z) / d) * (0.8 - d) * 1.8;
         }
       }
+      const mobility = e.missing?.leftLeg && e.missing?.rightLeg ? 0.23 : e.missing?.leftLeg || e.missing?.rightLeg ? 0.48 : 1;
       const norm = Math.max(1, Math.hypot(vx, vz)),
         before = { x: e.x, z: e.z };
       moveActor(
         e,
-        (vx / norm) * e.speed * dt,
-        (vz / norm) * e.speed * dt,
+        (vx / norm) * e.speed * mobility * dt,
+        (vz / norm) * e.speed * mobility * dt,
         RULES.enemyRadius,
         this.rects,
       );

@@ -169,6 +169,12 @@ export class GameAudio {
       );
       this.tone(1567.98, 0.5, 0.045, "triangle", undefined, 0.38, 0, true);
     }
+    if (event.type === "knife") this.burst(0.18, 0.13, 1800);
+    if (event.type === "grenadeThrow") this.burst(0.12, 0.1, 900);
+    if (event.type === "explosion") {
+      this.burst(0.65, 0.45, 220);
+      this.tone(90, 0.7, 0.3, "sine", 25);
+    }
     if (event.type === "shot") {
       const heavy = event.weapon === "shotgun",
         rifle = event.weapon === "rifle" || event.weapon === "revolver",

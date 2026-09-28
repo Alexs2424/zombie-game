@@ -28,6 +28,8 @@ The Sites preview uses a local Worker runtime; the development process must rema
 | Move                | W A S D                                    |
 | Look                | Mouse                                      |
 | Fire                | Left mouse button, hold for repeated shots |
+| Knife slash         | V                                          |
+| Throw grenade       | G                                          |
 | Sprint              | Shift                                      |
 | Reload              | R; an empty trigger also starts a reload   |
 | Buy/interact        | E when close to a purchase                 |
@@ -38,7 +40,9 @@ The start and pause screens provide mouse sensitivity, sound volume, and optiona
 
 ## First five rounds
 
-Start with a pistol and 400 chips. Kills award 100 chips. The first five rounds contain 6, 9, 12, 16, and 20 zombies, with a 14-enemy active cap. Health regenerates after 5.5 seconds without damage. Every run resets weapons, chips, doors, and upgrades.
+Start with a pistol and 400 chips. Each damaging hit awards a random integer from 5–10 chips (each shotgun pellet counts). Headshots add 100 chips, including nonfatal headshots; non-headshot kills add 50. A headshot kill does not also award the 50-chip body-kill bonus. The first five rounds contain 6, 9, 12, 16, and 20 zombies, with a 14-enemy active cap. Health regenerates after 5.5 seconds without damage. Every run resets weapons, chips, doors, and upgrades.
+
+Zombies use three original Blender designs: Pit Boss, Crooked Dealer, and Last Showman. They shamble, snarl, recoil, and cycle through a backhand rake, overhead hammer, and two-arm snatch with windup and recovery. Wounds remain bloody; 32 cumulative damage to an arm or leg severs that limb permanently for that zombie. Losing one leg reduces movement to 48%; losing both reduces it to 23%. Shared animation poses drive bullet hit volumes, excluding missing limbs. See `docs/zombie-assets` for the editable Blender source and preview, and `tools/zombie-assets/generate_zombies.py` to regenerate assets.
 
 - Pistol reserve: 150 chips, near the starting foyer.
 - Room Service shotgun: 800 chips, on the west casino wall. Return there for a 300-chip reserve refill.
@@ -69,9 +73,11 @@ The five-round income model leaves 500 chips for ammunition after the shotgun, t
 
 ## Validation and limitations
 
-80 automated checks pass (34 core simulation, 20 card-table/revolver, 15 roulette rules, six roulette motion, and five audio regressions), including five-round progression and fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
+93 automated checks pass (45 core simulation/combat, 20 card-table/revolver, 15 roulette rules, six roulette motion, five audio regressions, and two zombie-asset checks), including five-round progression and fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
 
-This is a rough playable: stylized geometry and humanoids, synthesized audio, no aim-down-sights, melee, grenades, jump, crouch, random weapon station, persistent records, native app, controller support, or co-op. Mouse capture needs a focused browser and a genuine user gesture. The final feel and difficulty need a hands-on mouse playtest.
+This is a rough playable: stylized geometry and humanoids, synthesized audio, no aim-down-sights, jump, crouch, random weapon station, persistent records, native app, controller support, or co-op. Mouse capture needs a focused browser and a genuine user gesture. The final feel and difficulty need a hands-on mouse playtest.
+
+Press **V** for a knife slash: 100 damage to the nearest target in a forward 1.65-meter reach, with a 0.18-second windup and 0.75-second cooldown. It consumes no ammunition. Press **G** to throw a grenade: 2.2-second fuse, bouncing trajectory, and a 4.5-meter blast with damage falloff and cover checks. Nearby explosions can hurt you. Start with two grenades; each round after the first supplies two more, capped at four. Both attacks cancel reloads and award the same hit chips and 50-chip non-headshot kill bonus as gunfire. Pause freezes windups, fuses, and blast effects.
 
 ## Assets
 
