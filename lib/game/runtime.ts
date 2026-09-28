@@ -429,6 +429,7 @@ export class GameRuntime {
       smg: [6.8, -0.2, -Math.PI / 2, 0],
       rifle: [25.3, -8.2, Math.PI / 2, 0],
       vip: [18, -8, 0.6, 0.08],
+      couch: [24.3, -1.3, 0.94, 0.23],
       gate: [2, -4.1, Math.PI / 2, 0],
       staff: [7, 8.6, -Math.PI / 2, 0],
       workshop: [24.7, 8.7, 0, 0.02],
@@ -448,6 +449,7 @@ export class GameRuntime {
           "smg",
           "rifle",
           "vip",
+          "couch",
           "staff",
           "workshop",
           "tablesGate",
@@ -464,6 +466,7 @@ export class GameRuntime {
         [
           "rifle",
           "vip",
+          "couch",
           "workshop",
           "tablesGate",
           "tables",

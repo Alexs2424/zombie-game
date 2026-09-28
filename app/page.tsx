@@ -948,6 +948,7 @@ export default function Home() {
             ["smg", "SMG rack"],
             ["rifle", "Rifle rack"],
             ["vip", "VIP room"],
+            ["couch", "VIP couch"],
             ["poker-a", "Card table I"],
             ["poker-b", "Card table II"],
             ["poker-near-flush", "Prepare flush"],

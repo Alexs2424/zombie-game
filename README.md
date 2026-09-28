@@ -178,3 +178,7 @@ Development `/?playtest=1` has **Walk slots west**, **Walk slots east**, and
 **Walk second bank** controls for repeatable real movement past each aisle.
 The slot status names the emitting cabinet and sound. See
 [`docs/slot-audio.md`](docs/slot-audio.md) for implementation and validation.
+
+## Blender High Roller couch
+
+The couch beside the flush card games now uses an original Blender-built oxblood leather banquette with sculpted diamond tufting, five shaped cushions, stitched piping, rolled arms, walnut joinery, and brass feet. The existing footprint and cover height remain unchanged. The editable source is `assets/source/vip-couch.blend`; the game loads `public/models/vip-couch.glb`. See `docs/couch-assets/` for previews, regeneration instructions, and validation. Development playtest controls include a **VIP couch** viewpoint.
