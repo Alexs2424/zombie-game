@@ -10,6 +10,7 @@ import {
   type BarItemId,
 } from "./simulation";
 import { GameRenderer } from "./renderer";
+import { SERVICE_VIEWS } from "./service-layout";
 import { GameAudio } from "./audio";
 import { ZombieAudioDirector } from "./zombie-audio-director";
 import { HOTEL, stairPoint } from "./world";
@@ -96,6 +97,7 @@ export type GameView = {
   p95: number;
   zombieAudioStatus?: string;
   hotelPlaytestStatus?: string;
+  slotAudioStatus?: string;
 };
 export const initialView: GameView = {
   grenades: 2,
@@ -172,6 +174,7 @@ export class GameRuntime {
   private playtesting = false;
   private hotelTour: { x: number; z: number }[] = [];
   private hotelTourCompleted = false;
+  private slotWalkRemaining = 0;
   constructor(
     private canvas: HTMLCanvasElement,
     private onView: (v: GameView) => void,
@@ -204,6 +207,7 @@ export class GameRuntime {
   };
   private resize = () => this.renderer.resize();
   private clearInput() {
+    this.slotWalkRemaining = 0;
     this.keys.clear();
     this.firing = false;
     this.accumulated = 0;
@@ -304,6 +308,7 @@ export class GameRuntime {
         this.sim = new Simulation();
         this.zombieAudio.reset();
         this.audio.resetZombies();
+        this.audio.resetSlots();
         this.sim.start();
         this.pendingStart = false;
       } else this.sim.resume();
@@ -347,6 +352,7 @@ export class GameRuntime {
         this.sim = new Simulation();
         this.zombieAudio.reset();
         this.audio.resetZombies();
+        this.audio.resetSlots();
         this.sim.start();
         this.pendingStart = false;
       } else this.sim.resume();
@@ -377,13 +383,15 @@ export class GameRuntime {
     this.playtesting = true;
     const soundScenario = ["sound-chase", "sound-last", "sound-horde"].includes(action);
     const hotelScenario = action.startsWith("hotel-");
-    if (action === "new" || soundScenario || hotelScenario) {
+    const slotScenario = ["sound-slots-west", "sound-slots-east", "sound-slots-bank"].includes(action);
+    if (action === "new" || soundScenario || hotelScenario || slotScenario) {
       this.hotelTour = [];
       this.hotelTourCompleted = false;
       this.clearInput();
       this.sim = new Simulation();
       this.zombieAudio.reset();
       this.audio.resetZombies();
+      this.audio.resetSlots();
       this.sim.start();
       this.sim.points = 12000;
       this.sim.intermission = 3600;
@@ -391,6 +399,15 @@ export class GameRuntime {
       this.sim.invulnerable = 99999;
     }
     const s = this.sim;
+    if (slotScenario) {
+      s.player = { x: action === "sound-slots-west" ? -10.2 : action === "sound-slots-east" ? -3.8 : 2.4, z: action === "sound-slots-bank" ? 0 : -5.5 };
+      s.yaw = 0;
+      s.pitch = 0.04;
+      s.roundCue = null;
+      s.roundCueRemaining = 0;
+      s.waveRemaining = 0;
+      this.slotWalkRemaining = 2.3;
+    }
     if (soundScenario) {
       s.player = { x: -9, z: -8 };
       s.yaw = 0;
@@ -484,15 +501,20 @@ export class GameRuntime {
       s.refreshMap();
     }
     const poses: Record<string, [number, number, number, number]> = {
+      ...SERVICE_VIEWS,
       floor: [-9, -8, 0.3, 0.06],
       slotsWest: [-11.6, -1.8, Math.PI / 2, 0.1],
       slotsEast: [-3, 0, -Math.PI / 2, 0.1],
       slotsBank: [3.2, 5, -Math.PI / 2, 0.1],
       bar: [12, -6.5, Math.PI, 0.03],
+      loungeWide: [14.8, 0.65, -2.72, 0.06],
+      loungeEntrance: [5.4, -3.4, 2.05, 0.03],
+      loungeSeating: [13.1, -4.8, -0.67, 0.08],
       shotgun: [-12.7, 1.8, -Math.PI / 2, 0],
       smg: [6.8, -0.2, -Math.PI / 2, 0],
       rifle: [25.3, -8.2, Math.PI / 2, 0],
       vip: [18, -8, 0.6, 0.08],
+      couch: [24.3, -1.3, 0.94, 0.23],
       gate: [2, -4.1, Math.PI / 2, 0],
       staff: [7, 8.6, -Math.PI / 2, 0],
       workshop: [24.7, 8.7, 0, 0.02],
@@ -507,12 +529,18 @@ export class GameRuntime {
     };
     if (poses[action]) {
       this.hotelTour = [];
+      this.slotWalkRemaining = 0;
       if (
         [
           "bar",
+          "loungeWide",
+          "loungeEntrance",
+          "loungeSeating",
+          ...Object.keys(SERVICE_VIEWS),
           "smg",
           "rifle",
           "vip",
+          "couch",
           "staff",
           "workshop",
           "tablesGate",
@@ -529,6 +557,7 @@ export class GameRuntime {
         [
           "rifle",
           "vip",
+          "couch",
           "workshop",
           "tablesGate",
           "tables",
@@ -717,6 +746,7 @@ export class GameRuntime {
     this.last = now;
     this.hit = Math.max(0, this.hit - dt);
     this.damage = Math.max(0, this.damage - dt);
+    const playerBeforeStep = { ...this.sim.player };
     if (this.sim.phase === "playing") {
       this.accumulated += dt;
       while (this.accumulated >= 1 / 60) {
@@ -736,12 +766,13 @@ export class GameRuntime {
           }
         }
         this.sim.step(1 / 60, {
-          forward: tourForward || (+this.keys.has("KeyW") - +this.keys.has("KeyS")),
+          forward: tourForward || (this.slotWalkRemaining > 0 ? 1 : +this.keys.has("KeyW") - +this.keys.has("KeyS")),
           strafe: +this.keys.has("KeyD") - +this.keys.has("KeyA"),
           sprint: this.keys.has("ShiftLeft") || this.keys.has("ShiftRight"),
           fire: this.firing,
         });
         this.accumulated -= 1 / 60;
+        this.slotWalkRemaining = Math.max(0, this.slotWalkRemaining - 1 / 60);
       }
     }
     this.audio.setActive(this.sim.phase === "playing");
@@ -789,7 +820,9 @@ export class GameRuntime {
       this.sim.phase === "playing",
       this.sim.player,
       this.sim.yaw,
-      this.sim.moving,
+      // Movement input can remain held against a wall; only real displacement
+      // should make footsteps or wake a nearby slot cabinet.
+      Math.hypot(this.sim.player.x - playerBeforeStep.x, this.sim.player.z - playerBeforeStep.z) > 0.0001,
       this.sim.sprinting,
     );
     this.audio.updateHotel(dt, this.sim.phase === "playing", this.sim.jukeboxOn, this.sim.player, this.sim.yaw);
@@ -895,6 +928,7 @@ export class GameRuntime {
       hotelPlaytestStatus: process.env.NODE_ENV !== "production"
         ? `${roomName(s.player)} · floor ${(s.player.y ?? 0).toFixed(2)} m${this.hotelTour.length ? ` · walking tour: ${this.hotelTour.length} waypoints left` : this.hotelTourCompleted ? " · hotel loop complete" : ""}`
         : undefined,
+      slotAudioStatus: process.env.NODE_ENV !== "production" ? this.audio.slotStatus : undefined,
       upgraded: Object.values(s.upgrades).some(Boolean),
       message: s.messageRemaining > 0 ? s.lastMessage : "",
       prompt:

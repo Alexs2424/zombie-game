@@ -27,7 +27,11 @@ import { createCharacter } from "./characters";
 import { RouletteMotion, ROULETTE_GEOMETRY } from "./roulette-motion";
 import { POKER_TABLES, type PokerTableId } from "./poker";
 import { paintPlayingCard } from "./card-art";
+import { LOUNGE_RECTS } from "./lounge-layout";
+import { SERVICE_RECTS } from "./service-layout";
+import { buildLoungeDecor } from "./lounge-decor";
 import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
+import { slotCabinetsForIsland } from "./slot-machines";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import {
   Simulation,
@@ -41,6 +45,7 @@ import {
   WEAPONS,
   WEAPON_ORDER,
   type WeaponId,
+  type Rect,
 } from "./simulation";
 import "@babylonjs/core/Culling/ray";
 import { buildHotel } from "./hotel-scene";
@@ -56,6 +61,7 @@ export class GameRenderer {
   ready: Promise<void>;
   private weaponAssets: AssetContainer[] = [];
   private hotel: ReturnType<typeof buildHotel>;
+  private couchFallback?: TransformNode;
   private slotPlacements: {
     root: TransformNode;
     variant: "emerald" | "burgundy";
@@ -88,6 +94,11 @@ export class GameRenderer {
   private gates: Record<string, Mesh> = {};
   private gateSigns: Record<string, Mesh> = {};
   private shadows: ShadowGenerator[] = [];
+  private loungeAccentLights: (PointLight | SpotLight)[] = [];
+  private loungeShadow?: ShadowGenerator;
+  private serviceAccentLights: (PointLight | SpotLight)[] = [];
+  private serviceShadow?: ShadowGenerator;
+  private serviceFallbacks = new Map<"truck" | "props", TransformNode>();
   private gunKick = 0;
   private knifeModel?: TransformNode;
   private grenadeMeshes = new Map<number, Mesh>();
@@ -177,16 +188,23 @@ export class GameRenderer {
     amber.range = 13;
     const lounge = new PointLight(
       "lounge lamp",
-      new Vector3(10, 3, -5),
+      new Vector3(10, 3.6, -4.6),
       this.scene,
     );
-    lounge.diffuse = new Color3(0.46, 0.9, 0.72);
-    lounge.intensity = 0.95;
+    lounge.diffuse = new Color3(1, 0.72, 0.45);
+    lounge.intensity = 1.25;
     lounge.range = 12;
+    const backbar = new PointLight("Last Call shelf glow", new Vector3(12, 2.55, -10.55), this.scene);
+    backbar.diffuse = new Color3(1, 0.67, 0.32);
+    backbar.intensity = 1.1;
+    backbar.range = 7;
+    backbar.renderPriority = 2;
+    this.loungeAccentLights.push(backbar);
     for (const [x, z] of [
       [-6, 0],
       [22, 1],
       [35, 0],
+      [10, -4.6],
     ]) {
       const key = new SpotLight(
         "chandelier pool",
@@ -196,12 +214,17 @@ export class GameRenderer {
         1.35,
         this.scene,
       );
+      if (x === 10) {
+        key.renderPriority = 1;
+        this.loungeAccentLights.push(key);
+      }
       key.diffuse = new Color3(1, 0.8, 0.5);
       key.intensity = 2.8;
       key.range = 18;
       key.shadowMinZ = 0.3;
       key.shadowMaxZ = 18;
       const shadow = new ShadowGenerator(1024, key);
+      if (x === 10) this.loungeShadow = shadow;
       shadow.usePercentageCloserFiltering = true;
       shadow.filteringQuality = ShadowGenerator.QUALITY_MEDIUM;
       shadow.bias = 0.002;
@@ -260,6 +283,7 @@ export class GameRenderer {
     rouletteGlow.range = 9;
     this.environment();
     this.hotel = buildHotel(this.scene);
+    this.serviceLighting();
     this.handLight = new PointLight(
       "weapon bounce",
       new Vector3(-0.3, 0.5, -0.1),
@@ -311,6 +335,10 @@ export class GameRenderer {
       this.loadTableAssets(),
       this.loadSlotAssets(),
       this.loadPokerAssets(),
+      this.loadLoungeAssets(),
+      this.loadServiceAsset("truck"),
+      this.loadServiceAsset("props"),
+      this.loadCouchAsset(),
       loadZombieAsset().then((asset) => {
         this.zombieAsset = asset;
       }),
@@ -449,13 +477,6 @@ export class GameRenderer {
     const width = BOUNDS.maxX - BOUNDS.minX;
     const centerX = (BOUNDS.minX + BOUNDS.maxX) / 2;
     this.box("floor", centerX, -0.12, 0, width, 0.2, 24, floorMat);
-    const loungeMat = this.mat("lounge carpet", "#739f8b");
-    const loungeTexture = carpet.clone();
-    loungeTexture.uScale = 3;
-    loungeTexture.vScale = 3.75;
-    loungeMat.diffuseTexture = loungeTexture;
-    loungeMat.specularColor = Color3.Black();
-    this.box("lounge carpet", 10, -0.005, -4.5, 11.5, 0.035, 14.7, loungeMat);
     this.box(
       "staff floor",
       10,
@@ -464,12 +485,14 @@ export class GameRenderer {
       11.5,
       0.035,
       8.8,
-      this.mat("service tile", "#53605a"),
+      this.mat("service concrete", "#626b62"),
     );
-    for (let x = 5; x < 16; x += 1.5)
-      this.box("grout", x, 0.013, 7.5, 0.016, 0.005, 8.8, dark);
-    for (let z = 3.5; z < 12; z += 1.5)
-      this.box("grout", 10, 0.014, z, 11.5, 0.005, 0.016, dark);
+    const concreteJoint = this.mat("service expansion joints", "#3d4840");
+    for (let x = 7; x < 16; x += 3)
+      this.box("concrete joint", x, 0.013, 7.5, 0.018, 0.005, 8.8, concreteJoint);
+    for (let z = 6; z < 12; z += 3)
+      this.box("concrete joint", 10, 0.014, z, 11.5, 0.005, 0.018, concreteJoint);
+    this.serviceFallback();
     this.box(
       "ceiling",
       centerX,
@@ -483,6 +506,8 @@ export class GameRenderer {
     // Decorative meshes stay inside these same solid footprints used by the simulation.
     for (const r of STATIC_RECTS) {
       if (r.id.startsWith("hotel-")) continue;
+      if (LOUNGE_RECTS.some((furniture) => furniture.id === r.id)) continue;
+      if (SERVICE_RECTS.some((fixture) => fixture.id === r.id)) continue;
       if (
         [
           "upgrade-machine",
@@ -493,7 +518,7 @@ export class GameRenderer {
       )
         continue;
       if (r.id.startsWith("slots")) {
-        this.slotIsland(r.x, r.z, r.w, r.d);
+        this.slotIsland(r);
         continue;
       }
       if (r.id.startsWith("poker")) {
@@ -501,7 +526,14 @@ export class GameRenderer {
         continue;
       }
       if (r.id === "vip-sofa") {
-        this.box("sofa base", r.x, 0.26, r.z, r.w, 0.4, r.d, wood);
+        // Keep the loading fallback out of the merged room scenery so it can
+        // be removed after the detailed couch has loaded successfully.
+        const fallback = new TransformNode(
+          "VIP couch loading fallback",
+          this.scene,
+        );
+        this.couchFallback = fallback;
+        this.box("sofa base", r.x, 0.26, r.z, r.w, 0.4, r.d, wood, fallback);
         this.box(
           "tufted sofa back",
           r.x + 0.4,
@@ -511,6 +543,7 @@ export class GameRenderer {
           0.8,
           r.d,
           burgundy,
+          fallback,
         );
         for (let z = -1; z <= 3; z++) {
           this.box(
@@ -522,6 +555,7 @@ export class GameRenderer {
             0.2,
             0.94,
             burgundy,
+            fallback,
           );
           this.box(
             "upholstery button",
@@ -532,7 +566,12 @@ export class GameRenderer {
             0.04,
             0.04,
             trim,
+            fallback,
           );
+        }
+        for (const mesh of fallback.getChildMeshes()) {
+          mesh.isPickable = false;
+          for (const shadow of this.shadows) shadow.addShadowCaster(mesh, false);
         }
         continue;
       }
@@ -563,7 +602,7 @@ export class GameRenderer {
         r.w,
         r.id === "cashier" ? 1 : r.h,
         r.d,
-        r.id === "bar" || r.id === "cashier" ? wood : wall,
+        r.id === "cashier" ? wood : wall,
       );
       if (r.h > 4) {
         this.box(
@@ -749,68 +788,14 @@ export class GameRenderer {
     this.label(
       "lounge sign",
       "THE LAST CALL",
-      11,
-      3.8,
-      -11.9,
-      4.8,
-      0.58,
+      12,
+      4.03,
+      -11.79,
+      5.5,
+      0.5,
       "#cead72",
       Math.PI,
     );
-    this.box("bar top", 12, 1.31, -8.7, 5.7, 0.14, 1.1, trim);
-    for (const y of [1.8, 2.7]) {
-      this.box("back bar shelf", 10.5, y, -11.68, 4.2, 0.08, 0.45, wood);
-      for (let i = 0; i < 9; i++) {
-        const x = 8.6 + i * 0.43,
-          height = 0.28 + (i % 3) * 0.08;
-        const bottle = this.mat(
-          i % 2 ? "amber bottle" : "green glass",
-          i % 2 ? "#8c5d2c" : "#2c7059",
-        );
-        this.cylinder(
-          "bottle body",
-          x,
-          y + height / 2 + 0.04,
-          -11.67,
-          0.14,
-          height,
-          bottle,
-          0.12,
-        );
-        this.cylinder(
-          "bottle neck",
-          x,
-          y + height + 0.1,
-          -11.67,
-          0.055,
-          0.12,
-          bottle,
-        );
-        this.box(
-          "bottle label",
-          x,
-          y + height / 2,
-          -11.57,
-          0.08,
-          0.13,
-          0.01,
-          cream,
-        );
-      }
-    }
-    for (let i = 0; i < 5; i++) {
-      this.box(
-        "bar front brass stile",
-        9.8 + i,
-        0.62,
-        -8.135,
-        0.035,
-        1.1,
-        0.025,
-        trim,
-      );
-      this.cylinder("bar glass", 10.1 + i * 0.7, 1.48, -8.7, 0.11, 0.19, cream);
-    }
     for (const p of PURCHASES) {
       if (p.id === "pistolAmmo") {
         this.box("ammo plaque", p.x, 1.5, -11.9, 2.5, 1.6, 0.12, wood);
@@ -975,28 +960,9 @@ export class GameRenderer {
       "#ddc68b",
       Math.PI,
     );
-    for (let i = 0; i < 3; i++) {
-      this.cylinder(
-        "cocktail stem",
-        13.1 + i * 0.45,
-        1.51,
-        -8.7,
-        0.025,
-        0.22,
-        trim,
-      );
-      this.cylinder(
-        "cocktail coupe",
-        13.1 + i * 0.45,
-        1.64,
-        -8.7,
-        0.06,
-        0.11,
-        this.mat("cocktail " + i, ["#b34a4a", "#d1b567", "#629d80"][i], 0.2),
-        0.2,
-      );
-    }
     SPAWNS.forEach((p, i) => {
+      // This entry is concealed behind the new back bar; its spawn lane stays open.
+      if (i === 3) return;
       const rotation = i === 1 ? -Math.PI / 2 : i === 2 ? 0 : Math.PI;
       const x = i === 1 ? -15.95 : p.x,
         z = i === 1 ? p.z : i === 2 ? 11.94 : -11.94;
@@ -1041,64 +1007,6 @@ export class GameRenderer {
         );
       }
     });
-    // Staff corridor reads as back-of-house: exposed pipes, valves, service signage.
-    for (const z of [5.4, 6.0]) {
-      const pipe = this.cylinder(
-        "service pipe",
-        10,
-        4.12,
-        z,
-        0.13,
-        11.4,
-        this.mat("utility steel", "#727b72"),
-      );
-      pipe.rotation.z = Math.PI / 2;
-      for (const x of [5.8, 9.5, 13.2]) {
-        const joint = this.cylinder(
-          "pipe coupling",
-          x,
-          4.12,
-          z,
-          0.19,
-          0.11,
-          trim,
-        );
-        joint.rotation.z = Math.PI / 2;
-      }
-    }
-    this.label(
-      "staff fire instructions",
-      "SERVICE CORRIDOR",
-      7,
-      2.55,
-      3.27,
-      4.5,
-      0.45,
-      "#cfb986",
-      Math.PI,
-    );
-    for (let i = 0; i < 4; i++) {
-      this.box(
-        "staff conduit",
-        7 + i * 0.23,
-        2.12,
-        11.86,
-        0.035,
-        4.16,
-        0.08,
-        dark,
-      );
-      this.box(
-        "staff switch box",
-        7 + i * 0.45,
-        1.8,
-        11.81,
-        0.32,
-        0.48,
-        0.15,
-        this.mat("utility steel", "#727b72"),
-      );
-    }
     // Coffered ceiling and suspended fixtures establish architectural scale.
     for (let x = BOUNDS.minX; x <= BOUNDS.maxX; x += 4)
       this.box("ceiling cross beam", x, 4.66, 0, 0.13, 0.22, 24, wood);
@@ -1330,6 +1238,8 @@ export class GameRenderer {
           i % 2 ? burgundy : cream,
         );
     }
+    this.serviceWallFinish();
+    buildLoungeDecor(this.scene);
     // Batch fixed scenery by material, keeping shutters and their children movable.
     const groups = new Map<StandardMaterial, Mesh[]>();
     const gates = new Set(Object.values(this.gates));
@@ -1414,6 +1324,240 @@ export class GameRenderer {
       });
     }
   }
+  private serviceWallFinish() {
+    const plaster = this.mat("service worn plaster", "#ffffff");
+    const texture = new DynamicTexture("service plaster wear", { width: 256, height: 512 }, this.scene, true);
+    const ctx = texture.getContext() as CanvasRenderingContext2D;
+    ctx.fillStyle = "#858e7e";
+    ctx.fillRect(0, 0, 256, 512);
+    // Small, repeatable stains give the utility finish scale without external textures.
+    for (let i = 0; i < 280; i++) {
+      const x = (i * 83) % 256, y = (i * 137) % 512;
+      ctx.fillStyle = i % 2 ? "rgba(33,49,38,.045)" : "rgba(204,208,184,.045)";
+      ctx.fillRect(x, y, 2 + i % 6, 4 + i % 21);
+    }
+    texture.update();
+    texture.anisotropicFilteringLevel = 8;
+    plaster.diffuseTexture = texture;
+    plaster.specularColor = Color3.Black();
+    const dado = this.mat("service painted steel dado", "#435c51");
+    const seam = this.mat("service panel seams", "#293b34");
+    const metal = this.mat("service kickplate", "#6b7970");
+    // Only the inward-facing solid sections are clad; all door openings remain clear.
+    const panels = [
+      { x: 4.285, z: 5.15, length: 3.7, alongX: false, inward: 1 },
+      { x: 4.285, z: 11.1, length: 1.8, alongX: false, inward: 1 },
+      { x: 15.715, z: 5.15, length: 3.7, alongX: false, inward: -1 },
+      { x: 15.715, z: 11.1, length: 1.8, alongX: false, inward: -1 },
+      { x: 7.14, z: 3.263, length: 5.72, alongX: true, inward: 1 },
+      { x: 14.56, z: 3.263, length: 2.32, alongX: true, inward: 1 },
+      { x: 10, z: 11.93, length: 11.43, alongX: true, inward: -1 },
+    ];
+    for (const { x, z, length, alongX, inward } of panels) {
+      const w = alongX ? length : 0.025, d = alongX ? 0.025 : length;
+      this.box("service wall upper finish", x, 3.22, z, w, 3.15, d, plaster);
+      this.box("service wall lower finish", x, 0.83, z, w, 1.66, d, dado);
+      for (const [y, h] of [[0.1, 0.18], [1.67, 0.045]])
+        this.box("service wall protective trim", x, y, z,
+          w + (alongX ? 0 : 0.013), h, d + (alongX ? 0.013 : 0), metal);
+      for (let offset = -length / 2 + 1.1; offset < length / 2 - 0.08; offset += 1.1) {
+        const px = x + (alongX ? offset : inward * 0.018);
+        const pz = z + (alongX ? inward * 0.018 : offset);
+        this.box("service dado seam", px, 0.9, pz,
+          alongX ? 0.012 : 0.005, 1.45, alongX ? 0.005 : 0.012, seam);
+        for (const y of [0.28, 1.48])
+          this.box("service panel fastener", px, y, pz,
+            alongX ? 0.028 : 0.008, 0.028, alongX ? 0.008 : 0.028, metal);
+      }
+    }
+  }
+  private serviceFallback() {
+    const paint = this.mat("service fallback truck paint", "#9a8a66");
+    const cardboard = this.mat("service fallback cartons", "#97724b");
+    const steel = this.mat("service fallback steel", "#52645e");
+    const rubber = this.mat("service fallback rubber", "#151b19");
+    const glass = this.mat("service fallback glass", "#253e40");
+    for (const kind of ["truck", "props"] as const) {
+      const root = new TransformNode(`Service ${kind} loading fallback`, this.scene);
+      this.serviceFallbacks.set(kind, root);
+      for (const rect of SERVICE_RECTS.filter((r) => (r.id === "service-truck") === (kind === "truck"))) {
+        const material = rect.id.includes("cartons") || rect.id.includes("pallet") ? cardboard : steel;
+        this.box(`${rect.id} fallback`, rect.x, rect.h / 2, rect.z, rect.w, rect.h, rect.d,
+          kind === "truck" ? paint : material, root);
+        if (kind === "truck") {
+          this.box("fallback truck windshield", rect.x - rect.w / 2 - 0.005, 2.05, rect.z,
+            0.015, 0.6, 1.85, glass, root);
+          for (const x of [rect.x - 1.8, rect.x + 1.7]) {
+            for (const side of [-1, 1]) {
+              const wheel = this.cylinder("fallback truck wheel", x, 0.42,
+                rect.z + side * (rect.d / 2 - 0.15), 0.8, 0.25, rubber);
+              wheel.parent = root;
+              wheel.rotation.x = Math.PI / 2;
+            }
+          }
+        } else {
+          this.box(`${rect.id} fallback band`, rect.x, rect.h * 0.55, rect.z,
+            rect.w + 0.005, 0.055, rect.d + 0.005, rubber, root);
+        }
+      }
+      for (const mesh of root.getChildMeshes()) mesh.isPickable = false;
+    }
+  }
+  private serviceLighting() {
+    // The loading bay has its own bounded pool; the lounge chandelier cannot
+    // reach around the staff partition. One map serves both imported assets.
+    const key = new SpotLight("Service loading bay work light", new Vector3(10, 4.48, 8.4),
+      new Vector3(0, -1, -0.12), 2.5, 1.2, this.scene);
+    key.diffuse = new Color3(0.83, 0.93, 1);
+    key.intensity = 2.15;
+    key.range = 13;
+    key.renderPriority = 3;
+    key.shadowMinZ = 0.3;
+    key.shadowMaxZ = 13;
+    const shadow = new ShadowGenerator(1024, key);
+    shadow.usePercentageCloserFiltering = true;
+    shadow.filteringQuality = ShadowGenerator.QUALITY_MEDIUM;
+    shadow.bias = 0.002;
+    shadow.normalBias = 0.025;
+    shadow.setDarkness(0.18);
+    this.serviceShadow = shadow;
+    // Keep this map out of the general scenery list: unrelated table, couch,
+    // and wall-weapon loaders register their meshes with every general map.
+    const fill = new PointLight("Service storage warm bounce", new Vector3(14.7, 3.55, 10.4), this.scene);
+    fill.diffuse = new Color3(1, 0.83, 0.59);
+    fill.intensity = 0.65;
+    fill.range = 8;
+    fill.renderPriority = 2;
+    this.serviceAccentLights.push(key, fill);
+    const receivers = this.scene.meshes.filter((mesh) => mesh.name.startsWith("scenery: service "));
+    const fallbacks = [...this.serviceFallbacks.values()].flatMap((root) => root.getChildMeshes());
+    for (const light of this.serviceAccentLights) light.includedOnlyMeshes = [...receivers, ...fallbacks];
+    for (const mesh of fallbacks) shadow.addShadowCaster(mesh, false);
+  }
+  private async loadServiceAsset(kind: "truck" | "props") {
+    let asset: AssetContainer | undefined;
+    try {
+      asset = await LoadAssetContainerAsync(`/models/service-${kind}.glb`, this.scene);
+      if (this.scene.isDisposed) {
+        asset.dispose();
+        return;
+      }
+      // These exports are already placed in world space. Keep the glTF root,
+      // including its handedness transform, to preserve normals and winding.
+      asset.addAllToScene();
+      for (const mesh of asset.meshes) {
+        mesh.isPickable = false;
+        mesh.receiveShadows = true;
+        const material = mesh.material as unknown as { maxSimultaneousLights?: number };
+        if (material && "maxSimultaneousLights" in material) material.maxSimultaneousLights = 8;
+        for (const texture of mesh.material?.getActiveTextures() ?? []) texture.anisotropicFilteringLevel = 8;
+        if (mesh.getTotalVertices() > 0) {
+          this.serviceShadow?.addShadowCaster(mesh, false);
+          mesh.freezeWorldMatrix();
+        }
+      }
+      for (const light of this.serviceAccentLights) light.includedOnlyMeshes.push(...asset.meshes);
+      const fallback = this.serviceFallbacks.get(kind);
+      if (fallback) {
+        const meshes = fallback.getChildMeshes();
+        for (const mesh of meshes) this.serviceShadow?.removeShadowCaster(mesh, false);
+        for (const light of this.serviceAccentLights)
+          light.includedOnlyMeshes = light.includedOnlyMeshes.filter((mesh) => !meshes.includes(mesh));
+        fallback.dispose();
+        this.serviceFallbacks.delete(kind);
+      }
+      this.weaponAssets.push(asset);
+    } catch (error) {
+      if (asset) {
+        const meshes = asset.meshes;
+        for (const light of this.serviceAccentLights)
+          light.includedOnlyMeshes = light.includedOnlyMeshes.filter((mesh) => !meshes.includes(mesh));
+        for (const mesh of asset.meshes) this.serviceShadow?.removeShadowCaster(mesh, false);
+        asset.dispose();
+      }
+      if (!this.scene.isDisposed) console.warn(`Detailed service ${kind} unavailable; keeping the fallback.`, error);
+    }
+  }
+  private async loadLoungeAssets() {
+    const asset = await LoadAssetContainerAsync("/models/last-call-lounge.glb", this.scene);
+    if (this.scene.isDisposed) {
+      asset.dispose();
+      return;
+    }
+    this.weaponAssets.push(asset);
+    asset.addAllToScene();
+    // Accent lights affect this room only, and rank ahead of distant casino lights.
+    // Otherwise the eight-light material cap silently drops the lounge shadow light.
+    const litMeshes = [
+      ...asset.meshes,
+      ...this.scene.meshes.filter((mesh) => mesh.name.startsWith("scenery: Last Call")),
+      ...(this.bartender?.root.getChildMeshes() ?? []),
+    ];
+    for (const light of this.loungeAccentLights) light.includedOnlyMeshes = [...litMeshes];
+    // The export is baked to world placement, including glTF's handedness conversion.
+    // Retain the loader root so winding and normals remain correct.
+    for (const mesh of asset.meshes) {
+      mesh.isPickable = false;
+      mesh.receiveShadows = true;
+      const material = mesh.material as unknown as { maxSimultaneousLights?: number };
+      if (material && "maxSimultaneousLights" in material) material.maxSimultaneousLights = 8;
+      if (mesh.getTotalVertices() > 0) {
+        this.loungeShadow?.addShadowCaster(mesh, false);
+        mesh.freezeWorldMatrix();
+      }
+    }
+  }
+  private async loadCouchAsset() {
+    const footprint = STATIC_RECTS.find((rect) => rect.id === "vip-sofa")!;
+    let asset: AssetContainer | undefined;
+    let placement: TransformNode | undefined;
+    try {
+      asset = await LoadAssetContainerAsync("/models/vip-couch.glb", this.scene);
+      if (this.scene.isDisposed) {
+        asset.dispose();
+        return;
+      }
+      placement = new TransformNode("VIP couch placement", this.scene);
+      placement.position.set(footprint.x, 0, footprint.z);
+      // The glTF conversion root preserves +Z forward in this left-handed
+      // scene. Turn the couch toward the card tables to the west (-X).
+      placement.rotation.y = -Math.PI / 2;
+      const imported = asset.instantiateModelsToScene(
+        (name) => `VIP couch:${name}`,
+        false,
+        { doNotInstantiate: true },
+      );
+      for (const node of imported.rootNodes) node.parent = placement;
+      for (const mesh of placement.getChildMeshes()) {
+        mesh.isPickable = false;
+        mesh.receiveShadows = true;
+        const material = mesh.material as unknown as {
+          maxSimultaneousLights?: number;
+        };
+        if (material && "maxSimultaneousLights" in material)
+          material.maxSimultaneousLights = 8;
+        for (const shadow of this.shadows) shadow.addShadowCaster(mesh, false);
+        mesh.freezeWorldMatrix();
+      }
+      this.weaponAssets.push(asset);
+      if (this.couchFallback) {
+        for (const mesh of this.couchFallback.getChildMeshes())
+          for (const shadow of this.shadows)
+            shadow.removeShadowCaster(mesh, false);
+        this.couchFallback.dispose();
+        this.couchFallback = undefined;
+      }
+    } catch (error) {
+      placement?.dispose();
+      asset?.dispose();
+      // A missing optional furnishing must not prevent the game from starting.
+      if (!this.scene.isDisposed)
+        console.warn(
+          "Detailed VIP couch unavailable; keeping the fallback.",
+          error,
+        );
+    }
+  }
   private async loadPokerAssets() {
     const asset = await LoadAssetContainerAsync(
       "/models/poker-table.glb",
@@ -1448,7 +1592,8 @@ export class GameRenderer {
       }
     }
   }
-  private slotIsland(x: number, z: number, w: number, d: number) {
+  private slotIsland(island: Rect) {
+    const { x, z, w, d } = island;
     const base = this.mat("slot base", "#202b27"),
       brass = this.mat("slot brass", "#998153");
     this.box("slot island plinth", x, 0.1, z, w, 0.2, d, base);
@@ -1488,19 +1633,17 @@ export class GameRenderer {
         end > 0 ? Math.PI : 0,
       );
     }
-    for (const side of [-1, 1])
-      for (let i = 0; i < 3; i++) {
-        const zz = z - d / 2 + 0.7 + (i * (d - 1.4)) / 2;
-        const variant = (i + (side > 0 ? 1 : 0)) % 2 ? "burgundy" : "emerald";
-        const root = new TransformNode(
-          `slot ${this.slotPlacements.length + 1} ${variant}`,
-          this.scene,
-        );
-        root.position.set(x + side * (w / 2 - 0.7), 0.16, zz);
-        // Blender export faces +Z; both banks face outward toward their aisles.
-        root.rotation.y = (side * Math.PI) / 2;
-        this.slotPlacements.push({ root, variant });
-      }
+    for (const cabinet of slotCabinetsForIsland(island)) {
+      const variant = cabinet.modelVariant;
+      const root = new TransformNode(
+        `slot ${this.slotPlacements.length + 1} ${variant}`,
+        this.scene,
+      );
+      root.position.set(cabinet.rootX, 0.16, cabinet.rootZ);
+      // Blender export faces +Z; both banks face outward toward their aisles.
+      root.rotation.y = (cabinet.side * Math.PI) / 2;
+      this.slotPlacements.push({ root, variant });
+    }
   }
   private async loadSlotAssets() {
     await Promise.all(
@@ -1940,12 +2083,16 @@ export class GameRenderer {
       this.gateSigns[id].setEnabled(!open);
       this.gateSigns[id + "Back"]?.setEnabled(!open);
     }
+    const characterShadows = this.serviceShadow ? [...this.shadows, this.serviceShadow] : this.shadows;
     const active = new Set(
       sim.enemies.filter((e) => e.health > 0).map((e) => e.id),
     );
     for (const [id, v] of this.zombies)
       if (!active.has(id)) {
-        for (const generator of this.shadows)
+        const meshes = v.root.getChildMeshes();
+        for (const light of [...this.loungeAccentLights, ...this.serviceAccentLights])
+          light.includedOnlyMeshes = light.includedOnlyMeshes.filter((mesh) => !meshes.includes(mesh));
+        for (const generator of characterShadows)
           for (const mesh of v.root.getChildMeshes())
             generator.removeShadowCaster(mesh, false);
         v.root.dispose();
@@ -1962,10 +2109,24 @@ export class GameRenderer {
         v = this.zombie(e.id);
         this.zombies.set(e.id, v);
       }
+      const meshes = v.root.getChildMeshes();
+      const atCasinoLevel = Math.abs(e.y ?? 0) < 0.2;
+      const inLounge = atCasinoLevel && e.x > 4 && e.x < 16 && e.z > -12 && e.z < 3;
+      for (const light of this.loungeAccentLights) {
+        if (inLounge === light.includedOnlyMeshes.includes(meshes[0])) continue;
+        if (inLounge) light.includedOnlyMeshes.push(...meshes);
+        else light.includedOnlyMeshes = light.includedOnlyMeshes.filter((mesh) => !meshes.includes(mesh));
+      }
+      const inService = atCasinoLevel && e.x > 4 && e.x < 16 && e.z > 3 && e.z < 12;
+      for (const light of this.serviceAccentLights) {
+        if (inService === light.includedOnlyMeshes.includes(meshes[0])) continue;
+        if (inService) light.includedOnlyMeshes.push(...meshes);
+        else light.includedOnlyMeshes = light.includedOnlyMeshes.filter((mesh) => !meshes.includes(mesh));
+      }
       const membership = this.zombieShadows.get(e.id)!;
-      for (const shadow of this.shadows) {
+      for (const shadow of characterShadows) {
         const light = shadow.getLight().position;
-        const nearby = Math.hypot(e.x - light.x, e.z - light.z) < 12;
+        const nearby = shadow === this.serviceShadow ? inService : Math.hypot(e.x - light.x, e.z - light.z) < 12;
         if (nearby === membership.has(shadow)) continue;
         for (const mesh of v.root.getChildMeshes()) {
           if (nearby) shadow.addShadowCaster(mesh, false);

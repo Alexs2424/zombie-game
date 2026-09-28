@@ -135,3 +135,12 @@ Keep this preview local.
   instances. All meshes, lights, and transforms are removed on disposal.
 
 The layout reminder was delivered and paused after the user's verification.
+
+## PR integration
+
+Merged main through `cc13a66` to retain the detailed Last Call lounge, High Roller
+couch, positional slot audio, and service-corridor loading bay. The combined
+gameplay and audio suite passes all 173 tests. TypeScript, targeted lint, and the
+production build pass after conflict resolution. Chrome smoke checks confirm
+that the hotel restaurant, service truck, Last Call lounge, and High Roller couch
+all load correctly in the combined scene.

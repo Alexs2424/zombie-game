@@ -1,0 +1,109 @@
+{
+  "status": "passed",
+  "file": "/Users/alexsantarelli/Documents/ChatGPT/zombie test game/decadent-bar-room/public/models/last-call-lounge.glb",
+  "sha256": "4cf851fdff8e10979881ff472c0eb72a6bd36b88fb21dabe1c0a90a70671a398",
+  "bytes": 6092852,
+  "engine": "Babylon.js NullEngine",
+  "coordinateSystem": "default left-handed scene with original glTF conversion root preserved",
+  "bounds": {
+    "min": [
+      5.925000190734863,
+      0,
+      -11.920000076293945
+    ],
+    "max": [
+      15.069999694824219,
+      4.715000152587891,
+      0.9800000190734863
+    ],
+    "allowed": {
+      "x": [
+        4.2,
+        15.8
+      ],
+      "y": [
+        0,
+        4.85
+      ],
+      "z": [
+        -12,
+        3
+      ]
+    }
+  },
+  "meshCount": 14,
+  "vertexCount": 146175,
+  "triangleCount": 126772,
+  "collisionFootprints": [
+    {
+      "id": "bar",
+      "vertices": 34125
+    },
+    {
+      "id": "lounge-backbar",
+      "vertices": 54652
+    },
+    {
+      "id": "lounge-west-booth",
+      "vertices": 12452
+    },
+    {
+      "id": "lounge-north-booth",
+      "vertices": 10567
+    },
+    {
+      "id": "lounge-cocktail-table",
+      "vertices": 1115
+    },
+    {
+      "id": "lounge-stool-a",
+      "vertices": 1366
+    },
+    {
+      "id": "lounge-stool-b",
+      "vertices": 1366
+    }
+  ],
+  "rayChecks": [
+    {
+      "name": "bar front faces the bartender approach",
+      "point": [
+        12,
+        0.8,
+        -8.14547348022461
+      ],
+      "mesh": "Last Call / 01 — antique champagne brass"
+    },
+    {
+      "name": "countertop is under the bar world position",
+      "point": [
+        11.7,
+        1.3400000333786009,
+        -8.7
+      ],
+      "mesh": "Last Call / 03 — black gold-veined marble"
+    },
+    {
+      "name": "backbar stands against the south wall",
+      "point": [
+        12,
+        2.4,
+        -11.766500473022461
+      ],
+      "mesh": "Last Call / 07 — smoked bronze mirrors"
+    },
+    {
+      "name": "main entrance-to-VIP aisle",
+      "clear": true
+    },
+    {
+      "name": "bartender approach",
+      "clear": true
+    },
+    {
+      "name": "staff passage gap",
+      "clear": true
+    }
+  ],
+  "materialsSkipped": true
+}

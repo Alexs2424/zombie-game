@@ -952,6 +952,7 @@ export default function Home() {
           <strong>DEVELOPMENT PLAYTEST</strong>
           <span>{view.zombieAudioStatus}</span>
           <span>{view.hotelPlaytestStatus}</span>
+          <span>{view.slotAudioStatus}</span>
           {[
             ["new", "Seed run"],
             ["hotel-entrance", "Hotel entrance"],
@@ -966,17 +967,27 @@ export default function Home() {
             ["slotsWest", "Slots west"],
             ["slotsEast", "Slots east"],
             ["slotsBank", "Slots second bank"],
+            ["sound-slots-west", "Walk slots west"],
+            ["sound-slots-east", "Walk slots east"],
+            ["sound-slots-bank", "Walk second bank"],
             ["gate", "Lounge door"],
             ["bar", "Bartender"],
+            ["loungeWide", "Lounge overview"],
+            ["loungeEntrance", "Lounge entry view"],
+            ["loungeSeating", "Lounge seating"],
             ["shotgun", "Shotgun rack"],
             ["smg", "SMG rack"],
             ["rifle", "Rifle rack"],
             ["vip", "VIP room"],
+            ["couch", "VIP couch"],
             ["poker-a", "Card table I"],
             ["poker-b", "Card table II"],
             ["poker-near-flush", "Prepare flush"],
             ["poker-swap", "Swap test card"],
             ["staff", "Staff door"],
+            ["serviceOverview", "Service overview"],
+            ["serviceTruck", "Service truck"],
+            ["serviceStorage", "Service storage"],
             ["workshop", "Workshop"],
             ["ammo", "Ammo rack"],
             ["tablesGate", "Table room door"],

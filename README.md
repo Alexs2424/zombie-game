@@ -21,6 +21,26 @@ npm run build
 
 The Sites preview uses a local Worker runtime; the development process must remain running while playing locally.
 
+## Last Call lounge
+
+The cocktail lounge has original Blender-built marble and walnut furniture, an
+illuminated arched backbar, burgundy booths, cocktail tables and stools, and a
+crystal chandelier. Furniture blocks players and zombies while preserving the
+cross-room aisle and staff escape route. See [asset source and rebuild details](docs/bar-assets/README.md)
+and [validation notes](docs/bar-assets/playtest.md). Development previews offer
+**Lounge overview**, **Lounge entry view**, and **Lounge seating** camera controls.
+
+## Service corridor loading bay
+
+The service corridor now contains an original Blender-built hotel-supply truck,
+stacked shipping cartons, wooden pallets, loaded shelving, a pallet jack, and
+detailed utility fixtures. The parked truck and storage assemblies provide
+solid cover while the staff shortcut, VIP exit, and lounge approach remain
+connected. Editable Blender sources, rebuild scripts, previews, and placement
+checks are documented in [service assets](docs/service-assets/README.md).
+Development playtests include **Service overview**, **Service truck**, and
+**Service storage** viewpoints.
+
 ## Controls
 
 | Action              | Control                                    |
@@ -74,7 +94,7 @@ The five-round income model leaves 500 chips for ammunition after the shotgun, t
 
 ## Validation and limitations
 
-106 automated checks pass (45 core simulation/combat, 20 card-table/revolver, 15 roulette rules, six roulette motion, nine audio regressions, nine zombie cue scheduling checks, and two zombie-asset checks), including five-round progression and fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
+125 automated checks pass (45 core simulation/combat, 20 card-table/revolver, 15 roulette rules, six roulette motion, 14 audio regressions, nine zombie cue scheduling checks, 14 slot proximity/layout checks, and two zombie-asset checks), including five-round progression and fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
 
 This is a rough playable: stylized geometry and humanoids, synthesized effects plus AI-generated zombie voices, no aim-down-sights, jump, crouch, random weapon station, persistent records, native app, controller support, or co-op. Mouse capture needs a focused browser and a genuine user gesture. The final feel and difficulty need a hands-on mouse playtest.
 
@@ -191,3 +211,28 @@ background rendering is disabled. This preview stays local. The development
 `?playtest=1` controls include the locked entrance, service bell, guided hotel
 loop, and an explicit ambusher-clear button for reward QA. Detailed editable
 asset sources and validation live in `docs/hotel-assets/` and `tools/hotel-assets/`.
+
+## Slot-machine pass-by sounds — September 28, 2026
+
+The 12 slot cabinets now give occasional quiet, positional greetings when you
+walk past their front panels. Three short original synthesized variations use
+padded reel ticks, soft electronic chimes, and coin-tray chatter. A gently sagging
+last note suits the abandoned casino. These require no additional downloads,
+AI service, or third-party audio license.
+
+Sounds trigger within 3.5 metres, pan with the listener, soften with distance,
+and fade completely by 5 metres. Cabinets behind walls or the back of a slot
+island stay quiet. Only one plays at a time; a four-second shared cooldown, a
+20-second cabinet cooldown, and leaving beyond 4.5 metres prevent repeated
+greetings while camping beside a machine. The old floor-wide slot melody has
+been replaced by these cabinet sounds. Zombie calls and round stingers have
+priority; pause, focus loss, restart, and disposal stop active slot audio.
+
+Development `/?playtest=1` has **Walk slots west**, **Walk slots east**, and
+**Walk second bank** controls for repeatable real movement past each aisle.
+The slot status names the emitting cabinet and sound. See
+[`docs/slot-audio.md`](docs/slot-audio.md) for implementation and validation.
+
+## Blender High Roller couch
+
+The couch beside the flush card games now uses an original Blender-built oxblood leather banquette with sculpted diamond tufting, five shaped cushions, stitched piping, rolled arms, walnut joinery, and brass feet. The existing footprint and cover height remain unchanged. The editable source is `assets/source/vip-couch.blend`; the game loads `public/models/vip-couch.glb`. See `docs/couch-assets/` for previews, regeneration instructions, and validation. Development playtest controls include a **VIP couch** viewpoint.

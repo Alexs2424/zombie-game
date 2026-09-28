@@ -1,6 +1,8 @@
 import type { GameEvent, V2 } from "./simulation";
 import type { WorldPosition } from "./world";
 import { HOTEL_FIXTURES } from "./hotel-fixtures.ts";
+import { SlotAudioDirector, slotSourceAudible, type SlotCue } from "./slot-audio-director.ts";
+import { slotSoundSamples, SLOT_SOUND_NAMES } from "./slot-sounds.ts";
 
 type ZombieCue = "chase" | "last" | "horde";
 const ZOMBIE_SOUNDS: Record<ZombieCue, string[]> = {
@@ -24,6 +26,20 @@ export class GameAudio {
   private active = false;
   private voices = 0;
   private duckUntil = 0;
+  private slotDirector = new SlotAudioDirector();
+  private slotBuffers: AudioBuffer[] = [];
+  private slotSequence = 0;
+  private lastSlotPlayback = "none";
+  private slotVoice: {
+    stop: () => void;
+    source: SlotCue["source"];
+    gain: GainNode;
+    panner: StereoPannerNode;
+    filter: BiquadFilterNode;
+  } | null = null;
+  get slotStatus() {
+    return `Slots · last cue: ${this.lastSlotPlayback}`;
+  }
   private zombieBuffers = new Map<string, AudioBuffer>();
   private zombieLoading: Promise<void> | null = null;
   private zombieFetch: AbortController | null = null;
@@ -82,6 +98,12 @@ export class GameAudio {
       );
       const data = this.noise.getChannelData(0);
       for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+      this.slotBuffers = SLOT_SOUND_NAMES.map((_, variant) => {
+        const samples = slotSoundSamples(this.context!.sampleRate, variant);
+        const buffer = this.context!.createBuffer(1, samples.length, this.context!.sampleRate);
+        buffer.getChannelData(0).set(samples);
+        return buffer;
+      });
       const air = this.context.createBufferSource();
       air.buffer = this.noise;
       air.loop = true;
@@ -133,7 +155,10 @@ export class GameAudio {
   }
   setActive(playing: boolean) {
     this.active = playing;
-    if (!playing) this.stopZombieVoices();
+    if (!playing) {
+      this.stopZombieVoices();
+      this.slotVoice?.stop();
+    }
     if (this.world && this.context)
       this.world.gain.setTargetAtTime(
         playing ? 1 : 0,
@@ -330,6 +355,7 @@ export class GameAudio {
   }
   private roundStinger(start: boolean) {
     this.stopZombieVoices();
+    this.slotVoice?.stop();
     this.duckUntil = (this.context?.currentTime ?? 0) + 2.5;
     // Original casino-horror cues: low impact and tense rising bells / falling resolution.
     this.burst(start ? 1.1 : 0.7, start ? 0.26 : 0.13, start ? 180 : 700);
@@ -368,6 +394,7 @@ export class GameAudio {
       0.5,
     );
     if (!playing) return;
+    this.updateSlots(dt, player, yaw, moving);
     for (const voice of this.zombieVoices.values()) {
       const spatial = this.zombieSpatial(voice.kind, player, voice.enemy, yaw);
       voice.panner.pan.setTargetAtTime(spatial.pan, c.currentTime, 0.08);
@@ -395,34 +422,67 @@ export class GameAudio {
       this.tone(440, 0.8, 0.008 * duck, "sine", undefined, 0.42, pan);
       return;
     }
-    const source =
-      player.x < 4
-        ? { x: -7, z: 0 }
-        : tables
-          ? { x: 35, z: 5 }
-          : { x: 12, z: -9 };
+    // Actual cabinet pass-bys replace the old room-wide slot melody.
+    if (player.x < 4) return;
+    const source = tables ? { x: 35, z: 5 } : { x: 12, z: -9 };
     const distance = Math.hypot(source.x - player.x, source.z - player.z);
     const level = 0.045 * Math.max(0.1, 1 - distance / 18) * duck;
     const pan = Math.sin(
       Math.atan2(source.x - player.x, source.z - player.z) - yaw,
     );
-    if (player.x < 4) {
-      [659.25, 783.99, 987.77].forEach((n, i) =>
-        this.tone(n, 0.55, level, "sine", undefined, i * 0.2, pan),
-      );
-      this.tone(1318.5, 0.8, level * 0.3, "sine", undefined, 0.4, pan);
-    } else {
-      this.burst(tables ? 0.5 : 0.15, level, tables ? 1800 : 2800, pan);
-      this.tone(
-        tables ? 880 : 1200,
-        0.35,
-        level * 0.5,
-        "sine",
-        undefined,
-        0.15,
-        pan,
-      );
+    this.burst(tables ? 0.5 : 0.15, level, tables ? 1800 : 2800, pan);
+    this.tone(tables ? 880 : 1200, 0.35, level * 0.5, "sine", undefined, 0.15, pan);
+  }
+  private updateSlots(dt: number, player: V2, yaw: number, moving: boolean) {
+    const c = this.context!;
+    const suppressed = c.state !== "running" || c.currentTime < this.duckUntil ||
+      this.zombieVoices.size > 0 || this.voices > 0;
+    const cue = this.slotDirector.update(dt, {
+      playing: this.active, player, moving, suppressed: suppressed || !!this.slotVoice,
+    });
+    if (cue && this.slotBuffers.length) {
+      const variant = (cue.variant + this.slotSequence++) % this.slotBuffers.length;
+      const source = c.createBufferSource(), gain = c.createGain(),
+        panner = c.createStereoPanner(), filter = c.createBiquadFilter();
+      source.buffer = this.slotBuffers[variant];
+      gain.gain.value = 0;
+      filter.type = "lowpass";
+      filter.Q.value = 0.55;
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(panner);
+      panner.connect(this.world!);
+      const voice = {
+        stop: () => { source.stop(); cleanup(); },
+        source: cue.source, gain, panner, filter,
+      };
+      const cleanup = () => {
+        if (this.slotVoice === voice) this.slotVoice = null;
+        source.disconnect();
+        gain.disconnect();
+        panner.disconnect();
+        filter.disconnect();
+      };
+      source.onended = cleanup;
+      this.slotVoice = voice;
+      this.lastSlotPlayback = `${cue.source.id} · ${SLOT_SOUND_NAMES[variant]}`;
+      source.start();
     }
+    const voice = this.slotVoice;
+    if (voice) {
+      const distance = Math.hypot(voice.source.x - player.x, voice.source.z - player.z);
+      const pan = Math.sin(Math.atan2(voice.source.x - player.x, voice.source.z - player.z) - yaw);
+      voice.panner.pan.setTargetAtTime(pan, c.currentTime, 0.06);
+      const audible = slotSourceAudible(voice.source, player, 5);
+      voice.gain.gain.setTargetAtTime(audible ? 0.65 * Math.pow(Math.max(0, 1 - distance / 5), 1.4) : 0, c.currentTime, 0.06);
+      voice.filter.frequency.setTargetAtTime(Math.max(900, 3800 - distance * 450), c.currentTime, 0.08);
+    }
+  }
+  resetSlots() {
+    this.slotVoice?.stop();
+    this.slotDirector.reset();
+    this.slotSequence = 0;
+    this.lastSlotPlayback = "none";
   }
   /** Original swung lounge instrumental; driven by gameplay frames, no timers. */
   updateHotel(dt: number, playing: boolean, jukeboxOn: boolean, player: WorldPosition, yaw: number) {
@@ -472,6 +532,7 @@ export class GameAudio {
     const c = this.context;
     if (!c || !this.world || !this.active || c.state !== "running" ||
         c.currentTime < this.duckUntil || this.zombieVoices.size > 0) return;
+    this.slotVoice?.stop();
     const choices = ZOMBIE_SOUNDS[kind].filter((name) => this.zombieBuffers.has(name));
     const alternatives = choices.filter((name) => name !== this.lastZombieSample[kind]);
     const pool = alternatives.length ? alternatives : choices;
@@ -514,6 +575,7 @@ export class GameAudio {
     if (!c || !this.active || c.state !== "running" || this.zombieVoices.size > 0 ||
         c.currentTime < Math.max(this.nextZombieAttack, this.duckUntil)) return;
     this.nextZombieAttack = c.currentTime + 1.6;
+    this.slotVoice?.stop();
     this.synthesizedThreat(player, enemy, yaw, 0, true);
   }
   private stopZombieVoices() {
@@ -589,6 +651,8 @@ export class GameAudio {
     };
   }
   dispose() {
+    this.resetSlots();
+    this.slotBuffers = [];
     this.stopZombieVoices();
     this.zombieFetch?.abort();
     this.zombieBuffers.clear();

@@ -1,0 +1,157 @@
+{
+  "status": "passed",
+  "notes": [],
+  "file": "vip-couch.glb",
+  "sha256": "583ed4780f1485d028430844a2094989be65952504abd0c823168a3013d6d726",
+  "bytes": 5911344,
+  "triangles": 106490,
+  "triangle_budget": 120000,
+  "materials": 6,
+  "material_draw_calls": 6,
+  "draw_call_budget": 12,
+  "bounds_min": [
+    -2.4779999256134033,
+    0.0,
+    -0.5325000286102295
+  ],
+  "bounds_max": [
+    2.4779999256134033,
+    1.1949999332427979,
+    0.5300000309944153
+  ],
+  "dimensions_XYZ": [
+    4.955999851226807,
+    1.1949999332427979,
+    1.0625000596046448
+  ],
+  "origin": "Y-up, feet on Y=0",
+  "expected_front_axis": "+Z (requires visual verification)",
+  "finite_arrays": true,
+  "unit_normals": true,
+  "indices_valid": true,
+  "texture_references_valid": true,
+  "degenerate_triangles": 0,
+  "winding_mismatches": 0,
+  "images": [
+    {
+      "name": "couch-leather-normal",
+      "size": [
+        1024,
+        1024
+      ],
+      "mimeType": "image/png",
+      "bytes": 1613548,
+      "embedded": true
+    },
+    {
+      "name": "couch-leather-color",
+      "size": [
+        1024,
+        1024
+      ],
+      "mimeType": "image/png",
+      "bytes": 644488,
+      "embedded": true
+    },
+    {
+      "name": "couch-leather-roughness",
+      "size": [
+        1024,
+        1024
+      ],
+      "mimeType": "image/png",
+      "bytes": 756425,
+      "embedded": true
+    },
+    {
+      "name": "couch-walnut-color",
+      "size": [
+        512,
+        512
+      ],
+      "mimeType": "image/png",
+      "bytes": 107416,
+      "embedded": true
+    }
+  ],
+  "material_geometry": [
+    {
+      "node": "01 Oxblood leather \u2022 pebbled grain",
+      "material": "01 Oxblood leather \u2022 pebbled grain",
+      "triangles": 66142,
+      "vertices": 35851,
+      "texture_slots": [
+        "normalTexture",
+        "pbrMetallicRoughness.baseColorTexture",
+        "pbrMetallicRoughness.metallicRoughnessTexture"
+      ],
+      "uv_ranges": {
+        "TEXCOORD_0": {
+          "minimum": [
+            -4.691034317016602,
+            -1.2634615898132324
+          ],
+          "maximum": [
+            4.691034317016602,
+            1.9448809623718262
+          ]
+        }
+      }
+    },
+    {
+      "node": "02 Rolled leather welt",
+      "material": "02 Rolled leather welt",
+      "triangles": 18444,
+      "vertices": 14304,
+      "texture_slots": [],
+      "uv_ranges": {}
+    },
+    {
+      "node": "03 Saddle stitch \u2022 warm oxblood",
+      "material": "03 Saddle stitch \u2022 warm oxblood",
+      "triangles": 2880,
+      "vertices": 3840,
+      "texture_slots": [],
+      "uv_ranges": {}
+    },
+    {
+      "node": "04 Hand finished walnut",
+      "material": "04 Hand finished walnut",
+      "triangles": 4844,
+      "vertices": 3314,
+      "texture_slots": [
+        "pbrMetallicRoughness.baseColorTexture"
+      ],
+      "uv_ranges": {
+        "TEXCOORD_0": {
+          "minimum": [
+            -1.862645149230957e-07,
+            0.0
+          ],
+          "maximum": [
+            1.0,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "node": "05 Antique brass \u2022 feet and nailheads",
+      "material": "05 Antique brass \u2022 feet and nailheads",
+      "triangles": 13880,
+      "vertices": 9472,
+      "texture_slots": [],
+      "uv_ranges": {}
+    },
+    {
+      "node": "06 Shadow fabric underneath",
+      "material": "06 Shadow fabric underneath",
+      "triangles": 300,
+      "vertices": 178,
+      "texture_slots": [],
+      "uv_ranges": {}
+    }
+  ],
+  "required_extensions": [],
+  "generator": "Khronos glTF Blender I/O v5.2.40"
+}
