@@ -33,7 +33,7 @@ The Sites preview uses a local Worker runtime; the development process must rema
 | Sprint              | Shift                                      |
 | Reload              | R; an empty trigger also starts a reload   |
 | Buy/interact        | E when close to a purchase                 |
-| Switch weapons      | 1 / 2 / 3 / 4                              |
+| Switch weapons      | 1 / 2 / 3 / 4 / 5                          |
 | Pause/release mouse | Escape                                     |
 
 The start and pause screens provide mouse sensitivity, sound volume, and optional frame statistics. Losing focus pauses the run and clears held input. Controller support is deferred.
@@ -50,17 +50,20 @@ Zombies use three original Blender designs: Pit Boss, Crooked Dealer, and Last S
 - Staff passage: 1,200 chips, purchased from inside the staff area after opening the lounge. It completes the second movement loop.
 - High Roller Club: 1,300 chips from the lounge. Opens a 12 × 24 metre poker room and both its lounge and staff entrances. A private entrance starts spawning zombies only after the room opens.
 - The Devil’s Tables: 1,500 chips from the High Roller Club. Opens a 14 × 24 metre room, two connected entrances, and a delayed dealer spawn. Craps and roulette are broad training islands.
-- Seven’s Curse craps wager: 250 chips, once per round. Two fair six-sided dice roll while combat continues. A total of seven slows walking and sprinting by 20% for that round; other totals pay 500 chips (250 net). During intermission, the wager and any curse apply to the upcoming round. Roulette is animated scenery in this version.
+- Seven’s Curse craps wager: 250 chips, once per round. Two fair six-sided dice roll while combat continues. A total of seven slows walking and sprinting by 20% for that round; other totals pay 500 chips (250 net). During intermission, the wager and any curse apply to the upcoming round.
+- Lucky Four roulette: 200 chips on every spin, charged when the spin starts. A fair 0–36 wheel spins for six seconds while combat continues. **4 and 24** refill the equipped gun’s magazine and reserve; **7** refills every owned gun; **0** refills every owned gun and grants **double damage for 30 seconds**. Other numbers give no reward. There is no additional charge at the result and no refund on a win. Return to the table for another spin once the wheel stops.
 - Dealer’s Choice SMG: 1,100 chips in the lounge; 400-chip reserve refill.
 - Pit Boss rifle: 1,600 chips on the east wall of the High Roller Club; 500-chip reserve refill.
+- The Dead Man’s Hand revolver: complete a five-card flush at either High Roller Club card table. One free chosen-card exchange per table, per round; hands persist between visits. The first flush grants and equips the six-shot revolver in slot 5; the other table’s flush refills it.
 - Marlowe, the lounge bartender: **E** from the customer side of the bar opens the menu and pauses the solo run. House Reserve costs 1,500 (+50 maximum health); Quick Pour costs 1,000 (reload time ×0.7); Night Shift costs 900 (sprint speed ×1.15). Perks are one-time purchases for the current run.
-- Double Down: 2,000 chips per owned weapon, at Marlowe’s menu or the VIP workshop. Increases magazine capacity by 50%, damage by approximately 35%, and fills the magazine once. Select the gun to upgrade in the bar menu; the workshop upgrades your equipped gun. Both locations share upgrade state.
+- Double Down: 2,000 chips per owned weapon, at Marlowe’s menu or the VIP workshop. Increases magazine capacity by 50%, damage by approximately 35%, and fills the magazine once. The revolver retains six chambers and gets a 25% faster reload instead of extra magazine capacity. Select the gun to upgrade in the bar menu; the workshop upgrades your equipped gun. Both locations share upgrade state.
 
 The five-round income model leaves 500 chips for ammunition after the shotgun, the original lounge/staff/VIP unlocks, and one weapon upgrade. Extra guns and perks are competing build choices; buying everything is a longer-run goal. Values are initial playtest tuning, not final balance. Rounds continue after five with bounded enemy speed and health.
 
 ## Architecture
 
 - `lib/game/simulation.ts`: pure gameplay rules, economy, rays, collisions, and shared navigation flow field.
+- `lib/game/poker.ts`: persistent five-card hands, finite shuffled decks, suit matching, and discarded-card recycling. `card-art.ts` draws the live tabletop card prints.
 - `lib/game/renderer.ts`: casino environment, local GLB weapon loading, animation, lighting, and frame sampling.
 - `lib/game/characters.ts`: articulated casino guests and Marlowe, with clothing and facial details.
 - `lib/game/runtime.ts`: fixed-step updates, input, pointer lock, pause/resume, restart, and HUD snapshots.
@@ -70,7 +73,7 @@ The five-round income model leaves 500 chips for ammunition after the shotgun, t
 
 ## Validation and limitations
 
-36 automated checks pass (34 simulation and two audio-routing regressions), including five-round progression and three fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
+93 automated checks pass (45 core simulation/combat, 20 card-table/revolver, 15 roulette rules, six roulette motion, five audio regressions, and two zombie-asset checks), including five-round progression and fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
 
 This is a rough playable: stylized geometry and humanoids, synthesized audio, no aim-down-sights, jump, crouch, random weapon station, persistent records, native app, controller support, or co-op. Mouse capture needs a focused browser and a genuine user gesture. The final feel and difficulty need a hands-on mouse playtest.
 
@@ -78,7 +81,7 @@ Press **V** for a knife slash: 100 damage to the nearest target in a forward 1.6
 
 ## Assets
 
-Casino geometry, characters, signs, and sounds are generated by this source. Four original local GLB weapon assets use named components and PBR materials; see `docs/weapon-models.md` and `tools/generate_weapons.py`. The wallpaper is an ImageGen texture documented in `docs/wallpaper-asset.md`. The worn carpet albedo in `public/textures/casino-carpet.png` was generated with the built-in OpenAI ImageGen tool; its prompt and provenance are in `docs/carpet-asset.md`. The social-preview image was generated with OpenAI ImageGen specifically for Last Jackpot; it is promotional art, not an in-game screenshot. Babylon.js is Apache-2.0 licensed; package licenses remain in their respective dependencies. No Call of Duty assets are included.
+Casino geometry, characters, signs, and sounds are generated by this source. Five original local GLB weapon assets use named components and PBR materials; see `docs/weapon-models.md`, `tools/generate_weapons.py`, and `docs/revolver-assets/`. The wallpaper is an ImageGen texture documented in `docs/wallpaper-asset.md`. The worn carpet albedo in `public/textures/casino-carpet.png` was generated with the built-in OpenAI ImageGen tool; its prompt and provenance are in `docs/carpet-asset.md`. The social-preview image was generated with OpenAI ImageGen specifically for Last Jackpot; it is promotional art, not an in-game screenshot. Babylon.js is Apache-2.0 licensed; package licenses remain in their respective dependencies. No Call of Duty assets are included.
 
 ## Environment pass — September 27, 2026
 
@@ -106,10 +109,24 @@ Lighting uses warm chandelier pools, cool ambient fill, local jade/warm table-ro
 
 Audio adds a quiet electrical/room bed, occasional distant slot notes and chips/glass, footsteps, and distance-panned zombie breath, groans, and attack calls. Round stingers duck ambience. Pause and focus loss mute the world bus immediately; purchases, denials, and death retain their separate cue path. These are original synthesized sounds, not recorded actors or licensed game audio. Audio graph tests cover pause/routing/disposal; their timbre still needs a human listening pass.
 
-New asset sources, dimensions, pivots, and geometry validation are documented under `docs/table-assets/` and `docs/hand-assets/`; generators live under `tools/`. Run these generators with Python, NumPy, SciPy, and Pillow installed. They write to ignored `outputs/table-assets/` and `outputs/hand-assets/`. Generated textures are embedded in the GLBs. Hands are fitted posed meshes, not skeletal finger animation. Roulette is visual ambience; the craps wager is the playable table mechanic.
+New asset sources, dimensions, pivots, and geometry validation are documented under `docs/table-assets/` and `docs/hand-assets/`; generators live under `tools/`. Run these generators with Python, NumPy, SciPy, and Pillow installed. They write to ignored `outputs/table-assets/` and `outputs/hand-assets/`. Generated textures are embedded in the GLBs. Hands are fitted posed meshes, not skeletal finger animation. Roulette began as visual ambience in this pass and is now playable alongside craps.
 
 ## Blender slot machines
 
 The main room's two slot islands use 12 original Blender-modeled cabinets in emerald and burgundy. Beveled panels, brass trim, curved mechanical reels, illuminated headers, control buttons, side levers, and payout trays replace the earlier block-based machines. Each style shares its geometry and materials across six hardware instances. Island footprints and walking routes are unchanged; bullet-cover height matches the taller cabinets. Slot machines remain scenery, without a new wager mechanic.
 
 The editable source is `assets/source/slot-machines.blend`; browser exports are `public/models/slot-machine-emerald.glb` and `public/models/slot-machine-burgundy.glb`. Reproduction instructions and previews are in `docs/slot-assets/`, with Blender Python sources under `tools/slot-assets/`. Development playtest controls include west, east, and second-bank slot viewpoints.
+
+## Roulette rewards
+
+Interact with the customer side of the roulette table in The Devil’s Tables using **E**. The room must be unlocked and you need 200 chips. The number is chosen once at the start, with all 37 pockets equally likely, and the wheel and ball settle on that number. The four lucky pockets give a combined win chance of 4/37 (about 10.8%). Spins continue while you move and fight; only one roulette spin can run at a time.
+
+Ammo rewards fill both magazine and reserve, respect upgraded magazine sizes, and cancel an active reload. The 4/24 reward uses the weapon equipped when the ball lands. Unowned weapons stay unowned. A second zero refreshes the 30-second double-damage timer instead of stacking its multiplier; the bonus also applies to upgraded weapons. Spin, result-display, and damage-bonus timers freeze during pause and the bartender/card menus. Starting a new run clears all roulette state and bonuses.
+
+## High Roller card tables
+
+Both poker islands now use a detailed shared GLB with stitched oxblood rails, inlaid walnut, brass trim, genuinely recessed cupholders, printed emerald felt, a pedestal base, dealer tray, and detailed chip stacks. Five live cards sit on each felt surface and match that table’s hand. Original footprints and walking routes are preserved. Editable Blender source, previews, regeneration instructions, and geometry checks are in `docs/poker-assets/` and `tools/poker-assets/`.
+
+Approach the south/customer side and press **E**. The solo game pauses while you select a card and confirm a free swap. Keep matching suits: a flush means five of the same suit, regardless of rank or order. Each table has its own hand, 52-card deck, and one-swap-per-round limit. Leaving, reopening, or entering intermission does not refresh that limit. A new actual round does. Previously discarded cards are shuffled back only when the draw pile runs out; cards still in the hand cannot be drawn again.
+
+The first flush unlocks **THE DEAD MAN’S HAND** for this run: a six-shot, 110-damage revolver with 48 reserve rounds. It equips automatically and uses weapon key **5**. Completing the other table refills it once. Completed tables retain their flush without granting repeated rewards. Roulette’s ammo rewards include the revolver once owned; Marlowe and the workshop can upgrade it to **ACE OF SPADES**. New runs reset both hands and the reward. Flush completion is represented separately from weapon ownership, ready for a future map-unlock reward; this pass adds no new room.

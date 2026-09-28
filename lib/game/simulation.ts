@@ -1,4 +1,13 @@
 /** Pure gameplay state. Rendering, audio, input, and wall-clock time live outside this module. */
+import {
+  POKER_TABLES,
+  freshPokerState,
+  dealPoker,
+  exchangePokerCard,
+  isFlush,
+  type PokerTableId,
+} from "./poker.ts";
+export { POKER_RULES } from "./poker.ts";
 import { ATTACK_WINDUP, zombieHitVolumes, type HitRegion, type Limb } from "./zombie-pose.ts";
 export type V2 = { x: number; z: number };
 export type V3 = V2 & { y: number };
@@ -10,8 +19,14 @@ export type Rect = {
   d: number;
   h: number;
 };
-export type WeaponId = "pistol" | "shotgun" | "smg" | "rifle";
-export const WEAPON_ORDER: WeaponId[] = ["pistol", "shotgun", "smg", "rifle"];
+export type WeaponId = "pistol" | "shotgun" | "smg" | "rifle" | "revolver";
+export const WEAPON_ORDER: WeaponId[] = [
+  "pistol",
+  "shotgun",
+  "smg",
+  "rifle",
+  "revolver",
+];
 export type PerkId = "reserve" | "quickPour" | "nightShift";
 export type BarItemId = PerkId | "weaponUpgrade";
 export const PERKS: Record<
@@ -35,7 +50,9 @@ export type PurchaseId =
   | "vip"
   | "upgrade"
   | "tables"
-  | "craps";
+  | "craps"
+  | "roulette"
+  | PokerTableId;
 export type GameEvent = {
   type:
     | "shot"
@@ -53,6 +70,12 @@ export type GameEvent = {
     | "diceRoll"
     | "diceWin"
     | "diceCurse"
+    | "rouletteSpin"
+    | "rouletteWin"
+    | "rouletteJackpot"
+    | "rouletteMiss"
+    | "cardSwap"
+    | "pokerFlush"
     | "zombieAttack"
     | "death";
   weapon?: WeaponId;
@@ -152,6 +175,20 @@ export const WEAPONS = {
     spread: 0.007,
     refill: 500,
   },
+  revolver: {
+    name: "THE DEAD MAN’S HAND",
+    upgradedName: "ACE OF SPADES",
+    label: "Revolver",
+    price: 0,
+    magazine: 6,
+    reserve: 48,
+    damage: 110,
+    pellets: 1,
+    interval: 0.5,
+    reload: 2.6,
+    spread: 0.003,
+    refill: 400,
+  },
 };
 export const PRICES = {
   shotgun: 800,
@@ -163,6 +200,22 @@ export const PRICES = {
   upgrade: 2000,
   tables: 1500,
   craps: 250,
+  roulette: 200,
+};
+export const ROULETTE_RULES = {
+  spinDuration: 6,
+  resultDuration: 6,
+  damageDuration: 30,
+  damageMultiplier: 2,
+} as const;
+export type RouletteSpin = {
+  id: number;
+  number: number;
+  remaining: number;
+  resolved: boolean;
+  resultRemaining: number;
+  reward: "ammo" | "maxAmmo" | "jackpot" | "miss" | null;
+  weapon: WeaponId | null;
 };
 export const BOUNDS = { minX: -16, maxX: 42, minZ: -12, maxZ: 12 };
 export function roomName(p: V2) {
@@ -219,6 +272,14 @@ export const PURCHASES: {
   name: string;
   detail: string;
 }[] = [
+  ...POKER_TABLES.map((table) => ({
+    id: table.id,
+    x: table.x,
+    z: table.approachZ,
+    name: table.name,
+    detail:
+      "Make a flush · five cards of one suit · one free swap per table each round",
+  })),
   {
     id: "pistolAmmo",
     x: -12.6,
@@ -288,6 +349,14 @@ export const PURCHASES: {
     name: "Seven’s Curse · roll the dice",
     detail:
       "250 chips · 7 slows you 20% this round · other rolls pay 500 chips · once per round",
+  },
+  {
+    id: "roulette",
+    x: 35,
+    z: 3.1,
+    name: "Lucky Four roulette",
+    detail:
+      "4 / 24: equipped ammo · 7: all ammo · 0: all ammo + 30s double damage · 200 chips every spin",
   },
   {
     id: "upgrade",
@@ -505,6 +574,12 @@ export class Simulation {
     resultRemaining: number;
     resolved: boolean;
   } | null = null;
+  roulette: RouletteSpin | null = null;
+  damageBoostRemaining = 0;
+  pokerTables = { "poker-a": freshPokerState(), "poker-b": freshPokerState() };
+  pokerOpen: PokerTableId | null = null;
+  flushRewardUnlocked = false;
+  private rouletteSpinId = 0;
   get slowed() {
     return (
       this.slowRound === this.round && this.round > 0 && this.intermission <= 0
@@ -518,6 +593,7 @@ export class Simulation {
     shotgun: false,
     smg: false,
     rifle: false,
+    revolver: false,
   };
   perks: Record<PerkId, boolean> = {
     reserve: false,
@@ -544,6 +620,7 @@ export class Simulation {
     shotgun: { owned: false, mag: 0, reserve: 0 },
     smg: { owned: false, mag: 0, reserve: 0 },
     rifle: { owned: false, mag: 0, reserve: 0 },
+    revolver: { owned: false, mag: 0, reserve: 0 },
   };
   enemies: Enemy[] = [];
   grenades = 2;
@@ -604,19 +681,31 @@ export class Simulation {
     }
   }
   resume() {
-    if (this.phase === "paused" && !this.shopOpen) this.phase = this.priorPhase;
+    if (this.phase === "paused" && !this.shopOpen && !this.pokerOpen)
+      this.phase = this.priorPhase;
   }
   capacity(w: WeaponId = this.weapon) {
+    if (w === "revolver") return WEAPONS.revolver.magazine;
     return Math.round(WEAPONS[w].magazine * (this.upgrades[w] ? 1.5 : 1));
   }
   weaponName(w = this.weapon) {
     return this.upgrades[w] ? WEAPONS[w].upgradedName : WEAPONS[w].name;
   }
   reloadDuration(w = this.weapon) {
-    return WEAPONS[w].reload * (this.perks.quickPour ? 0.7 : 1);
+    return (
+      WEAPONS[w].reload *
+      (this.perks.quickPour ? 0.7 : 1) *
+      (w === "revolver" && this.upgrades.revolver ? 0.75 : 1)
+    );
   }
   weaponDamage(w = this.weapon) {
-    return Math.round(WEAPONS[w].damage * (this.upgrades[w] ? 1.35 : 1));
+    const damage = Math.round(
+      WEAPONS[w].damage * (this.upgrades[w] ? 1.35 : 1),
+    );
+    return (
+      damage *
+      (this.damageBoostRemaining > 0 ? ROULETTE_RULES.damageMultiplier : 1)
+    );
   }
   canUseBar() {
     return (
@@ -624,6 +713,77 @@ export class Simulation {
       dist(this.player, BAR_ANCHOR) <= 2.2 &&
       hasSight(this.player, BAR_ANCHOR, this.rects)
     );
+  }
+  canUsePoker(id: PokerTableId) {
+    const table = POKER_TABLES.find((table) => table.id === id);
+    if (!table || !this.vip) return false;
+    const anchor = { x: table.x, z: table.approachZ };
+    return (
+      dist(this.player, anchor) <= 2.2 &&
+      hasSight(this.player, anchor, this.rects)
+    );
+  }
+  openPoker(id: PokerTableId) {
+    if (this.phase !== "playing" || !this.canUsePoker(id)) return false;
+    dealPoker(this.pokerTables[id], () => this.random());
+    this.finishPoker(id);
+    this.pause();
+    this.pokerOpen = id;
+    return true;
+  }
+  closePoker() {
+    this.pokerOpen = null;
+  }
+  pokerInfo(id: PokerTableId) {
+    const table = this.pokerTables[id];
+    const reason = !this.vip
+      ? "Open the High Roller Club first"
+      : table.completed
+        ? "Flush completed"
+        : table.lastSwapRound >= Math.max(1, this.round)
+          ? "Swap used · return next round"
+          : "";
+    return { canSwap: !reason, reason };
+  }
+  swapPoker(index: number) {
+    const id = this.pokerOpen;
+    if (
+      this.phase !== "paused" ||
+      this.shopOpen ||
+      !id ||
+      !this.canUsePoker(id) ||
+      !this.pokerInfo(id).canSwap
+    )
+      return false;
+    const state = this.pokerTables[id];
+    if (!exchangePokerCard(state, index, () => this.random())) return false;
+    state.lastSwapRound = Math.max(1, this.round);
+    this.events.push({ type: "cardSwap" });
+    if (!this.finishPoker(id))
+      this.notify("Card exchanged. Your hand stays here. Return next round.");
+    return true;
+  }
+  private finishPoker(id: PokerTableId) {
+    const state = this.pokerTables[id];
+    if (state.completed || !isFlush(state.hand)) return false;
+    state.completed = true;
+    const first = !this.flushRewardUnlocked;
+    this.flushRewardUnlocked = true;
+    this.inventory.revolver = {
+      owned: true,
+      mag: this.capacity("revolver"),
+      reserve: WEAPONS.revolver.reserve,
+    };
+    this.weapon = "revolver";
+    this.reloadRemaining = 0;
+    this.fireCooldown = Math.max(this.fireCooldown, 0.2);
+    this.notify(
+      first
+        ? "FLUSH · THE DEAD MAN’S HAND unlocked · weapon 5"
+        : "FLUSH · THE DEAD MAN’S HAND refilled",
+    );
+    this.events.push({ type: "pokerFlush", weapon: "revolver" });
+    return true;
   }
   openBar() {
     if (this.phase !== "playing" || !this.canUseBar()) return false;
@@ -745,6 +905,11 @@ export class Simulation {
     }
     if (id === "bartender")
       return { price: 0, reason: this.lounge ? "" : "Open the lounge first" };
+    if (id === "poker-a" || id === "poker-b")
+      return {
+        price: 0,
+        reason: this.vip ? "" : "Open the High Roller Club first",
+      };
     if (id === "lounge") {
       price = PRICES.lounge;
       if (this.lounge) reason = "Already open";
@@ -777,12 +942,19 @@ export class Simulation {
       else if (this.lastWagerRound >= this.wagerRound)
         reason = "One wager per round · come back next round";
     }
+    if (id === "roulette") {
+      price = PRICES.roulette;
+      if (!this.tables) reason = "Open The Devil’s Tables first";
+      else if (this.roulette && !this.roulette.resolved)
+        reason = "Wheel is spinning";
+    }
     if (!reason && this.points < price) reason = "Not enough chips";
     return { price, reason };
   }
   purchase(id: PurchaseId) {
     if (this.phase !== "playing") return false;
     if (id === "bartender") return this.openBar();
+    if (id === "poker-a" || id === "poker-b") return this.openPoker(id);
     const p = PURCHASES.find((p) => p.id === id)!;
     if (dist(this.player, p) > 2.2 || !hasSight(this.player, p, this.rects))
       return false;
@@ -793,6 +965,20 @@ export class Simulation {
       return false;
     }
     this.points -= price;
+    if (id === "roulette") {
+      this.roulette = {
+        id: ++this.rouletteSpinId,
+        number: Math.floor(this.random() * 37),
+        remaining: ROULETTE_RULES.spinDuration,
+        resolved: false,
+        resultRemaining: 0,
+        reward: null,
+        weapon: null,
+      };
+      this.events.push({ type: "rouletteSpin", position: { x: 35, z: 5 } });
+      this.notify("200 chips on the wheel. Keep moving.");
+      return true;
+    }
     if (id === "craps") {
       this.lastWagerRound = this.wagerRound;
       this.dice = {
@@ -860,6 +1046,40 @@ export class Simulation {
     );
     this.events.push({ type: "purchase" });
     return true;
+  }
+  private resolveRoulette() {
+    const spin = this.roulette;
+    if (!spin || spin.resolved) return;
+    spin.resolved = true;
+    spin.resultRemaining = ROULETTE_RULES.resultDuration;
+    spin.reward =
+      spin.number === 0
+        ? "jackpot"
+        : spin.number === 7
+          ? "maxAmmo"
+          : spin.number === 4 || spin.number === 24
+            ? "ammo"
+            : "miss";
+    if (spin.reward === "miss") {
+      // The entire wager was charged at spin start. Never charge again here.
+      this.events.push({ type: "rouletteMiss", position: { x: 35, z: 5 } });
+      return;
+    }
+    const weapons = spin.reward === "ammo" ? [this.weapon] : WEAPON_ORDER;
+    for (const weapon of weapons) {
+      const inventory = this.inventory[weapon];
+      if (!inventory.owned) continue;
+      inventory.mag = this.capacity(weapon);
+      inventory.reserve = WEAPONS[weapon].reserve;
+    }
+    spin.weapon = spin.reward === "ammo" ? this.weapon : null;
+    this.reloadRemaining = 0;
+    if (spin.reward === "jackpot")
+      this.damageBoostRemaining = ROULETTE_RULES.damageDuration;
+    this.events.push({
+      type: spin.reward === "jackpot" ? "rouletteJackpot" : "rouletteWin",
+      position: { x: 35, z: 5 },
+    });
   }
   damageEnemy(e: Enemy, damage: number, headshot: boolean, region: HitRegion = headshot ? "head" : "body") {
     if (e.health <= 0 || !Number.isFinite(damage) || damage <= 0) return;
@@ -1092,9 +1312,20 @@ export class Simulation {
     this.stepGrenades(dt);
     if (this.phase !== "playing") return;
     this.messageRemaining = Math.max(0, this.messageRemaining - dt);
+    this.damageBoostRemaining = Math.max(0, this.damageBoostRemaining - dt);
     if (this.lounge) this.loungeAge += dt;
     if (this.vip) this.vipAge += dt;
     if (this.tables) this.tablesAge += dt;
+    if (this.roulette) {
+      if (!this.roulette.resolved) {
+        this.roulette.remaining = Math.max(0, this.roulette.remaining - dt);
+        if (!this.roulette.remaining) this.resolveRoulette();
+      } else
+        this.roulette.resultRemaining = Math.max(
+          0,
+          this.roulette.resultRemaining - dt,
+        );
+    }
     if (this.dice) {
       if (!this.dice.resolved) {
         this.dice.remaining = Math.max(0, this.dice.remaining - dt);

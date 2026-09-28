@@ -1,0 +1,56 @@
+{
+  "name": "THE DEAD MAN\u2019S HAND",
+  "upgraded_name": "ACE OF SPADES",
+  "provenance": "Original procedural fictional revolver. Reuses existing project mesh utilities and exact pistol grip contact geometry. No third-party art or external assets.",
+  "coordinate_system": "Metres; +Y up; +Z muzzle; receiver origin. Gun and hands share root, scale 1.",
+  "muzzle": [
+    0,
+    0.07,
+    0.307
+  ],
+  "cylinder_axis": "Z",
+  "cylinder_center": [
+    0.0,
+    0.048,
+    0.038
+  ],
+  "chambers": 6,
+  "display_rotation": "No baked rotation. For a side-on wall display, use the existing weapon display convention: yaw +pi/2 or -pi/2 according to wall facing.",
+  "grip": {
+    "reference": "pistol.glb",
+    "exact_contact_nodes": [
+      "Grip frame",
+      "Rear backstrap",
+      "Trigger",
+      "Trigger guard",
+      "Trigger guard right"
+    ],
+    "panels": "Same panel vertices, walnut PBR material and separate fine checkering.",
+    "hands": "hands-revolver.glb is byte-for-byte identical to hands-pistol.glb. Preserve named RightHand/LeftHand wrist pivot transforms.",
+    "hands_sha256": "437c272336b99b2be3f0f4fea31146a964aafd3700d34d07663c36ed0ad32c07"
+  },
+  "animation": {
+    "rotating_prefix": "Cylinder ",
+    "fixed_parts": "Thumb latch, frame, barrel, sights, grip, trigger, hammer, ejector rod",
+    "note": "Cylinder components are coaxial along Z and retain local translations. Group them under a shared pivot at cylinder_center for swing-out motion. There is no Magazine or Slide node."
+  },
+  "asset": {
+    "file": "revolver.glb",
+    "nodes": 47,
+    "vertices": 13778,
+    "triangles": 10226,
+    "bounds": [
+      [
+        -0.0387,
+        -0.1655,
+        -0.123
+      ],
+      [
+        0.0387,
+        0.12000000000000001,
+        0.307
+      ]
+    ],
+    "bytes": 493324
+  }
+}
