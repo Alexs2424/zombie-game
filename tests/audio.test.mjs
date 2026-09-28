@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { GameAudio } from "../lib/game/audio.ts";
+import { slotSoundSamples } from "../lib/game/slot-sounds.ts";
 
 // A graph-only Web Audio double: checks bus routing and immediate pause behavior,
 // without claiming to measure the sound of the synthesized effects.
@@ -140,6 +141,97 @@ const player = { x: 0, z: 0 };
 const sampledSources = (audio) => audio.context.nodes.filter(
   (node) => node.kind === "source" && node.buffer?.name,
 );
+const slotSources = (audio) => audio.context.nodes.filter(
+  (node) => node.kind === "source" && audio.slotBuffers.includes(node.buffer),
+);
+const westAisle = { x: -10.2, z: -1.8 };
+
+test("slot pass-bys follow the cabinet position and fade as the listener walks away", async () => {
+  await fixture((audio) => {
+    audio.update(0.1, true, westAisle, 0, true, false);
+    const [source] = slotSources(audio);
+    assert.ok(source, "walking near a real cabinet starts a cue");
+    assert.match(audio.slotStatus, /slots-a:west:0/);
+    const filter = source.outputs[0], gain = filter.outputs[0], panner = gain.outputs[0];
+    assert.ok(gain.gain.value > 0 && gain.gain.value < 0.65);
+    assert.equal(panner.pan.value, 1);
+    assert.deepEqual(panner.outputs, [audio.world]);
+    const nearLevel = gain.gain.value;
+    audio.update(0.1, true, { x: -12, z: -1.8 }, Math.PI, true, false);
+    assert.ok(gain.gain.value < nearLevel);
+    assert.equal(panner.pan.value, -1);
+    audio.update(0.1, true, { x: -15, z: -1.8 }, Math.PI, true, false);
+    assert.equal(gain.gain.value, 0);
+    assert.equal(slotSources(audio).length, 1, "only one cabinet can sound at a time");
+  });
+});
+
+test("slot cues stop on pause, reset and disposal, without a stale restart", async () => {
+  await fixture((audio) => {
+    audio.update(0.1, true, westAisle, 0, true, false);
+    const first = slotSources(audio)[0];
+    audio.setActive(false);
+    assert.equal(first.stopped, true);
+    assert.equal(audio.slotVoice, null);
+    audio.update(30, false, westAisle, 0, true, false);
+    audio.update(0.1, true, westAisle, 0, false, false);
+    assert.equal(slotSources(audio).length, 1);
+    audio.resetSlots();
+    audio.update(0.1, true, westAisle, 0, true, false);
+    const second = slotSources(audio)[1];
+    assert.ok(second);
+    audio.dispose();
+    assert.equal(second.stopped, true);
+    assert.equal(audio.slotVoice, null);
+    assert.equal(audio.slotBuffers.length, 0);
+  });
+});
+
+test("zombie voices and round stingers take priority over slot attract sounds", async () => {
+  await fixture((audio) => {
+    audio.update(0.1, true, westAisle, 0, true, false);
+    const first = slotSources(audio)[0];
+    audio.zombieCue("chase", westAisle, { x: -10.2, z: -2 }, 0);
+    assert.equal(first.stopped, true);
+    audio.resetSlots();
+    audio.update(5, true, westAisle, 0, true, false);
+    assert.equal(slotSources(audio).length, 1);
+    audio.resetZombies();
+    audio.update(0.1, true, westAisle, 0, true, false);
+    assert.equal(slotSources(audio).length, 2, "suppression did not consume the cabinet greeting");
+    const second = slotSources(audio)[1];
+    audio.play({ type: "round" });
+    assert.equal(second.stopped, true);
+    audio.resetSlots();
+    audio.update(5, true, westAisle, 0, true, false);
+    assert.equal(slotSources(audio).length, 2);
+  }, true);
+});
+
+test("standing on the casino floor no longer triggers the old room-wide slot melody", async () => {
+  await fixture((audio) => {
+    audio.update(30, true, westAisle, 0, false, false);
+    assert.equal(slotSources(audio).length, 0);
+    assert.equal(audio.context.nodes.filter((node) => node.kind === "oscillator").length, 2,
+      "only the room hum remains while standing still");
+  });
+});
+
+test("all original slot recipes are short, audible, finite and softly bounded", () => {
+  const recipes = [0, 1, 2].map((variant) => slotSoundSamples(24000, variant));
+  for (const samples of recipes) {
+    assert.equal(samples.length, 34800);
+    assert.ok(samples.every(Number.isFinite));
+    assert.equal(samples[0], 0);
+    assert.equal(Math.abs(samples.at(-1)), 0);
+    const peak = samples.reduce((max, value) => Math.max(max, Math.abs(value)), 0);
+    const rms = Math.sqrt(samples.reduce((sum, value) => sum + value * value, 0) / samples.length);
+    assert.ok(peak < 0.25 && peak > 0.05, `restrained peak: ${peak}`);
+    assert.ok(rms > 0.01, `non-silent RMS: ${rms}`);
+  }
+  assert.notDeepEqual(recipes[0], recipes[1]);
+  assert.notDeepEqual(recipes[1], recipes[2]);
+});
 
 test("sampled zombie voices are local, spatial, restrained, and limited to one", async () => {
   await fixture((audio) => {

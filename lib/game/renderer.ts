@@ -30,6 +30,7 @@ import { paintPlayingCard } from "./card-art";
 import { LOUNGE_RECTS } from "./lounge-layout";
 import { buildLoungeDecor } from "./lounge-decor";
 import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
+import { slotCabinetsForIsland } from "./slot-machines";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import {
   Simulation,
@@ -43,6 +44,7 @@ import {
   WEAPONS,
   WEAPON_ORDER,
   type WeaponId,
+  type Rect,
 } from "./simulation";
 import "@babylonjs/core/Culling/ray";
 
@@ -56,6 +58,7 @@ export class GameRenderer {
   flash: Mesh;
   ready: Promise<void>;
   private weaponAssets: AssetContainer[] = [];
+  private couchFallback?: TransformNode;
   private slotPlacements: {
     root: TransformNode;
     variant: "emerald" | "burgundy";
@@ -321,6 +324,7 @@ export class GameRenderer {
       this.loadSlotAssets(),
       this.loadPokerAssets(),
       this.loadLoungeAssets(),
+      this.loadCouchAsset(),
       loadZombieAsset().then((asset) => {
         this.zombieAsset = asset;
       }),
@@ -496,7 +500,7 @@ export class GameRenderer {
       )
         continue;
       if (r.id.startsWith("slots")) {
-        this.slotIsland(r.x, r.z, r.w, r.d);
+        this.slotIsland(r);
         continue;
       }
       if (r.id.startsWith("poker")) {
@@ -504,7 +508,14 @@ export class GameRenderer {
         continue;
       }
       if (r.id === "vip-sofa") {
-        this.box("sofa base", r.x, 0.26, r.z, r.w, 0.4, r.d, wood);
+        // Keep the loading fallback out of the merged room scenery so it can
+        // be removed after the detailed couch has loaded successfully.
+        const fallback = new TransformNode(
+          "VIP couch loading fallback",
+          this.scene,
+        );
+        this.couchFallback = fallback;
+        this.box("sofa base", r.x, 0.26, r.z, r.w, 0.4, r.d, wood, fallback);
         this.box(
           "tufted sofa back",
           r.x + 0.4,
@@ -514,6 +525,7 @@ export class GameRenderer {
           0.8,
           r.d,
           burgundy,
+          fallback,
         );
         for (let z = -1; z <= 3; z++) {
           this.box(
@@ -525,6 +537,7 @@ export class GameRenderer {
             0.2,
             0.94,
             burgundy,
+            fallback,
           );
           this.box(
             "upholstery button",
@@ -535,7 +548,12 @@ export class GameRenderer {
             0.04,
             0.04,
             trim,
+            fallback,
           );
+        }
+        for (const mesh of fallback.getChildMeshes()) {
+          mesh.isPickable = false;
+          for (const shadow of this.shadows) shadow.addShadowCaster(mesh, false);
         }
         continue;
       }
@@ -1373,6 +1391,57 @@ export class GameRenderer {
       }
     }
   }
+  private async loadCouchAsset() {
+    const footprint = STATIC_RECTS.find((rect) => rect.id === "vip-sofa")!;
+    let asset: AssetContainer | undefined;
+    let placement: TransformNode | undefined;
+    try {
+      asset = await LoadAssetContainerAsync("/models/vip-couch.glb", this.scene);
+      if (this.scene.isDisposed) {
+        asset.dispose();
+        return;
+      }
+      placement = new TransformNode("VIP couch placement", this.scene);
+      placement.position.set(footprint.x, 0, footprint.z);
+      // The glTF conversion root preserves +Z forward in this left-handed
+      // scene. Turn the couch toward the card tables to the west (-X).
+      placement.rotation.y = -Math.PI / 2;
+      const imported = asset.instantiateModelsToScene(
+        (name) => `VIP couch:${name}`,
+        false,
+        { doNotInstantiate: true },
+      );
+      for (const node of imported.rootNodes) node.parent = placement;
+      for (const mesh of placement.getChildMeshes()) {
+        mesh.isPickable = false;
+        mesh.receiveShadows = true;
+        const material = mesh.material as unknown as {
+          maxSimultaneousLights?: number;
+        };
+        if (material && "maxSimultaneousLights" in material)
+          material.maxSimultaneousLights = 8;
+        for (const shadow of this.shadows) shadow.addShadowCaster(mesh, false);
+        mesh.freezeWorldMatrix();
+      }
+      this.weaponAssets.push(asset);
+      if (this.couchFallback) {
+        for (const mesh of this.couchFallback.getChildMeshes())
+          for (const shadow of this.shadows)
+            shadow.removeShadowCaster(mesh, false);
+        this.couchFallback.dispose();
+        this.couchFallback = undefined;
+      }
+    } catch (error) {
+      placement?.dispose();
+      asset?.dispose();
+      // A missing optional furnishing must not prevent the game from starting.
+      if (!this.scene.isDisposed)
+        console.warn(
+          "Detailed VIP couch unavailable; keeping the fallback.",
+          error,
+        );
+    }
+  }
   private async loadPokerAssets() {
     const asset = await LoadAssetContainerAsync(
       "/models/poker-table.glb",
@@ -1407,7 +1476,8 @@ export class GameRenderer {
       }
     }
   }
-  private slotIsland(x: number, z: number, w: number, d: number) {
+  private slotIsland(island: Rect) {
+    const { x, z, w, d } = island;
     const base = this.mat("slot base", "#202b27"),
       brass = this.mat("slot brass", "#998153");
     this.box("slot island plinth", x, 0.1, z, w, 0.2, d, base);
@@ -1447,19 +1517,17 @@ export class GameRenderer {
         end > 0 ? Math.PI : 0,
       );
     }
-    for (const side of [-1, 1])
-      for (let i = 0; i < 3; i++) {
-        const zz = z - d / 2 + 0.7 + (i * (d - 1.4)) / 2;
-        const variant = (i + (side > 0 ? 1 : 0)) % 2 ? "burgundy" : "emerald";
-        const root = new TransformNode(
-          `slot ${this.slotPlacements.length + 1} ${variant}`,
-          this.scene,
-        );
-        root.position.set(x + side * (w / 2 - 0.7), 0.16, zz);
-        // Blender export faces +Z; both banks face outward toward their aisles.
-        root.rotation.y = (side * Math.PI) / 2;
-        this.slotPlacements.push({ root, variant });
-      }
+    for (const cabinet of slotCabinetsForIsland(island)) {
+      const variant = cabinet.modelVariant;
+      const root = new TransformNode(
+        `slot ${this.slotPlacements.length + 1} ${variant}`,
+        this.scene,
+      );
+      root.position.set(cabinet.rootX, 0.16, cabinet.rootZ);
+      // Blender export faces +Z; both banks face outward toward their aisles.
+      root.rotation.y = (cabinet.side * Math.PI) / 2;
+      this.slotPlacements.push({ root, variant });
+    }
   }
   private async loadSlotAssets() {
     await Promise.all(

@@ -1,0 +1,55 @@
+{
+  "name": "High Roller Club oxblood banquette",
+  "authoring": "Original Blender geometry and procedural material maps; no third-party assets",
+  "native": "assets/source/vip-couch.blend",
+  "runtime": "public/models/vip-couch.glb",
+  "source_objects": 435,
+  "blender": "5.2.2 LTS",
+  "coordinates": "Blender Z up, front -Y; glTF Y up, front +Z; floor-centred pivot",
+  "features": [
+    "Physically sculpted diamond tufting",
+    "Five softly compressed loose cushions",
+    "Modeled seat piping and front saddle stitches",
+    "Covered tuft buttons and gathered folds",
+    "Rolled arms and antique brass tacks",
+    "Walnut plinth, eight turned legs, brass ferrules"
+  ],
+  "render": {
+    "engine": "Cycles CPU",
+    "samples": 40
+  },
+  "textures": [
+    {
+      "name": "couch-leather-color.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed": true
+    },
+    {
+      "name": "couch-leather-normal.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed": true
+    },
+    {
+      "name": "couch-leather-roughness.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed": true
+    },
+    {
+      "name": "couch-walnut-color.png",
+      "size": [
+        512,
+        512
+      ],
+      "packed": true
+    }
+  ]
+}
