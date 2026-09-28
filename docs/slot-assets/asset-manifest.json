@@ -1,0 +1,81 @@
+{
+  "generator": "Installed Blender 5.2.2 LTS",
+  "blender_executable": "/Applications/Blender.app/Contents/MacOS/Blender",
+  "coordinate_system": "glTF metres, +Y up, FRONT +Z; origin center of complete footprint at floor",
+  "limits_m": {
+    "width_X": 0.98,
+    "height_Y": 1.92,
+    "depth_Z": 1.3
+  },
+  "assets": [
+    {
+      "file": "slot-machine-emerald.glb",
+      "triangles": 15612,
+      "material_batches": 8,
+      "native_dimensions_XYZ": [
+        0.9620000123977661,
+        1.1634999513626099,
+        1.9199999570846558
+      ],
+      "gltf_dimensions_XYZ": [
+        0.9620000123977661,
+        1.9199999570846558,
+        1.1634999513626099
+      ],
+      "blender_to_origin_translation": [
+        -0.00599999725818634,
+        0.09425000846385956,
+        -0.0
+      ],
+      "source_objects": 225,
+      "bytes": 1394856
+    },
+    {
+      "file": "slot-machine-burgundy.glb",
+      "triangles": 15612,
+      "material_batches": 8,
+      "native_dimensions_XYZ": [
+        0.9620000123977661,
+        1.1634999513626099,
+        1.9199999570846558
+      ],
+      "gltf_dimensions_XYZ": [
+        0.9620000123977661,
+        1.9199999570846558,
+        1.1634999513626099
+      ],
+      "blender_to_origin_translation": [
+        -0.00599999725818634,
+        0.09425000846385956,
+        -0.0
+      ],
+      "source_objects": 225,
+      "bytes": 1394872
+    }
+  ],
+  "textures": {
+    "slot-atlas.png": [
+      2048,
+      2048
+    ],
+    "slot-walnut.png": [
+      1024,
+      512
+    ]
+  },
+  "render": {
+    "engine": "Cycles",
+    "device": "CPU",
+    "threads": 2,
+    "samples": 12,
+    "hero_size": [
+      980,
+      900
+    ],
+    "detail_size": [
+      720,
+      760
+    ]
+  },
+  "provenance": "Original bevelled Blender geometry; original Pillow symbols/type/layout and algorithmic walnut; no third-party game art, brands or models."
+}

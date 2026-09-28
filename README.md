@@ -101,3 +101,9 @@ Lighting uses warm chandelier pools, cool ambient fill, local jade/warm table-ro
 Audio adds a quiet electrical/room bed, occasional distant slot notes and chips/glass, footsteps, and distance-panned zombie breath, groans, and attack calls. Round stingers duck ambience. Pause and focus loss mute the world bus immediately; purchases, denials, and death retain their separate cue path. These are original synthesized sounds, not recorded actors or licensed game audio. Audio graph tests cover pause/routing/disposal; their timbre still needs a human listening pass.
 
 New asset sources, dimensions, pivots, and geometry validation are documented under `docs/table-assets/` and `docs/hand-assets/`; generators live under `tools/`. Run these generators with Python, NumPy, SciPy, and Pillow installed. They write to ignored `outputs/table-assets/` and `outputs/hand-assets/`. Generated textures are embedded in the GLBs. Hands are fitted posed meshes, not skeletal finger animation. Roulette is visual ambience; the craps wager is the playable table mechanic.
+
+## Blender slot machines
+
+The main room's two slot islands use 12 original Blender-modeled cabinets in emerald and burgundy. Beveled panels, brass trim, curved mechanical reels, illuminated headers, control buttons, side levers, and payout trays replace the earlier block-based machines. Each style shares its geometry and materials across six hardware instances. Island footprints and walking routes are unchanged; bullet-cover height matches the taller cabinets. Slot machines remain scenery, without a new wager mechanic.
+
+The editable source is `assets/source/slot-machines.blend`; browser exports are `public/models/slot-machine-emerald.glb` and `public/models/slot-machine-burgundy.glb`. Reproduction instructions and previews are in `docs/slot-assets/`, with Blender Python sources under `tools/slot-assets/`. Development playtest controls include west, east, and second-bank slot viewpoints.

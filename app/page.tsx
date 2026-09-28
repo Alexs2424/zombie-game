@@ -341,7 +341,8 @@ export default function Home() {
                   <b>
                     {view.prompt.price ? (
                       <>
-                        {view.prompt.price.toLocaleString()} <small>CHIPS</small>
+                        {view.prompt.price.toLocaleString()}{" "}
+                        <small>CHIPS</small>
                       </>
                     ) : (
                       "VIEW MENU"
@@ -608,6 +609,9 @@ export default function Home() {
           {[
             ["new", "Seed run"],
             ["floor", "Casino floor"],
+            ["slotsWest", "Slots west"],
+            ["slotsEast", "Slots east"],
+            ["slotsBank", "Slots second bank"],
             ["gate", "Lounge door"],
             ["bar", "Bartender"],
             ["shotgun", "Shotgun rack"],
