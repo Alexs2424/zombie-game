@@ -28,6 +28,7 @@ import { RouletteMotion, ROULETTE_GEOMETRY } from "./roulette-motion";
 import { POKER_TABLES, type PokerTableId } from "./poker";
 import { paintPlayingCard } from "./card-art";
 import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
+import { slotCabinetsForIsland } from "./slot-machines";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import {
   Simulation,
@@ -41,6 +42,7 @@ import {
   WEAPONS,
   WEAPON_ORDER,
   type WeaponId,
+  type Rect,
 } from "./simulation";
 import "@babylonjs/core/Culling/ray";
 
@@ -487,7 +489,7 @@ export class GameRenderer {
       )
         continue;
       if (r.id.startsWith("slots")) {
-        this.slotIsland(r.x, r.z, r.w, r.d);
+        this.slotIsland(r);
         continue;
       }
       if (r.id.startsWith("poker")) {
@@ -1506,7 +1508,8 @@ export class GameRenderer {
       }
     }
   }
-  private slotIsland(x: number, z: number, w: number, d: number) {
+  private slotIsland(island: Rect) {
+    const { x, z, w, d } = island;
     const base = this.mat("slot base", "#202b27"),
       brass = this.mat("slot brass", "#998153");
     this.box("slot island plinth", x, 0.1, z, w, 0.2, d, base);
@@ -1546,19 +1549,17 @@ export class GameRenderer {
         end > 0 ? Math.PI : 0,
       );
     }
-    for (const side of [-1, 1])
-      for (let i = 0; i < 3; i++) {
-        const zz = z - d / 2 + 0.7 + (i * (d - 1.4)) / 2;
-        const variant = (i + (side > 0 ? 1 : 0)) % 2 ? "burgundy" : "emerald";
-        const root = new TransformNode(
-          `slot ${this.slotPlacements.length + 1} ${variant}`,
-          this.scene,
-        );
-        root.position.set(x + side * (w / 2 - 0.7), 0.16, zz);
-        // Blender export faces +Z; both banks face outward toward their aisles.
-        root.rotation.y = (side * Math.PI) / 2;
-        this.slotPlacements.push({ root, variant });
-      }
+    for (const cabinet of slotCabinetsForIsland(island)) {
+      const variant = cabinet.modelVariant;
+      const root = new TransformNode(
+        `slot ${this.slotPlacements.length + 1} ${variant}`,
+        this.scene,
+      );
+      root.position.set(cabinet.rootX, 0.16, cabinet.rootZ);
+      // Blender export faces +Z; both banks face outward toward their aisles.
+      root.rotation.y = (cabinet.side * Math.PI) / 2;
+      this.slotPlacements.push({ root, variant });
+    }
   }
   private async loadSlotAssets() {
     await Promise.all(

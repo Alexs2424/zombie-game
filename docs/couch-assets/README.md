@@ -39,7 +39,7 @@ The renderer keeps the existing block couch as a temporary loading fallback, rem
 
 Start `npm run dev`, open `/?playtest=1`, click **Seed run**, then **VIP couch**. The viewpoint unlocks the lounge and High Roller room for inspection. The couch was visually checked there for west-facing orientation, scale, floor contact, material response, and placement against the wall. Browser warning/error logs were empty during this check.
 
-The independent validator checks GLB chunks/accessors, finite positions and UVs, unit normals, indices, winding, zero-area triangles, embedded images, material references, world bounds, floor origin, triangle budget, and material batches. The final asset passed with no zero-area triangles or winding mismatches. All 106 existing automated tests, TypeScript checks, and the production build also passed. Build output contains existing framework/bundler advisory warnings.
+The independent validator checks GLB chunks/accessors, finite positions and UVs, unit normals, indices, winding, zero-area triangles, embedded images, material references, world bounds, floor origin, triangle budget, and material batches. The final asset passed with no zero-area triangles or winding mismatches. All 125 existing automated tests, TypeScript checks, and the production build also passed. Build output contains existing framework/bundler advisory warnings.
 
 ![In the High Roller Club](couch-in-game.png)
 

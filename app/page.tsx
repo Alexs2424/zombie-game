@@ -932,12 +932,16 @@ export default function Home() {
         >
           <strong>DEVELOPMENT PLAYTEST</strong>
           <span>{view.zombieAudioStatus}</span>
+          <span>{view.slotAudioStatus}</span>
           {[
             ["new", "Seed run"],
             ["floor", "Casino floor"],
             ["slotsWest", "Slots west"],
             ["slotsEast", "Slots east"],
             ["slotsBank", "Slots second bank"],
+            ["sound-slots-west", "Walk slots west"],
+            ["sound-slots-east", "Walk slots east"],
+            ["sound-slots-bank", "Walk second bank"],
             ["gate", "Lounge door"],
             ["bar", "Bartender"],
             ["shotgun", "Shotgun rack"],
