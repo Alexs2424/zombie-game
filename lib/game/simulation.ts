@@ -9,16 +9,15 @@ import {
 } from "./poker.ts";
 export { POKER_RULES } from "./poker.ts";
 import { ATTACK_WINDUP, zombieHitVolumes, type HitRegion, type Limb } from "./zombie-pose.ts";
+import {
+  HOTEL_RECTS, hotelRoomName, collides, moveActor, wallDistance,
+  hasSight, canWalkDirect, Navigation, raycastWorld,
+  type WorldPosition, type WorldRect,
+} from "./world.ts";
+export { collides, moveActor, wallDistance, hasSight, Navigation } from "./world.ts";
 export type V2 = { x: number; z: number };
 export type V3 = V2 & { y: number };
-export type Rect = {
-  id: string;
-  x: number;
-  z: number;
-  w: number;
-  d: number;
-  h: number;
-};
+export type Rect = WorldRect;
 export type WeaponId = "pistol" | "shotgun" | "smg" | "rifle" | "revolver";
 export const WEAPON_ORDER: WeaponId[] = [
   "pistol",
@@ -83,7 +82,7 @@ export type GameEvent = {
   position?: V2;
   text?: string;
 };
-export type Enemy = V2 & {
+export type Enemy = WorldPosition & {
   id: number;
   health: number;
   maxHealth: number;
@@ -218,7 +217,9 @@ export type RouletteSpin = {
   weapon: WeaponId | null;
 };
 export const BOUNDS = { minX: -16, maxX: 42, minZ: -12, maxZ: 12 };
-export function roomName(p: V2) {
+export function roomName(p: WorldPosition) {
+  const hotel = hotelRoomName(p);
+  if (hotel) return hotel;
   return p.x > 28
     ? "The Devil’s Tables"
     : p.x > 16
@@ -233,7 +234,10 @@ export const STATIC_RECTS: Rect[] = [
   { id: "west", x: -16.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
   { id: "east", x: 42.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
   { id: "south", x: 13, z: -12.25, w: 58.5, d: 0.5, h: 4.8 },
-  { id: "north", x: 13, z: 12.25, w: 58.5, d: 0.5, h: 4.8 },
+  // The five-metre hotel entrance is level with the casino floor.
+  { id: "north-west", x: -11, z: 12.25, w: 11, d: 0.5, h: 4.8 },
+  { id: "north-east", x: 21, z: 12.25, w: 43, d: 0.5, h: 4.8 },
+  ...HOTEL_RECTS,
   { id: "tables-wall-s", x: 28, z: -9, w: 0.45, d: 6, h: 4.8 },
   { id: "tables-wall-m", x: 28, z: 2.4, w: 0.45, d: 9.2, h: 4.8 },
   { id: "tables-wall-n", x: 28, z: 11.1, w: 0.45, d: 1.8, h: 4.8 },
@@ -374,36 +378,8 @@ export const SPAWNS: V2[] = [
   { x: 26.2, z: -10.6 },
   { x: 39.7, z: -10.6 },
 ];
-export const dist = (a: V2, b: V2) => Math.hypot(a.x - b.x, a.z - b.z);
-export function collides(p: V2, r: number, rects: Rect[]) {
-  if (
-    p.x < BOUNDS.minX + r ||
-    p.x > BOUNDS.maxX - r ||
-    p.z < BOUNDS.minZ + r ||
-    p.z > BOUNDS.maxZ - r
-  )
-    return true;
-  return rects.some((q) => {
-    const dx = p.x - Math.max(q.x - q.w / 2, Math.min(p.x, q.x + q.w / 2));
-    const dz = p.z - Math.max(q.z - q.d / 2, Math.min(p.z, q.z + q.d / 2));
-    return dx * dx + dz * dz < r * r;
-  });
-}
-export function moveActor(
-  p: V2,
-  dx: number,
-  dz: number,
-  r: number,
-  rects: Rect[],
-) {
-  const steps = Math.max(1, Math.ceil(Math.hypot(dx, dz) / 0.12));
-  for (let i = 0; i < steps; i++) {
-    const x = p.x + dx / steps;
-    if (!collides({ x, z: p.z }, r, rects)) p.x = x;
-    const z = p.z + dz / steps;
-    if (!collides({ x: p.x, z }, r, rects)) p.z = z;
-  }
-}
+export const dist = (a: WorldPosition, b: WorldPosition) =>
+  Math.hypot(a.x - b.x, (a.y ?? 0) - (b.y ?? 0), a.z - b.z);
 export function rayBox(o: V3, d: V3, min: V3, max: V3): number {
   let near = 0,
     far = Infinity;
@@ -434,32 +410,6 @@ function raySphere(o: V3, d: V3, c: V3, r: number) {
       ? -b - Math.sqrt(v)
       : Infinity;
 }
-export function wallDistance(o: V3, d: V3, rects: Rect[]) {
-  let best = Infinity;
-  for (const q of rects)
-    best = Math.min(
-      best,
-      rayBox(
-        o,
-        d,
-        { x: q.x - q.w / 2, y: 0, z: q.z - q.d / 2 },
-        { x: q.x + q.w / 2, y: q.h, z: q.z + q.d / 2 },
-      ),
-    );
-  return best;
-}
-export function hasSight(a: V2, b: V2, rects: Rect[], height = 1) {
-  const len = dist(a, b);
-  if (len < 0.001) return true;
-  return (
-    wallDistance(
-      { ...a, y: height },
-      { x: (b.x - a.x) / len, y: 0, z: (b.z - a.z) / len },
-      rects,
-    ) >
-    len - 0.05
-  );
-}
 export function waveStats(round: number) {
   return {
     count: [6, 9, 12, 16, 20][round - 1] ?? 20 + (round - 5) * 4,
@@ -469,85 +419,9 @@ export function waveStats(round: number) {
   };
 }
 
-/** A small cardinal flow field avoids corners and makes all enemies share one path search. */
-export class Navigation {
-  readonly step = 0.6;
-  readonly nx = Math.ceil((BOUNDS.maxX - BOUNDS.minX) / this.step);
-  readonly nz = Math.ceil((BOUNDS.maxZ - BOUNDS.minZ) / this.step);
-  readonly blocked = new Uint8Array(this.nx * this.nz);
-  readonly distance = new Int32Array(this.nx * this.nz);
-  index(p: V2) {
-    const x = Math.max(
-        0,
-        Math.min(this.nx - 1, Math.floor((p.x - BOUNDS.minX) / this.step)),
-      ),
-      z = Math.max(
-        0,
-        Math.min(this.nz - 1, Math.floor((p.z - BOUNDS.minZ) / this.step)),
-      );
-    return z * this.nx + x;
-  }
-  point(i: number): V2 {
-    return {
-      x: BOUNDS.minX + ((i % this.nx) + 0.5) * this.step,
-      z: BOUNDS.minZ + (Math.floor(i / this.nx) + 0.5) * this.step,
-    };
-  }
-  rebuild(rects: Rect[]) {
-    for (let i = 0; i < this.blocked.length; i++)
-      this.blocked[i] = +collides(this.point(i), 0.34, rects);
-  }
-  update(target: V2) {
-    this.distance.fill(-1);
-    let start = this.index(target);
-    if (this.blocked[start]) {
-      let best = Infinity;
-      for (let i = 0; i < this.blocked.length; i++) {
-        const d = dist(this.point(i), target);
-        if (!this.blocked[i] && d < best) {
-          best = d;
-          start = i;
-        }
-      }
-    }
-    const q = new Int32Array(this.blocked.length);
-    let head = 0,
-      tail = 1;
-    q[0] = start;
-    this.distance[start] = 0;
-    while (head < tail) {
-      const cur = q[head++];
-      for (const n of this.neighbors(cur)) {
-        if (!this.blocked[n] && this.distance[n] === -1) {
-          this.distance[n] = this.distance[cur] + 1;
-          q[tail++] = n;
-        }
-      }
-    }
-  }
-  neighbors(i: number) {
-    const a: number[] = [];
-    if (i % this.nx > 0) a.push(i - 1);
-    if (i % this.nx < this.nx - 1) a.push(i + 1);
-    if (i >= this.nx) a.push(i - this.nx);
-    if (i < this.nx * (this.nz - 1)) a.push(i + this.nx);
-    return a;
-  }
-  next(p: V2) {
-    const i = this.index(p);
-    let best = i;
-    for (const n of this.neighbors(i))
-      if (
-        this.distance[n] >= 0 &&
-        (this.distance[best] < 0 || this.distance[n] < this.distance[best])
-      )
-        best = n;
-    return this.point(best);
-  }
-}
 export class Simulation {
   phase: Phase = "ready";
-  player: V2 = { x: -9, z: -8 };
+  player: WorldPosition = { x: -9, y: 0, z: -8, surfaceId: "casino" };
   yaw = 0.16;
   pitch = 0;
   health = 100;
@@ -1126,7 +1000,7 @@ export class Simulation {
         const [x,y,z] = v.center;
         const dx=e.x+x*Math.cos(e.yaw)+z*Math.sin(e.yaw)-this.player.x;
         const dz=e.z-x*Math.sin(e.yaw)+z*Math.cos(e.yaw)-this.player.z;
-        const dy=y-1.4, distance=Math.hypot(dx,dy,dz);
+        const dy=(e.y ?? 0)+y-((this.player.y ?? 0)+1.4), distance=Math.hypot(dx,dy,dz);
         if (distance < nearest && (dx*direction.x+dy*direction.y+dz*direction.z)/distance > .65) {
           target=e; nearest=distance;
         }
@@ -1138,39 +1012,69 @@ export class Simulation {
     if (this.phase !== "playing" || this.grenades <= 0 || this.grenadeCooldown > 0 || this.knifeCooldown > 0) return false;
     this.grenades--; this.grenadeCooldown=.65;
     this.reloadRemaining=0;
-    this.projectiles.push({ id:this.nextGrenadeId++, ...this.player, y:1.5,
+    this.projectiles.push({ id:this.nextGrenadeId++, ...this.player, y:(this.player.y ?? 0)+1.5,
       vx:Math.sin(this.yaw)*Math.cos(this.pitch)*8, vz:Math.cos(this.yaw)*Math.cos(this.pitch)*8,
       vy:2.5-Math.sin(this.pitch)*8, fuse:2.2 });
     this.events.push({type:"grenadeThrow"});
     return true;
   }
   private stepGrenades(dt: number) {
-    this.explosions.forEach(e=>e.remaining-=dt);
-    this.explosions=this.explosions.filter(e=>e.remaining>0);
+    this.explosions.forEach(e => e.remaining -= dt);
+    this.explosions = this.explosions.filter(e => e.remaining > 0);
     for (const g of this.projectiles) {
-      g.fuse-=dt; g.vy-=9.8*dt;
-      const length=Math.hypot(g.vx,g.vy,g.vz)*dt;
-      if (length>0) {
-        const direction={x:g.vx*dt/length,y:g.vy*dt/length,z:g.vz*dt/length};
-        const hit=wallDistance(g,direction,this.rects);
-        const travel=Math.max(0,Math.min(length,hit-.09));
-        g.x+=direction.x*travel;g.y+=direction.y*travel;g.z+=direction.z*travel;
-        if (hit<length+.09) { g.vx*=-.45;g.vz*=-.45;g.vy*=-.35; }
+      g.fuse -= dt;
+      // Sweep each short flight segment against walls, stair treads and floor slabs.
+      const steps = Math.max(1, Math.ceil(dt / (1 / 120)));
+      const step = dt / steps;
+      for (let i = 0; i < steps; i++) {
+        g.vy -= 9.8 * step;
+        const speed = Math.hypot(g.vx, g.vy, g.vz);
+        if (speed < 1e-6) continue;
+        const direction = { x: g.vx / speed, y: g.vy / speed, z: g.vz / speed };
+        const length = speed * step;
+        const hit = raycastWorld(g, direction, this.rects);
+        const contact = !!hit && hit.distance <= length + 0.09;
+        const travel = contact ? Math.max(0, hit.distance - 0.09) : length;
+        g.x += direction.x * travel;
+        g.y += direction.y * travel;
+        g.z += direction.z * travel;
+        if (contact) {
+          const n = hit.normal;
+          const impact = g.vx * n.x + g.vy * n.y + g.vz * n.z;
+          if (impact < 0) {
+            g.vx -= 1.4 * impact * n.x;
+            g.vy -= 1.4 * impact * n.y;
+            g.vz -= 1.4 * impact * n.z;
+          }
+          if (n.y > 0.7) {
+            g.vx *= 0.65;
+            g.vz *= 0.65;
+            if (Math.abs(g.vy) < 0.25) g.vy = 0;
+          }
+        }
       }
-      if(g.y<.09) { g.y=.09;g.vy=Math.abs(g.vy)*.4;g.vx*=.65;g.vz*=.65; }
-      if(g.fuse>0) continue;
-      this.explosions.push({id:g.id,x:g.x,y:g.y,z:g.z,remaining:.5});
-      this.events.push({type:"explosion",position:{x:g.x,z:g.z}});
+      if (g.fuse > 0) continue;
+      this.explosions.push({ id: g.id, x: g.x, y: g.y, z: g.z, remaining: 0.5 });
+      this.events.push({ type: "explosion", position: { x: g.x, z: g.z } });
+      const exposed = (p: WorldPosition) => {
+        const origin = { x: g.x, y: g.y + 0.02, z: g.z };
+        const delta = { x: p.x - origin.x, y: (p.y ?? 0) + 0.8 - origin.y, z: p.z - origin.z };
+        const length = Math.hypot(delta.x, delta.y, delta.z);
+        return length < 0.001 || wallDistance(origin, {
+          x: delta.x / length, y: delta.y / length, z: delta.z / length,
+        }, this.rects) > length - 0.05;
+      };
       for (const e of this.enemies) {
-        const distance=dist(g,e);
-        if(e.health>0 && distance<4.5 && hasSight(g,e,this.rects,Math.max(.2,g.y)))
-          this.damageEnemy(e,220*(1-distance/5.5),false);
+        const distance = dist(g, e);
+        if (e.health > 0 && distance < 4.5 && exposed(e))
+          this.damageEnemy(e, 220 * (1 - distance / 5.5), false);
       }
-      const distance=dist(g,this.player);
-      if(distance<4.5 && hasSight(g,this.player,this.rects,Math.max(.2,g.y))) this.hurt(70*(1-distance/4.5));
+      const distance = dist(g, this.player);
+      if (distance < 4.5 && exposed(this.player)) this.hurt(70 * (1 - distance / 4.5));
     }
-    this.projectiles=this.projectiles.filter(g=>g.fuse>0);
+    this.projectiles = this.projectiles.filter(g => g.fuse > 0);
   }
+
   fire() {
     if (
       this.phase !== "playing" ||
@@ -1196,7 +1100,7 @@ export class Simulation {
         y: -Math.sin(pitch),
         z: Math.cos(yaw) * Math.cos(pitch),
       };
-      const o = { ...this.player, y: 1.65 };
+      const o = { ...this.player, y: (this.player.y ?? 0) + 1.65 };
       let nearest = wallDistance(o, d, this.rects),
         target: Enemy | undefined,
         region: HitRegion = "body";
@@ -1204,7 +1108,7 @@ export class Simulation {
         if (e.health <= 0) continue;
         for (const volume of zombieHitVolumes(e)) {
           const [x, y, z] = volume.center;
-          const n = raySphere(o, d, { x: e.x + x * Math.cos(e.yaw) + z * Math.sin(e.yaw), y,
+          const n = raySphere(o, d, { x: e.x + x * Math.cos(e.yaw) + z * Math.sin(e.yaw), y: (e.y ?? 0) + y,
             z: e.z - x * Math.sin(e.yaw) + z * Math.cos(e.yaw) }, volume.radius);
           if (n < nearest) {
             nearest = n;
@@ -1455,7 +1359,7 @@ export class Simulation {
       }
       if (range < 0.65) continue;
       // Walking must go around low tables even when the eye-height ray clears them.
-      const target = hasSight(e, this.player, this.walkRects, 0.1)
+      const target = canWalkDirect(e, this.player, RULES.enemyRadius + 0.02, this.rects)
         ? this.player
         : this.navigation.next(e);
       let vx = target.x - e.x,
@@ -1475,7 +1379,7 @@ export class Simulation {
       }
       const mobility = e.missing?.leftLeg && e.missing?.rightLeg ? 0.23 : e.missing?.leftLeg || e.missing?.rightLeg ? 0.48 : 1;
       const norm = Math.max(1, Math.hypot(vx, vz)),
-        before = { x: e.x, z: e.z };
+        before = { x: e.x, y: e.y ?? 0, z: e.z };
       moveActor(
         e,
         (vx / norm) * e.speed * mobility * dt,
@@ -1496,6 +1400,8 @@ export class Simulation {
         if (replacement) {
           e.x = replacement.x;
           e.z = replacement.z;
+          e.y = 0;
+          e.surfaceId = "casino";
           e.stuck = 0;
         }
       }

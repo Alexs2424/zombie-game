@@ -43,6 +43,7 @@ import {
   type WeaponId,
 } from "./simulation";
 import "@babylonjs/core/Culling/ray";
+import { buildHotel } from "./hotel-scene";
 
 type ZombieView = ReturnType<typeof createZombie>;
 export class GameRenderer {
@@ -255,6 +256,7 @@ export class GameRenderer {
     rouletteGlow.intensity = 0.5;
     rouletteGlow.range = 9;
     this.environment();
+    buildHotel(this.scene);
     this.handLight = new PointLight(
       "weapon bounce",
       new Vector3(-0.3, 0.5, -0.1),
@@ -475,6 +477,7 @@ export class GameRenderer {
     );
     // Decorative meshes stay inside these same solid footprints used by the simulation.
     for (const r of STATIC_RECTS) {
+      if (r.id.startsWith("hotel-")) continue;
       if (
         [
           "upgrade-machine",
@@ -722,7 +725,7 @@ export class GameRenderer {
         Math.PI / 2,
       );
     }
-    this.label("main sign", "LAST JACKPOT", -2.5, 3.5, 11.9, 7, 1.1);
+    this.label("main sign", "LAST JACKPOT", -4, 3.5, -11.9, 7, 1.1, "#d9bd77", Math.PI);
     this.label("cashier sign", "CASHIER", -11, 2.8, 9.12, 4, 0.7);
     for (let x = -13.7; x < -8.2; x += 0.3)
       this.box("cage bar", x, 2.05, 9.04, 0.035, 1.05, 0.055, trim);
@@ -1783,7 +1786,7 @@ export class GameRenderer {
     this.time += dt;
     this.camera.position.set(
       sim.player.x,
-      1.65 +
+      (sim.player.y ?? 0) + 1.65 +
         (sim.moving && sim.phase === "playing"
           ? Math.sin(sim.time * 12) * 0.018
           : 0),

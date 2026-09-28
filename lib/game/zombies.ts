@@ -65,7 +65,7 @@ export function createZombie(scene: Scene, id: number, asset: ZombieAsset) {
 }
 export function animateZombie(v: ReturnType<typeof createZombie>, e: Enemy) {
   const pose=zombiePose(e);
-  v.root.position.set(e.x,pose.drop,e.z);v.root.rotation.y=e.yaw;
+  v.root.position.set(e.x,(e.y ?? 0)+pose.drop,e.z);v.root.rotation.y=e.yaw;
   for (let i=0;i<2;i++) {
     const arm=v.pivots[LIMBS[i]], leg=v.pivots[LIMBS[i+2]];
     arm.setEnabled(!e.missing?.[LIMBS[i]]);leg.setEnabled(!e.missing?.[LIMBS[i+2]]);
@@ -86,5 +86,5 @@ export function animateZombie(v: ReturnType<typeof createZombie>, e: Enemy) {
   v.head.rotation.z = Math.sin(e.age*1.6+e.id)*.045 + (e.id%3-1)*.04;
   v.head.rotation.x = e.flash > 0 ? -.16 : pose.attacking ? .09 : 0;
   v.skin.emissiveColor.set(e.flash>0?.16:0,0,0);
-  v.shadow.position.set(e.x,.025,e.z);
+  v.shadow.position.set(e.x,(e.y ?? 0)+.025,e.z);
 }

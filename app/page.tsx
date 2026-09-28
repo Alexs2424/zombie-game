@@ -932,8 +932,14 @@ export default function Home() {
         >
           <strong>DEVELOPMENT PLAYTEST</strong>
           <span>{view.zombieAudioStatus}</span>
+          <span>{view.hotelPlaytestStatus}</span>
           {[
             ["new", "Seed run"],
+            ["hotel-entrance", "Hotel entrance"],
+            ["hotel-lobby", "Hotel lobby"],
+            ["hotel-upper", "Upper walkway"],
+            ["hotel-tour", "Walk hotel loop"],
+            ["hotel-chase", "Test upstairs pursuit"],
             ["floor", "Casino floor"],
             ["slotsWest", "Slots west"],
             ["slotsEast", "Slots east"],

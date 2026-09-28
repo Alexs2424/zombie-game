@@ -92,6 +92,7 @@ export type GameView = {
   fps: number;
   p95: number;
   zombieAudioStatus?: string;
+  hotelPlaytestStatus?: string;
 };
 export const initialView: GameView = {
   grenades: 2,
@@ -164,6 +165,8 @@ export class GameRuntime {
   private suppressUntil = 0;
   private disposed = false;
   private playtesting = false;
+  private hotelTour: { x: number; z: number }[] = [];
+  private hotelTourCompleted = false;
   constructor(
     private canvas: HTMLCanvasElement,
     private onView: (v: GameView) => void,
@@ -355,6 +358,7 @@ export class GameRuntime {
     }
   }
   pause() {
+    this.hotelTour = [];
     this.clearInput();
     this.sim.pause();
     if (document.pointerLockElement === this.canvas) document.exitPointerLock();
@@ -365,7 +369,10 @@ export class GameRuntime {
     if (process.env.NODE_ENV === "production") return;
     this.playtesting = true;
     const soundScenario = ["sound-chase", "sound-last", "sound-horde"].includes(action);
-    if (action === "new" || soundScenario) {
+    const hotelScenario = action.startsWith("hotel-");
+    if (action === "new" || soundScenario || hotelScenario) {
+      this.hotelTour = [];
+      this.hotelTourCompleted = false;
       this.clearInput();
       this.sim = new Simulation();
       this.zombieAudio.reset();
@@ -403,6 +410,38 @@ export class GameRuntime {
         age: 0,
       }));
     }
+    if (hotelScenario) {
+      s.player = { x: -3, y: 0, z: 9.2, surfaceId: "casino" };
+      s.yaw = 0;
+      s.pitch = 0;
+      if (action === "hotel-lobby") s.player = { x: -4, y: 0, z: 20, surfaceId: "hotel-lobby" };
+      if (action === "hotel-upper" || action === "hotel-chase") {
+        s.player = { x: -4, y: 4, z: 34, surfaceId: "hotel-upper" };
+        s.yaw = Math.PI;
+        s.pitch = 0.25;
+      }
+      if (action === "hotel-chase") {
+        s.enemies = [-6, -4, -2].map((x, i) => ({
+          id: 800 + i, x, y: 0, z: 34, surfaceId: "hotel-lobby",
+          health: 100, maxHealth: 100, speed: 2.6, yaw: 0,
+          attack: 0, cooldown: 0, stuck: 0, flash: 0, age: 0,
+        }));
+      }
+      if (action === "hotel-tour") {
+        this.hotelTour = [{x:-3,z:18},{x:-9,z:24},{x:-11,z:24}];
+        for (let i = 1; i <= 36; i++) {
+          const t = i / 36;
+          this.hotelTour.push({x:-11-Math.sin(Math.PI*t)*4,z:28-Math.cos(Math.PI*t)*4});
+        }
+        this.hotelTour.push({x:-9.5,z:32},{x:-4,z:35},{x:1.5,z:32},{x:3,z:32});
+        for (let i = 35; i >= 0; i--) {
+          const t = i / 36;
+          this.hotelTour.push({x:3+Math.sin(Math.PI*t)*4,z:28-Math.cos(Math.PI*t)*4});
+        }
+        this.hotelTour.push({x:1.5,z:24},{x:-3,z:22},{x:-3,z:9.2});
+      }
+      s.refreshMap();
+    }
     const poses: Record<string, [number, number, number, number]> = {
       floor: [-9, -8, 0.3, 0.06],
       slotsWest: [-11.6, -1.8, Math.PI / 2, 0.1],
@@ -426,6 +465,7 @@ export class GameRuntime {
       "poker-b": [22, 3.2, 0, 0.52],
     };
     if (poses[action]) {
+      this.hotelTour = [];
       if (
         [
           "bar",
@@ -636,8 +676,23 @@ export class GameRuntime {
     if (this.sim.phase === "playing") {
       this.accumulated += dt;
       while (this.accumulated >= 1 / 60) {
+        if (this.hotelTour.length && this.keys.size) this.hotelTour = [];
+        let tourForward = 0;
+        const target = this.hotelTour[0];
+        if (target) {
+          const dx = target.x - this.sim.player.x;
+          const dz = target.z - this.sim.player.z;
+          if (Math.hypot(dx, dz) < 0.12) {
+            this.hotelTour.shift();
+            if (!this.hotelTour.length) this.hotelTourCompleted = true;
+          } else {
+            this.sim.yaw = Math.atan2(dx, dz);
+            this.sim.pitch = -0.08;
+            tourForward = 1;
+          }
+        }
         this.sim.step(1 / 60, {
-          forward: +this.keys.has("KeyW") - +this.keys.has("KeyS"),
+          forward: tourForward || (+this.keys.has("KeyW") - +this.keys.has("KeyS")),
           strafe: +this.keys.has("KeyD") - +this.keys.has("KeyA"),
           sprint: this.keys.has("ShiftLeft") || this.keys.has("ShiftRight"),
           fire: this.firing,
@@ -785,6 +840,9 @@ export class GameRuntime {
       damageBoostRemaining: s.damageBoostRemaining,
       room: roomName(s.player),
       zombieAudioStatus: process.env.NODE_ENV !== "production" ? this.audio.zombieStatus : undefined,
+      hotelPlaytestStatus: process.env.NODE_ENV !== "production"
+        ? `${roomName(s.player)} · floor ${(s.player.y ?? 0).toFixed(2)} m${this.hotelTour.length ? ` · walking tour: ${this.hotelTour.length} waypoints left` : this.hotelTourCompleted ? " · hotel loop complete" : ""}`
+        : undefined,
       upgraded: Object.values(s.upgrades).some(Boolean),
       message: s.messageRemaining > 0 ? s.lastMessage : "",
       prompt:
