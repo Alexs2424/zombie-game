@@ -1,5 +1,6 @@
 import {
   Simulation,
+  RULES,
   WEAPONS,
   WEAPON_ORDER,
   PERKS,
@@ -11,13 +12,36 @@ import {
 import { GameRenderer } from "./renderer";
 import { GameAudio } from "./audio";
 import { ZombieAudioDirector } from "./zombie-audio-director";
+import {
+  POKER_TABLES,
+  bestPokerSuit,
+  cardDeck,
+  type PlayingCard,
+  type CardSuit,
+  type PokerTableId,
+} from "./poker";
 export type GameView = {
+  grenades: number;
+  knifeReady: boolean;
   phase: "ready" | "playing" | "paused" | "dead";
   health: number;
   maxHealth: number;
   inventory: { id: WeaponId; label: string; owned: boolean }[];
   perks: { id: PerkId; name: string }[];
   shopOpen: boolean;
+  pokerOpen: boolean;
+  poker: null | {
+    id: PokerTableId;
+    name: string;
+    hand: PlayingCard[];
+    bestCount: number;
+    bestSuit: CardSuit;
+    canSwap: boolean;
+    reason: string;
+    completed: boolean;
+    rewardUnlocked: boolean;
+    swaps: number;
+  };
   shopOffers: {
     id: BarItemId;
     name: string;
@@ -50,6 +74,8 @@ export type GameView = {
   tables: boolean;
   slowRound: number;
   dice: Simulation["dice"];
+  roulette: Simulation["roulette"];
+  damageBoostRemaining: number;
   room: string;
   upgraded: boolean;
   message: string;
@@ -58,6 +84,7 @@ export type GameView = {
     detail: string;
     price: number;
     reason: string;
+    actionLabel?: string;
   };
   hit: number;
   headshot: boolean;
@@ -67,6 +94,8 @@ export type GameView = {
   zombieAudioStatus?: string;
 };
 export const initialView: GameView = {
+  grenades: 2,
+  knifeReady: true,
   phase: "ready",
   health: 100,
   maxHealth: 100,
@@ -77,6 +106,8 @@ export const initialView: GameView = {
   })),
   perks: [],
   shopOpen: false,
+  pokerOpen: false,
+  poker: null,
   shopOffers: [],
   roundCue: null,
   roundCueRemaining: 0,
@@ -103,6 +134,8 @@ export const initialView: GameView = {
   tables: false,
   slowRound: 0,
   dice: null,
+  roulette: null,
+  damageBoostRemaining: 0,
   room: "Casino Floor",
   upgraded: false,
   message: "",
@@ -168,6 +201,14 @@ export class GameRuntime {
     this.accumulated = 0;
   }
   private keyDown = (e: KeyboardEvent) => {
+    if (this.sim.pokerOpen) {
+      if (e.code === "Escape") {
+        e.preventDefault();
+        this.sim.closePoker();
+        this.publish();
+      }
+      return;
+    }
     if (this.sim.shopOpen && e.code === "Escape") {
       e.preventDefault();
       this.sim.closeBar();
@@ -185,10 +226,13 @@ export class GameRuntime {
         "ShiftRight",
         "KeyR",
         "KeyE",
+        "KeyG",
+        "KeyV",
         "Digit1",
         "Digit2",
         "Digit3",
         "Digit4",
+        "Digit5",
         "Space",
         "Tab",
       ].includes(e.code)
@@ -197,17 +241,20 @@ export class GameRuntime {
     this.keys.add(e.code);
     if (e.repeat) return;
     if (e.code === "KeyR") this.sim.reload();
+    if (e.code === "KeyG") this.sim.throwGrenade();
+    if (e.code === "KeyV") this.sim.knife();
     if (e.code === "Digit1") this.sim.switchWeapon("pistol");
     if (e.code === "Digit2") this.sim.switchWeapon("shotgun");
     if (e.code === "Digit3") this.sim.switchWeapon("smg");
     if (e.code === "Digit4") this.sim.switchWeapon("rifle");
+    if (e.code === "Digit5") this.sim.switchWeapon("revolver");
     if (e.code === "KeyE") this.interact();
     if (e.code === "Escape") this.pause();
   };
   private interact() {
     const p = this.sim.nearestPurchase();
     if (p) this.sim.purchase(p.id);
-    if (this.sim.shopOpen) {
+    if (this.sim.shopOpen || this.sim.pokerOpen) {
       this.clearInput();
       if (document.pointerLockElement === this.canvas)
         document.exitPointerLock();
@@ -274,6 +321,7 @@ export class GameRuntime {
   async enter(restart = false) {
     if (this.disposed) return;
     this.sim.closeBar();
+    this.sim.closePoker();
     this.pendingStart =
       restart || this.sim.phase === "ready" || this.sim.phase === "dead";
     this.clearInput();
@@ -373,6 +421,9 @@ export class GameRuntime {
       tables: [30, -8, 0.55, 0.1],
       craps: [35, -5.3, 0, 0.28],
       roulette: [35, 2.6, 0, 0.25],
+      rouletteClose: [35.735, 3.37, 0, 0.5],
+      "poker-a": [22, -4.8, 0, 0.52],
+      "poker-b": [22, 3.2, 0, 0.52],
     };
     if (poses[action]) {
       if (
@@ -387,6 +438,9 @@ export class GameRuntime {
           "tables",
           "craps",
           "roulette",
+          "rouletteClose",
+          "poker-a",
+          "poker-b",
         ].includes(action)
       )
         s.lounge = true;
@@ -399,11 +453,16 @@ export class GameRuntime {
           "tables",
           "craps",
           "roulette",
+          "rouletteClose",
+          "poker-a",
+          "poker-b",
         ].includes(action)
       )
         s.vip = true;
-      if (["tables", "craps", "roulette"].includes(action)) s.tables = true;
+      if (["tables", "craps", "roulette", "rouletteClose"].includes(action))
+        s.tables = true;
       s.closeBar();
+      s.closePoker();
       s.phase = "playing";
       s.intermission = 3600;
       s.invulnerable = 99999;
@@ -422,6 +481,48 @@ export class GameRuntime {
         (s.dice as NonNullable<Simulation["dice"]>).values =
           action === "dice-seven" ? [3, 4] : [5, 4];
     }
+    if (action === "roulette-spin") s.purchase("roulette");
+    const rouletteOutcomes: Record<string, number> = {
+      "roulette-4": 4,
+      "roulette-24": 24,
+      "roulette-7": 7,
+      "roulette-0": 0,
+      "roulette-miss": 13,
+    };
+    if (action in rouletteOutcomes && s.purchase("roulette") && s.roulette) {
+      s.roulette.number = rouletteOutcomes[action];
+      // Visible development controls provide repeatable reward checks using a paid spin.
+      for (const weapon of WEAPON_ORDER)
+        s.inventory[weapon] = { owned: true, mag: 1, reserve: 2 };
+      s.reloadRemaining = 0;
+    }
+    if (action === "roulette-expire")
+      s.damageBoostRemaining = Math.min(s.damageBoostRemaining, 0.05);
+    if (action === "roulette-pause") s.pause();
+    if (action === "roulette-resume") s.resume();
+    if (action === "poker-near-flush") {
+      const id = s.pokerOpen ?? "poker-a";
+      const state = s.pokerTables[id];
+      state.hand = [
+        { rank: 2, suit: "hearts" },
+        { rank: 5, suit: "hearts" },
+        { rank: 8, suit: "hearts" },
+        { rank: 11, suit: "hearts" },
+        { rank: 1, suit: "clubs" },
+      ];
+      state.drawPile = cardDeck().filter(
+        (card) =>
+          !state.hand.some(
+            (held) => held.rank === card.rank && held.suit === card.suit,
+          ) && !(card.rank === 13 && card.suit === "hearts"),
+      );
+      state.drawPile.push({ rank: 13, suit: "hearts" });
+      state.discard = [];
+      state.lastSwapRound = -1;
+      state.swaps = 0;
+      state.completed = false;
+    }
+    if (action === "poker-swap") s.swapPoker(4);
     if (action === "left") s.yaw -= Math.PI / 4;
     if (action === "right") s.yaw += Math.PI / 4;
     if (action === "forward" || action === "back")
@@ -433,6 +534,13 @@ export class GameRuntime {
           fire: false,
         });
     if (action === "shoot") s.fire();
+    if (action === "grenade") s.throwGrenade();
+    if (action === "knife") s.knife();
+    if (action === "melee-target") {
+      s.phase="playing";s.intermission=3600;s.invulnerable=99999;
+      s.player={x:-12,z:-7};s.yaw=0;s.pitch=0;
+      s.enemies=[{id:500,x:-12,z:-5.8,health:80,maxHealth:80,speed:0,yaw:Math.PI,attack:0,cooldown:0,stuck:0,flash:0,age:0}];
+    }
     if (action === "reload") s.reload();
     if (action.startsWith("weapon-"))
       s.switchWeapon(action.slice(7) as WeaponId);
@@ -470,11 +578,33 @@ export class GameRuntime {
         age: 0,
       }));
     }
+    if (action === "zombies") {
+      s.phase = "playing"; s.intermission = 3600; s.invulnerable = 99999;
+      s.player = { x: -12, z: -7 }; s.yaw = 0; s.pitch = .12;
+      s.enemies = Array.from({ length: 3 }, (_, i) => ({
+        id: 300 + i, x: -13 + i, z: -4, health: 1000, maxHealth: 1000,
+        speed: 0, yaw: Math.PI, attack: 0, cooldown: 0, stuck: 0, flash: 0, age: 0,
+      }));
+    }
+    if (action === "zombie-wounds") for (const e of s.enemies) {
+      s.damageEnemy(e, 10, false, "body");
+      s.damageEnemy(e, 10, true, "head");
+    }
+    if (action === "zombie-limbs") for (const e of s.enemies) {
+      s.damageEnemy(e, 34, false, e.id % 2 ? "leftLeg" : "rightArm");
+    }
+    if (action === "zombie-attacks") for (const e of s.enemies) {
+      e.attackStyle = e.id % 3; e.attack = RULES.attackWindup;
+    }
     void this.audio.unlock();
     this.publish();
   }
   buyBar(id: BarItemId) {
     this.sim.purchaseBar(id);
+    this.publish();
+  }
+  swapPoker(index: number) {
+    this.sim.swapPoker(index);
     this.publish();
   }
   selectBarWeapon(id: WeaponId) {
@@ -575,8 +705,13 @@ export class GameRuntime {
       w = s.inventory[s.weapon],
       p = s.nearestPurchase(),
       info = p ? s.purchaseInfo(p.id) : null;
+    const pokerId = s.pokerOpen;
+    const pokerState = pokerId ? s.pokerTables[pokerId] : null;
+    const bestSuit = bestPokerSuit(pokerState?.hand ?? []);
     this.audio.setActive(s.phase === "playing");
     this.onView({
+      grenades: s.grenades,
+      knifeReady: s.knifeCooldown <= 0 && s.grenadeCooldown <= 0,
       phase: s.phase,
       health: s.health,
       maxHealth: s.maxHealth,
@@ -589,6 +724,21 @@ export class GameRuntime {
         .filter((id) => s.perks[id])
         .map((id) => ({ id, name: PERKS[id].name })),
       shopOpen: s.shopOpen,
+      pokerOpen: !!pokerId,
+      poker:
+        pokerId && pokerState
+          ? {
+              id: pokerId,
+              name: POKER_TABLES.find((table) => table.id === pokerId)!.name,
+              hand: pokerState.hand.map((card) => ({ ...card })),
+              bestCount: bestSuit.count,
+              bestSuit: bestSuit.suit,
+              ...s.pokerInfo(pokerId),
+              completed: pokerState.completed,
+              rewardUnlocked: s.flushRewardUnlocked,
+              swaps: pokerState.swaps,
+            }
+          : null,
       shopOffers: [
         ...(Object.keys(PERKS) as PerkId[]).map((id) => ({
           id,
@@ -599,7 +749,10 @@ export class GameRuntime {
         {
           id: "weaponUpgrade",
           name: `Double Down · ${WEAPONS[s.weapon].label}`,
-          detail: "+50% magazine · heavier hits · full magazine",
+          detail:
+            s.weapon === "revolver"
+              ? "+35% damage · reload 25% faster · full cylinder"
+              : "+50% magazine · heavier hits · full magazine",
           ...s.barInfo("weaponUpgrade"),
         },
       ],
@@ -628,6 +781,8 @@ export class GameRuntime {
       tables: s.tables,
       slowRound: s.slowRound,
       dice: s.dice ? { ...s.dice, values: [...s.dice.values] } : null,
+      roulette: s.roulette ? { ...s.roulette } : null,
+      damageBoostRemaining: s.damageBoostRemaining,
       room: roomName(s.player),
       zombieAudioStatus: process.env.NODE_ENV !== "production" ? this.audio.zombieStatus : undefined,
       upgraded: Object.values(s.upgrades).some(Boolean),
@@ -645,6 +800,10 @@ export class GameRuntime {
                   ? `7 slows you 20% ${s.intermission > 0 ? "next round" : "this round"} · other rolls pay 500 chips · once per round`
                   : p.detail,
               ...info,
+              actionLabel:
+                p.id === "poker-a" || p.id === "poker-b"
+                  ? "OPEN HAND"
+                  : undefined,
             }
           : null,
       hit: this.hit,

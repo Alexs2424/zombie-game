@@ -202,9 +202,25 @@ export class GameAudio {
     };
   }
   play(event: GameEvent) {
+    if (event.type === "cardSwap") {
+      this.tone(860, 0.045, 0.045, "triangle", 480, 0, -0.12, true);
+      this.tone(610, 0.06, 0.04, "triangle", 260, 0.065, 0.12, true);
+    }
+    if (event.type === "pokerFlush") {
+      [392, 493.88, 587.33, 783.99].forEach((note, i) =>
+        this.tone(note, 0.35, 0.085, "sine", undefined, i * 0.11, 0, true),
+      );
+      this.tone(1567.98, 0.5, 0.045, "triangle", undefined, 0.38, 0, true);
+    }
+    if (event.type === "knife") this.burst(0.18, 0.13, 1800);
+    if (event.type === "grenadeThrow") this.burst(0.12, 0.1, 900);
+    if (event.type === "explosion") {
+      this.burst(0.65, 0.45, 220);
+      this.tone(90, 0.7, 0.3, "sine", 25);
+    }
     if (event.type === "shot") {
       const heavy = event.weapon === "shotgun",
-        rifle = event.weapon === "rifle",
+        rifle = event.weapon === "rifle" || event.weapon === "revolver",
         smg = event.weapon === "smg";
       this.burst(
         heavy ? 0.25 : rifle ? 0.18 : smg ? 0.075 : 0.14,
@@ -244,6 +260,48 @@ export class GameAudio {
     if (event.type === "diceCurse") {
       this.tone(155, 0.95, 0.22, "sawtooth", 42);
       this.burst(0.65, 0.14, 280);
+    }
+    if (event.type === "rouletteSpin") {
+      // A brief ball rattle and slowing pocket ticks. The simulation owns the
+      // six-second spin; scheduling only this opening flurry avoids an audio
+      // timer continuing the whole spin while the game is paused.
+      [0, 0.055, 0.12, 0.19, 0.275, 0.375, 0.5, 0.65, 0.83].forEach(
+        (delay, i) => {
+          this.tone(
+            1760 - i * 95,
+            0.035,
+            0.045 + i * 0.003,
+            "triangle",
+            390,
+            delay,
+            Math.sin(i * 1.2) * 0.3,
+          );
+        },
+      );
+      this.burst(0.42, 0.065, 2600);
+      this.tone(170, 0.8, 0.035, "sine", 75);
+    }
+    if (event.type === "rouletteWin") {
+      // Bright, compact chip/bell reward, distinct from the dice triad.
+      [659.25, 987.77, 1318.51].forEach((note, i) => {
+        this.tone(note, 0.3, 0.095, "sine", undefined, i * 0.105);
+        this.tone(note * 2.01, 0.12, 0.027, "triangle", undefined, i * 0.105);
+      });
+    }
+    if (event.type === "rouletteJackpot") {
+      [523.25, 659.25, 783.99, 1046.5].forEach((note, i) =>
+        this.tone(note, 0.32, 0.1, "triangle", undefined, i * 0.105),
+      );
+      [523.25, 783.99, 1046.5].forEach((note) =>
+        this.tone(note, 0.55, 0.07, "sine", undefined, 0.46),
+      );
+      this.burst(0.18, 0.045, 3700);
+    }
+    if (event.type === "rouletteMiss") {
+      // A settled ball and soft falling pair, without implying another charge.
+      this.burst(0.11, 0.045, 900);
+      this.tone(330, 0.18, 0.065, "triangle", 245);
+      this.tone(220, 0.26, 0.055, "sine", 165, 0.15);
     }
     if (event.type === "round") this.roundStinger(true);
     if (event.type === "roundClear") this.roundStinger(false);

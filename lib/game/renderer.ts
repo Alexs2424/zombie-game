@@ -24,6 +24,10 @@ import { RawCubeTexture } from "@babylonjs/core/Materials/Textures/rawCubeTextur
 import { Constants } from "@babylonjs/core/Engines/constants";
 import "@babylonjs/loaders/glTF";
 import { createCharacter } from "./characters";
+import { RouletteMotion, ROULETTE_GEOMETRY } from "./roulette-motion";
+import { POKER_TABLES, type PokerTableId } from "./poker";
+import { paintPlayingCard } from "./card-art";
+import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import {
   Simulation,
@@ -33,13 +37,14 @@ import {
   SPAWNS,
   BOUNDS,
   PRICES,
+  ROULETTE_RULES,
   WEAPONS,
   WEAPON_ORDER,
   type WeaponId,
 } from "./simulation";
 import "@babylonjs/core/Culling/ray";
 
-type ZombieView = ReturnType<typeof createCharacter>;
+type ZombieView = ReturnType<typeof createZombie>;
 export class GameRenderer {
   engine: Engine;
   scene: Scene;
@@ -57,11 +62,20 @@ export class GameRenderer {
   private movingParts: Partial<
     Record<WeaponId, { node: TransformNode; y: number; z: number }[]>
   > = {};
-  private bartender?: ZombieView;
+  private bartender?: ReturnType<typeof createCharacter>;
+  private zombieAsset?: Awaited<ReturnType<typeof loadZombieAsset>>;
   private handLight: PointLight;
   private muzzleLight: PointLight;
   private rouletteWheel?: TransformNode;
   private rouletteBall?: TransformNode;
+  private rouletteMotion = new RouletteMotion();
+  private pokerCards: {
+    table: PokerTableId;
+    index: number;
+    key: string;
+    texture: DynamicTexture;
+    material: StandardMaterial;
+  }[] = [];
   private diceMeshes: TransformNode[] = [];
   private handParts: Partial<
     Record<WeaponId, { node: TransformNode; rest: Vector3 }[]>
@@ -73,6 +87,9 @@ export class GameRenderer {
   private gateSigns: Record<string, Mesh> = {};
   private shadows: ShadowGenerator[] = [];
   private gunKick = 0;
+  private knifeModel?: TransformNode;
+  private grenadeMeshes = new Map<number, Mesh>();
+  private blastMeshes = new Map<number, Mesh>();
   private flashTime = 0;
   private impact: Mesh;
   private impactTime = 0;
@@ -264,6 +281,7 @@ export class GameRenderer {
       shotgun: this.weapon("shotgun"),
       smg: this.weapon("smg"),
       rifle: this.weapon("rifle"),
+      revolver: this.weapon("revolver"),
     };
     this.flash = MeshBuilder.CreateSphere(
       "muzzle",
@@ -285,6 +303,10 @@ export class GameRenderer {
       this.loadWeaponAssets(),
       this.loadTableAssets(),
       this.loadSlotAssets(),
+      this.loadPokerAssets(),
+      loadZombieAsset().then((asset) => {
+        this.zombieAsset = asset;
+      }),
     ]).then(async () => {
       await this.scene.whenReadyAsync();
     });
@@ -467,7 +489,7 @@ export class GameRenderer {
         continue;
       }
       if (r.id.startsWith("poker")) {
-        this.pokerTable(r.x, r.z, r.w, r.d);
+        this.pokerTable(r.x, r.z);
         continue;
       }
       if (r.id === "vip-sofa") {
@@ -1173,6 +1195,76 @@ export class GameRenderer {
       "#dfbd78",
       Math.PI / 2,
     );
+    this.box(
+      "roulette rules brass frame",
+      35,
+      2.12,
+      11.93,
+      6.8,
+      2.06,
+      0.06,
+      trim,
+    );
+    this.box(
+      "roulette rules walnut board",
+      35,
+      2.12,
+      11.89,
+      6.68,
+      1.94,
+      0.035,
+      wood,
+    );
+    this.label(
+      "roulette rules title",
+      "ROULETTE • LUCKY NUMBERS",
+      35,
+      2.83,
+      11.864,
+      6.32,
+      0.39,
+      "#e3bd78",
+    );
+    this.label(
+      "roulette spin cost",
+      `${PRICES.roulette} CHIPS • EVERY SPIN`,
+      35,
+      2.43,
+      11.864,
+      6.32,
+      0.29,
+      "#d6c4a0",
+    );
+    this.label(
+      "roulette equipped ammo reward",
+      "4 / 24  •  EQUIPPED WEAPON AMMO",
+      35,
+      2.08,
+      11.864,
+      6.32,
+      0.29,
+      "#d6c4a0",
+    );
+    this.label(
+      "roulette maximum ammo reward",
+      "7  •  MAX AMMO FOR ALL OWNED WEAPONS",
+      35,
+      1.73,
+      11.864,
+      6.32,
+      0.29,
+      "#d6c4a0",
+    );
+    this.label(
+      "roulette jackpot reward",
+      `0  •  MAX AMMO + ${ROULETTE_RULES.damageMultiplier}× DAMAGE FOR ${ROULETTE_RULES.damageDuration} SECONDS`,
+      35,
+      1.38,
+      11.864,
+      6.32,
+      0.29,
+      "#e3bd78",
+    );
     this.label(
       "craps rules",
       "SEVEN’S CURSE",
@@ -1263,63 +1355,88 @@ export class GameRenderer {
       for (const shadow of this.shadows) shadow.addShadowCaster(merged, false);
     }
   }
-  private pokerTable(x: number, z: number, w: number, d: number) {
-    const wood = this.mat("walnut paneling", "#392c24"),
-      brass = this.mat("old brass", "#b2985c"),
-      felt = this.mat("poker felt", "#286c59"),
-      leather = this.mat("padded rail", "#251e1b");
-    this.box("poker pedestal", x, 0.4, z, 1.8, 0.8, 1, wood);
-    this.box("padded poker rail", x, 0.88, z, w, 0.14, d, leather);
-    this.box(
-      "brass table edge",
-      x,
-      0.82,
-      z,
-      w + 0.015,
-      0.035,
-      d + 0.015,
-      brass,
-    );
-    this.box("green baize", x, 0.954, z, w - 0.32, 0.012, d - 0.32, felt);
+  private pokerTable(x: number, z: number) {
+    const table = POKER_TABLES.find((table) => table.x === x && table.z === z)!;
     for (let i = 0; i < 5; i++) {
-      const card = this.box(
-        "playing card",
-        x - 0.65 + i * 0.33,
-        0.966,
-        z,
-        0.22,
-        0.009,
-        0.3,
-        this.mat("cards", "#dacfad"),
-      );
-      card.rotation.y = (i - 2) * 0.08;
       this.box(
-        "card suit",
-        x - 0.65 + i * 0.33,
-        0.972,
-        z,
-        0.06,
-        0.006,
-        0.07,
-        this.mat("red chips", "#a34842"),
+        `${table.id} card ${i + 1} paper edge`,
+        x + (i - 2) * 0.28,
+        0.868,
+        z - 0.36,
+        0.22,
+        0.004,
+        0.31,
+        this.mat("card paper edge", "#ddcfac"),
       );
+      const texture = new DynamicTexture(
+        `${table.id} card ${i + 1} print`,
+        { width: 384, height: 544 },
+        this.scene,
+        true,
+      );
+      texture.anisotropicFilteringLevel = 8;
+      paintPlayingCard(texture.getContext() as CanvasRenderingContext2D);
+      texture.update();
+      const material = new StandardMaterial(
+        `${table.id} card ${i + 1}`,
+        this.scene,
+      );
+      material.diffuseTexture = texture;
+      material.diffuseColor = Color3.White();
+      material.emissiveColor = new Color3(0.08, 0.08, 0.065);
+      material.specularColor = new Color3(0.13, 0.12, 0.09);
+      material.specularPower = 40;
+      material.maxSimultaneousLights = 8;
+      const face = MeshBuilder.CreateGround(
+        `${table.id} card ${i + 1} face`,
+        { width: 0.22, height: 0.31 },
+        this.scene,
+      );
+      face.position.set(x + (i - 2) * 0.28, 0.8705, z - 0.36);
+      face.material = material;
+      face.isPickable = false;
+      face.receiveShadows = true;
+      this.pokerCards.push({
+        table: table.id,
+        index: i,
+        key: "back",
+        texture,
+        material,
+      });
     }
-    for (let i = 0; i < 8; i++) {
-      const xx = x - 1.25 + (i % 4) * 0.8,
-        zz = z + (i < 4 ? -0.8 : 0.8);
-      for (let n = 0; n <= i % 3; n++)
-        this.cylinder(
-          "chip stack",
-          xx,
-          0.975 + n * 0.028,
-          zz,
-          0.13,
-          0.022,
-          this.mat(
-            i % 2 ? "red chips" : "ivory chips",
-            i % 2 ? "#a34842" : "#e0cfa9",
-          ),
-        );
+  }
+  private async loadPokerAssets() {
+    const asset = await LoadAssetContainerAsync(
+      "/models/poker-table.glb",
+      this.scene,
+    );
+    if (this.scene.isDisposed) {
+      asset.dispose();
+      return;
+    }
+    this.weaponAssets.push(asset);
+    for (const mesh of asset.meshes) {
+      mesh.isPickable = false;
+      mesh.receiveShadows = true;
+      const material = mesh.material as unknown as {
+        maxSimultaneousLights?: number;
+      };
+      if (material && "maxSimultaneousLights" in material)
+        material.maxSimultaneousLights = 8;
+    }
+    for (const table of POKER_TABLES) {
+      const root = new TransformNode(`${table.id} detailed table`, this.scene);
+      root.position.set(table.x, 0, table.z);
+      const imported = asset.instantiateModelsToScene(
+        (name) => `${table.id}:${name}`,
+        false,
+        { doNotInstantiate: false },
+      );
+      for (const node of imported.rootNodes) node.parent = root;
+      for (const mesh of root.getChildMeshes()) {
+        mesh.isPickable = false;
+        this.shadows[0].addShadowCaster(mesh, false);
+      }
     }
   }
   private slotIsland(x: number, z: number, w: number, d: number) {
@@ -1572,22 +1689,30 @@ export class GameRenderer {
   }
   private zombie(id: number): ZombieView {
     this.zombieShadows.set(id, new Set());
-    return createCharacter(this.scene, id);
+    return createZombie(this.scene, id, this.zombieAsset!);
   }
   shot(id: WeaponId) {
     this.gunKick =
-      id === "shotgun"
-        ? 0.12
-        : id === "rifle"
-          ? 0.085
-          : id === "smg"
-            ? 0.035
-            : 0.055;
+      id === "revolver"
+        ? 0.115
+        : id === "shotgun"
+          ? 0.12
+          : id === "rifle"
+            ? 0.085
+            : id === "smg"
+              ? 0.035
+              : 0.055;
     this.flashTime = 0.045;
     this.flash.position.set(
       0,
-      0.03,
-      id === "shotgun" || id === "rifle" ? 0.65 : id === "smg" ? 0.4 : 0.24,
+      id === "revolver" ? 0.07 : 0.03,
+      id === "shotgun" || id === "rifle"
+        ? 0.65
+        : id === "revolver"
+          ? 0.307
+          : id === "smg"
+            ? 0.4
+            : 0.24,
     );
   }
   hit() {
@@ -1595,7 +1720,66 @@ export class GameRenderer {
     const ray = this.camera.getForwardRay(6);
     this.impact.position.copyFrom(ray.origin.add(ray.direction.scale(5)));
   }
+  private updateEquipment(sim: Simulation) {
+    if (!this.knifeModel) {
+      const knife = new TransformNode("combat knife", this.scene);
+      knife.parent = this.camera;
+      const part = (name: string, size: number[], pos: number[], material: StandardMaterial) => {
+        const mesh = MeshBuilder.CreateBox(name,{width:size[0],height:size[1],depth:size[2]},this.scene);
+        mesh.parent=knife;mesh.position.set(pos[0],pos[1],pos[2]);mesh.material=material;
+        mesh.isPickable=false;mesh.renderingGroupId=1;
+        return mesh;
+      };
+      part("ribbed knife grip",[.065,.07,.19],[0,0,0],this.mat("knife grip","#292d26"));
+      part("steel guard",[.18,.035,.035],[0,0,.11],this.mat("knife steel","#a6b5b3",.1));
+      const blade=MeshBuilder.CreateCylinder("tapered blade",{diameterTop:0,diameterBottom:.11,height:.34,tessellation:4},this.scene);
+      blade.parent=knife;blade.rotation.x=Math.PI/2;blade.position.z=.29;blade.scaling.z=.16;
+      blade.material=this.mat("knife steel","#a6b5b3",.1);blade.renderingGroupId=1;blade.isPickable=false;
+      part("gloved knife hand",[.105,.095,.13],[0,-.045,-.035],this.mat("knife glove","#69503a"));
+      part("knife sleeve",[.12,.13,.22],[0,-.075,-.18],this.mat("knife sleeve","#283b31"));
+      this.knifeModel=knife;
+    }
+    const slash=sim.knifeRemaining>0;
+    this.knifeModel.setEnabled(slash);
+    if (slash) {
+      const progress=1-sim.knifeRemaining/.55;
+      const swing=Math.sin(progress*Math.PI);
+      this.knifeModel.position.set(.4-swing*.62,-.3+swing*.17,.5+swing*.3);
+      this.knifeModel.rotation.set(-.2,.65-swing*1.2,-.4+swing*.65);
+    }
+    for(const [id,mesh] of this.grenadeMeshes) if(!sim.projectiles.some(g=>g.id===id)) {
+      mesh.dispose();this.grenadeMeshes.delete(id);
+    }
+    for(const g of sim.projectiles) {
+      let mesh=this.grenadeMeshes.get(g.id);
+      if(!mesh) {
+        mesh=MeshBuilder.CreateSphere("thrown grenade",{diameter:.17,segments:12},this.scene);
+        mesh.scaling.y=1.2;mesh.material=this.mat("grenade casing","#52613a");mesh.isPickable=false;
+        const cap=MeshBuilder.CreateBox("grenade fuse",{width:.05,height:.06,depth:.05},this.scene);
+        cap.parent=mesh;cap.position.y=.095;cap.material=this.mat("grenade fuse","#eb9d43",.5);cap.isPickable=false;
+        this.grenadeMeshes.set(g.id,mesh);
+      }
+      mesh.position.set(g.x,g.y,g.z);mesh.rotation.set(sim.time*7,0,sim.time*4);
+    }
+    for(const [id,mesh] of this.blastMeshes) if(!sim.explosions.some(g=>g.id===id)) {
+      mesh.material?.dispose();mesh.dispose();this.blastMeshes.delete(id);
+    }
+    for(const blast of sim.explosions) {
+      let mesh=this.blastMeshes.get(blast.id);
+      if(!mesh) {
+        mesh=MeshBuilder.CreateSphere("grenade blast",{diameter:1,segments:16},this.scene);
+        const material=new StandardMaterial("blast flash",this.scene);
+        material.emissiveColor.set(1,.35,.035);material.disableLighting=true;
+        mesh.material=material;mesh.isPickable=false;this.blastMeshes.set(blast.id,mesh);
+      }
+      const progress=1-blast.remaining/.5;
+      mesh.position.set(blast.x,Math.max(.15,blast.y),blast.z);
+      mesh.scaling.setAll(.2+progress*8);
+      (mesh.material as StandardMaterial).alpha=(1-progress)*.65;
+    }
+  }
   update(sim: Simulation, dt: number) {
+    this.updateEquipment(sim);
     this.time += dt;
     this.camera.position.set(
       sim.player.x,
@@ -1627,7 +1811,8 @@ export class GameRenderer {
         ? 0.5 + Math.sin(sim.reloadRemaining * 6) * 0.12
         : this.gunKick * 1.4;
     this.gun.rotation.z = sim.sprinting ? -0.2 : 0;
-    for (const id of WEAPON_ORDER) this.guns[id].setEnabled(sim.weapon === id);
+    this.gun.position.y -= sim.grenadeCooldown > 0 ? Math.sin(sim.grenadeCooldown/.65*Math.PI)*.25 : 0;
+    for (const id of WEAPON_ORDER) this.guns[id].setEnabled(sim.weapon === id && sim.knifeRemaining <= 0);
     const reloadProgress =
       sim.reloadRemaining > 0
         ? 1 - sim.reloadRemaining / sim.reloadDuration()
@@ -1656,14 +1841,43 @@ export class GameRenderer {
       } else if (sim.weapon === "shotgun")
         hand.node.position.z -= this.gunKick * 0.5;
     }
+    for (const card of this.pokerCards) {
+      const state = sim.pokerTables[card.table];
+      const value = state.hand[card.index];
+      const key = value ? `${value.suit}-${value.rank}` : "back";
+      if (key !== card.key) {
+        paintPlayingCard(
+          card.texture.getContext() as CanvasRenderingContext2D,
+          value,
+        );
+        card.texture.update();
+        card.key = key;
+      }
+      card.material.emissiveColor.set(
+        state.completed ? 0.2 : 0.08,
+        state.completed ? 0.16 : 0.08,
+        0.065,
+      );
+    }
+    const roulettePose = this.rouletteMotion.update(
+      sim,
+      sim.roulette,
+      ROULETTE_RULES.spinDuration,
+    );
     if (this.rouletteWheel) {
       this.rouletteWheel.rotationQuaternion = null;
-      this.rouletteWheel.rotation.y = sim.time * 0.32;
+      this.rouletteWheel.rotation.y = roulettePose.wheelAngle;
     }
     if (this.rouletteBall) {
-      this.rouletteBall.position.x =
-        -0.735 + Math.cos(sim.time * -0.68) * 0.725;
-      this.rouletteBall.position.z = Math.sin(sim.time * -0.68) * 0.725;
+      // Both nodes remain beneath glTF's conversion root. In these coordinates,
+      // a wheel pocket at angle alpha rotates to alpha - wheel.rotation.y.
+      this.rouletteBall.position.set(
+        ROULETTE_GEOMETRY.centerX +
+          Math.cos(roulettePose.ballAngle) * roulettePose.ballRadius,
+        roulettePose.ballHeight,
+        ROULETTE_GEOMETRY.centerZ +
+          Math.sin(roulettePose.ballAngle) * roulettePose.ballRadius,
+      );
     }
     const faces = [
       Quaternion.Identity(),
@@ -1728,6 +1942,7 @@ export class GameRenderer {
       }
     for (const e of sim.enemies) {
       if (e.health <= 0) continue;
+      if (!this.zombieAsset) continue;
       let v = this.zombies.get(e.id);
       if (!v) {
         v = this.zombie(e.id);
@@ -1745,20 +1960,7 @@ export class GameRenderer {
         if (nearby) membership.add(shadow);
         else membership.delete(shadow);
       }
-      v.root.position.set(e.x, 0, e.z);
-      v.root.rotation.y = e.yaw;
-      v.root.rotation.z = Math.sin(e.age * 3 + e.id) * 0.025;
-      const walk = Math.sin(e.age * e.speed * 4) * 0.3;
-      v.legs[0].rotation.x = walk;
-      v.legs[1].rotation.x = -walk;
-      v.arms.forEach(
-        (a, i) =>
-          (a.rotation.x =
-            e.attack > 0 ? -1.55 : -0.7 + (i ? walk : -walk) * 0.4),
-      );
-      v.material.emissiveColor =
-        e.flash > 0 ? new Color3(0.6, 0.45, 0.2) : Color3.Black();
-      v.shadow.position.set(e.x, 0.025, e.z);
+      animateZombie(v, e);
     }
     this.scene.render();
     this.fps = this.engine.getFps();

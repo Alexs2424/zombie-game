@@ -1,5 +1,23 @@
 # Zombie audio validation
 
+## Merge with current main
+
+Merged `origin/main` at `a06362f` (PR #4) into the sound-effects branch.
+Resolved README, runtime import, and development-control conflicts by preserving
+both feature sets. Reviewed the automatic audio/test merges: poker cues remain
+on the UI bus while gameplay is paused; roulette, revolver, knife, grenade, and
+explosion cues coexist with the zombie director and sampled-voice lifecycle.
+New zombie wound and limb fields remain compatible with the sound scenarios.
+
+- All 106 tests pass, including the upstream combat/casino/asset regressions and
+  the zombie audio routing, pause, disposal, and scheduling checks.
+- TypeScript, production build, focused audio/runtime/test ESLint, and diff
+  whitespace checks pass. Existing framework build warnings remain.
+- No additional browser or subjective listening pass was performed for this
+  merge; the original browser checks below apply to the initial sound feature.
+
+## Original sound feature
+
 Validated September 27, 2026 on `codex/zombie-sound-effects`.
 
 - `npm test`: 49 passing checks: 34 simulation, six audio graph/lifecycle,

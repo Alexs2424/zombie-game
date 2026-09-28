@@ -1,0 +1,33 @@
+{
+  "blender_version": "5.2.2 LTS",
+  "source_objects": 684,
+  "packed_images": [
+    {
+      "name": "poker-deck-atlas.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed": true
+    },
+    {
+      "name": "poker-felt.png",
+      "size": [
+        2048,
+        1024
+      ],
+      "packed": true
+    },
+    {
+      "name": "poker-walnut.png",
+      "size": [
+        1024,
+        512
+      ],
+      "packed": true
+    }
+  ],
+  "render_device": "CPU",
+  "threads": 2,
+  "samples": 12
+}
