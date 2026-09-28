@@ -54,6 +54,7 @@ export class GameRenderer {
   flash: Mesh;
   ready: Promise<void>;
   private weaponAssets: AssetContainer[] = [];
+  private couchFallback?: TransformNode;
   private slotPlacements: {
     root: TransformNode;
     variant: "emerald" | "burgundy";
@@ -304,6 +305,7 @@ export class GameRenderer {
       this.loadTableAssets(),
       this.loadSlotAssets(),
       this.loadPokerAssets(),
+      this.loadCouchAsset(),
       loadZombieAsset().then((asset) => {
         this.zombieAsset = asset;
       }),
@@ -493,7 +495,14 @@ export class GameRenderer {
         continue;
       }
       if (r.id === "vip-sofa") {
-        this.box("sofa base", r.x, 0.26, r.z, r.w, 0.4, r.d, wood);
+        // Keep the loading fallback out of the merged room scenery so it can
+        // be removed after the detailed couch has loaded successfully.
+        const fallback = new TransformNode(
+          "VIP couch loading fallback",
+          this.scene,
+        );
+        this.couchFallback = fallback;
+        this.box("sofa base", r.x, 0.26, r.z, r.w, 0.4, r.d, wood, fallback);
         this.box(
           "tufted sofa back",
           r.x + 0.4,
@@ -503,6 +512,7 @@ export class GameRenderer {
           0.8,
           r.d,
           burgundy,
+          fallback,
         );
         for (let z = -1; z <= 3; z++) {
           this.box(
@@ -514,6 +524,7 @@ export class GameRenderer {
             0.2,
             0.94,
             burgundy,
+            fallback,
           );
           this.box(
             "upholstery button",
@@ -524,7 +535,12 @@ export class GameRenderer {
             0.04,
             0.04,
             trim,
+            fallback,
           );
+        }
+        for (const mesh of fallback.getChildMeshes()) {
+          mesh.isPickable = false;
+          for (const shadow of this.shadows) shadow.addShadowCaster(mesh, false);
         }
         continue;
       }
@@ -1403,6 +1419,57 @@ export class GameRenderer {
         texture,
         material,
       });
+    }
+  }
+  private async loadCouchAsset() {
+    const footprint = STATIC_RECTS.find((rect) => rect.id === "vip-sofa")!;
+    let asset: AssetContainer | undefined;
+    let placement: TransformNode | undefined;
+    try {
+      asset = await LoadAssetContainerAsync("/models/vip-couch.glb", this.scene);
+      if (this.scene.isDisposed) {
+        asset.dispose();
+        return;
+      }
+      placement = new TransformNode("VIP couch placement", this.scene);
+      placement.position.set(footprint.x, 0, footprint.z);
+      // The glTF conversion root preserves +Z forward in this left-handed
+      // scene. Turn the couch toward the card tables to the west (-X).
+      placement.rotation.y = -Math.PI / 2;
+      const imported = asset.instantiateModelsToScene(
+        (name) => `VIP couch:${name}`,
+        false,
+        { doNotInstantiate: true },
+      );
+      for (const node of imported.rootNodes) node.parent = placement;
+      for (const mesh of placement.getChildMeshes()) {
+        mesh.isPickable = false;
+        mesh.receiveShadows = true;
+        const material = mesh.material as unknown as {
+          maxSimultaneousLights?: number;
+        };
+        if (material && "maxSimultaneousLights" in material)
+          material.maxSimultaneousLights = 8;
+        for (const shadow of this.shadows) shadow.addShadowCaster(mesh, false);
+        mesh.freezeWorldMatrix();
+      }
+      this.weaponAssets.push(asset);
+      if (this.couchFallback) {
+        for (const mesh of this.couchFallback.getChildMeshes())
+          for (const shadow of this.shadows)
+            shadow.removeShadowCaster(mesh, false);
+        this.couchFallback.dispose();
+        this.couchFallback = undefined;
+      }
+    } catch (error) {
+      placement?.dispose();
+      asset?.dispose();
+      // A missing optional furnishing must not prevent the game from starting.
+      if (!this.scene.isDisposed)
+        console.warn(
+          "Detailed VIP couch unavailable; keeping the fallback.",
+          error,
+        );
     }
   }
   private async loadPokerAssets() {
