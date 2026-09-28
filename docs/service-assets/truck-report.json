@@ -1,0 +1,62 @@
+{
+  "coordinateSystem": "Intended game metres, Y-up; Blender source=(x,-z,y). Export reflects X for default Babylon left-handed glTF conversion.",
+  "collisionContract": {
+    "id": "service_truck",
+    "center": [
+      7.8,
+      5.65
+    ],
+    "footprint": [
+      5.5,
+      2.55
+    ],
+    "height": 2.95,
+    "solid": true,
+    "orientation": "Cab faces west / negative game X",
+    "wheelContactY": 0.025,
+    "asset": "service-truck.glb"
+  },
+  "sourceObjects": 1009,
+  "materials": 14,
+  "triangles": 80214,
+  "min": [
+    5.054,
+    0.025,
+    4.375
+  ],
+  "max": [
+    10.545998,
+    2.9385,
+    6.925001
+  ],
+  "assemblies": {
+    "undercarriage": {
+      "objects": 45,
+      "triangles": 2868
+    },
+    "wheels": {
+      "objects": 444,
+      "triangles": 31952
+    },
+    "cab": {
+      "objects": 113,
+      "triangles": 12254
+    },
+    "cargo_body": {
+      "objects": 219,
+      "triangles": 25380
+    },
+    "rear_hardware": {
+      "objects": 90,
+      "triangles": 6448
+    },
+    "surface_wear": {
+      "objects": 98,
+      "triangles": 1312
+    }
+  },
+  "exportMeshes": 14,
+  "glbBytes": 5166236,
+  "runtimeCoordinateSystem": "Reflected X is restored by the default Babylon left-handed glTF root; keep that default root conversion.",
+  "letteringOrientation": "Export mirrors local text X to maintain reading order in the game camera, matching the existing lounge asset convention. Editable source lettering is natural for the Blender preview."
+}

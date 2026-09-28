@@ -30,6 +30,17 @@ cross-room aisle and staff escape route. See [asset source and rebuild details](
 and [validation notes](docs/bar-assets/playtest.md). Development previews offer
 **Lounge overview**, **Lounge entry view**, and **Lounge seating** camera controls.
 
+## Service corridor loading bay
+
+The service corridor now contains an original Blender-built hotel-supply truck,
+stacked shipping cartons, wooden pallets, loaded shelving, a pallet jack, and
+detailed utility fixtures. The parked truck and storage assemblies provide
+solid cover while the staff shortcut, VIP exit, and lounge approach remain
+connected. Editable Blender sources, rebuild scripts, previews, and placement
+checks are documented in [service assets](docs/service-assets/README.md).
+Development playtests include **Service overview**, **Service truck**, and
+**Service storage** viewpoints.
+
 ## Controls
 
 | Action              | Control                                    |
