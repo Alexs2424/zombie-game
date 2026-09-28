@@ -74,7 +74,7 @@ The five-round income model leaves 500 chips for ammunition after the shotgun, t
 
 ## Validation and limitations
 
-106 automated checks pass (45 core simulation/combat, 20 card-table/revolver, 15 roulette rules, six roulette motion, nine audio regressions, nine zombie cue scheduling checks, and two zombie-asset checks), including five-round progression and fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
+125 automated checks pass (45 core simulation/combat, 20 card-table/revolver, 15 roulette rules, six roulette motion, 14 audio regressions, nine zombie cue scheduling checks, 14 slot proximity/layout checks, and two zombie-asset checks), including five-round progression and fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
 
 This is a rough playable: stylized geometry and humanoids, synthesized effects plus AI-generated zombie voices, no aim-down-sights, jump, crouch, random weapon station, persistent records, native app, controller support, or co-op. Mouse capture needs a focused browser and a genuine user gesture. The final feel and difficulty need a hands-on mouse playtest.
 
@@ -157,3 +157,24 @@ Both poker islands now use a detailed shared GLB with stitched oxblood rails, in
 Approach the south/customer side and press **E**. The solo game pauses while you select a card and confirm a free swap. Keep matching suits: a flush means five of the same suit, regardless of rank or order. Each table has its own hand, 52-card deck, and one-swap-per-round limit. Leaving, reopening, or entering intermission does not refresh that limit. A new actual round does. Previously discarded cards are shuffled back only when the draw pile runs out; cards still in the hand cannot be drawn again.
 
 The first flush unlocks **THE DEAD MAN’S HAND** for this run: a six-shot, 110-damage revolver with 48 reserve rounds. It equips automatically and uses weapon key **5**. Completing the other table refills it once. Completed tables retain their flush without granting repeated rewards. Roulette’s ammo rewards include the revolver once owned; Marlowe and the workshop can upgrade it to **ACE OF SPADES**. New runs reset both hands and the reward. Flush completion is represented separately from weapon ownership, ready for a future map-unlock reward; this pass adds no new room.
+
+## Slot-machine pass-by sounds — September 28, 2026
+
+The 12 slot cabinets now give occasional quiet, positional greetings when you
+walk past their front panels. Three short original synthesized variations use
+padded reel ticks, soft electronic chimes, and coin-tray chatter. A gently sagging
+last note suits the abandoned casino. These require no additional downloads,
+AI service, or third-party audio license.
+
+Sounds trigger within 3.5 metres, pan with the listener, soften with distance,
+and fade completely by 5 metres. Cabinets behind walls or the back of a slot
+island stay quiet. Only one plays at a time; a four-second shared cooldown, a
+20-second cabinet cooldown, and leaving beyond 4.5 metres prevent repeated
+greetings while camping beside a machine. The old floor-wide slot melody has
+been replaced by these cabinet sounds. Zombie calls and round stingers have
+priority; pause, focus loss, restart, and disposal stop active slot audio.
+
+Development `/?playtest=1` has **Walk slots west**, **Walk slots east**, and
+**Walk second bank** controls for repeatable real movement past each aisle.
+The slot status names the emitting cabinet and sound. See
+[`docs/slot-audio.md`](docs/slot-audio.md) for implementation and validation.
