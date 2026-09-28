@@ -1,6 +1,8 @@
 import type { GameEvent, V2 } from "./simulation";
 import { SlotAudioDirector, slotSourceAudible, type SlotCue } from "./slot-audio-director.ts";
 import { slotSoundSamples, SLOT_SOUND_NAMES } from "./slot-sounds.ts";
+import { WeaponCueDirector, WeaponSounds } from "./weapon-audio.ts";
+import type { WeaponId } from "./simulation";
 
 type ZombieCue = "chase" | "last" | "horde";
 const ZOMBIE_SOUNDS: Record<ZombieCue, string[]> = {
@@ -38,6 +40,12 @@ export class GameAudio {
   get slotStatus() {
     return `Slots · last cue: ${this.lastSlotPlayback}`;
   }
+  /** Sampled 1970s arsenal: lazily loaded per weapon, cue-locked to the viewmodel animation. */
+  readonly weapons = new WeaponSounds(() =>
+    this.context && this.world ? { context: this.context, world: this.world, reverb: this.reverb } : null,
+  );
+  private weaponCues = new WeaponCueDirector(this.weapons);
+  private listener = { player: { x: 0, z: 0 } as V2, yaw: 0 };
   private zombieBuffers = new Map<string, AudioBuffer>();
   private zombieLoading: Promise<void> | null = null;
   private zombieFetch: AbortController | null = null;
@@ -226,7 +234,13 @@ export class GameAudio {
       panner.disconnect();
     };
   }
+  /** Per-frame weapon cue timing (reload beats, lever/bolt cycles, LMG belt run-out). */
+  weaponFrame(dt: number, s: { weapon: WeaponId; reloadRemaining: number; reloadDuration: number; mag: number; playing: boolean }) {
+    this.weaponCues.update(dt, s);
+  }
   play(event: GameEvent) {
+    if (event.type === "shot" && event.weapon) this.weaponCues.shot(event.weapon);
+    if (this.weapons.event(event, this.listener.player, this.listener.yaw)) return;
     if (event.type === "cardSwap") {
       this.tone(860, 0.045, 0.045, "triangle", 480, 0, -0.12, true);
       this.tone(610, 0.06, 0.04, "triangle", 260, 0.065, 0.12, true);
@@ -356,6 +370,8 @@ export class GameAudio {
     moving: boolean,
     sprinting: boolean,
   ) {
+    this.listener.player = player;
+    this.listener.yaw = yaw;
     const c = this.context;
     if (!c || !this.master || !this.ambience || !this.ambienceFilter) return;
     if (playing !== this.active) this.setActive(playing);
