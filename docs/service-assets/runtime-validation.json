@@ -1,0 +1,145 @@
+{
+  "status": "passed",
+  "engine": "Babylon.js NullEngine",
+  "coordinateSystem": "default left-handed; glTF roots preserved",
+  "assets": [
+    {
+      "name": "service-truck",
+      "sha256": "ef1450426f54540e2cb22ee7c0e5171614cc6da925885306b8396ba5f3f3237a",
+      "bytes": 5166236,
+      "meshes": 14,
+      "vertices": 115098,
+      "triangles": 80214,
+      "materials": 14,
+      "embeddedTextures": 3,
+      "bounds": {
+        "min": [
+          5.053999900817871,
+          0.02500000037252903,
+          4.374999523162842
+        ],
+        "max": [
+          10.545997619628906,
+          2.938499927520752,
+          6.925000190734863
+        ]
+      }
+    },
+    {
+      "name": "service-props",
+      "sha256": "0ef13d8f6edee7b5bfff70b63513634840e57684c2133df74dffe7d6c8c01b0a",
+      "bytes": 4631112,
+      "meshes": 13,
+      "vertices": 123827,
+      "triangles": 67672,
+      "materials": 13,
+      "embeddedTextures": 3,
+      "bounds": {
+        "min": [
+          4.414999961853027,
+          0,
+          3.2249999046325684
+        ],
+        "max": [
+          15.579999923706055,
+          4.6999993324279785,
+          11.886500358581543
+        ]
+      }
+    }
+  ],
+  "collisionFootprints": [
+    {
+      "id": "service-truck",
+      "vertices": 114162
+    },
+    {
+      "id": "service-cartons",
+      "vertices": 32100
+    },
+    {
+      "id": "service-shelf",
+      "vertices": 41767
+    },
+    {
+      "id": "service-pallet-jack",
+      "vertices": 17142
+    },
+    {
+      "id": "service-cabinet",
+      "vertices": 3889
+    }
+  ],
+  "rayChecks": [
+    {
+      "name": "cross-room door aisle at height 0.35",
+      "hit": false
+    },
+    {
+      "name": "lounge passage at height 0.35",
+      "hit": false
+    },
+    {
+      "name": "cross-room door aisle at height 0.85",
+      "hit": false
+    },
+    {
+      "name": "lounge passage at height 0.85",
+      "hit": false
+    },
+    {
+      "name": "cross-room door aisle at height 1.65",
+      "hit": false
+    },
+    {
+      "name": "lounge passage at height 1.65",
+      "hit": false
+    },
+    {
+      "name": "truck cargo side",
+      "hit": true,
+      "point": [
+        8.6,
+        1.7,
+        6.826499938964844
+      ]
+    },
+    {
+      "name": "truck cab front",
+      "hit": true,
+      "point": [
+        5.173364245090132,
+        1.35,
+        5.65
+      ]
+    },
+    {
+      "name": "stacked pallet cartons",
+      "hit": true,
+      "point": [
+        14.12,
+        0.8,
+        6.289999961853027
+      ]
+    },
+    {
+      "name": "north shelf cartons",
+      "hit": true,
+      "point": [
+        6.5,
+        0.6,
+        10.829999923706055
+      ]
+    },
+    {
+      "name": "floor paint clears concrete and joints",
+      "hit": true,
+      "point": [
+        4.75,
+        0.021499991416931152,
+        7.59
+      ]
+    }
+  ],
+  "materialsSkippedDuringGeometryAudit": true
+}

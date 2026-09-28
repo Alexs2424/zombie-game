@@ -10,6 +10,7 @@ import {
   type BarItemId,
 } from "./simulation";
 import { GameRenderer } from "./renderer";
+import { SERVICE_VIEWS } from "./service-layout";
 import { GameAudio } from "./audio";
 import { ZombieAudioDirector } from "./zombie-audio-director";
 import {
@@ -420,6 +421,7 @@ export class GameRuntime {
       }));
     }
     const poses: Record<string, [number, number, number, number]> = {
+      ...SERVICE_VIEWS,
       floor: [-9, -8, 0.3, 0.06],
       slotsWest: [-11.6, -1.8, Math.PI / 2, 0.1],
       slotsEast: [-3, 0, -Math.PI / 2, 0.1],
@@ -452,6 +454,7 @@ export class GameRuntime {
           "loungeWide",
           "loungeEntrance",
           "loungeSeating",
+          ...Object.keys(SERVICE_VIEWS),
           "smg",
           "rifle",
           "vip",
