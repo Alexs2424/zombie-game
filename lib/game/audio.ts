@@ -1,4 +1,12 @@
 import type { GameEvent, V2 } from "./simulation";
+
+type ZombieCue = "chase" | "last" | "horde";
+const ZOMBIE_SOUNDS: Record<ZombieCue, string[]> = {
+  chase: ["chase-01"],
+  last: ["last-01"],
+  horde: ["horde-01"],
+};
+
 export class GameAudio {
   context: AudioContext | null = null;
   master: GainNode | null = null;
@@ -14,6 +22,22 @@ export class GameAudio {
   private active = false;
   private voices = 0;
   private duckUntil = 0;
+  private zombieBuffers = new Map<string, AudioBuffer>();
+  private zombieLoading: Promise<void> | null = null;
+  private zombieFetch: AbortController | null = null;
+  private lastZombieSample: Partial<Record<ZombieCue, string>> = {};
+  private nextZombieAttack = 0;
+  private lastZombiePlayback = "none";
+  get zombieStatus() {
+    return `${this.zombieBuffers.size}/3 clips ready · last cue: ${this.lastZombiePlayback}`;
+  }
+  private zombieVoices = new Map<AudioBufferSourceNode, {
+    stop: () => void;
+    enemy: V2;
+    kind: ZombieCue;
+    gain: GainNode;
+    panner: StereoPannerNode;
+  }>();
   async unlock() {
     if (!this.context) {
       this.context = new AudioContext();
@@ -79,6 +103,24 @@ export class GameAudio {
       }
     }
     if (this.context.state === "suspended") await this.context.resume();
+    // Loading never blocks mouse capture or entry. Failed files retain the
+    // synthesized fallback, and all in-game playback remains local.
+    if (!this.zombieLoading) this.zombieLoading = this.loadZombieSounds(this.context);
+  }
+  private async loadZombieSounds(context: AudioContext) {
+    this.zombieFetch = new AbortController();
+    const signal = this.zombieFetch.signal;
+    await Promise.all(Object.values(ZOMBIE_SOUNDS).flat().map(async (name) => {
+      try {
+        const response = await fetch(`/audio/zombies/${name}.wav`, { signal });
+        if (!response.ok) return;
+        const buffer = await context.decodeAudioData(await response.arrayBuffer());
+        if (this.context === context && !signal.aborted)
+          this.zombieBuffers.set(name, buffer);
+      } catch {
+        // Network/decoding failure must not interrupt the game.
+      }
+    }));
   }
   setVolume(v: number) {
     this.volume = v;
@@ -87,6 +129,7 @@ export class GameAudio {
   }
   setActive(playing: boolean) {
     this.active = playing;
+    if (!playing) this.stopZombieVoices();
     if (this.world && this.context)
       this.world.gain.setTargetAtTime(
         playing ? 1 : 0,
@@ -208,6 +251,7 @@ export class GameAudio {
       this.tone(180, 1, 0.2, "sawtooth", 40, 0, 0, true);
   }
   private roundStinger(start: boolean) {
+    this.stopZombieVoices();
     this.duckUntil = (this.context?.currentTime ?? 0) + 2.5;
     // Original casino-horror cues: low impact and tense rising bells / falling resolution.
     this.burst(start ? 1.1 : 0.7, start ? 0.26 : 0.13, start ? 180 : 700);
@@ -245,6 +289,11 @@ export class GameAudio {
       0.5,
     );
     if (!playing) return;
+    for (const voice of this.zombieVoices.values()) {
+      const spatial = this.zombieSpatial(voice.kind, player, voice.enemy, yaw);
+      voice.panner.pan.setTargetAtTime(spatial.pan, c.currentTime, 0.08);
+      voice.gain.gain.setTargetAtTime(spatial.gain * duck, c.currentTime, 0.12);
+    }
     this.ambientTimer -= dt;
     this.footTimer -= dt;
     if (moving && this.footTimer <= 0) {
@@ -287,7 +336,73 @@ export class GameAudio {
       );
     }
   }
-  threat(player: V2, enemy: V2, yaw: number, variant = 0, attack = false) {
+  private zombieSpatial(kind: ZombieCue, player: V2, enemy: V2, yaw: number) {
+    const distance = Math.hypot(enemy.x - player.x, enemy.z - player.z);
+    return {
+      pan: Math.sin(Math.atan2(enemy.x - player.x, enemy.z - player.z) - yaw),
+      gain: (kind === "horde" ? 0.34 : kind === "last" ? 0.52 : 0.48) *
+        Math.max(0, 1 - distance / (kind === "last" ? 24 : 18)),
+    };
+  }
+  zombieCue(kind: ZombieCue, player: V2, enemy: V2, yaw: number, variant = 0) {
+    const c = this.context;
+    if (!c || !this.world || !this.active || c.state !== "running" ||
+        c.currentTime < this.duckUntil || this.zombieVoices.size > 0) return;
+    const choices = ZOMBIE_SOUNDS[kind].filter((name) => this.zombieBuffers.has(name));
+    const alternatives = choices.filter((name) => name !== this.lastZombieSample[kind]);
+    const pool = alternatives.length ? alternatives : choices;
+    const name = pool[Math.abs(Math.floor(variant)) % pool.length];
+    if (!name) {
+      this.lastZombiePlayback = `${kind} (synth fallback)`;
+      this.synthesizedThreat(player, enemy, yaw, variant);
+      return;
+    }
+    const spatial = this.zombieSpatial(kind, player, enemy, yaw);
+    if (spatial.gain <= 0) return;
+    const source = c.createBufferSource(), gain = c.createGain(),
+      panner = c.createStereoPanner();
+    source.buffer = this.zombieBuffers.get(name)!;
+    // Tiny pitch variation preserves the performance without cartoon squeaks.
+    source.playbackRate.value = 0.98 + (Math.abs(variant) % 5) * 0.01;
+    gain.gain.value = spatial.gain;
+    panner.pan.value = spatial.pan;
+    source.connect(gain);
+    gain.connect(panner);
+    panner.connect(this.world);
+    // Baked short fades keep these voices dry and leave the casino mix room.
+    const cleanup = () => {
+      this.zombieVoices.delete(source);
+      source.disconnect();
+      gain.disconnect();
+      panner.disconnect();
+    };
+    source.onended = cleanup;
+    this.zombieVoices.set(source, {
+      stop: () => { source.stop(); cleanup(); }, enemy, kind, gain, panner,
+    });
+    this.lastZombieSample[kind] = name;
+    this.nextZombieAttack = c.currentTime + source.buffer.duration / source.playbackRate.value + 0.6;
+    source.start();
+    this.lastZombiePlayback = `${kind} (AI clip)`;
+  }
+  zombieAttack(player: V2, enemy: V2, yaw: number) {
+    const c = this.context;
+    if (!c || !this.active || c.state !== "running" || this.zombieVoices.size > 0 ||
+        c.currentTime < Math.max(this.nextZombieAttack, this.duckUntil)) return;
+    this.nextZombieAttack = c.currentTime + 1.6;
+    this.synthesizedThreat(player, enemy, yaw, 0, true);
+  }
+  private stopZombieVoices() {
+    for (const voice of [...this.zombieVoices.values()]) voice.stop();
+  }
+  resetZombies() {
+    this.stopZombieVoices();
+    this.nextZombieAttack = 0;
+    this.lastZombieSample = {};
+    this.lastZombiePlayback = "none";
+    this.duckUntil = 0;
+  }
+  private synthesizedThreat(player: V2, enemy: V2, yaw: number, variant = 0, attack = false) {
     const c = this.context;
     if (!c || !this.master || c.state !== "running" || this.voices >= 4) return;
     const distance = Math.hypot(enemy.x - player.x, enemy.z - player.z);
@@ -350,6 +465,10 @@ export class GameAudio {
     };
   }
   dispose() {
+    this.stopZombieVoices();
+    this.zombieFetch?.abort();
+    this.zombieBuffers.clear();
+    this.zombieLoading = null;
     for (const source of this.loops) {
       source.stop();
       source.disconnect();
