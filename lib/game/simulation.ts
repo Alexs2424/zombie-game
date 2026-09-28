@@ -9,6 +9,8 @@ import {
 } from "./poker.ts";
 export { POKER_RULES } from "./poker.ts";
 import { ATTACK_WINDUP, zombieHitVolumes, type HitRegion, type Limb } from "./zombie-pose.ts";
+import { HOTEL_RULES, HOTEL_GATE, HOTEL_ANCHORS, HOTEL_SPAWNS, freshHotelChallenge } from "./hotel-gameplay.ts";
+export { HOTEL_RULES, HOTEL_ANCHORS, HOTEL_SPAWNS } from "./hotel-gameplay.ts";
 import {
   HOTEL_RECTS, hotelRoomName, collides, moveActor, wallDistance,
   hasSight, canWalkDirect, Navigation, raycastWorld,
@@ -18,13 +20,14 @@ export { collides, moveActor, wallDistance, hasSight, Navigation } from "./world
 export type V2 = { x: number; z: number };
 export type V3 = V2 & { y: number };
 export type Rect = WorldRect;
-export type WeaponId = "pistol" | "shotgun" | "smg" | "rifle" | "revolver";
+export type WeaponId = "pistol" | "shotgun" | "smg" | "rifle" | "revolver" | "tommy";
 export const WEAPON_ORDER: WeaponId[] = [
   "pistol",
   "shotgun",
   "smg",
   "rifle",
   "revolver",
+  "tommy",
 ];
 export type PerkId = "reserve" | "quickPour" | "nightShift";
 export type BarItemId = PerkId | "weaponUpgrade";
@@ -51,6 +54,10 @@ export type PurchaseId =
   | "tables"
   | "craps"
   | "roulette"
+  | "hotel"
+  | "hotelBell"
+  | "tommyAmmo"
+  | "jukebox"
   | PokerTableId;
 export type GameEvent = {
   type:
@@ -76,6 +83,10 @@ export type GameEvent = {
     | "cardSwap"
     | "pokerFlush"
     | "zombieAttack"
+    | "hotelBell"
+    | "hotelComplete"
+    | "hotelFail"
+    | "jukebox"
     | "death";
   weapon?: WeaponId;
   headshot?: boolean;
@@ -97,6 +108,7 @@ export type Enemy = WorldPosition & {
   missing?: Partial<Record<Limb, boolean>>;
   limbDamage?: Partial<Record<Limb, number>>;
   wounds?: Partial<Record<HitRegion, number>>;
+  hotelAmbush?: boolean;
 };
 export type Grenade = V3 & { id: number; vx: number; vy: number; vz: number; fuse: number };
 export const RULES = {
@@ -188,6 +200,20 @@ export const WEAPONS = {
     spread: 0.003,
     refill: 400,
   },
+  tommy: {
+    name: "THE CHICAGO TYPEWRITER",
+    upgradedName: "THE HOUSE COLLECTOR",
+    label: "Tommy gun",
+    price: 0,
+    magazine: 50,
+    reserve: 250,
+    damage: 30,
+    pellets: 1,
+    interval: 0.105,
+    reload: 3,
+    spread: 0.017,
+    refill: HOTEL_RULES.ammoPrice,
+  },
 };
 export const PRICES = {
   shotgun: 800,
@@ -200,6 +226,7 @@ export const PRICES = {
   tables: 1500,
   craps: 250,
   roulette: 200,
+  hotel: HOTEL_RULES.price,
 };
 export const ROULETTE_RULES = {
   spinDuration: 6,
@@ -262,6 +289,7 @@ export const STATIC_RECTS: Rect[] = [
   { id: "vip-sofa", x: 27.35, z: 1, w: 1.1, d: 5, h: 1.2 },
 ];
 export const DOORS = {
+  hotel: HOTEL_GATE,
   lounge: { id: "lounge", x: 4, z: -4.1, w: 0.45, d: 3.8, h: 4.8 },
   shortcut: { id: "shortcut", x: 4, z: 8.6, w: 0.45, d: 3.2, h: 4.8 },
   vip: { id: "vip", x: 16, z: -4.1, w: 0.45, d: 3.8, h: 4.8 },
@@ -273,9 +301,14 @@ export const PURCHASES: {
   id: PurchaseId;
   x: number;
   z: number;
+  y?: number;
   name: string;
   detail: string;
 }[] = [
+  { id: "hotel", ...HOTEL_ANCHORS.hotel, name: "Grand Hotel", detail: "Unlock the lobby and upstairs restaurant" },
+  { id: "hotelBell", ...HOTEL_ANCHORS.hotelBell, name: "Last service · ring the bell", detail: "Stay in the restaurant for 35s and clear the ambush · unlock Tommy gun" },
+  { id: "tommyAmmo", ...HOTEL_ANCHORS.tommyAmmo, name: "Chicago Typewriter ammunition", detail: "Refill Tommy gun reserve" },
+  { id: "jukebox", ...HOTEL_ANCHORS.jukebox, name: "Grand Hotel jukebox", detail: "Toggle the music · free" },
   ...POKER_TABLES.map((table) => ({
     id: table.id,
     x: table.x,
@@ -378,6 +411,7 @@ export const SPAWNS: V2[] = [
   { x: 26.2, z: -10.6 },
   { x: 39.7, z: -10.6 },
 ];
+export const ALL_SPAWNS: WorldPosition[] = [...SPAWNS, ...HOTEL_SPAWNS];
 export const dist = (a: WorldPosition, b: WorldPosition) =>
   Math.hypot(a.x - b.x, (a.y ?? 0) - (b.y ?? 0), a.z - b.z);
 export function rayBox(o: V3, d: V3, min: V3, max: V3): number {
@@ -439,6 +473,13 @@ export class Simulation {
   vip = false;
   tables = false;
   tablesAge = 0;
+  hotel = false;
+  hotelAge = 0;
+  hotelChallenge = freshHotelChallenge();
+  jukeboxOn = false;
+  get hotelChallengeAlive() {
+    return this.enemies.filter(e => e.hotelAmbush && e.health > 0).length;
+  }
   lastWagerRound = -1;
   slowRound = 0;
   dice: {
@@ -468,6 +509,7 @@ export class Simulation {
     smg: false,
     rifle: false,
     revolver: false,
+    tommy: false,
   };
   perks: Record<PerkId, boolean> = {
     reserve: false,
@@ -495,6 +537,7 @@ export class Simulation {
     smg: { owned: false, mag: 0, reserve: 0 },
     rifle: { owned: false, mag: 0, reserve: 0 },
     revolver: { owned: false, mag: 0, reserve: 0 },
+    tommy: { owned: false, mag: 0, reserve: 0 },
   };
   enemies: Enemy[] = [];
   grenades = 2;
@@ -530,6 +573,7 @@ export class Simulation {
   refreshMap() {
     this.rects = [
       ...STATIC_RECTS,
+      ...(!this.hotel ? [DOORS.hotel] : []),
       ...(!this.lounge ? [DOORS.lounge] : []),
       ...(!this.shortcut ? [DOORS.shortcut] : []),
       ...(!this.vip ? [DOORS.vip, DOORS.vipExit] : []),
@@ -748,6 +792,9 @@ export class Simulation {
         (p.id === "lounge" && this.lounge) ||
         (p.id === "vip" && this.vip) ||
         (p.id === "tables" && this.tables) ||
+        (p.id === "hotel" && this.hotel) ||
+        (p.id === "hotelBell" && this.hotelChallenge.phase === "complete") ||
+        (p.id === "tommyAmmo" && !this.inventory.tommy.owned) ||
         (p.id === "shortcut" && this.shortcut)
       )
         continue;
@@ -762,7 +809,24 @@ export class Simulation {
   purchaseInfo(id: PurchaseId) {
     let price = 0;
     let reason = "";
-
+    if (id === "hotel") {
+      price = HOTEL_RULES.price;
+      if (this.hotel) reason = "Already open";
+    }
+    if (id === "hotelBell") {
+      if (!this.hotel) reason = "Open the Grand Hotel first";
+      else if (this.hotelChallenge.phase === "active") reason = "Ambush active · stay in the restaurant";
+      else if (this.hotelChallenge.phase === "complete") reason = "Tommy gun already unlocked";
+      else if (this.hotelChallengeAlive) reason = "Clear the remaining ambush zombies, then ring again";
+      else if (!this.inRestaurant()) reason = "Ring the bell from the upstairs restaurant";
+    }
+    if (id === "tommyAmmo") {
+      price = HOTEL_RULES.ammoPrice;
+      if (!this.hotel) reason = "Open the Grand Hotel first";
+      else if (!this.inventory.tommy.owned) reason = "Complete the service-bell ambush first";
+      else if (this.inventory.tommy.reserve >= WEAPONS.tommy.reserve) reason = "Reserve full";
+    }
+    if (id === "jukebox" && !this.hotel) reason = "Open the Grand Hotel first";
     if (id === "pistolAmmo") {
       price = 150;
       if (this.inventory.pistol.reserve >= WEAPONS.pistol.reserve)
@@ -829,8 +893,8 @@ export class Simulation {
     if (this.phase !== "playing") return false;
     if (id === "bartender") return this.openBar();
     if (id === "poker-a" || id === "poker-b") return this.openPoker(id);
-    const p = PURCHASES.find((p) => p.id === id)!;
-    if (dist(this.player, p) > 2.2 || !hasSight(this.player, p, this.rects))
+    const p = PURCHASES.find((p) => p.id === id);
+    if (!p || dist(this.player, p) > 2.2 || !hasSight(this.player, p, this.rects))
       return false;
     const { price, reason } = this.purchaseInfo(id);
     if (reason) {
@@ -839,6 +903,36 @@ export class Simulation {
       return false;
     }
     this.points -= price;
+    if (id === "hotelBell") {
+      this.hotelChallenge = {
+        phase: "active", remaining: HOTEL_RULES.ambushDuration,
+        pending: HOTEL_RULES.ambushCount, attempt: this.hotelChallenge.attempt + 1,
+        spawnTimer: 0.7,
+      };
+      this.notify("LAST SERVICE · stay upstairs for 35 seconds, then clear the ambush");
+      this.events.push({ type: "hotelBell", position: HOTEL_ANCHORS.hotelBell });
+      return true;
+    }
+    if (id === "jukebox") {
+      this.jukeboxOn = !this.jukeboxOn;
+      this.notify(this.jukeboxOn ? "Jukebox playing" : "Jukebox switched off");
+      this.events.push({ type: "jukebox", position: HOTEL_ANCHORS.jukebox });
+      return true;
+    }
+    if (id === "hotel") {
+      this.hotel = true;
+      this.hotelAge = 0;
+      this.refreshMap();
+      this.notify("Grand Hotel opened · lobby and restaurant unlocked");
+      this.events.push({ type: "purchase" });
+      return true;
+    }
+    if (id === "tommyAmmo") {
+      this.inventory.tommy.reserve = WEAPONS.tommy.reserve;
+      this.notify("Tommy gun reserve refilled");
+      this.events.push({ type: "purchase", weapon: "tommy" });
+      return true;
+    }
     if (id === "roulette") {
       this.roulette = {
         id: ++this.rouletteSpinId,
@@ -968,11 +1062,12 @@ export class Simulation {
     }
     e.health -= damage;
     e.flash = 0.12;
-    const payout = 5 + Math.floor(this.random() * 6) + (headshot ? RULES.headshotReward : e.health <= 0 ? RULES.killReward : 0);
+    // The free, retryable ambush pays its weapon reward rather than farmable chips.
+    const payout = e.hotelAmbush ? 0 : 5 + Math.floor(this.random() * 6) + (headshot ? RULES.headshotReward : e.health <= 0 ? RULES.killReward : 0);
     this.points += payout;
     this.earned += payout;
     if (headshot) this.headshots++;
-    this.notify(`+${payout} CHIPS · ${headshot ? "HEADSHOT" : e.health <= 0 ? "KILL" : "HIT"}`);
+    if (payout) this.notify(`+${payout} CHIPS · ${headshot ? "HEADSHOT" : e.health <= 0 ? "KILL" : "HIT"}`);
     this.events.push({ type: "hit", headshot, position: { x: e.x, z: e.z } });
     if (e.health <= 0) {
       this.kills++;
@@ -1148,34 +1243,79 @@ export class Simulation {
     if (this.health === 0) {
       this.phase = "dead";
       this.moving = false;
+      this.failHotelChallenge("Last service failed · start a new run to try again");
       this.events.push({ type: "death" });
     }
   }
-  spawn() {
-    const options = SPAWNS.filter(
+  private inRestaurant() {
+    return (this.player.y ?? 0) >= 3.9 &&
+      (this.player.surfaceId === "hotel-upper" || !this.player.surfaceId) &&
+      hotelRoomName(this.player) === "Grand Hotel Restaurant";
+  }
+  private failHotelChallenge(message: string) {
+    if (this.hotelChallenge.phase !== "active") return;
+    this.hotelChallenge.phase = "failed";
+    this.hotelChallenge.pending = 0;
+    this.hotelChallenge.remaining = 0;
+    this.notify(message);
+    this.events.push({ type: "hotelFail", text: message });
+  }
+  private stepHotelChallenge(dt: number) {
+    const challenge = this.hotelChallenge;
+    if (challenge.phase !== "active") return;
+    if (!this.inRestaurant()) {
+      this.failHotelChallenge("Left the restaurant · clear any ambush survivors, then ring the bell to retry");
+      return;
+    }
+    challenge.remaining = Math.max(0, challenge.remaining - dt);
+    challenge.spawnTimer -= dt;
+    if (challenge.pending > 0 && challenge.spawnTimer <= 0 &&
+        this.hotelAge > HOTEL_RULES.spawnGrace &&
+        this.enemies.length < RULES.cap && this.hotelChallengeAlive < HOTEL_RULES.ambushCap) {
+      challenge.spawnTimer = this.spawn(true) ? HOTEL_RULES.ambushCadence : 0.4;
+    }
+    if (challenge.remaining === 0 && challenge.pending === 0 && this.hotelChallengeAlive === 0) {
+      challenge.phase = "complete";
+      this.inventory.tommy = { owned: true, mag: this.capacity("tommy"), reserve: WEAPONS.tommy.reserve };
+      this.weapon = "tommy";
+      this.reloadRemaining = 0;
+      this.fireCooldown = Math.max(this.fireCooldown, 0.2);
+      this.notify("LAST SERVICE COMPLETE · THE CHICAGO TYPEWRITER unlocked · weapon 6");
+      this.events.push({ type: "hotelComplete", weapon: "tommy" });
+    }
+  }
+  spawn(ambush = false) {
+    if (this.enemies.filter(e => e.health > 0).length >= RULES.cap) return false;
+    if (ambush && (this.hotelChallenge.phase !== "active" || this.hotelChallenge.pending <= 0 || this.hotelChallengeAlive >= HOTEL_RULES.ambushCap)) return false;
+    const options = ALL_SPAWNS.filter(
       (p, i) =>
         this.spawnEnabled(i) &&
+        (!ambush || (i >= SPAWNS.length && (p.y ?? 0) === 4)) &&
         dist(p, this.player) >= 8 &&
         !collides(p, 0.35, this.rects) &&
         this.enemies.every((e) => dist(e, p) > 0.8),
     );
     if (!options.length) return false;
     const p = options[Math.floor(this.random() * options.length)],
-      stats = waveStats(this.round);
+      stats = waveStats(Math.max(1, this.round));
+    const inHotel = p.z > 12;
+    const health = ambush ? Math.min(180, stats.health + 20) : Math.round(stats.health * (inHotel ? 1.08 : 1));
     this.enemies.push({
       ...p,
       id: this.nextId++,
-      health: stats.health,
-      maxHealth: stats.health,
-      speed: stats.speed,
+      health,
+      maxHealth: health,
+      speed: ambush ? Math.min(3.2, stats.speed + 0.35) : Math.min(3.5, stats.speed * (inHotel ? 1.08 : 1)),
       yaw: 0,
       attack: 0,
       cooldown: 0,
       stuck: 0,
       flash: 0,
       age: 0,
+      hotelAmbush: ambush || undefined,
     });
-    this.waveRemaining--;
+    if (ambush) this.hotelChallenge.pending--;
+    else this.waveRemaining--;
     return true;
   }
   spawnEnabled(index: number) {
@@ -1184,6 +1324,7 @@ export class Simulation {
       (index === 3 && this.lounge && this.loungeAge > 3) ||
       (index === 4 && this.vip && this.vipAge > 3) ||
       (index === 5 && this.tables && this.tablesAge > 3)
+      || (index >= SPAWNS.length && index < ALL_SPAWNS.length && this.hotel && this.hotelAge > HOTEL_RULES.spawnGrace)
     );
   }
   beginRound() {
@@ -1220,6 +1361,7 @@ export class Simulation {
     if (this.lounge) this.loungeAge += dt;
     if (this.vip) this.vipAge += dt;
     if (this.tables) this.tablesAge += dt;
+    if (this.hotel) this.hotelAge += dt;
     if (this.roulette) {
       if (!this.roulette.resolved) {
         this.roulette.remaining = Math.max(0, this.roulette.remaining - dt);
@@ -1296,7 +1438,12 @@ export class Simulation {
       this.navTimer = 0.3;
     }
     this.enemies = this.enemies.filter((e) => e.health > 0);
-    if (this.intermission > 0) {
+    this.stepHotelChallenge(dt);
+    // Hold regular wave spawning and intermission during the finite ambush.
+    // Already-living regular zombies still pursue, attack and count toward the cap.
+    if (this.hotelChallenge.phase === "active") {
+      // Challenge owns spawning until its timer AND its finite enemy budget clear.
+    } else if (this.intermission > 0) {
       this.intermission -= dt;
       if (this.intermission <= 0) {
         this.intermission = 0;
@@ -1390,9 +1537,10 @@ export class Simulation {
       e.stuck =
         dist(before, e) < 0.003 ? e.stuck + dt : Math.max(0, e.stuck - dt * 2);
       if (e.stuck > 7 && range > 8) {
-        const replacement = SPAWNS.find(
+        const replacement = ALL_SPAWNS.find(
           (p, i) =>
             this.spawnEnabled(i) &&
+            (!e.hotelAmbush || (i >= SPAWNS.length && (p.y ?? 0) === 4)) &&
             !collides(p, RULES.enemyRadius, this.rects) &&
             dist(p, this.player) > 10 &&
             this.enemies.every((o) => o === e || dist(o, p) > 1),
@@ -1400,8 +1548,8 @@ export class Simulation {
         if (replacement) {
           e.x = replacement.x;
           e.z = replacement.z;
-          e.y = 0;
-          e.surfaceId = "casino";
+          e.y = replacement.y ?? 0;
+          e.surfaceId = replacement.surfaceId ?? "casino";
           e.stuck = 0;
         }
       }

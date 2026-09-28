@@ -1,4 +1,6 @@
 /** Shared, deterministic hotel geometry, layered walking and navigation. Y is foot height. */
+import { HOTEL_FIXTURES } from './hotel-fixtures.ts';
+import { HOTEL_AMMO_CRATE, HOTEL_SERVICE_DOORS } from './hotel-gameplay.ts';
 export type WorldPosition = { x: number; z: number; y?: number; surfaceId?: string };
 export type WorldVector = { x: number; y: number; z: number };
 export type WorldRect = { id: string; x: number; z: number; w: number; d: number; h: number; baseY?: number; yaw?: number };
@@ -6,14 +8,14 @@ export type Point = { x: number; z: number };
 export type Stair = { id: string; cx: number; cz: number; side: number; innerRadius: number; outerRadius: number; bottomY: number; topY: number };
 const points = (pairs: number[][]): Point[] => pairs.map(([x, z]) => ({ x, z }));
 export const HOTEL = {
-  center: { x: -4, z: 28 }, floorY: 4, ceilingY: 8.8,
+  center: { x: -4, z: 30 }, floorY: 4, ceilingY: 8.8,
   entrance: { x: -3, z: 12, w: 5 },
   foyer: { minX: -5.5, maxX: -0.5, minZ: 11.5, maxZ: 17 },
-  lobbyPolygon: points([[-12, 15], [4, 15], [10, 21], [10, 35], [4, 41], [-12, 41], [-18, 35], [-18, 21]]),
-  upperPolygon: points([[-11, 30.5], [3, 30.5], [3, 33.5], [7, 33.5], [7, 35], [3, 39], [-11, 39], [-15, 35], [-15, 33.5], [-11, 33.5]]),
+  lobbyPolygon: points([[-15, 15], [7, 15], [15, 23], [15, 43], [7, 51], [-15, 51], [-23, 43], [-23, 23]]),
+  upperPolygon: points([[-15, 32.5], [7, 32.5], [7, 35.5], [11, 35.5], [11, 45], [6, 49], [-14, 49], [-19, 45], [-19, 35.5], [-15, 35.5]]),
   stairs: [
-    { id: 'hotel-stair-left', cx: -11, cz: 28, side: -1, innerRadius: 2.5, outerRadius: 5.5, bottomY: 0, topY: 4 },
-    { id: 'hotel-stair-right', cx: 3, cz: 28, side: 1, innerRadius: 2.5, outerRadius: 5.5, bottomY: 0, topY: 4 },
+    { id: 'hotel-stair-left', cx: -15, cz: 30, side: -1, innerRadius: 2.5, outerRadius: 5.5, bottomY: 0, topY: 4 },
+    { id: 'hotel-stair-right', cx: 7, cz: 30, side: 1, innerRadius: 2.5, outerRadius: 5.5, bottomY: 0, topY: 4 },
   ] as Stair[],
 };
 const CASINO = points([[-16, -12], [42, -12], [42, 12], [-16, 12]]);
@@ -55,13 +57,16 @@ function makeHotelRects() {
     if (i === 1 || i === 9) continue;
     rects.push(wall(`hotel-upper-rail-${i}`, HOTEL.upperPolygon[i], HOTEL.upperPolygon[(i + 1) % HOTEL.upperPolygon.length], 1.15, 4, 0.14));
   }
+  rects.push(...HOTEL_FIXTURES);
+  rects.push(HOTEL_AMMO_CRATE);
+  rects.push(...HOTEL_SERVICE_DOORS);
   return rects;
 }
 export const HOTEL_RECTS = makeHotelRects();
 export function hotelRoomName(p: WorldPosition): string | null {
   if (p.z < 12) return null;
   if (p.surfaceId?.startsWith('hotel-stair')) return 'Grand Hotel Staircase';
-  if ((p.y ?? 0) > 3.8) return 'Hotel Mezzanine';
+  if ((p.y ?? 0) > 3.8) return 'Grand Hotel Restaurant';
   return p.z < 15 ? 'Hotel Entrance' : 'Grand Hotel Lobby';
 }
 function pointInPolygon(p: Point, polygon: Point[]) {
@@ -237,6 +242,14 @@ for (const stair of HOTEL.stairs) for (let i = 0; i < 56; i++) {
   if (i === 55) verticalFace(stairTriangles, d, c);
 }
 for (let i = 0; i < HOTEL.upperPolygon.length; i++) verticalFace(upperEdgeTriangles, { ...HOTEL.upperPolygon[i], y: 4 }, { ...HOTEL.upperPolygon[(i + 1) % HOTEL.upperPolygon.length], y: 4 }, 3.72);
+function polygonBounds(polygon: Point[]) {
+  return { minX: Math.min(...polygon.map(p => p.x)), maxX: Math.max(...polygon.map(p => p.x)), minZ: Math.min(...polygon.map(p => p.z)), maxZ: Math.max(...polygon.map(p => p.z)) };
+}
+const stairRayBounds = {
+  min: { x: Math.min(...HOTEL.stairs.map(s => s.cx - s.outerRadius)), y: Math.min(...HOTEL.stairs.map(s => s.bottomY)), z: Math.min(...HOTEL.stairs.map(s => s.cz - s.outerRadius)) },
+  max: { x: Math.max(...HOTEL.stairs.map(s => s.cx + s.outerRadius)), y: Math.max(...HOTEL.stairs.map(s => s.topY)), z: Math.max(...HOTEL.stairs.map(s => s.cz + s.outerRadius)) },
+};
+const upperBounds = polygonBounds(HOTEL.upperPolygon);
 /** Floors and their undersides occlude rays, as do the shared wall/guard colliders. */
 export function raycastWorld(o: WorldVector, d: WorldVector, rects: WorldRect[], maxDistance = Infinity): RayHit | null {
   let best: RayHit | null = null;
@@ -248,10 +261,11 @@ export function raycastWorld(o: WorldVector, d: WorldVector, rects: WorldRect[],
       if (distance > 0.00001 && distance <= maxDistance && pointInPolygon({ x: o.x + d.x * distance, z: o.z + d.z * distance }, polygon)) accept({ distance, normal: { x: 0, y: d.y < 0 ? 1 : -1, z: 0 } });
     }
   }
-  // Cheap broadphase avoids all stair triangles for ordinary casino combat.
-  const canReachHotel = o.z + Math.max(0, d.z) * Math.min(maxDistance, 200) >= 22 && o.z + Math.min(0, d.z) * Math.min(maxDistance, 200) <= 34;
-  if (canReachHotel) for (const t of stairTriangles) accept(triangleHit(o, d, ...t));
-  if (canReachHotel || o.z > 30) for (const t of upperEdgeTriangles) accept(triangleHit(o, d, ...t));
+  // Derive broadphase bounds from the same geometry as rendering/navigation.
+  const stairDistance = rayBox(o, d, stairRayBounds.min, stairRayBounds.max);
+  if (Number.isFinite(stairDistance) && stairDistance <= maxDistance) for (const t of stairTriangles) accept(triangleHit(o, d, ...t));
+  const upperDistance = rayBox(o, d, { x: upperBounds.minX, y: 3.72, z: upperBounds.minZ }, { x: upperBounds.maxX, y: 4, z: upperBounds.maxZ });
+  if (Number.isFinite(upperDistance) && upperDistance <= maxDistance) for (const t of upperEdgeTriangles) accept(triangleHit(o, d, ...t));
   return best;
 }
 export function wallDistance(o: WorldVector, d: WorldVector, rects: WorldRect[]) { return raycastWorld(o, d, rects)?.distance ?? Infinity; }
@@ -261,7 +275,12 @@ export function hasSight(a: WorldPosition, b: WorldPosition, rects: WorldRect[],
   return len < 0.001 || !raycastWorld(o, { x: delta.x / len, y: delta.y / len, z: delta.z / len }, rects, len - 0.05);
 }
 
-const NAV_STEP = 0.6, NAV_MIN_X = -18, NAV_MIN_Z = -12;
+const NAV_STEP = 0.6;
+const navigationBounds = polygonBounds([...CASINO, ...FOYER, ...HOTEL.lobbyPolygon, ...HOTEL.upperPolygon]);
+const NAV_MIN_X = Math.floor(navigationBounds.minX / NAV_STEP) * NAV_STEP;
+const NAV_MIN_Z = Math.floor(navigationBounds.minZ / NAV_STEP) * NAV_STEP;
+const NAV_NX = Math.ceil((navigationBounds.maxX - NAV_MIN_X) / NAV_STEP);
+const NAV_NZ = Math.ceil((navigationBounds.maxZ - NAV_MIN_Z) / NAV_STEP);
 type NavGeometry = { nodes: WorldPosition[]; cells: Map<string, number[]>; edges: number[][] };
 let navGeometry: NavGeometry | null = null;
 // Gate states recur when runs restart and in independent simulations. Keep the
@@ -272,7 +291,7 @@ function gridPosition(p: Point) { return { x: Math.floor((p.x - NAV_MIN_X) / NAV
 function makeNavGeometry(): NavGeometry {
   if (navGeometry) return navGeometry;
   const nodes: WorldPosition[] = [], cells = new Map<string, number[]>(), edges: number[][] = [];
-  for (let iz = 0; iz < 89; iz++) for (let ix = 0; ix < 100; ix++) {
+  for (let iz = 0; iz < NAV_NZ; iz++) for (let ix = 0; ix < NAV_NX; ix++) {
     const x = NAV_MIN_X + (ix + 0.5) * NAV_STEP, z = NAV_MIN_Z + (iz + 0.5) * NAV_STEP;
     const candidates: WorldPosition[] = [];
     if (groundContains({ x, z })) candidates.push({ x, z, y: 0, surfaceId: 'ground' });
@@ -298,8 +317,8 @@ function makeNavGeometry(): NavGeometry {
 /** One shared layered flow field: overlapping floors have different nodes. */
 export class Navigation {
   readonly step = NAV_STEP;
-  readonly nx = 100;
-  readonly nz = 89;
+  readonly nx = NAV_NX;
+  readonly nz = NAV_NZ;
   readonly blocked: Uint8Array;
   readonly distance: Int32Array;
   private readonly geometry = makeNavGeometry();

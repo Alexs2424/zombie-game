@@ -137,6 +137,45 @@ test("pause silences world audio immediately while preserving shop and death cue
 });
 
 const player = { x: 0, z: 0 };
+test("jukebox is opt-in, local, and cannot schedule music while paused", async () => {
+  await fixture((audio) => {
+    audio.setActive(true);
+    const count = () => audio.context.nodes.filter(n => n.kind === "oscillator").length;
+    const near = { x: 11, y: 0, z: 25 };
+    const baseline = count();
+    audio.updateHotel(1, true, false, near, 0);
+    audio.updateHotel(1, false, true, near, 0);
+    assert.equal(count(), baseline);
+    audio.updateHotel(.05, true, true, near, 0);
+    assert.ok(count() > baseline);
+    const sounding = count();
+    const outputs = audio.context.nodes.filter(n => n.kind === "panner").slice(-6);
+    assert.ok(outputs.every(n => n.outputs.includes(audio.world)));
+    audio.setActive(false);
+    audio.updateHotel(20, false, true, near, 0);
+    assert.equal(count(), sounding);
+    assert.equal(audio.world.gain.value, 0);
+    audio.updateHotel(1, true, false, near, 0);
+    audio.setActive(true);
+    audio.updateHotel(.05, true, true, { x: -9, y: 0, z: -8 }, 0);
+    assert.equal(count(), sounding, "distant casino does not schedule inaudible music");
+  });
+});
+
+test("hotel bell and reward cues use the pausable world bus with finite notes", async () => {
+  await fixture((audio) => {
+    audio.setActive(true);
+    for (const type of ["hotelBell", "hotelComplete", "hotelFail", "jukebox"]) audio.play({ type });
+    const output = audio.context.nodes.findLast(n => n.kind === "panner");
+    assert.ok(output.outputs.includes(audio.world));
+    const notes = audio.context.nodes.filter(n => n.kind === "oscillator" && n.stopTime !== undefined);
+    assert.ok(notes.length > 0);
+    assert.ok(notes.every(n => Number.isFinite(n.stopTime) && n.stopTime <= audio.context.currentTime + 2));
+    audio.setActive(false);
+    assert.equal(audio.world.gain.value, 0);
+  });
+});
+
 const sampledSources = (audio) => audio.context.nodes.filter(
   (node) => node.kind === "source" && node.buffer?.name,
 );

@@ -9,6 +9,10 @@ const DT = 0.05;
 function quiet() {
   const s = new Simulation();
   s.start();
+  // Geometry tests exercise the unlocked wing; gameplay tests cover purchasing it.
+  s.hotel = true;
+  s.hotelAge = 10;
+  s.refreshMap();
   s.intermission = 1e6;
   s.random = () => 0.5;
   return s;
@@ -49,6 +53,11 @@ function aimAt(s, target) {
 
 function ground(x, z) { return { x, z, y: 0, surfaceId: "ground" }; }
 function upper(x, z) { return { x, z, y: HOTEL.floorY, surfaceId: "hotel-upper" }; }
+function landing(stair, end) {
+  const point = stairPoint(stair, end);
+  return end === 0 ? ground(point.x - stair.side, point.z)
+    : upper(point.x - stair.side, point.z);
+}
 
 function moveTo(s, actor, target, radius = RULES.playerRadius) {
   moveActor(actor, target.x - actor.x, target.z - actor.z, radius, s.rects);
@@ -70,10 +79,10 @@ function followStair(s, actor, stair, from, to) {
 
 function climb(s, stair) {
   const bottom = stairPoint(stair, 0);
-  const actor = ground(bottom.x - stair.side, bottom.z);
+  const actor = landing(stair, 0);
   moveTo(s, actor, bottom);
   followStair(s, actor, stair, 0, 1);
-  moveTo(s, actor, { x: stair.cx - stair.side, z: stair.cz + 4 });
+  moveTo(s, actor, landing(stair, 1));
   assert.equal(actor.surfaceId, "hotel-upper");
   close(actor.y, HOTEL.floorY, 1e-6, "stair exit meets upper floor");
   return actor;
@@ -105,32 +114,59 @@ for (const stair of HOTEL.stairs) {
     const actor = climb(s, stair);
     moveTo(s, actor, stairPoint(stair, 1));
     followStair(s, actor, stair, 1, 0);
-    moveTo(s, actor, { x: stair.cx - stair.side, z: stair.cz - 4 });
+    moveTo(s, actor, landing(stair, 0));
     assert.equal(actor.surfaceId, "ground");
     close(actor.y, 0, 1e-6, "descending stair returns to lobby");
   });
 }
 
-test("the upper walkway joins both stair landings into a traversable loop", () => {
+test("the furnished restaurant and both stair landings form a complete walking loop", () => {
   const s = quiet();
   const [left, right] = HOTEL.stairs;
-  const actor = climb(s, left);
-  moveTo(s, actor, { x: right.cx - right.side, z: right.cz + 4 });
-  close(actor.y, HOTEL.floorY, 1e-6, "walkway stays upstairs");
-  assert.equal(actor.surfaceId, "hotel-upper");
+  const actor = ground(HOTEL.entrance.x, 18);
+  // Pass reception on its left, then enter the bottom landing from the lobby.
+  for (const point of [{ x: -10, z: 18 }, { x: -10, z: landing(left, 0).z }, landing(left, 0)])
+    moveTo(s, actor, point);
+  moveTo(s, actor, stairPoint(left, 0));
+  followStair(s, actor, left, 0, 1);
+  moveTo(s, actor, landing(left, 1));
+  const walkwayZ = landing(left, 1).z;
+  // Walk the full center aisle and both sides of the rear service counter.
+  for (const point of [
+    { x: -6, z: walkwayZ }, { x: -6, z: 37 }, { x: -4, z: 37 },
+    { x: -4, z: 44 }, { x: -8, z: 44 },
+    { x: -8, z: 48.25 }, { x: -4, z: 48.25 }, { x: 0, z: 48.25 },
+    { x: 0, z: 44 }, { x: -4, z: 44 }, { x: -4, z: 37 },
+    { x: -2, z: 37 }, { x: -2, z: walkwayZ }, landing(right, 1),
+  ]) {
+    moveTo(s, actor, point);
+    close(actor.y, HOTEL.floorY, 1e-6, "restaurant route stays upstairs");
+    assert.equal(actor.surfaceId, "hotel-upper");
+    assert.equal(collides(actor, RULES.playerRadius, s.rects), false);
+  }
   moveTo(s, actor, stairPoint(right, 1));
   followStair(s, actor, right, 1, 0);
-  moveTo(s, actor, { x: right.cx - right.side, z: right.cz - 4 });
+  moveTo(s, actor, landing(right, 0));
   close(actor.y, 0, 1e-6, "other stair returns to lobby");
+  for (const point of [
+    { x: -4, z: landing(right, 0).z }, { x: -4, z: 46 },
+    { x: -7, z: 46 }, { x: -7, z: 49 }, { x: -7, z: 46 }, { x: -4, z: 46 },
+    { x: -4, z: landing(left, 0).z }, { x: -10, z: landing(left, 0).z },
+    { x: -10, z: 18 }, { x: HOTEL.entrance.x, z: 18 }, { x: HOTEL.entrance.x, z: 10.5 },
+  ]) {
+    moveTo(s, actor, point);
+    close(actor.y, 0, 1e-6, "lobby route stays on ground floor");
+  }
 });
 
 test("mezzanine guards prevent an oversized diagonal movement from dropping to the lobby", () => {
   const s = quiet();
-  const actor = upper(-4, 32);
+  const frontZ = Math.min(...HOTEL.upperPolygon.map(point => point.z));
+  const actor = upper(HOTEL.center.x, frontZ + 1.5);
   moveActor(actor, 2, -8, RULES.playerRadius, s.rects);
   close(actor.y, HOTEL.floorY, 1e-6, "guard keeps actor upstairs");
   assert.equal(actor.surfaceId, "hotel-upper");
-  assert.ok(actor.z > 30.5 + RULES.playerRadius, JSON.stringify(actor));
+  assert.ok(actor.z > frontZ + RULES.playerRadius, JSON.stringify(actor));
   assert.equal(collides(actor, RULES.playerRadius, s.rects), false);
 });
 
@@ -160,8 +196,8 @@ for (const stair of HOTEL.stairs) {
 
 test("an enemy directly below the player takes the stairs and eventually lands an attack", () => {
   const s = quiet();
-  s.player = upper(-4, 35);
-  const pursuer = enemy(ground(-4, 35));
+  s.player = upper(-4, 37);
+  const pursuer = enemy(ground(-4, 37));
   s.enemies = [pursuer];
   s.refreshMap();
   let climbed = false;
@@ -187,8 +223,8 @@ test("stacked actors cannot start or finish zombie melee attacks through the flo
   for (const playerUpstairs of [false, true]) {
     for (const attack of [0, 0.02]) {
       const s = quiet();
-      s.player = playerUpstairs ? upper(-4, 35) : ground(-4, 35);
-      s.enemies = [enemy(playerUpstairs ? ground(-4, 35) : upper(-4, 35),
+      s.player = playerUpstairs ? upper(-4, 37) : ground(-4, 37);
+      s.enemies = [enemy(playerUpstairs ? ground(-4, 37) : upper(-4, 37),
         { speed: 0, attack })];
       tick(s, 1.2);
       assert.equal(s.health, RULES.health);
@@ -200,9 +236,9 @@ test("stacked actors cannot start or finish zombie melee attacks through the flo
 
 test("upstairs gunfire uses elevated muzzle and enemy hit volumes", () => {
   const s = quiet();
-  s.player = upper(-8, 35);
-  const upstairs = enemy(upper(-4, 35), { speed: 0 });
-  const downstairs = enemy(ground(-4, 35), { id: 2, speed: 0 });
+  s.player = upper(-8, 37);
+  const upstairs = enemy(upper(-4, 37), { speed: 0 });
+  const downstairs = enemy(ground(-4, 37), { id: 2, speed: 0 });
   s.enemies = [downstairs, upstairs];
   aimAt(s, { x: upstairs.x, z: upstairs.z, y: HOTEL.floorY + 1.23 });
   assert.equal(s.fire(), true);
@@ -213,8 +249,8 @@ test("upstairs gunfire uses elevated muzzle and enemy hit volumes", () => {
 test("the mezzanine floor blocks aimed bullets in both vertical directions", () => {
   for (const playerUpstairs of [false, true]) {
     const s = quiet();
-    s.player = playerUpstairs ? upper(-4, 35) : ground(-4, 35);
-    const target = enemy(playerUpstairs ? ground(-3, 35) : upper(-3, 35), { speed: 0 });
+    s.player = playerUpstairs ? upper(-4, 37) : ground(-4, 37);
+    const target = enemy(playerUpstairs ? ground(-3, 37) : upper(-3, 37), { speed: 0 });
     s.enemies = [target];
     aimAt(s, { x: target.x, z: target.z, y: target.y + 1.23 });
     const magazine = s.inventory.pistol.mag;
@@ -226,18 +262,18 @@ test("the mezzanine floor blocks aimed bullets in both vertical directions", () 
 
 test("a grenade thrown upstairs begins at the player's elevated hand height", () => {
   const s = quiet();
-  s.player = upper(-4, 35);
+  s.player = upper(-4, 37);
   assert.equal(s.throwGrenade(), true);
   close(s.projectiles[0].y, HOTEL.floorY + 1.5, 1e-6, "grenade hand height");
 });
 
 test("an upstairs grenade bounces on the mezzanine and its blast cannot cross the floor", () => {
   const s = quiet();
-  s.player = upper(-8, 35);
-  const upstairs = enemy(upper(-3.5, 35), { speed: 0 });
-  const downstairs = enemy(ground(-3.5, 35), { id: 2, speed: 0 });
+  s.player = upper(-8, 37);
+  const upstairs = enemy(upper(-3.5, 37), { speed: 0 });
+  const downstairs = enemy(ground(-3.5, 37), { id: 2, speed: 0 });
   s.enemies = [upstairs, downstairs];
-  s.projectiles = [{ id: 1, x: -4, y: HOTEL.floorY + 0.5, z: 35,
+  s.projectiles = [{ id: 1, x: -4, y: HOTEL.floorY + 0.5, z: 37,
     vx: 0, vy: -3, vz: 0, fuse: 1.4 }];
   let bounced = false;
   for (let i = 0; i < 1.6 / DT && s.projectiles.length; i++) {
@@ -261,9 +297,9 @@ test("sprint input descends each curved stair and retraces the same path upstair
   for (const stair of HOTEL.stairs) {
     const s = quiet();
     const route = [
-      upper(stair.cx - stair.side, stair.cz + 4),
+      landing(stair, 1),
       ...Array.from({ length: 33 }, (_, i) => stairPoint(stair, 1 - i / 32)),
-      ground(stair.cx - stair.side, stair.cz - 4),
+      landing(stair, 0),
     ];
     s.player = { ...route[0] };
     const sprint = { ...idle, forward: 1, sprint: true };
@@ -301,8 +337,8 @@ test("sprint input descends each curved stair and retraces the same path upstair
 test("blocking the left stair makes an enemy physically reach the player using the right stair", () => {
   const s = quiet();
   const [left, right] = HOTEL.stairs;
-  s.player = upper(-4, 35);
-  const pursuer = enemy(ground(-4, 35));
+  s.player = upper(-4, 37);
+  const pursuer = enemy(ground(-4, 37));
   s.enemies = [pursuer];
   // Cross the full radial width at the left stair's midpoint, leaving the other route open.
   s.rects = [...s.rects, {
@@ -328,4 +364,54 @@ test("blocking the left stair makes an enemy physically reach the player using t
   assert.ok(usedRightStair, "enemy traverses the unblocked stair");
   assert.ok(attacked, `enemy reaches the upstairs player: ${JSON.stringify(pursuer)}`);
   close(pursuer.y, HOTEL.floorY, 0.2, "enemy finishes on the upper floor");
+});
+
+test("enemies can pursue from the casino to the expanded rear of either hotel floor", () => {
+  for (const destination of [ground(-7, 49), upper(-4, 48.25)]) {
+    const s = quiet();
+    s.player = destination;
+    assert.equal(collides(s.player, RULES.playerRadius, s.rects), false,
+      `rear destination is a clear walk surface: ${JSON.stringify(destination)}`);
+    const pursuer = enemy(ground(HOTEL.entrance.x, 10.5));
+    s.enemies = [pursuer];
+    s.refreshMap();
+    assert.ok(s.navigation.distance[s.navigation.index(pursuer)] >= 0,
+      "rear destination has a route back through the entrance");
+    let attacked = false;
+    for (let i = 0; i < 130 / DT; i++) {
+      const before = { ...pursuer };
+      s.step(DT, idle);
+      assert.ok(Math.hypot(pursuer.x - before.x, pursuer.z - before.z,
+        (pursuer.y ?? 0) - (before.y ?? 0)) < 0.18,
+      "long pursuit traverses the world without recovery teleportation");
+      if (s.events.some(event => event.type === "hurt")) { attacked = true; break; }
+    }
+    assert.ok(attacked, `enemy must reach the rear destination: ${JSON.stringify(pursuer)}`);
+    close(pursuer.y ?? 0, destination.y, 0.2, "rear pursuit reaches the correct floor");
+  }
+});
+
+test("reception blocks the lobby while elevated dining furniture leaves the ground underneath walkable", () => {
+  const s = quiet();
+  const atReception = ground(-4, 21);
+  moveActor(atReception, 0, 6, RULES.playerRadius, s.rects);
+  assert.ok(atReception.z < 22.95 && atReception.z > 22,
+    `reception stops the player before the counter: ${JSON.stringify(atReception)}`);
+  const aroundReception = ground(-10, 21);
+  moveTo(s, aroundReception, { x: -10, z: 27 });
+
+  for (const x of [-11, 3]) {
+    const upstairs = upper(x, 36);
+    moveActor(upstairs, 0, 4, RULES.playerRadius, s.rects);
+    assert.ok(upstairs.z < 37.4 && upstairs.z > 36.5,
+      `dining island blocks upstairs approach: ${JSON.stringify(upstairs)}`);
+    close(upstairs.y, HOTEL.floorY, 1e-6, "table collision keeps player upstairs");
+    assert.equal(collides(upper(x, 39.2), RULES.playerRadius, s.rects), true,
+      "dining island center is solid on the restaurant floor");
+    assert.equal(collides(ground(x, 39.2), RULES.playerRadius, s.rects), false,
+      "elevated dining island does not collide with ground floor actors");
+    const downstairs = ground(x, 36);
+    moveTo(s, downstairs, { x, z: 40 });
+    close(downstairs.y, 0, 1e-6, "ground movement passes underneath dining island");
+  }
 });

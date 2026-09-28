@@ -55,6 +55,7 @@ export class GameRenderer {
   flash: Mesh;
   ready: Promise<void>;
   private weaponAssets: AssetContainer[] = [];
+  private hotel: ReturnType<typeof buildHotel>;
   private slotPlacements: {
     root: TransformNode;
     variant: "emerald" | "burgundy";
@@ -112,6 +113,8 @@ export class GameRenderer {
     this.engine.setHardwareScalingLevel(
       1 / Math.min(window.devicePixelRatio || 1, 1.5),
     );
+    this.engine.maxFPS = 15;
+    this.engine.renderEvenInBackground = false;
     this.scene = new Scene(this.engine);
     this.scene.clearColor = new Color4(0.035, 0.049, 0.045, 1);
     this.scene.fogMode = Scene.FOGMODE_EXP2;
@@ -256,7 +259,7 @@ export class GameRenderer {
     rouletteGlow.intensity = 0.5;
     rouletteGlow.range = 9;
     this.environment();
-    buildHotel(this.scene);
+    this.hotel = buildHotel(this.scene);
     this.handLight = new PointLight(
       "weapon bounce",
       new Vector3(-0.3, 0.5, -0.1),
@@ -284,6 +287,7 @@ export class GameRenderer {
       smg: this.weapon("smg"),
       rifle: this.weapon("rifle"),
       revolver: this.weapon("revolver"),
+      tommy: this.weapon("tommy"),
     };
     this.flash = MeshBuilder.CreateSphere(
       "muzzle",
@@ -302,6 +306,7 @@ export class GameRenderer {
     this.impact.material = this.mat("impact", "#e3c580", 1);
     this.impact.isVisible = false;
     this.ready = Promise.all([
+      this.hotel.ready,
       this.loadWeaponAssets(),
       this.loadTableAssets(),
       this.loadSlotAssets(),
@@ -628,6 +633,7 @@ export class GameRenderer {
       }
     }
     for (const [id, r] of Object.entries(DOORS)) {
+      if (id === "hotel") continue; // Hotel builder owns this north-facing entrance.
       this.gates[id] = this.box(
         id + " shutter",
         r.x,
@@ -1702,17 +1708,21 @@ export class GameRenderer {
           ? 0.12
           : id === "rifle"
             ? 0.085
+            : id === "tommy"
+              ? 0.05
             : id === "smg"
               ? 0.035
               : 0.055;
     this.flashTime = 0.045;
     this.flash.position.set(
       0,
-      id === "revolver" ? 0.07 : 0.03,
+      id === "revolver" ? 0.07 : id === "tommy" ? 0.025 : 0.03,
       id === "shotgun" || id === "rifle"
         ? 0.65
         : id === "revolver"
           ? 0.307
+          : id === "tommy"
+            ? 0.48
           : id === "smg"
             ? 0.4
             : 0.24,
@@ -1782,6 +1792,7 @@ export class GameRenderer {
     }
   }
   update(sim: Simulation, dt: number) {
+    this.hotel.update(sim);
     this.updateEquipment(sim);
     this.time += dt;
     this.camera.position.set(
@@ -1978,6 +1989,7 @@ export class GameRenderer {
     this.engine.resize();
   }
   dispose() {
+    this.hotel.dispose();
     for (const asset of this.weaponAssets) asset.dispose();
     this.scene.dispose();
     this.engine.dispose();
