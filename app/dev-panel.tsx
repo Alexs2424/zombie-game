@@ -3,6 +3,28 @@ import { useState } from "react";
 import type { GameView } from "../lib/game/runtime";
 
 const groups: Record<string, string[][]> = {
+  "Hotel and casino QA": [
+    ["toggle-invulnerability","Toggle invulnerability"],
+    ["hotel-reception","Reception ledger"],
+    ["hotel-suitcase","Guest suitcase"],
+    ["hotel-panel","Concealed panel"],
+    ["hotel-register","Collection register"],
+    ["hotel-cache","Gallery supplies"],
+    ["mystery-unlock","Unlock gallery (QA)"],
+    ["casinoWide","Grand casino overview"],
+    ["barExit","Bar second door"],
+    ["vipGate","High Roller entrance"],
+    ["vipExit","High Roller second door"],
+    ["casinoCouchNorth","Casino north couch"],
+    ["casinoCouchSouth","Casino south couch"],
+    ["loungeCouch","Lounge couch"],
+    ["cashierGate","Cashier entrance"],
+    ["cashier","Cashier room"],
+    ["crapsB","Craps table II"],
+    ["craps-roll-b","Roll craps II"],
+    ["rouletteB","Roulette table II"],
+    ["roulette-spin-b","Spin roulette II"],
+  ],
   "Session": [
     ["new", "Seed run"],
     ["unlock-all", "Open all doors"],
@@ -74,6 +96,7 @@ const groups: Record<string, string[][]> = {
     ["give-axe", "Give Fire Exit"]
   ],
   "Combat": [
+    ["zombie-deaths", "Collapse zombies"],
     ["bell-clear-wave", "Clear ambushers (QA)"],
     ["hotel-chase", "Test upstairs pursuit"],
     ["clear", "Finish round"],

@@ -1,0 +1,145 @@
+{
+  "loader": "Babylon NullEngine, GLTF AUTO left-handed conversion",
+  "assets": [
+    {
+      "file": "hotel-reception.glb",
+      "bytes": 1695984,
+      "meshes": 13,
+      "materials": 13,
+      "triangles": 25622,
+      "boundsBabylon": [
+        [
+          -3.799999952316284,
+          0,
+          -0.8230634331703186
+        ],
+        [
+          3.799999952316284,
+          1.899999976158142,
+          0.8250000476837158
+        ]
+      ],
+      "expectedFixture": [
+        7.6,
+        1.65,
+        1.9
+      ],
+      "embeddedImages": 3,
+      "finiteVertices": true,
+      "uvs": true,
+      "validIndices": true
+    },
+    {
+      "file": "hotel-reception-backdrop.glb",
+      "bytes": 2793156,
+      "meshes": 10,
+      "materials": 10,
+      "triangles": 62200,
+      "boundsBabylon": [
+        [
+          -4.099999904632568,
+          0,
+          -0.32499998807907104
+        ],
+        [
+          4.099999904632568,
+          3.3999998569488525,
+          0.2992209792137146
+        ]
+      ],
+      "expectedFixture": [
+        8.2,
+        0.65,
+        3.5
+      ],
+      "embeddedImages": 2,
+      "finiteVertices": true,
+      "uvs": true,
+      "validIndices": true
+    },
+    {
+      "file": "hotel-guest-suitcase.glb",
+      "bytes": 679272,
+      "meshes": 11,
+      "materials": 11,
+      "triangles": 5928,
+      "boundsBabylon": [
+        [
+          -0.5571066737174988,
+          1.4901161193847656e-8,
+          -0.3798174560070038
+        ],
+        [
+          0.5571066737174988,
+          0.9000000357627869,
+          0.3630894720554352
+        ]
+      ],
+      "expectedFixture": [
+        1.25,
+        0.85,
+        0.9
+      ],
+      "embeddedImages": 2,
+      "finiteVertices": true,
+      "uvs": true,
+      "validIndices": true
+    },
+    {
+      "file": "hotel-luggage-shelf.glb",
+      "bytes": 1596856,
+      "meshes": 11,
+      "materials": 11,
+      "triangles": 32532,
+      "boundsBabylon": [
+        [
+          -1.8799999952316284,
+          0,
+          -0.3500000238418579
+        ],
+        [
+          1.8799999952316284,
+          2.5,
+          0.33469271659851074
+        ]
+      ],
+      "expectedFixture": [
+        3.8,
+        0.7,
+        2.5
+      ],
+      "embeddedImages": 2,
+      "finiteVertices": true,
+      "uvs": true,
+      "validIndices": true
+    },
+    {
+      "file": "hotel-porter-cabinet.glb",
+      "bytes": 690896,
+      "meshes": 9,
+      "materials": 9,
+      "triangles": 5560,
+      "boundsBabylon": [
+        [
+          -0.853826105594635,
+          0,
+          -0.32499998807907104
+        ],
+        [
+          0.8999999761581421,
+          1.120486855506897,
+          0.28032344579696655
+        ]
+      ],
+      "expectedFixture": [
+        1.8,
+        0.65,
+        1.15
+      ],
+      "embeddedImages": 2,
+      "finiteVertices": true,
+      "uvs": true,
+      "validIndices": true
+    }
+  ]
+}

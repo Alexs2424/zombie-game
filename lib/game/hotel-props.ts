@@ -352,6 +352,27 @@ export function buildHotelProps(
       box("register pages", 0.2, 1.205, 0, 0.6, 0.014, 0.4, cream);
       box("desk telephone base", 2.2, 1.22, 0.3, 0.4, 0.13, 0.28, dark);
       box("telephone receiver", 2.2, 1.34, 0.3, 0.49, 0.07, 0.12, dark);
+    } else if (f.kind === "reception-backdrop") {
+      box("key cabinet backdrop", 0, f.h / 2, 0, f.w, f.h, f.d, walnut);
+      for (const x of [-2.5, 2.5]) {
+        box("key wall inset", x, 1.95, -f.d / 2 - 0.015, 2.7, 1.9, 0.025, dark);
+        for (let i = 0; i < 8; i++) for (let j = 0; j < 4; j++)
+          box("ivory key tag", x - 1.12 + i * 0.32, 1.24 + j * 0.4, -f.d / 2 - 0.04, 0.09, 0.15, 0.018, cream);
+      }
+      text("GRAND HOTEL", 0, 2.85, -f.d / 2 - 0.04, 2.2, 0.34);
+      text("CONCIERGE", 0, 2.42, -f.d / 2 - 0.04, 1.8, 0.25);
+    } else if (f.kind === "guest-suitcase") {
+      box("guest suitcase stand", 0, 0.23, 0, f.w, 0.46, f.d, walnut);
+      box("Varga leather case", 0, 0.68, 0, f.w - 0.08, 0.4, f.d - 0.1, leather);
+      for (const x of [-0.4, 0.4]) box("suitcase straps", x, 0.68, 0, 0.06, 0.42, f.d - 0.07, dark);
+      text("E. VARGA · 214", 0, 0.69, -f.d / 2, 0.68, 0.14);
+    } else if (f.kind === "luggage-shelf") {
+      for (const x of [-f.w / 2 + 0.035, f.w / 2 - 0.035]) box("luggage shelf upright", x, f.h / 2, 0, 0.07, f.h, f.d, walnut);
+      for (const y of [0.06, 0.85, 1.64, 2.43]) box("luggage shelf", 0, y, 0, f.w, 0.08, f.d, walnut);
+      for (const y of [0.43, 1.22, 2.01]) for (const x of [-1.2, 0, 1.2]) box("stored guest case", x, y, 0, 1.03, 0.62, 0.55, leather);
+    } else if (f.kind === "porter-cabinet") {
+      box("porter walnut cabinet", 0, 0.54, 0, f.w, 1.08, f.d, walnut);
+      box("porter marble top", 0, 1.12, 0, f.w, 0.06, f.d, dark);
     } else if (f.kind === "jukebox") {
       const outline: [number, number][] = [
         [-0.73, 0.05],

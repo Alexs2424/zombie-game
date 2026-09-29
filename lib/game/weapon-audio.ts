@@ -141,7 +141,8 @@ export class WeaponSounds {
   }
   /** Returns true when the event was handled by a sampled weapon voice. */
   event(e: GameEvent, player: V2, yaw: number): boolean {
-    const id = e.type === "stickBreak" ? "stick" : e.weapon;
+    if (e.type === "grenadeThrow") void this.preload("launcher");
+    const id = e.type === "stickBreak" ? "stick" : e.type === "explosion" ? "launcher" : e.weapon;
     if (!id || !this.has(id)) return false;
     const jitter = () => 1 + (Math.random() - 0.5) * 0.05;
     if (e.type === "shot") {
@@ -169,7 +170,7 @@ export class WeaponSounds {
       return true;
     }
     if (e.type === "stickBreak") return this.play("stick", "break", { gain: 1 });
-    if (e.type === "explosion" && e.weapon === "launcher" && e.position) {
+    if (e.type === "explosion" && e.position) {
       const d = Math.hypot(e.position.x - player.x, e.position.z - player.z);
       const pan = Math.sin(Math.atan2(e.position.x - player.x, e.position.z - player.z) - yaw);
       return this.play(id, "explode", { pan: pan * 0.7, gain: Math.max(0.25, 1 - d / 40), reverb: 0.6 });

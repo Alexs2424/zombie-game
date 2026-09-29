@@ -34,7 +34,8 @@ input:focus-visible {
   height: 100dvh;
   min-height: 620px;
   position: relative;
-  overflow: hidden;
+  /* Focus changes in reading panels must not scroll the full-screen canvas. */
+  overflow: clip;
   background: #101515;
 }
 .casino-backdrop {
@@ -1322,6 +1323,232 @@ h1 i {
   .dev-panel footer { display: none; }
 }
 
+.hotel-document-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #120e0bdb;
+  backdrop-filter: blur(8px);
+}
+.hotel-document {
+  width: min(700px, 100%);
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  background: #211b15;
+  border: 1px solid #9c8052;
+  box-shadow: 0 24px 100px #0009;
+  color: #efdfbc;
+}
+.hotel-document:focus {
+  outline: none;
+}
+.hotel-document-masthead {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 32px;
+  color: #d3b684;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+.hotel-document-masthead span:last-child {
+  color: #c6baa8;
+  font-size: 9px;
+  letter-spacing: 1.3px;
+}
+.hotel-document-paper {
+  position: relative;
+  padding: 32px 56px 30px;
+  background: radial-gradient(ellipse at 25% 15%, #fff9e8 0%, #f1e4c9 75%, #e4d4b4 100%);
+  color: #352a1f;
+}
+.hotel-document-paper::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid #a8884947;
+  pointer-events: none;
+}
+.hotel-document-crest {
+  margin: 0 auto 19px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #9d7d44;
+  border-radius: 50%;
+  color: #89652d;
+  font: 17px Georgia, serif;
+  letter-spacing: -2px;
+}
+.hotel-document-kicker {
+  margin: 0 0 10px;
+  text-align: center;
+  color: #806236;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.hotel-document h2 {
+  margin: 0 0 26px;
+  text-align: center;
+  font: 35px/1.15 Georgia, "Times New Roman", serif;
+  letter-spacing: -0.7px;
+}
+.hotel-document-body {
+  font: 17px/1.65 Georgia, "Times New Roman", serif;
+}
+.hotel-document-body p {
+  margin: 0 0 16px;
+  white-space: pre-line;
+}
+.hotel-document-body p:last-child {
+  margin-bottom: 0;
+}
+.hotel-document-lead {
+  margin-top: 25px;
+  padding-top: 18px;
+  border-top: 1px solid #a48b604d;
+}
+.hotel-document-lead > span {
+  color: #806236;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 1.8px;
+}
+.hotel-document-lead p {
+  margin: 7px 0 0;
+  color: #5a4933;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.hotel-document-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 30px;
+}
+.hotel-document-footer > p {
+  margin: 0;
+  color: #e8d5af;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.hotel-document-footer > p > span {
+  color: #bfb29d;
+}
+.hotel-document-footer > div {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.hotel-document-footer .primary-button {
+  min-width: unset;
+  padding: 15px 16px;
+  letter-spacing: 1px;
+  font-size: 10px;
+}
+.hotel-document-pause {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  color: #dcc79d;
+  background: transparent;
+  border: 0;
+  font-size: 9px;
+  letter-spacing: 0.8px;
+  padding: 5px 0;
+}
+.hotel-document-pause:hover {
+  color: #fff2d4;
+}
+.hotel-document-pause kbd {
+  font: 8px Arial, sans-serif;
+  color: #b7a88f;
+}
+.hotel-journal {
+  margin: 0 0 24px;
+  padding: 18px 20px 14px;
+  border: 1px solid #b49a6352;
+  background: #1c241ccb;
+}
+.hotel-journal-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 13px;
+}
+.hotel-journal-heading h3 {
+  font: 21px Georgia, serif;
+  color: #e0c795;
+  margin: 0;
+}
+.hotel-journal-heading > span {
+  color: #b4ac96;
+  font-size: 8px;
+  letter-spacing: 1.3px;
+}
+.hotel-journal-entries {
+  display: grid;
+  gap: 5px;
+}
+.hotel-journal-entries button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  background: #eee1c808;
+  border: 1px solid #eee1c812;
+  color: #e6d9bc;
+  text-align: left;
+  font-size: 12px;
+}
+.hotel-journal-entries button:hover {
+  border-color: #bda36a;
+  background: #eee1c814;
+}
+.hotel-journal-entries button > span {
+  color: #b29b68;
+  font-size: 10px;
+}
+.hotel-journal-entries button > b {
+  margin-left: auto;
+  color: #b29b68;
+  font-weight: normal;
+}
+.hotel-journal > p {
+  color: #b4b3a2;
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 12px 0 0;
+}
+@media (max-width: 700px), (max-height: 740px) {
+  .hotel-document-shade { padding: 14px; }
+  .hotel-document { max-height: calc(100dvh - 28px); }
+  .hotel-document-paper { padding: 24px 30px; }
+  .hotel-document-crest { width: 32px; height: 32px; font-size: 13px; margin-bottom: 13px; }
+  .hotel-document h2 { font-size: 29px; margin-bottom: 18px; }
+  .hotel-document-body { font-size: 16px; line-height: 1.5; }
+  .hotel-document-body p { margin-bottom: 12px; }
+  .hotel-document-masthead { padding: 14px 22px; }
+  .hotel-document-footer { padding: 15px 22px; }
+  .pause-shade { overflow-y: auto; padding: 26px 0; }
+  .pause-card { margin: auto 0; }
+}
+@media (max-width: 520px) {
+  .hotel-document-footer { flex-direction: column; align-items: stretch; gap: 12px; }
+  .hotel-document-footer > p { text-align: center; }
+  .hotel-document-footer > div { justify-content: space-between; }
+  .hotel-journal-heading { flex-wrap: wrap; gap: 5px; }
+}
+
 .status-effects {
   position: absolute;
   top: 270px;
@@ -1367,6 +1594,28 @@ h1 i {
   background: linear-gradient(145deg, #162923ed, #0d1714f2);
   box-shadow: 0 12px 30px #0007;
   color: #ead9b0;
+}
+.gambling-results.multiple-wagers {
+  gap: 6px;
+}
+.multiple-wagers .gambling-card {
+  padding: 8px 12px;
+}
+.multiple-wagers .dice-faces {
+  font-size: 28px;
+  margin: 2px 0;
+}
+.multiple-wagers .roulette-outcome {
+  margin: 8px 0;
+  gap: 10px;
+}
+.multiple-wagers .roulette-pocket {
+  width: 40px;
+  height: 40px;
+}
+.multiple-wagers .gambling-card p {
+  font-size: 11px;
+  margin-top: 4px;
 }
 .dice-result {
   text-align: center;
@@ -2087,7 +2336,7 @@ h1 i {
   }
 }
 /* Companion controls for the physical table and hidden lock. */
-.casino-betting{position:absolute;right:24px;top:140px;width:350px;padding:18px;border:1px solid #b89d64;background:rgba(9,25,21,.92);color:#eadbb4;pointer-events:none;box-shadow:0 10px 40px #0008}
+.casino-betting{position:absolute;left:24px;top:306px;width:350px;padding:18px;border:1px solid #b89d64;background:rgba(9,25,21,.92);color:#eadbb4;pointer-events:none;box-shadow:0 10px 40px #0008}
 .casino-betting>strong{display:block;margin:10px 0;font:18px Georgia,serif;letter-spacing:2px}
 .casino-betting p{font-size:12px;line-height:1.7;margin:12px 0}
 .casino-betting small{font-size:10px;line-height:1.6;letter-spacing:.4px}

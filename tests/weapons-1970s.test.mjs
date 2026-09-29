@@ -170,16 +170,18 @@ test("Stickman sweeps a 2.8 m, 100-degree fan, only successful hits wear it, and
   assert.ok(s.events.some((e) => e.type === "stickBreak"));
   assert.equal(s.inventory.stick.owned, false);
   assert.equal(s.weapon, "magnum", "returns to the last owned firearm");
-  assert.equal(s.purchaseInfo("stick").reason, "Open The Devil’s Tables first");
+  assert.equal(s.purchaseInfo("stick").reason, "Rake already taken");
   assert.ok(!MYSTERY_WEAPONS.includes("stick"));
 });
 
-test("Fire Exit hangs by the staff exit, chops one zombie hard and never breaks", () => {
+test("Fire Exit hangs in the relocated supply room, chops one zombie hard and never breaks", () => {
   const s = quiet();
   const p = PURCHASES.find((p) => p.id === "axe");
   assert.ok(Math.abs(p.x - AXE_CABINET.x) < 0.01 && p.z < AXE_CABINET.z);
   s.player = { x: p.x, z: p.z };
   s.points = 0;
+  assert.equal(s.purchase("axe"), false);
+  s.hotel = true; s.doorsOpen.supply = true; s.refreshMap();
   assert.equal(s.purchase("axe"), true);
   assert.equal(s.weapon, "axe");
   assert.equal(s.purchase("axe"), false);

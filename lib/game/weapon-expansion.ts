@@ -38,8 +38,8 @@ export const recoilPitch = (id: string) => ({
 /** Melee swing length and the remaining-time moment at which the swing connects. */
 export const meleeDuration = (id: string) => id === "axe" ? 1.1 : .6;
 export const meleeContactTime = (id: string | null) => id === "axe" ? .62 : .32;
-/** Fire cabinet beside the staff passage's emergency exit (north wall). */
-export const AXE_CABINET = { x: 10, z: 11.93 };
+/** Fire cabinet on the relocated supply room's north storage wall. */
+export const AXE_CABINET = { x: -30, z: 48.77 };
 /** One-line house descriptions for the pickup card (docs/weapon-spec-1970s.md). */
 export const WEAPON_FLAVOR: Record<string, string> = {
   pistol: "The house sidearm. Reliable, forgiving, always in reach.",

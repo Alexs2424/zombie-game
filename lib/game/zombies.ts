@@ -1,17 +1,53 @@
-import { Scene } from "@babylonjs/core/scene";
-import { Mesh } from "@babylonjs/core/Meshes/mesh";
-import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
-import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
-import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
-import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
-import { Color3 } from "@babylonjs/core/Maths/math.color";
-import { LIMBS, zombiePose, type HitRegion } from "./zombie-pose";
+import { Scene } from "@babylonjs/core/scene.js";
+import { Mesh } from "@babylonjs/core/Meshes/mesh.js";
+import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder.js";
+import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData.js";
+import { TransformNode } from "@babylonjs/core/Meshes/transformNode.js";
+import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial.js";
+import { Texture } from "@babylonjs/core/Materials/Textures/texture.js";
+import { Color3 } from "@babylonjs/core/Maths/math.color.js";
+import { LIMBS, zombiePose, type HitRegion } from "./zombie-pose.ts";
 import type { Enemy } from "./simulation";
 
+type ZombieMesh = {
+  part: string; material: string; positions: number[]; indices: number[];
+  normals?: number[]; uvs?: number[]; colors?: number[];
+};
 type ZombieAsset = {
   colors: Record<string, string>;
-  variants: { name: string; meshes: { part: string; material: string; positions: number[]; indices: number[] }[] }[];
+  surfaces?: Record<string, string>;
+  roughness?: Record<string, number>;
+  variants: { name: string; palette?: Record<string, string>; meshes: ZombieMesh[] }[];
 };
+// Surface maps belong to the scene; per-enemy material disposal keeps them alive.
+const surfaceTextures = new WeakMap<Scene, Map<string, Texture>>();
+const preparedMeshes = new WeakMap<ZombieMesh, VertexData>();
+function surfaceTexture(scene: Scene, surface: string, channel: 'color' | 'normal') {
+  let textures = surfaceTextures.get(scene);
+  if (!textures) { textures = new Map(); surfaceTextures.set(scene, textures); }
+  const key = `${surface}-${channel}`;
+  let texture = textures.get(key);
+  if (!texture) {
+    texture = new Texture(`/textures/zombies/${key}.png`, scene);
+    texture.gammaSpace = channel === 'color';
+    texture.anisotropicFilteringLevel = 4;
+    if (channel === 'normal') texture.level = surface === 'skin' ? .8 : .38;
+    textures.set(key, texture);
+  }
+  return texture;
+}
+function prepareMesh(data: ZombieMesh) {
+  let vd = preparedMeshes.get(data);
+  if (!vd) {
+    vd = new VertexData(); vd.positions = data.positions; vd.indices = data.indices;
+    vd.normals = data.normals ?? [];
+    if (!data.normals) VertexData.ComputeNormals(data.positions, data.indices, vd.normals);
+    if (data.uvs) vd.uvs = data.uvs;
+    if (data.colors) vd.colors = data.colors;
+    preparedMeshes.set(data, vd);
+  }
+  return vd;
+}
 export async function loadZombieAsset(): Promise<ZombieAsset> {
   const response = await fetch('/models/zombies.json');
   if (!response.ok) throw new Error(`Zombie models: ${response.status}`);
@@ -24,11 +60,19 @@ export function createZombie(scene: Scene, id: number, asset: ZombieAsset) {
   const materials = Object.fromEntries(Object.entries(asset.colors).map(([name, hex]) => {
     const m = new StandardMaterial(`zombie-${id}-${name}`, scene);
     m.diffuseColor = Color3.FromHexString(hex);
-    if (name === 'suit') m.diffuseColor = Color3.FromHexString(['#364e49', '#593e49', '#3b425a'][id % 3]);
-    if (name === 'skin') m.diffuseColor = Color3.FromHexString(['#849574', '#a0a082', '#819393'][id % 3]);
+    if (variant.palette?.[name]) m.diffuseColor = Color3.FromHexString(variant.palette[name]);
+    else if (name === 'suit') m.diffuseColor = Color3.FromHexString(['#364e49', '#593e49', '#3b425a'][id % 3]);
+    else if (name === 'skin') m.diffuseColor = Color3.FromHexString(['#849574', '#a0a082', '#819393'][id % 3]);
     m.specularColor.set(name === 'blood' ? .22 : .045, .025, .025);
+    const roughness = asset.roughness?.[name] ?? .85;
+    m.specularPower = 8 + 120 * (1 - roughness) ** 2;
+    const surface = asset.surfaces?.[name];
+    if (surface) {
+      m.diffuseTexture = surfaceTexture(scene, surface, 'color');
+      m.bumpTexture = surfaceTexture(scene, surface, 'normal');
+    }
     m.maxSimultaneousLights = 8;
-    if (name === 'eye') m.emissiveColor.set(.3,.15,.015);
+    if (name === 'eye') m.emissiveColor.set(.65,.38,.08);
     return [name,m];
   }));
   const pivots: Record<string, TransformNode> = { body: root };
@@ -48,9 +92,8 @@ export function createZombie(scene: Scene, id: number, asset: ZombieAsset) {
   const wounds: { mesh: Mesh; region: HitRegion; stump: boolean }[] = [];
   for (const data of variant.meshes) {
     const mesh = new Mesh(data.part, scene);
-    const vd = new VertexData(); vd.positions=data.positions; vd.indices=data.indices;
-    vd.normals=[]; VertexData.ComputeNormals(data.positions, data.indices, vd.normals);
-    vd.applyToMesh(mesh); mesh.material=materials[data.material];
+    prepareMesh(data).applyToMesh(mesh); mesh.material=materials[data.material];
+    mesh.useVertexColors = !!data.colors;
     mesh.isPickable=false; mesh.receiveShadows=true;
     if (data.part.startsWith('wound_') || data.part.startsWith('stump_')) {
       const stump = data.part.startsWith('stump_');
@@ -68,7 +111,11 @@ export function animateZombie(v: ReturnType<typeof createZombie>, e: Enemy) {
   v.root.position.set(e.x,(e.y ?? 0)+pose.drop,e.z);v.root.rotation.set(0,e.yaw,0);
   v.shadow.scaling.setAll(1);
   v.shadow.visibility = 1;
-  for (const material of v.materials) material.alpha = 1;
+  for (const material of v.materials) {
+    material.alpha = 1;
+    if (material.name.endsWith('-eye')) material.emissiveColor.set(.65,.38,.08);
+  }
+  v.shadow.rotation.z = 0;
   for (let i=0;i<2;i++) {
     const arm=v.pivots[LIMBS[i]], leg=v.pivots[LIMBS[i+2]];
     arm.setEnabled(!e.missing?.[LIMBS[i]]);leg.setEnabled(!e.missing?.[LIMBS[i+2]]);
@@ -113,6 +160,17 @@ export function animateZombieDeath(v: ReturnType<typeof createZombie>, e: Enemy,
   }
   v.head.rotation.x = direction*.12*fall;
   v.jaw.rotation.x = -.2;
+  // Use the revamped model's visible bounds, including hands and shoes. A
+  // fixed torso height clips larger variants and bodies with missing limbs.
+  let lowest = Infinity;
+  v.root.computeWorldMatrix(true);
+  for (const mesh of v.root.getChildMeshes()) {
+    if (!mesh.isEnabled()) continue;
+    mesh.computeWorldMatrix(true);
+    lowest = Math.min(lowest, mesh.getBoundingInfo().boundingBox.minimumWorld.y);
+  }
+  const floor = (e.y ?? 0) + .015;
+  if (Number.isFinite(lowest)) v.root.position.y += Math.max(0, floor-lowest);
   const alpha = Math.max(0, 1-Math.max(0,age-4.5)/1.5);
   for (const material of v.materials) {
     material.alpha = alpha;
@@ -120,6 +178,7 @@ export function animateZombieDeath(v: ReturnType<typeof createZombie>, e: Enemy,
   }
   v.shadow.scaling.set(1,1+fall*1.8,1);
   v.shadow.visibility = .2 * alpha;
+  v.shadow.rotation.z = -e.yaw;
   v.shadow.position.z = e.z + Math.cos(e.yaw)*direction*.65*fall;
   v.shadow.position.x = e.x + Math.sin(e.yaw)*direction*.65*fall;
 }

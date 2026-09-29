@@ -616,6 +616,21 @@ def lmg():
     write(w, "pickup", room(y, 0.1, 0.4), "heavy set-down, bipod legs, belt links", 0.8)
 
 
+def explosion():
+    r = Rand(9041)
+    y = canvas(3.4)
+    t = t_(2.8)
+    # Sharp pressure front, chest-weight body and uneven room rumble.
+    crack = filt(r.noise(2.8), "band", [650, 7800]) * env(2.8, .0003, .028)
+    body = np.sin(2*np.pi*np.cumsum(44+90*np.exp(-t/.045))/SR)*env(2.8,.001,.28)
+    rumble = filt(r.noise(2.8), "low", 190)*env(2.8,.014,.65)*3.8
+    tearing = filt(r.noise(2.8), "band", [180, 2400])*env(2.8,.002,.13)
+    place(y, sat(crack*.85+body*1.4+rumble+tearing*.7, 1.7), 0)
+    for i in range(18):
+        place(y, (wood_knock if i%3 else steel_click)(r,r.u(.65,1.35),level=r.u(.018,.065)),r.u(.12,1.7))
+    write("launcher", "explode", room(y,.32,1.55,warm=1800),
+          "heavy pressure crack, 134-to-44 Hz body, irregular bass rumble, scattered debris and warm casino reflections")
+
 def launcher():
     w = "launcher"
     r = Rand(1000)
@@ -633,15 +648,7 @@ def launcher():
     hiss = filt(r.noise(d), "band", [2200, 7000], 2) * np.exp(-t / 0.6) * np.clip(t / 0.02, 0, 1)
     hiss += filt(r.noise(d), "band", [600, 1800], 2) * np.exp(-t / 0.5) * 0.4
     write(w, "flight", room(hiss, 0.1, 0.5), "brief projectile flight hiss receding", 0.55)
-    y = canvas(3.2)
-    t = t_(2.6)
-    boom = np.sin(2 * np.pi * np.cumsum(40 + 50 * np.exp(-t / 0.08)) / SR) * env(2.6, 0.002, 0.45)
-    blast = filt(r.noise(2.6), "low", 3500) * env(2.6, 0.0005, 0.12) * 1.3
-    rumble = filt(r.noise(2.6), "low", 220, 2) * env(2.6, 0.02, 0.8) * 1.5
-    place(y, sat(boom * 1.2 + blast + rumble, 2.6), 0)
-    for i in range(14):
-        place(y, (wood_knock if i % 2 else steel_click)(r, r.u(0.7, 1.4), level=r.u(0.04, 0.12)), 0.15 + r.u(0, 1.2))
-    write(w, "explode", room(y, 0.4, 1.8, warm=2600), "concussive room-filling blast: 40 Hz boom, broadband blast, debris ticks, long casino tail")
+    explosion()
     y = canvas(0.3); place(y, steel_click(r, 0.8, level=0.8), 0); place(y, steel_clack(r, 1.3, 0.1, 0.3), 0.004)
     write(w, "dry", room(y, 0.1, 0.4), "heavy hammer on an empty chamber", 0.7)
     y = canvas(0.3); place(y, steel_click(r, 0.8, level=0.8), 0); place(y, steel_clack(r, 1.4, 0.1, 0.4), 0.05)

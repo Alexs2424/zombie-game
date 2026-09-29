@@ -1,0 +1,568 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2270" height="1650" viewBox="0 0 2270 1650" role="img" aria-labelledby="title desc">
+<title id="title">The Last Jackpot — implemented casino and hotel floor plan</title><desc id="desc">Accurate two-dimensional plan of the new 60 by 32 metre starting casino, west bar, east cashier public room and inaccessible cash area, south High Roller, northwest supply, unchanged hotel lobby, upstairs restaurant and concealed luggage gallery. The Velvet Hour speakeasy connects to the cashier public room through a portrait puzzle. Forty-eight slot cabinets, two craps tables, two roulette tables, two existing flush tables and seven individually purchased doors are shown.</desc>
+<defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0L7,3.5L0,7Z" fill="#567868"/></marker><pattern id="grid" width="70" height="70" patternUnits="userSpaceOnUse"><path d="M70,0H0V70" fill="none" stroke="#D4DED5" stroke-width="0.6" opacity=".6"/></pattern><pattern id="restricted" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="14" height="14" fill="#EBECE5"/><path d="M0,0V14" stroke="#D7DBD0" stroke-width="3"/></pattern><style>text{font-family:Arial,Helvetica,sans-serif}.halo{paint-order:stroke;stroke:#F8F7F2;stroke-width:4px;stroke-linejoin:round}</style></defs>
+<rect width="2270" height="1650" fill="#F8F7F2"/>
+<rect x="55" y="42" width="5" height="72" fill="#567868"/>
+<text x="80" y="58" font-size="14" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="2.5">THE LAST JACKPOT / WORLD ATLAS</text>
+<text x="77" y="105" font-size="37" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">A grander casino. The same Grand Hotel.</text>
+<text x="2205" y="60" font-size="13" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="1.5">IMPLEMENTED FLOOR PLAN</text>
+<text x="2205" y="91" font-size="16" fill="#687872" font-weight="400" text-anchor="end" letter-spacing="0">60 × 32 m starting casino · 48 slots · 7 paid doors</text>
+<line x1="55" y1="135" x2="2205" y2="135" stroke="#243B39" stroke-width="1.2"/>
+<text x="80" y="171" font-size="17" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="1.4">00 / GROUND FLOOR</text>
+<text x="80" y="194" font-size="14" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">All rooms in their actual positions · elevation 0 m</text>
+<text x="1575" y="171" font-size="17" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="1.4">01 / UPSTAIRS RESTAURANT</text>
+<text x="1575" y="194" font-size="14" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Elevation +4 m · same scale and orientation</text>
+<line x1="1520" y1="154" x2="1520" y2="1572" stroke="#CDD5CF"/>
+<polygon points="248,1204 1088,1204 1088,756 248,756" fill="#FFFEFA"/>
+<polygon points="248,1204 1088,1204 1088,756 248,756" fill="url(#grid)"/>
+<polygon points="80,1204 248,1204 248,868 80,868" fill="#FFFEFA"/>
+<polygon points="80,1204 248,1204 248,868 80,868" fill="url(#grid)"/>
+<polygon points="318,1456 626,1456 626,1204 318,1204" fill="#FFFEFA"/>
+<polygon points="318,1456 626,1456 626,1204 318,1204" fill="url(#grid)"/>
+<polygon points="1088,1204 1312,1204 1312,1092 1088,1092" fill="#FFFEFA"/>
+<polygon points="1088,1204 1312,1204 1312,1092 1088,1092" fill="url(#grid)"/>
+<polygon points="1088,1092 1312,1092 1312,868 1088,868" fill="url(#restricted)"/>
+<polygon points="192,434 388,434 388,238 192,238" fill="#FFFEFA"/>
+<polygon points="192,434 388,434 388,238 192,238" fill="url(#grid)"/>
+<polygon points="633,756 703,756 703,714 633,714" fill="#FFFEFA"/>
+<polygon points="633,756 703,756 703,714 633,714" fill="url(#grid)"/>
+<polygon points="500,714 808,714 920,602 920,322 808,210 500,210 388,322 388,602" fill="#FFFEFA"/>
+<polygon points="500,714 808,714 920,602 920,322 808,210 500,210 388,322 388,602" fill="url(#grid)"/>
+<polygon points="1312,1260 1452,1260 1452,924 1312,924" fill="#FFFEFA"/>
+<polygon points="1312,1260 1452,1260 1452,924 1312,924" fill="url(#grid)"/>
+<polygon points="878,280 808,210 500,210 430,280" fill="#E4DEED" fill-opacity=".8"/>
+<polygon points="500,469 808,469 808,427 864,427 864,294 794,238 514,238 444,294 444,427 500,427" fill="none" stroke="#978AA9" stroke-width="1.4" stroke-dasharray="7 5"/>
+<rect x="-66.5" y="-1.4" width="133" height="2.8" transform="translate(566.5 714) rotate(0)" fill="#243B39"><title>hotel-wall-0-left</title></rect>
+<rect x="-52.5" y="-1.4" width="105" height="2.8" transform="translate(755.5 714) rotate(0)" fill="#243B39"><title>hotel-wall-0-right</title></rect>
+<rect x="-79.196" y="-1.4" width="158.392" height="2.8" transform="translate(864 658) rotate(-45)" fill="#243B39"><title>hotel-wall-1</title></rect>
+<rect x="-140" y="-1.4" width="280" height="2.8" transform="translate(920 462) rotate(-90)" fill="#243B39"><title>hotel-wall-2</title></rect>
+<rect x="-79.196" y="-1.4" width="158.392" height="2.8" transform="translate(864 266) rotate(-135)" fill="#243B39"><title>hotel-wall-3</title></rect>
+<rect x="-154" y="-1.4" width="308" height="2.8" transform="translate(654 210) rotate(-180)" fill="#243B39"><title>hotel-wall-4</title></rect>
+<rect x="-79.196" y="-1.4" width="158.392" height="2.8" transform="translate(444 266) rotate(135)" fill="#243B39"><title>hotel-wall-5</title></rect>
+<rect x="-9.1" y="-1.4" width="18.2" height="2.8" transform="translate(388 331.1) rotate(90)" fill="#243B39"><title>hotel-wall-6-north</title></rect>
+<rect x="-107.1" y="-1.4" width="214.2" height="2.8" transform="translate(388 494.9) rotate(90)" fill="#243B39"><title>hotel-wall-6-south</title></rect>
+<rect x="-79.196" y="-1.4" width="158.392" height="2.8" transform="translate(444 658) rotate(45)" fill="#243B39"><title>hotel-wall-7</title></rect>
+<rect x="-21" y="-1.4" width="42" height="2.8" transform="translate(633 735) rotate(-90)" fill="#243B39"><title>hotel-foyer-wall-left</title></rect>
+<rect x="-21" y="-1.4" width="42" height="2.8" transform="translate(703 735) rotate(-90)" fill="#243B39"><title>hotel-foyer-wall-right</title></rect>
+<rect x="-46.9" y="-1.68" width="93.8" height="3.36" transform="translate(476.9 280) rotate(0)" fill="#243B39"><title>hotel-gallery-wall-west</title></rect>
+<rect x="-93.8" y="-1.68" width="187.6" height="3.36" transform="translate(654 280) rotate(0)" fill="#243B39"><title>hotel-gallery-wall-center</title></rect>
+<rect x="-46.9" y="-1.68" width="93.8" height="3.36" transform="translate(831.1 280) rotate(0)" fill="#243B39"><title>hotel-gallery-wall-east</title></rect>
+<rect x="-192.5" y="-3.15" width="385" height="6.3" transform="translate(440.5 756) rotate(0)" fill="#243B39"><title>casino-wall-nw</title></rect>
+<rect x="-192.5" y="-3.15" width="385" height="6.3" transform="translate(895.5 756) rotate(0)" fill="#243B39"><title>casino-wall-ne</title></rect>
+<rect x="-56" y="-3.15" width="112" height="6.3" transform="translate(304 1204) rotate(0)" fill="#243B39"><title>casino-wall-sw</title></rect>
+<rect x="-56" y="-3.15" width="112" height="6.3" transform="translate(472 1204) rotate(0)" fill="#243B39"><title>casino-wall-sm</title></rect>
+<rect x="-252" y="-3.15" width="504" height="6.3" transform="translate(836 1204) rotate(0)" fill="#243B39"><title>casino-wall-se</title></rect>
+<rect x="-3.15" y="-28" width="6.3" height="56" transform="translate(248 1176) rotate(0)" fill="#243B39"><title>casino-wall-ws</title></rect>
+<rect x="-3.15" y="-56" width="6.3" height="112" transform="translate(248 1036) rotate(0)" fill="#243B39"><title>casino-wall-wm</title></rect>
+<rect x="-3.15" y="-84" width="6.3" height="168" transform="translate(248 840) rotate(0)" fill="#243B39"><title>casino-wall-wn</title></rect>
+<rect x="-3.15" y="-14" width="6.3" height="28" transform="translate(1088 1190) rotate(0)" fill="#243B39"><title>casino-wall-es</title></rect>
+<rect x="-3.15" y="-182" width="6.3" height="364" transform="translate(1088 938) rotate(0)" fill="#243B39"><title>casino-wall-en</title></rect>
+<rect x="-3.15" y="-168" width="6.3" height="336" transform="translate(80 1036) rotate(0)" fill="#243B39"><title>lounge-wall-west</title></rect>
+<rect x="-84" y="-3.15" width="168" height="6.3" transform="translate(164 868) rotate(0)" fill="#243B39"><title>lounge-wall-north</title></rect>
+<rect x="-84" y="-3.15" width="168" height="6.3" transform="translate(164 1204) rotate(0)" fill="#243B39"><title>lounge-wall-south</title></rect>
+<rect x="-112" y="-3.15" width="224" height="6.3" transform="translate(1200 868) rotate(0)" fill="#243B39"><title>cashier-wall-north</title></rect>
+<rect x="-112" y="-3.15" width="224" height="6.3" transform="translate(1200 1204) rotate(0)" fill="#243B39"><title>cashier-wall-south</title></rect>
+<rect x="-3.15" y="-126" width="6.3" height="252" transform="translate(318 1330) rotate(0)" fill="#243B39"><title>vip-wall-west</title></rect>
+<rect x="-3.15" y="-126" width="6.3" height="252" transform="translate(626 1330) rotate(0)" fill="#243B39"><title>vip-wall-east</title></rect>
+<rect x="-154" y="-3.15" width="308" height="6.3" transform="translate(472 1456) rotate(0)" fill="#243B39"><title>vip-wall-south</title></rect>
+<rect x="-3.15" y="-98" width="6.3" height="196" transform="translate(192 336) rotate(0)" fill="#243B39"><title>supply-wall-west</title></rect>
+<rect x="-98" y="-3.15" width="196" height="6.3" transform="translate(290 238) rotate(0)" fill="#243B39"><title>supply-wall-north</title></rect>
+<rect x="-98" y="-3.15" width="196" height="6.3" transform="translate(290 434) rotate(0)" fill="#243B39"><title>supply-wall-south</title></rect>
+<rect x="-3.15" y="-42" width="6.3" height="84" transform="translate(388 280) rotate(0)" fill="#243B39"><title>supply-wall-east</title></rect>
+<rect x="-3.15" y="-42" width="6.3" height="84" transform="translate(1312 1218) rotate(0)" fill="#243B39"><title>secret-wall-west-s</title></rect>
+<rect x="-3.15" y="-127.4" width="6.3" height="254.8" transform="translate(1312 995.4) rotate(0)" fill="#243B39"><title>secret-wall-west-n</title></rect>
+<rect x="-3.15" y="-171.15" width="6.3" height="342.3" transform="translate(1452 1092) rotate(0)" fill="#243B39"><title>secret-wall-east</title></rect>
+<rect x="-73.15" y="-3.15" width="146.3" height="6.3" transform="translate(1382 1260) rotate(0)" fill="#243B39"><title>secret-wall-south</title></rect>
+<rect x="-73.15" y="-3.15" width="146.3" height="6.3" transform="translate(1382 924) rotate(0)" fill="#243B39"><title>secret-wall-north</title></rect>
+<rect x="-53.2" y="-11.55" width="106.4" height="23.1" transform="translate(542 638.4) rotate(-180)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-reception</title></rect>
+<rect x="-57.4" y="-4.55" width="114.8" height="9.1" transform="translate(542 688.8) rotate(-180)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-reception-backdrop</title></rect>
+<rect x="-8.75" y="-5.95" width="17.5" height="11.9" transform="translate(600.8 578.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-guest-suitcase</title></rect>
+<rect x="-12.6" y="-4.55" width="25.2" height="9.1" transform="translate(458 592.2) rotate(-90)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-porter</title></rect>
+<rect x="-26.6" y="-4.9" width="53.2" height="9.8" transform="translate(558.8 224) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-luggage-shelf-west</title></rect>
+<rect x="-26.6" y="-4.9" width="53.2" height="9.8" transform="translate(766 224) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-luggage-shelf-east</title></rect>
+<rect x="-10.5" y="-5.95" width="21" height="11.9" transform="translate(892 574) rotate(90)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-jukebox</title></rect>
+<rect x="-26.6" y="-9.45" width="53.2" height="18.9" transform="translate(791.2 660.8) rotate(-180)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-front-sofa</title></rect>
+<rect x="-26.6" y="-9.45" width="53.2" height="18.9" transform="translate(486 378) rotate(-180)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-west-sofa</title></rect>
+<rect x="-8.4" y="-8.4" width="16.8" height="16.8" transform="translate(530.8 336) rotate(90)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-west-armchair</title></rect>
+<rect x="-16.8" y="-8.4" width="33.6" height="16.8" transform="translate(486 336) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-west-coffee</title></rect>
+<rect x="-26.6" y="-9.45" width="53.2" height="18.9" transform="translate(822 378) rotate(-180)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-east-sofa</title></rect>
+<rect x="-8.4" y="-8.4" width="16.8" height="16.8" transform="translate(777.2 336) rotate(-90)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-east-armchair</title></rect>
+<rect x="-16.8" y="-8.4" width="33.6" height="16.8" transform="translate(822 336) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-east-coffee</title></rect>
+<rect x="-11.2" y="-7" width="22.4" height="14" transform="translate(460.8 296.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-luggage</title></rect>
+<rect x="-8.4" y="-8.4" width="16.8" height="16.8" transform="translate(423 392) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-west-palm</title></rect>
+<rect x="-8.4" y="-8.4" width="16.8" height="16.8" transform="translate(885 392) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-east-palm</title></rect>
+<rect x="-8.4" y="-8.4" width="16.8" height="16.8" transform="translate(654 310.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-rear-palm</title></rect>
+<rect x="-16.8" y="-5.6" width="33.6" height="11.2" transform="translate(640 233.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-gallery-register</title></rect>
+<rect x="-8.4" y="-4.9" width="16.8" height="9.8" transform="translate(710 233.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-gallery-cache</title></rect>
+<rect x="-5.04" y="-5.04" width="10.08" height="10.08" transform="translate(584 445.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-salon-column-west</title></rect>
+<rect x="-5.04" y="-5.04" width="10.08" height="10.08" transform="translate(724 445.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-salon-column-east</title></rect>
+<rect x="-11.2" y="-7.7" width="22.4" height="15.4" transform="translate(1396 1212.4) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>mystery-cabinet</title></rect>
+<rect x="-9.8" y="-56" width="19.6" height="112" transform="translate(1328.8 1050) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>secret-bar</title></rect>
+<rect x="-23.8" y="-35" width="47.6" height="70" transform="translate(467.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width="0.9"><title>slots-a</title></rect>
+<rect x="-23.8" y="-35" width="47.6" height="70" transform="translate(467.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width="0.9"><title>slots-b</title></rect>
+<rect x="-23.8" y="-35" width="47.6" height="70" transform="translate(593.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width="0.9"><title>slots-c</title></rect>
+<rect x="-23.8" y="-35" width="47.6" height="70" transform="translate(593.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width="0.9"><title>slots-d</title></rect>
+<rect x="-23.8" y="-35" width="47.6" height="70" transform="translate(803.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width="0.9"><title>slots-e</title></rect>
+<rect x="-23.8" y="-35" width="47.6" height="70" transform="translate(803.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width="0.9"><title>slots-f</title></rect>
+<rect x="-23.8" y="-35" width="47.6" height="70" transform="translate(929.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width="0.9"><title>slots-g</title></rect>
+<rect x="-23.8" y="-35" width="47.6" height="70" transform="translate(929.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width="0.9"><title>slots-h</title></rect>
+<rect x="-33.6" y="-17.5" width="67.2" height="35" transform="translate(491.6 1116.5) rotate(0)" fill="#F1BDB5" stroke="#B14B43" stroke-width="0.9"><title>craps-table</title></rect>
+<rect x="-33.6" y="-17.5" width="67.2" height="35" transform="translate(869.6 1116.5) rotate(0)" fill="#F1BDB5" stroke="#B14B43" stroke-width="0.9"><title>craps-table-b</title></rect>
+<rect x="-23.8" y="-17.5" width="47.6" height="35" transform="translate(341.8 864.5) rotate(0)" fill="#D0C2EE" stroke="#756098" stroke-width="0.9"><title>roulette-table</title></rect>
+<rect x="-23.8" y="-17.5" width="47.6" height="35" transform="translate(341.8 1004.5) rotate(0)" fill="#D0C2EE" stroke="#756098" stroke-width="0.9"><title>roulette-table-b</title></rect>
+<rect x="-26.6" y="-16.8" width="53.2" height="33.6" transform="translate(1030.6 851.2) rotate(0)" fill="#C6E6AC" stroke="#527C34" stroke-width="0.9"><title>poker-a</title></rect>
+<rect x="-26.6" y="-16.8" width="53.2" height="33.6" transform="translate(470.6 1397.2) rotate(0)" fill="#C6E6AC" stroke="#527C34" stroke-width="0.9"><title>poker-b</title></rect>
+<rect x="-7.7" y="-35" width="15.4" height="70" transform="translate(609.2 1302) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>vip-sofa</title></rect>
+<rect x="-7.7" y="-11.2" width="15.4" height="22.4" transform="translate(611.3 1397.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>upgrade-machine</title></rect>
+<rect x="-110.6" y="-5.6" width="221.2" height="11.2" transform="translate(1200 1096.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>cashier-counter</title></rect>
+<rect x="-112" y="-0.84" width="224" height="1.68" transform="translate(1200 1092) rotate(0)" fill="#42A8AB" stroke="#248B8F" stroke-width="2.7"><title>cashier-glass</title></rect>
+<rect x="-77" y="-8.75" width="154" height="17.5" transform="translate(1200 1066.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>cashier-rear-counter</title></rect>
+<rect x="-14.7" y="-11.2" width="29.4" height="22.4" transform="translate(1270 903) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>cashier-safe</title></rect>
+<rect x="-19.6" y="-4.9" width="39.2" height="9.8" transform="translate(1116 883.4) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>cashier-shelves</title></rect>
+<rect x="-35" y="-7.7" width="70" height="15.4" transform="translate(530.8 772.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>casino-bench-nw</title></rect>
+<rect x="-35" y="-7.7" width="70" height="15.4" transform="translate(381 772.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>casino-bench-north-west</title></rect>
+<rect x="-35" y="-7.7" width="70" height="15.4" transform="translate(759 772.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>casino-bench-north-center</title></rect>
+<rect x="-35" y="-7.7" width="70" height="15.4" transform="translate(969 772.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>casino-bench-north-east</title></rect>
+<rect x="-35" y="-7.7" width="70" height="15.4" transform="translate(787 1188.6) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>casino-bench-south-center</title></rect>
+<rect x="-26.6" y="-7.7" width="53.2" height="15.4" transform="translate(1004 1188.6) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>casino-bench-south</title></rect>
+<rect x="-7" y="-7" width="14" height="14" transform="translate(297 779.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>casino-planter-nw</title></rect>
+<rect x="-7" y="-7" width="14" height="14" transform="translate(1004 938) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>casino-planter-mid</title></rect>
+<rect x="-35" y="-7.7" width="70" height="15.4" transform="translate(164 883.4) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>lounge-bench-north</title></rect>
+<rect x="-39.9" y="-7.7" width="79.8" height="15.4" transform="translate(178 1115.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>bar</title></rect>
+<rect x="-42.7" y="-4.9" width="85.4" height="9.8" transform="translate(178 1156.4) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>lounge-backbar</title></rect>
+<rect x="-15.4" y="-25.2" width="30.8" height="50.4" transform="translate(108 1104.6) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>lounge-west-booth</title></rect>
+<rect x="-23.8" y="-12.95" width="47.6" height="25.9" transform="translate(154.2 992.6) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>lounge-north-booth</title></rect>
+<rect x="-7.7" y="-7.7" width="15.4" height="15.4" transform="translate(203.2 1009.4) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>lounge-cocktail-table</title></rect>
+<rect x="-4.55" y="-4.55" width="9.1" height="9.1" transform="translate(150 1096.9) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>lounge-stool-a</title></rect>
+<rect x="-4.55" y="-4.55" width="9.1" height="9.1" transform="translate(207.4 1096.9) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>lounge-stool-b</title></rect>
+<rect x="-38.5" y="-17.85" width="77" height="35.7" transform="translate(259.2 354.9) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>service-truck</title></rect>
+<rect x="-11.9" y="-14.7" width="23.8" height="29.4" transform="translate(353 357.7) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>service-cartons</title></rect>
+<rect x="-18.9" y="-7.7" width="37.8" height="15.4" transform="translate(241 276.5) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>service-shelf</title></rect>
+<rect x="-18.9" y="-9.1" width="37.8" height="18.2" transform="translate(344.6 280.7) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>service-pallet-jack</title></rect>
+<rect x="-4.9" y="-5.25" width="9.8" height="10.5" transform="translate(363.5 336.7) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>service-cabinet</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(453.8 872.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-a:west:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(453.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-a:west:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(453.8 821.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-a:west:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(481.8 872.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-a:east:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(481.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-a:east:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(481.8 821.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-a:east:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(453.8 1012.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-b:west:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(453.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-b:west:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(453.8 961.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-b:west:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(481.8 1012.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-b:east:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(481.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-b:east:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(481.8 961.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-b:east:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(579.8 872.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-c:west:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(579.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-c:west:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(579.8 821.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-c:west:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(607.8 872.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-c:east:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(607.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-c:east:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(607.8 821.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-c:east:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(579.8 1012.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-d:west:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(579.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-d:west:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(579.8 961.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-d:west:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(607.8 1012.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-d:east:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(607.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-d:east:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(607.8 961.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-d:east:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(789.8 872.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-e:west:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(789.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-e:west:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(789.8 821.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-e:west:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(817.8 872.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-e:east:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(817.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-e:east:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(817.8 821.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-e:east:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(789.8 1012.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-f:west:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(789.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-f:west:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(789.8 961.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-f:west:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(817.8 1012.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-f:east:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(817.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-f:east:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(817.8 961.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-f:east:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(915.8 872.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-g:west:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(915.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-g:west:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(915.8 821.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-g:west:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(943.8 872.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-g:east:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(943.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-g:east:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(943.8 821.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-g:east:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(915.8 1012.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-h:west:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(915.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-h:west:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(915.8 961.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-h:west:2</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(943.8 1012.2) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-h:east:0</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(943.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-h:east:1</title></rect>
+<rect x="-9.45" y="-9.45" width="18.9" height="18.9" transform="translate(943.8 961.8) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width=".7"><title>slots-h:east:2</title></rect>
+<polygon points="500,581 493.959,580.763 487.955,580.052 482.025,578.872 476.206,577.231 470.533,575.139 465.043,572.608 459.768,569.653 454.741,566.294 449.993,562.551 445.553,558.447 441.449,554.007 437.706,549.259 434.347,544.232 431.392,538.957 428.861,533.467 426.769,527.794 425.128,521.975 423.948,516.045 423.237,510.041 423,504 423.237,497.959 423.948,491.955 425.128,486.025 426.769,480.206 428.861,474.533 431.392,469.043 434.347,463.768 437.706,458.741 441.449,453.993 445.553,449.553 449.993,445.449 454.741,441.706 459.768,438.347 465.043,435.392 470.533,432.861 476.206,430.769 482.025,429.128 487.955,427.948 493.959,427.237 500,427 500,469 497.254,469.108 494.525,469.431 491.829,469.967 489.184,470.713 486.606,471.664 484.11,472.815 481.713,474.158 479.428,475.684 477.269,477.386 475.251,479.251 473.386,481.269 471.684,483.428 470.158,485.713 468.815,488.11 467.664,490.606 466.713,493.184 465.967,495.829 465.431,498.525 465.108,501.254 465,504 465.108,506.746 465.431,509.475 465.967,512.171 466.713,514.816 467.664,517.394 468.815,519.89 470.158,522.287 471.684,524.572 473.386,526.731 475.251,528.749 477.269,530.614 479.428,532.316 481.713,533.842 484.11,535.185 486.606,536.336 489.184,537.287 491.829,538.033 494.525,538.569 497.254,538.892 500,539" fill="#E3E9E1" stroke="#243B39" stroke-width="1.1"/>
+<line x1="500" y1="539" x2="500" y2="581" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="495.432" y1="538.701" x2="489.949" y2="580.341" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="490.941" y1="537.807" x2="480.071" y2="578.376" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="486.606" y1="536.336" x2="470.533" y2="575.139" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="482.5" y1="534.311" x2="461.5" y2="570.684" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="478.693" y1="531.767" x2="453.125" y2="565.088" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="475.251" y1="528.749" x2="445.553" y2="558.447" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="472.233" y1="525.307" x2="438.912" y2="550.875" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="469.689" y1="521.5" x2="433.316" y2="542.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="467.664" y1="517.394" x2="428.861" y2="533.467" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="466.193" y1="513.059" x2="425.624" y2="523.929" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="465.299" y1="508.568" x2="423.659" y2="514.051" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="465" y1="504" x2="423" y2="504" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="465.299" y1="499.432" x2="423.659" y2="493.949" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="466.193" y1="494.941" x2="425.624" y2="484.071" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="467.664" y1="490.606" x2="428.861" y2="474.533" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="469.689" y1="486.5" x2="433.316" y2="465.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="472.233" y1="482.693" x2="438.912" y2="457.125" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="475.251" y1="479.251" x2="445.553" y2="449.553" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="478.693" y1="476.233" x2="453.125" y2="442.912" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="482.5" y1="473.689" x2="461.5" y2="437.316" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="486.606" y1="471.664" x2="470.533" y2="432.861" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="490.941" y1="470.193" x2="480.071" y2="429.624" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="495.432" y1="469.299" x2="489.949" y2="427.659" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="500" y1="469" x2="500" y2="427" stroke="#A2B2A5" stroke-width="0.75"/>
+<path d="M486.073,558.241 L481.259,556.771 L476.596,554.875 L472.123,552.568 L467.874,549.869 L463.885,546.799 L460.188,543.383 L456.813,539.649 L453.786,535.627 L451.133,531.35 L448.874,526.851 L447.029,522.168 L445.612,517.338 L444.634,512.401 L444.103,507.395 L444.024,502.362 L444.397,497.343 L445.22,492.377 L446.485,487.505 L448.182,482.766 L450.298,478.199 L452.815,473.84 L455.714,469.725 L458.971,465.887 L462.559,462.357 L466.449,459.163 L470.611,456.332 L475.01,453.885 L479.611,451.844 L484.376,450.224" fill="none" stroke="#567868" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="500" y="497" font-size="10" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0">STAIR A</text>
+<text x="500" y="512.4" font-size="9" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">UP +4 m</text>
+<polygon points="808,581 814.041,580.763 820.045,580.052 825.975,578.872 831.794,577.231 837.467,575.139 842.957,572.608 848.232,569.653 853.259,566.294 858.007,562.551 862.447,558.447 866.551,554.007 870.294,549.259 873.653,544.232 876.608,538.957 879.139,533.467 881.231,527.794 882.872,521.975 884.052,516.045 884.763,510.041 885,504 884.763,497.959 884.052,491.955 882.872,486.025 881.231,480.206 879.139,474.533 876.608,469.043 873.653,463.768 870.294,458.741 866.551,453.993 862.447,449.553 858.007,445.449 853.259,441.706 848.232,438.347 842.957,435.392 837.467,432.861 831.794,430.769 825.975,429.128 820.045,427.948 814.041,427.237 808,427 808,469 810.746,469.108 813.475,469.431 816.171,469.967 818.816,470.713 821.394,471.664 823.89,472.815 826.287,474.158 828.572,475.684 830.731,477.386 832.749,479.251 834.614,481.269 836.316,483.428 837.842,485.713 839.185,488.11 840.336,490.606 841.287,493.184 842.033,495.829 842.569,498.525 842.892,501.254 843,504 842.892,506.746 842.569,509.475 842.033,512.171 841.287,514.816 840.336,517.394 839.185,519.89 837.842,522.287 836.316,524.572 834.614,526.731 832.749,528.749 830.731,530.614 828.572,532.316 826.287,533.842 823.89,535.185 821.394,536.336 818.816,537.287 816.171,538.033 813.475,538.569 810.746,538.892 808,539" fill="#E3E9E1" stroke="#243B39" stroke-width="1.1"/>
+<line x1="808" y1="539" x2="808" y2="581" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="812.568" y1="538.701" x2="818.051" y2="580.341" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="817.059" y1="537.807" x2="827.929" y2="578.376" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="821.394" y1="536.336" x2="837.467" y2="575.139" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="825.5" y1="534.311" x2="846.5" y2="570.684" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="829.307" y1="531.767" x2="854.875" y2="565.088" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="832.749" y1="528.749" x2="862.447" y2="558.447" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="835.767" y1="525.307" x2="869.088" y2="550.875" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="838.311" y1="521.5" x2="874.684" y2="542.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="840.336" y1="517.394" x2="879.139" y2="533.467" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="841.807" y1="513.059" x2="882.376" y2="523.929" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="842.701" y1="508.568" x2="884.341" y2="514.051" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="843" y1="504" x2="885" y2="504" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="842.701" y1="499.432" x2="884.341" y2="493.949" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="841.807" y1="494.941" x2="882.376" y2="484.071" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="840.336" y1="490.606" x2="879.139" y2="474.533" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="838.311" y1="486.5" x2="874.684" y2="465.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="835.767" y1="482.693" x2="869.088" y2="457.125" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="832.749" y1="479.251" x2="862.447" y2="449.553" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="829.307" y1="476.233" x2="854.875" y2="442.912" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="825.5" y1="473.689" x2="846.5" y2="437.316" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="821.394" y1="471.664" x2="837.467" y2="432.861" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="817.059" y1="470.193" x2="827.929" y2="429.624" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="812.568" y1="469.299" x2="818.051" y2="427.659" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="808" y1="469" x2="808" y2="427" stroke="#A2B2A5" stroke-width="0.75"/>
+<path d="M821.927,558.241 L826.741,556.771 L831.404,554.875 L835.877,552.568 L840.126,549.869 L844.115,546.799 L847.812,543.383 L851.187,539.649 L854.214,535.627 L856.867,531.35 L859.126,526.851 L860.971,522.168 L862.388,517.338 L863.366,512.401 L863.897,507.395 L863.976,502.362 L863.603,497.343 L862.78,492.377 L861.515,487.505 L859.818,482.766 L857.702,478.199 L855.185,473.84 L852.286,469.725 L849.029,465.887 L845.441,462.357 L841.551,459.163 L837.389,456.332 L832.99,453.885 L828.389,451.844 L823.624,450.224" fill="none" stroke="#567868" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="808" y="497" font-size="10" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0">STAIR B</text>
+<text x="808" y="512.4" font-size="9" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">UP +4 m</text>
+<path d="M1431,1234.6L1435.4,1239L1431,1243.4L1426.6,1239Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>speakeasy-spawn-1 — enemy entry</title></path>
+<path d="M1431,940.6L1435.4,945L1431,949.4L1426.6,945Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>speakeasy-spawn-2 — enemy entry</title></path>
+<path d="M269,786.6L273.4,791L269,795.4L264.6,791Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>casino-spawn-3 — enemy entry</title></path>
+<path d="M1067,786.6L1071.4,791L1067,795.4L1062.6,791Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>casino-spawn-4 — enemy entry</title></path>
+<path d="M283,1178.6L287.4,1183L283,1187.4L278.6,1183Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>casino-spawn-5 — enemy entry</title></path>
+<path d="M1067,1178.6L1071.4,1183L1067,1187.4L1062.6,1183Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>casino-spawn-6 — enemy entry</title></path>
+<path d="M850,772.6L854.4,777L850,781.4L845.6,777Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>casino-spawn-7 — enemy entry</title></path>
+<path d="M101,884.6L105.4,889L101,893.4L96.6,889Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>lounge-spawn-8 — enemy entry</title></path>
+<path d="M101,1178.6L105.4,1183L101,1187.4L96.6,1183Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>lounge-spawn-9 — enemy entry</title></path>
+<path d="M339,1430.6L343.4,1435L339,1439.4L334.6,1435Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>vip-spawn-10 — enemy entry</title></path>
+<path d="M605,1430.6L609.4,1435L605,1439.4L600.6,1435Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>vip-spawn-11 — enemy entry</title></path>
+<path d="M213,408.6L217.4,413L213,417.4L208.6,413Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>supply-spawn-12 — enemy entry</title></path>
+<path d="M367,254.6L371.4,259L367,263.4L362.6,259Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>supply-spawn-13 — enemy entry</title></path>
+<path d="M1291,1178.6L1295.4,1183L1291,1187.4L1286.6,1183Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>cashier-spawn-14 — enemy entry</title></path>
+<path d="M1291,1108.6L1295.4,1113L1291,1117.4L1286.6,1113Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>cashier-spawn-15 — enemy entry</title></path>
+<path d="M411.8,418.4000000000001L416.2,422.80000000000007L411.8,427.20000000000005L407.40000000000003,422.80000000000007Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>hotel-west — enemy entry</title></path>
+<rect x="-12.6" y="-1.12" width="25.2" height="2.24" transform="translate(389.68 420) rotate(-90)" fill="#AB635C"><title>hotel-west</title></rect>
+<path d="M899,457.6L903.4,462L899,466.4L894.6,462Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>hotel-east — enemy entry</title></path>
+<rect x="-12.6" y="-1.12" width="25.2" height="2.24" transform="translate(918.32 462) rotate(90)" fill="#AB635C"><title>hotel-east</title></rect>
+<path d="M873.8000000000001,307.79999999999995L878.2,312.19999999999993L873.8000000000001,316.5999999999999L869.4000000000001,312.19999999999993Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>hotel-rear — enemy entry</title></path>
+<rect x="-12.6" y="-1.12" width="25.2" height="2.24" transform="translate(892 294) rotate(135)" fill="#AB635C"><title>hotel-rear</title></rect>
+<rect x="-3.15" y="-28" width="6.3" height="56" transform="translate(248 952) rotate(0)" fill="#E3AE52" stroke="#63481B" stroke-width="1"><title>lounge</title></rect>
+<circle cx="248" cy="952" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="248" y="956" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">A</text>
+<rect x="-3.15" y="-28" width="6.3" height="56" transform="translate(248 1120) rotate(0)" fill="#E3AE52" stroke="#63481B" stroke-width="1"><title>shortcut</title></rect>
+<circle cx="248" cy="1120" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="248" y="1124" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">B</text>
+<rect x="-28" y="-3.15" width="56" height="6.3" transform="translate(388 1204) rotate(0)" fill="#E3AE52" stroke="#63481B" stroke-width="1"><title>vip</title></rect>
+<circle cx="388" cy="1204" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="388" y="1208" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">C</text>
+<rect x="-28" y="-3.15" width="56" height="6.3" transform="translate(556 1204) rotate(0)" fill="#E3AE52" stroke="#63481B" stroke-width="1"><title>vipExit</title></rect>
+<circle cx="556" cy="1204" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="556" y="1208" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">D</text>
+<rect x="-35" y="-3.15" width="70" height="6.3" transform="translate(668 752.5) rotate(0)" fill="#E3AE52" stroke="#63481B" stroke-width="1"><title>hotel</title></rect>
+<circle cx="668" cy="752.5" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="668" y="756.5" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">E</text>
+<rect x="-1.4" y="-23.8" width="2.8" height="47.6" transform="translate(388 364) rotate(0)" fill="#E3AE52" stroke="#63481B" stroke-width="1"><title>supply</title></rect>
+<circle cx="388" cy="364" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="388" y="368" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">F</text>
+<rect x="-3.15" y="-28" width="6.3" height="56" transform="translate(1088 1148) rotate(0)" fill="#E3AE52" stroke="#63481B" stroke-width="1"><title>cashier</title></rect>
+<circle cx="1088" cy="1148" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1088" y="1152" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">G</text>
+<rect x="-18.2" y="-1.68" width="36.4" height="3.36" transform="translate(542 280) rotate(0)" fill="#B39BCD" stroke="#79569C" stroke-width="2" stroke-dasharray="4 2"><title>hotel-secret-left</title></rect>
+<rect x="-18.2" y="-1.68" width="36.4" height="3.36" transform="translate(766 280) rotate(0)" fill="#B39BCD" stroke="#79569C" stroke-width="2" stroke-dasharray="4 2"><title>hotel-secret-right</title></rect>
+<rect x="-3.15" y="-26.6" width="6.3" height="53.2" transform="translate(1312 1149.4) rotate(0)" fill="#B39BCD" stroke="#79569C" stroke-width="2" stroke-dasharray="4 2"><title>speakeasy</title></rect>
+<circle cx="668" cy="889.4" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="668" y="893.4" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">01</text>
+<text x="668" y="911.4" font-size="22" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">GRAND CASINO</text>
+<text x="668" y="938.4" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">60 × 32 m</text>
+<circle cx="164" cy="910.4" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="164" y="914.4" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">02</text>
+<text x="164" y="932.4" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Last Call</text>
+<text x="164" y="951.4" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Lounge</text>
+<text x="164" y="972.4" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">12 × 24 m</text>
+<circle cx="472" cy="1266" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="472" y="1270" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">03</text>
+<text x="472" y="1288" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">High Roller</text>
+<text x="472" y="1309" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">22 × 18 m</text>
+<circle cx="1200" cy="1126" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1200" y="1130" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">04</text>
+<text x="1200" y="1148" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Cashier</text>
+<text x="1200" y="1169" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">16 × 8 m</text>
+<circle cx="1200" cy="958" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1200" y="962" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">05</text>
+<text x="1200" y="980" font-size="13" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">SECURE CASH AREA</text>
+<text x="1200" y="998" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">INACCESSIBLE · RESERVED</text>
+<circle cx="290" cy="382.6" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="290" y="386.6" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">06</text>
+<text x="290" y="404.6" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Supply Room</text>
+<text x="290" y="425.6" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">14 × 14 m</text>
+<circle cx="654" cy="496" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="654" y="500" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">08</text>
+<text x="654" y="518" font-size="21" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Grand Hotel Lobby</text>
+<text x="654" y="544" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">38 × 36 m bounds</text>
+<circle cx="1382" cy="951" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1382" y="955" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">10</text>
+<text x="1382" y="973" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">The Velvet</text>
+<text x="1382" y="992" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Hour</text>
+<text x="1382" y="1013" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">10 × 24 m</text>
+<circle cx="668" cy="735" r="9" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="668" y="739" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">07</text>
+<line x1="680" y1="735" x2="740" y2="735" stroke="#687872"/>
+<text x="747" y="739" font-size="12" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0" class="halo">Hotel Entrance</text>
+<text x="654" y="263.9" font-size="10" fill="#715384" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">CONCEALED LUGGAGE GALLERY</text>
+<text x="654" y="301" font-size="10" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0.5" class="halo">RESTAURANT OVERHEAD · +4 m</text>
+<text x="654" y="375.2" font-size="10" fill="#567868" font-weight="400" text-anchor="middle" letter-spacing="1">LOBBY SEATING</text>
+<text x="1200" y="1055.6" font-size="9" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">CASH + SAFE BEHIND GLASS</text>
+<text x="1200" y="950.6" font-size="10" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">Future stairs / trapdoor only</text>
+<text x="1382" y="1110.2" font-size="8" fill="#715384" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">PORTRAIT + KEYPAD</text>
+<text x="1396" y="1169" font-size="8" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">MYSTERY SLOT</text>
+<text x="542" y="641.48" font-size="10" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">RECEPTION</text>
+<text x="178" y="1118.88" font-size="10" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">BAR</text>
+<text x="259.2" y="357.98" font-size="10" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">TRUCK</text>
+<text x="1030.6" y="854.28" font-size="10" fill="#527C34" font-weight="700" text-anchor="middle" letter-spacing="0">FLUSH</text>
+<text x="470.6" y="1400.28" font-size="10" fill="#527C34" font-weight="700" text-anchor="middle" letter-spacing="0">FLUSH</text>
+<text x="491.6" y="1119.58" font-size="10" fill="#B14B43" font-weight="700" text-anchor="middle" letter-spacing="0">CRAPS</text>
+<text x="869.6" y="1119.58" font-size="10" fill="#B14B43" font-weight="700" text-anchor="middle" letter-spacing="0">CRAPS</text>
+<text x="341.8" y="867.58" font-size="8" fill="#756098" font-weight="700" text-anchor="middle" letter-spacing="0">ROULETTE</text>
+<text x="341.8" y="1007.58" font-size="8" fill="#756098" font-weight="700" text-anchor="middle" letter-spacing="0">ROULETTE</text>
+<circle cx="1058.6" cy="1029" r="8" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1058.6" y="1033" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">S</text>
+<circle cx="98.2" cy="996.8" r="8" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="98.2" y="1000.8" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">M</text>
+<circle cx="220" cy="259" r="8" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="220" y="263" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">R</text>
+<circle cx="710" cy="1183" r="8" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="710" y="1187" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">P</text>
+<circle cx="598" cy="1397.2" r="8" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="598" y="1401.2" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">U</text>
+<circle cx="668" cy="1155" r="6" fill="#567868" stroke="#F8F7F2" stroke-width="2"/><circle cx="668" cy="1155" r="10" fill="none" stroke="#567868"/>
+<text x="685" y="1159" font-size="10" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="0" class="halo">PLAYER START</text>
+<text x="1170" y="254" font-size="22" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0">N</text>
+<path d="M1170 269L1158 305L1170 297L1182 305Z" fill="#243B39"/>
+<text x="1170" y="324" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">+Z</text>
+<text x="1020" y="374" font-size="11" fill="#687872" font-weight="700" text-anchor="start" letter-spacing="1.2">SHARED SCALE</text>
+<rect x="1020" y="389" width="35" height="8" fill="#243B39" stroke="#243B39"/>
+<rect x="1055" y="389" width="35" height="8" fill="#F8F7F2" stroke="#243B39"/>
+<rect x="1090" y="389" width="35" height="8" fill="#243B39" stroke="#243B39"/>
+<rect x="1125" y="389" width="35" height="8" fill="#F8F7F2" stroke="#243B39"/>
+<text x="1020" y="416" font-size="11" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">0</text>
+<text x="1090" y="416" font-size="11" fill="#243B39" font-weight="400" text-anchor="middle" letter-spacing="0">5</text>
+<text x="1160" y="416" font-size="11" fill="#243B39" font-weight="400" text-anchor="end" letter-spacing="0">10 m</text>
+<text x="1020" y="473" font-size="29" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">98 × 89 m</text>
+<text x="1020" y="495" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Overall ground bounds</text>
+<line x1="1020" y1="520" x2="1290" y2="520" stroke="#CDD5CF"/>
+<text x="1020" y="548" font-size="12" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1">HOTEL PRESERVED</text>
+<text x="1020" y="576" font-size="16" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Same lobby octagon.</text>
+<text x="1020" y="599" font-size="16" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Same two curved stairs.</text>
+<text x="1020" y="626" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Only the supply connection</text>
+<text x="1020" y="646" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">changes the lobby boundary.</text>
+<polygon points="1712,478 2020,478 2020,436 2076,436 2076,303 2006,247 1726,247 1656,303 1656,436 1712,436" fill="#FFFEFA"/>
+<rect x="-154" y="-0.98" width="308" height="1.96" transform="translate(1866 478) rotate(0)" fill="#243B39"><title>hotel-upper-rail-0</title></rect>
+<rect x="-28" y="-0.98" width="56" height="1.96" transform="translate(2048 436) rotate(0)" fill="#243B39"><title>hotel-upper-rail-2</title></rect>
+<rect x="-66.5" y="-0.98" width="133" height="1.96" transform="translate(2076 369.5) rotate(-90)" fill="#243B39"><title>hotel-upper-rail-3</title></rect>
+<rect x="-44.822" y="-0.98" width="89.644" height="1.96" transform="translate(2041 275) rotate(-141.34)" fill="#243B39"><title>hotel-upper-rail-4</title></rect>
+<rect x="-140" y="-0.98" width="280" height="1.96" transform="translate(1866 247) rotate(-180)" fill="#243B39"><title>hotel-upper-rail-5</title></rect>
+<rect x="-44.822" y="-0.98" width="89.644" height="1.96" transform="translate(1691 275) rotate(141.34)" fill="#243B39"><title>hotel-upper-rail-6</title></rect>
+<rect x="-66.5" y="-0.98" width="133" height="1.96" transform="translate(1656 369.5) rotate(90)" fill="#243B39"><title>hotel-upper-rail-7</title></rect>
+<rect x="-28" y="-0.98" width="56" height="1.96" transform="translate(1684 436) rotate(0)" fill="#243B39"><title>hotel-upper-rail-8</title></rect>
+<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1768 384.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-nw</title></rect>
+<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1964 384.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-ne</title></rect>
+<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1768 303) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-sw</title></rect>
+<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1964 303) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-se</title></rect>
+<rect x="-14" y="-42" width="28" height="84" transform="translate(1681.2 366) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-west-booth</title></rect>
+<rect x="-14" y="-42" width="28" height="84" transform="translate(2050.8 366) rotate(-180)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-east-booth</title></rect>
+<rect x="-44.8" y="-9.1" width="89.6" height="18.2" transform="translate(1866 275) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-service</title></rect>
+<rect x="-9.45" y="-6.3" width="18.9" height="12.6" transform="translate(1866 437.4) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-host</title></rect>
+<rect x="-5.25" y="-3.85" width="10.5" height="7.7" transform="translate(1878.6 426.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-ammo-crate</title></rect>
+<polygon points="1712,590 1705.959,589.763 1699.955,589.052 1694.025,587.872 1688.206,586.231 1682.533,584.139 1677.043,581.608 1671.768,578.653 1666.741,575.294 1661.993,571.551 1657.553,567.447 1653.449,563.007 1649.706,558.259 1646.347,553.232 1643.392,547.957 1640.861,542.467 1638.769,536.794 1637.128,530.975 1635.948,525.045 1635.237,519.041 1635,513 1635.237,506.959 1635.948,500.955 1637.128,495.025 1638.769,489.206 1640.861,483.533 1643.392,478.043 1646.347,472.768 1649.706,467.741 1653.449,462.993 1657.553,458.553 1661.993,454.449 1666.741,450.706 1671.768,447.347 1677.043,444.392 1682.533,441.861 1688.206,439.769 1694.025,438.128 1699.955,436.948 1705.959,436.237 1712,436 1712,478 1709.254,478.108 1706.525,478.431 1703.829,478.967 1701.184,479.713 1698.606,480.664 1696.11,481.815 1693.713,483.158 1691.428,484.684 1689.269,486.386 1687.251,488.251 1685.386,490.269 1683.684,492.428 1682.158,494.713 1680.815,497.11 1679.664,499.606 1678.713,502.184 1677.967,504.829 1677.431,507.525 1677.108,510.254 1677,513 1677.108,515.746 1677.431,518.475 1677.967,521.171 1678.713,523.816 1679.664,526.394 1680.815,528.89 1682.158,531.287 1683.684,533.572 1685.386,535.731 1687.251,537.749 1689.269,539.614 1691.428,541.316 1693.713,542.842 1696.11,544.185 1698.606,545.336 1701.184,546.287 1703.829,547.033 1706.525,547.569 1709.254,547.892 1712,548" fill="#E3E9E1" stroke="#243B39" stroke-width="1.1"/>
+<line x1="1712" y1="548" x2="1712" y2="590" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1707.432" y1="547.701" x2="1701.949" y2="589.341" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1702.941" y1="546.807" x2="1692.071" y2="587.376" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1698.606" y1="545.336" x2="1682.533" y2="584.139" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1694.5" y1="543.311" x2="1673.5" y2="579.684" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1690.693" y1="540.767" x2="1665.125" y2="574.088" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1687.251" y1="537.749" x2="1657.553" y2="567.447" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1684.233" y1="534.307" x2="1650.912" y2="559.875" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1681.689" y1="530.5" x2="1645.316" y2="551.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1679.664" y1="526.394" x2="1640.861" y2="542.467" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1678.193" y1="522.059" x2="1637.624" y2="532.929" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1677.299" y1="517.568" x2="1635.659" y2="523.051" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1677" y1="513" x2="1635" y2="513" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1677.299" y1="508.432" x2="1635.659" y2="502.949" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1678.193" y1="503.941" x2="1637.624" y2="493.071" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1679.664" y1="499.606" x2="1640.861" y2="483.533" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1681.689" y1="495.5" x2="1645.316" y2="474.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1684.233" y1="491.693" x2="1650.912" y2="466.125" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1687.251" y1="488.251" x2="1657.553" y2="458.553" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1690.693" y1="485.233" x2="1665.125" y2="451.912" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1694.5" y1="482.689" x2="1673.5" y2="446.316" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1698.606" y1="480.664" x2="1682.533" y2="441.861" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1702.941" y1="479.193" x2="1692.071" y2="438.624" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1707.432" y1="478.299" x2="1701.949" y2="436.659" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1712" y1="478" x2="1712" y2="436" stroke="#A2B2A5" stroke-width="0.75"/>
+<path d="M1698.073,458.759 L1693.259,460.229 L1688.596,462.125 L1684.123,464.432 L1679.874,467.131 L1675.885,470.201 L1672.188,473.617 L1668.813,477.351 L1665.786,481.373 L1663.133,485.65 L1660.874,490.149 L1659.029,494.832 L1657.612,499.662 L1656.634,504.599 L1656.103,509.605 L1656.024,514.638 L1656.397,519.657 L1657.22,524.623 L1658.485,529.495 L1660.182,534.234 L1662.298,538.801 L1664.815,543.16 L1667.714,547.275 L1670.971,551.113 L1674.559,554.643 L1678.449,557.837 L1682.611,560.668 L1687.01,563.115 L1691.611,565.156 L1696.376,566.776" fill="none" stroke="#567868" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="1712" y="506" font-size="10" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0">STAIR A</text>
+<text x="1712" y="521.4" font-size="9" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">DOWN</text>
+<polygon points="2020,590 2026.041,589.763 2032.045,589.052 2037.975,587.872 2043.794,586.231 2049.467,584.139 2054.957,581.608 2060.232,578.653 2065.259,575.294 2070.007,571.551 2074.447,567.447 2078.551,563.007 2082.294,558.259 2085.653,553.232 2088.608,547.957 2091.139,542.467 2093.231,536.794 2094.872,530.975 2096.052,525.045 2096.763,519.041 2097,513 2096.763,506.959 2096.052,500.955 2094.872,495.025 2093.231,489.206 2091.139,483.533 2088.608,478.043 2085.653,472.768 2082.294,467.741 2078.551,462.993 2074.447,458.553 2070.007,454.449 2065.259,450.706 2060.232,447.347 2054.957,444.392 2049.467,441.861 2043.794,439.769 2037.975,438.128 2032.045,436.948 2026.041,436.237 2020,436 2020,478 2022.746,478.108 2025.475,478.431 2028.171,478.967 2030.816,479.713 2033.394,480.664 2035.89,481.815 2038.287,483.158 2040.572,484.684 2042.731,486.386 2044.749,488.251 2046.614,490.269 2048.316,492.428 2049.842,494.713 2051.185,497.11 2052.336,499.606 2053.287,502.184 2054.033,504.829 2054.569,507.525 2054.892,510.254 2055,513 2054.892,515.746 2054.569,518.475 2054.033,521.171 2053.287,523.816 2052.336,526.394 2051.185,528.89 2049.842,531.287 2048.316,533.572 2046.614,535.731 2044.749,537.749 2042.731,539.614 2040.572,541.316 2038.287,542.842 2035.89,544.185 2033.394,545.336 2030.816,546.287 2028.171,547.033 2025.475,547.569 2022.746,547.892 2020,548" fill="#E3E9E1" stroke="#243B39" stroke-width="1.1"/>
+<line x1="2020" y1="548" x2="2020" y2="590" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2024.568" y1="547.701" x2="2030.051" y2="589.341" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2029.059" y1="546.807" x2="2039.929" y2="587.376" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2033.394" y1="545.336" x2="2049.467" y2="584.139" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2037.5" y1="543.311" x2="2058.5" y2="579.684" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2041.307" y1="540.767" x2="2066.875" y2="574.088" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2044.749" y1="537.749" x2="2074.447" y2="567.447" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2047.767" y1="534.307" x2="2081.088" y2="559.875" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2050.311" y1="530.5" x2="2086.684" y2="551.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2052.336" y1="526.394" x2="2091.139" y2="542.467" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2053.807" y1="522.059" x2="2094.376" y2="532.929" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2054.701" y1="517.568" x2="2096.341" y2="523.051" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2055" y1="513" x2="2097" y2="513" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2054.701" y1="508.432" x2="2096.341" y2="502.949" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2053.807" y1="503.941" x2="2094.376" y2="493.071" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2052.336" y1="499.606" x2="2091.139" y2="483.533" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2050.311" y1="495.5" x2="2086.684" y2="474.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2047.767" y1="491.693" x2="2081.088" y2="466.125" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2044.749" y1="488.251" x2="2074.447" y2="458.553" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2041.307" y1="485.233" x2="2066.875" y2="451.912" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2037.5" y1="482.689" x2="2058.5" y2="446.316" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2033.394" y1="480.664" x2="2049.467" y2="441.861" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2029.059" y1="479.193" x2="2039.929" y2="438.624" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2024.568" y1="478.299" x2="2030.051" y2="436.659" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2020" y1="478" x2="2020" y2="436" stroke="#A2B2A5" stroke-width="0.75"/>
+<path d="M2033.927,458.759 L2038.741,460.229 L2043.404,462.125 L2047.877,464.432 L2052.126,467.131 L2056.115,470.201 L2059.812,473.617 L2063.187,477.351 L2066.214,481.373 L2068.867,485.65 L2071.126,490.149 L2072.971,494.832 L2074.388,499.662 L2075.366,504.599 L2075.897,509.605 L2075.976,514.638 L2075.603,519.657 L2074.78,524.623 L2073.515,529.495 L2071.818,534.234 L2069.702,538.801 L2067.185,543.16 L2064.286,547.275 L2061.029,551.113 L2057.441,554.643 L2053.551,557.837 L2049.389,560.668 L2044.99,563.115 L2040.389,565.156 L2035.624,566.776" fill="none" stroke="#567868" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="2020" y="506" font-size="10" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0">STAIR B</text>
+<text x="2020" y="521.4" font-size="9" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">DOWN</text>
+<path d="M1964,255.19999999999996L1968.4,259.59999999999997L1964,263.99999999999994L1959.6,259.59999999999997Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>hotel-restaurant-service — enemy entry</title></path>
+<rect x="-12.6" y="-0.84" width="25.2" height="1.68" transform="translate(1964 248.4) rotate(-180)" fill="#AB635C"><title>hotel-service-door-hotel-restaurant-service</title></rect>
+<path d="M1675.6,424.6L1680,429L1675.6,433.4L1671.1999999999998,429Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>hotel-restaurant-west — enemy entry</title></path>
+<rect x="-12.6" y="-0.84" width="25.2" height="1.68" transform="translate(1657.4 429) rotate(-90)" fill="#AB635C"><title>hotel-service-door-hotel-restaurant-west</title></rect>
+<circle cx="1866" cy="323" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1866" y="327" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">09</text>
+<text x="1866" y="345" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Grand Hotel</text>
+<text x="1866" y="364" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Restaurant</text>
+<text x="1866" y="385" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">30 × 16.5 m bounds</text>
+<text x="1768" y="387.28" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
+<text x="1964" y="387.28" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
+<text x="1768" y="306.08" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
+<text x="1964" y="306.08" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
+<text x="1866" y="278.08" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">SERVICE</text>
+<text x="1866" y="472.4" font-size="10" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">OVERLOOK TO LOBBY</text>
+<text x="1575" y="625" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">The restaurant sits above the rear lobby and concealed gallery.</text>
+<line x1="1575" y1="646" x2="2205" y2="646" stroke="#CDD5CF"/>
+<text x="1575" y="678" font-size="13" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.3">ROOM REGISTER</text>
+<circle cx="1585" cy="706" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="710" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">01</text>
+<text x="1604" y="710" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Grand Casino</text>
+<text x="1604" y="728" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">60 × 32 m</text>
+<circle cx="1910" cy="706" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1910" y="710" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">02</text>
+<text x="1929" y="710" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Last Call Lounge</text>
+<text x="1929" y="728" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">12 × 24 m</text>
+<circle cx="1585" cy="754" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="758" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">03</text>
+<text x="1604" y="758" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">High Roller</text>
+<text x="1604" y="776" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">22 × 18 m</text>
+<circle cx="1910" cy="754" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1910" y="758" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">04</text>
+<text x="1929" y="758" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Cashier</text>
+<text x="1929" y="776" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">16 × 8 m</text>
+<circle cx="1585" cy="802" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="806" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">05</text>
+<text x="1604" y="806" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Secure cash area</text>
+<text x="1604" y="824" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">16 × 16 m</text>
+<circle cx="1910" cy="802" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1910" y="806" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">06</text>
+<text x="1929" y="806" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Supply Room</text>
+<text x="1929" y="824" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">14 × 14 m</text>
+<circle cx="1585" cy="850" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="854" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">07</text>
+<text x="1604" y="854" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Hotel Entrance</text>
+<text x="1604" y="872" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">5 × 3 m connector</text>
+<circle cx="1910" cy="850" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1910" y="854" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">08</text>
+<text x="1929" y="854" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Grand Hotel Lobby</text>
+<text x="1929" y="872" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">38 × 36 m bounds</text>
+<circle cx="1585" cy="898" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="902" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">09</text>
+<text x="1604" y="902" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Grand Hotel Restaurant</text>
+<text x="1604" y="920" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">30 × 16.5 m bounds</text>
+<circle cx="1910" cy="898" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1910" y="902" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">10</text>
+<text x="1929" y="902" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">The Velvet Hour · Speakeasy</text>
+<text x="1929" y="920" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">10 × 24 m</text>
+<line x1="1575" y1="943" x2="2205" y2="943" stroke="#CDD5CF"/>
+<text x="1575" y="978" font-size="13" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.3">DOORS / INDIVIDUAL UNLOCK COST</text>
+<circle cx="1585" cy="1006" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1010" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">A</text>
+<text x="1607" y="1010" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Lounge · north entrance</text>
+<text x="2205" y="1010" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">900 chips</text>
+<circle cx="1585" cy="1034" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1038" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">B</text>
+<text x="1607" y="1038" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Lounge · south entrance</text>
+<text x="2205" y="1038" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">600 chips</text>
+<circle cx="1585" cy="1062" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1066" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">C</text>
+<text x="1607" y="1066" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">High Roller · west entrance</text>
+<text x="2205" y="1066" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">1,300 chips</text>
+<circle cx="1585" cy="1090" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1094" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">D</text>
+<text x="1607" y="1094" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">High Roller · east entrance</text>
+<text x="2205" y="1094" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">800 chips</text>
+<circle cx="1585" cy="1118" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1122" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">E</text>
+<text x="1607" y="1122" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Hotel · lobby + restaurant</text>
+<text x="2205" y="1122" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">2,000 chips</text>
+<circle cx="1585" cy="1146" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1150" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">F</text>
+<text x="1607" y="1150" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Supply · from hotel lobby</text>
+<text x="2205" y="1150" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">1,200 chips</text>
+<circle cx="1585" cy="1174" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1178" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">G</text>
+<text x="1607" y="1178" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Cashier · public room</text>
+<text x="2205" y="1178" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">600 chips</text>
+<text x="1575" y="1213" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Each door has its own purchase. Buying A does not open B;</text>
+<text x="1575" y="1233" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">buying C does not open D. Supply requires hotel access first.</text>
+<line x1="1575" y1="1254" x2="2205" y2="1254" stroke="#CDD5CF"/>
+<text x="1575" y="1287" font-size="13" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.1">GAME FLOOR / MATCHING YOUR COLOR KEY</text>
+<rect x="1575" y="1306" width="20" height="12" rx="2" fill="#B4D7F8" stroke="#3068A1"/>
+<text x="1607" y="1316" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">48 slot cabinets / 8 banks</text>
+<rect x="1575" y="1331" width="20" height="12" rx="2" fill="#F1BDB5" stroke="#B14B43"/>
+<text x="1607" y="1341" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">2 craps tables / separate wagers</text>
+<rect x="1575" y="1356" width="20" height="12" rx="2" fill="#D0C2EE" stroke="#756098"/>
+<text x="1607" y="1366" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">2 roulette tables</text>
+<rect x="1575" y="1381" width="20" height="12" rx="2" fill="#C6E6AC" stroke="#527C34"/>
+<text x="1607" y="1391" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">1 flush in the casino + 1 in High Roller</text>
+<text x="1575" y="1427" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">P  Pistol ammo     S  Shotgun     M  SMG     R  Pit Boss rifle</text>
+<text x="1575" y="1448" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">U  Upgrade workshop     ◆  Enemy entry     - -  Floor above</text>
+<text x="1575" y="1484" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Teal barrier: intact cashier glass; actors and shots stop here.</text>
+<text x="1575" y="1505" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Purple doors: hotel gallery key / Velvet Hour portrait puzzle.</text>
+<text x="1575" y="1526" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Hatching: inaccessible cashier staff area reserved for later.</text>
+<text x="1575" y="1555" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Furniture footprints are physical bounds, not mesh silhouettes.</text>
+<text x="80" y="1502" font-size="13" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.2">CENTRAL GAMES OPEN FROM THE START</text>
+<text x="80" y="1527" font-size="15" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Slots, craps, roulette and the first flush table fill the shared starting hall.</text>
+<text x="80" y="1550" font-size="15" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Every surrounding room opens through progression. The cashier back area stays closed.</text>
+<line x1="55" y1="1582" x2="2205" y2="1582" stroke="#243B39" stroke-width="1.2"/>
+<text x="55" y="1615" font-size="11" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.3">DRAWN FROM THE GAME</text>
+<text x="275" y="1615" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Shared casino layout · live hotel geometry · actual fixtures, purchases and spawns</text>
+<text x="2205" y="1615" font-size="12" fill="#687872" font-weight="400" text-anchor="end" letter-spacing="0">Doors shown in their initial closed state.   /   01</text>
+</svg>
