@@ -1,3 +1,4 @@
+import { buildTestRange } from './test-range-scene';
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { Scene } from "@babylonjs/core/scene";
 import { FreeCamera } from "@babylonjs/core/Cameras/freeCamera";
@@ -41,7 +42,7 @@ import {
   LOUNGE_OFFSET,
   SERVICE_OFFSET,
 } from "./casino-layout";
-import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
+import { createZombie, loadZombieAsset, animateZombie, animateZombieDeath } from "./zombies";
 import { slotCabinetsForIsland } from "./slot-machines";
 import { CasinoVisuals } from "./casino-visuals";
 import { CASINO_SECRET_ANCHORS } from "./casino";
@@ -168,7 +169,7 @@ export class GameRenderer {
     this.engine.setHardwareScalingLevel(
       1 / Math.min(window.devicePixelRatio || 1, 1.5),
     );
-    this.engine.maxFPS = 15;
+    this.engine.maxFPS = process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("range") ? 60 : 15;
     this.engine.renderEvenInBackground = false;
     this.scene = new Scene(this.engine);
     this.scene.clearColor = new Color4(0.035, 0.049, 0.045, 1);
@@ -327,6 +328,7 @@ export class GameRenderer {
     rouletteGlow.intensity = 0.5;
     rouletteGlow.range = 9;
     this.environment();
+    if (process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("range")) buildTestRange(this.scene);
     this.hotel = buildHotel(this.scene);
     this.serviceLighting();
     this.handLight = new PointLight(
@@ -2040,7 +2042,7 @@ export class GameRenderer {
     }
     const characterShadows = this.serviceShadow ? [...this.shadows, this.serviceShadow] : this.shadows;
     const active = new Set(
-      sim.enemies.filter((e) => e.health > 0).map((e) => e.id),
+      [...sim.enemies.filter((e) => e.health > 0).map((e) => e.id), ...sim.corpses.map(c => c.enemy.id)],
     );
     for (const [id, v] of this.zombies)
       if (!active.has(id)) {
@@ -2056,8 +2058,8 @@ export class GameRenderer {
         this.zombies.delete(id);
         this.zombieShadows.delete(id);
       }
-    for (const e of sim.enemies) {
-      if (e.health <= 0) continue;
+    const corpseAges = new Map(sim.corpses.map(c => [c.enemy.id, c.age]));
+    for (const e of [...sim.enemies.filter(e => e.health > 0), ...sim.corpses.map(c => c.enemy)]) {
       if (!this.zombieAsset) continue;
       let v = this.zombies.get(e.id);
       if (!v) {
@@ -2094,7 +2096,9 @@ export class GameRenderer {
         if (nearby) membership.add(shadow);
         else membership.delete(shadow);
       }
-      animateZombie(v, e);
+      const deathAge = corpseAges.get(e.id);
+      if (deathAge === undefined) animateZombie(v, e);
+      else animateZombieDeath(v, e, deathAge);
     }
     this.scene.render();
     this.fps = this.engine.getFps();

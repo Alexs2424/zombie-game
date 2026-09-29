@@ -1,3 +1,4 @@
+import { RANGE_RECTS } from './test-range-layout.ts';
 /** Pure gameplay state. Rendering, audio, input, and wall-clock time live outside this module. */
 import {
   POKER_TABLES,
@@ -107,6 +108,7 @@ export type GameEvent = {
     | "meleeHit"
     | "round"
     | "roundClear"
+    | "mysterySpin"
     | "diceRoll"
     | "diceWin"
     | "diceCurse"
@@ -129,7 +131,8 @@ export type GameEvent = {
   side?: number;
   count?: number;
   headshot?: boolean;
-  position?: V2;
+  enemyId?: number;
+  position?: WorldPosition;
   text?: string;
 };
 export type Enemy = WorldPosition & {
@@ -156,6 +159,11 @@ export const RULES = {
   health: 100,
   walk: 4.8,
   sprint: 6.8,
+  staminaMax: 100,
+  staminaDrain: 20,
+  staminaRecovery: 25,
+  staminaRecoveryDelay: 1,
+  staminaRestart: 30,
   regenDelay: 5.5,
   regenRate: 18,
   hurtGrace: 0.7,
@@ -276,6 +284,7 @@ export type RouletteSpin = {
 };
 export const BOUNDS = { ...CASINO_BOUNDS, maxX: SECRET_ROOM.maxX };
 export function roomName(p: WorldPosition) {
+  if (p.x >= 90 && p.x <= 118) return "Mechanics test range";
   if (p.x >= SECRET_ROOM.minX && p.x <= SECRET_ROOM.maxX && p.z >= SECRET_ROOM.minZ && p.z <= SECRET_ROOM.maxZ) return SECRET_ROOM.name;
   return casinoRoomName(p) ?? hotelRoomName(p) ?? "Casino Floor";
 }
@@ -507,6 +516,7 @@ export class Simulation {
     owned: id === "pistol", mag: id === "pistol" ? 12 : 0, reserve: id === "pistol" ? 84 : 0,
   }])) as Record<WeaponId, {owned:boolean; mag:number; reserve:number}>;
   enemies: Enemy[] = [];
+  corpses: { enemy: Enemy; age: number }[] = [];
   grenades = 2;
   projectiles: Grenade[] = [];
   explosions: (V3 & { id: number; remaining: number })[] = [];
@@ -526,11 +536,16 @@ export class Simulation {
   nextId = 1;
   moving = false;
   sprinting = false;
+  stamina = RULES.staminaMax;
+  staminaDelay = 0;
+  sprintExhausted = false;
   lastMessage = "";
   messageRemaining = 0;
   private seed = 527;
   private priorPhase: Phase = "playing";
-  constructor() {
+  readonly testRange: boolean;
+  constructor(testRange = false) {
+    this.testRange = testRange;
     this.refreshMap();
   }
   random() {
@@ -543,7 +558,7 @@ export class Simulation {
     this.vip = this.doorsOpen.vip || this.doorsOpen.vipExit;
     this.supply = this.doorsOpen.supply;
     this.cashier = this.doorsOpen.cashier;
-    this.rects = [
+    this.rects = this.testRange ? RANGE_RECTS : [
       ...STATIC_RECTS,
       ...(!this.hotel ? [DOORS.hotel] : []),
       ...(!this.hotelMystery.passageOpen ? HOTEL_MYSTERY_GATES : []),
@@ -1023,7 +1038,7 @@ export class Simulation {
     if (id === "mystery") {
       const wins = this.random() < .5;
       this.mystery = {remaining:2.8,reward:wins ? MYSTERY_WEAPONS[Math.min(MYSTERY_WEAPONS.length-1,Math.floor(this.random()*MYSTERY_WEAPONS.length))] : null,resolved:false,message:"The Velvet Fortune is spinning…"};
-      this.events.push({type:"diceRoll",position:CASINO_SECRET_ANCHORS.mysteryCabinet});
+      this.events.push({type:"mysterySpin",position:CASINO_SECRET_ANCHORS.mysteryCabinet});
       return true;
     }
     if (id === "craps" || id === "craps-b") {
@@ -1201,13 +1216,16 @@ export class Simulation {
     this.earned += payout;
     if (headshot) this.headshots++;
     if (payout) this.notify(`+${payout} CHIPS · ${headshot ? "HEADSHOT" : e.health <= 0 ? "KILL" : "HIT"}`);
-    this.events.push({ type: "hit", headshot, position: { x: e.x, z: e.z } });
+    this.events.push({ type: "hit", headshot, position: { x: e.x, y: e.y, z: e.z } });
     if (e.health <= 0) {
       this.kills++;
+      this.corpses.push({ enemy: { ...e, flash: 0 }, age: 0 });
+      // Heavy firefights retire older bodies sooner, always through the fade.
+      for (const corpse of this.corpses.slice(0, -24)) corpse.age = Math.max(4.5, corpse.age);
       this.events.push({
         type: "kill",
         headshot,
-        position: { x: e.x, z: e.z },
+        position: { x: e.x, y: e.y, z: e.z },
       });
     }
   }
@@ -1541,6 +1559,8 @@ export class Simulation {
     if (this.phase !== "playing") return;
     dt = Math.min(0.05, Math.max(0, dt));
     this.time += dt;
+    for (const corpse of this.corpses) corpse.age += dt;
+    this.corpses = this.corpses.filter(corpse => corpse.age < 6);
     this.codeFlash = this.codeFlash > 0 ? Math.max(0,this.codeFlash-dt) : Math.min(0,this.codeFlash+dt);
     if (this.mystery && !this.mystery.resolved) {
       this.mystery.remaining = Math.max(0,this.mystery.remaining-dt);
@@ -1650,7 +1670,17 @@ export class Simulation {
     }
     const length = Math.hypot(input.forward, input.strafe);
     this.moving = length > 0;
-    this.sprinting = input.sprint && length > 0 && !this.aiming;
+    if (this.sprintExhausted && this.stamina >= RULES.staminaRestart) this.sprintExhausted = false;
+    this.sprinting = input.sprint && length > 0 && !this.aiming && !input.fire && !this.sprintExhausted && this.stamina > 0;
+    if (this.sprinting) {
+      this.stamina = Math.max(0, this.stamina - RULES.staminaDrain * dt);
+      this.staminaDelay = RULES.staminaRecoveryDelay;
+      if (this.stamina <= 0) { this.sprintExhausted = true; this.sprinting = false; }
+    } else {
+      const recoveryTime = Math.max(0, dt - this.staminaDelay);
+      this.staminaDelay = Math.max(0, this.staminaDelay - dt);
+      this.stamina = Math.min(RULES.staminaMax, this.stamina + RULES.staminaRecovery * recoveryTime);
+    }
     if (length) {
       const f = input.forward / length,
         s = input.strafe / length,
@@ -1740,7 +1770,8 @@ export class Simulation {
         e.attack = RULES.attackWindup;
         this.events.push({
           type: "zombieAttack",
-          position: { x: e.x, z: e.z },
+          enemyId: e.id,
+          position: { x: e.x, y: e.y, z: e.z },
         });
         continue;
       }

@@ -1,0 +1,543 @@
+{
+  "service": "ElevenLabs Sound Effects",
+  "generation_settings": {
+    "provider": "ElevenLabs",
+    "product": "Sound Effects",
+    "model": "eleven_text_to_sound_v2",
+    "modelEvidence": "Official Sound Effects API documentation lists v2 as the current default; the website did not show a model selector.",
+    "durationSeconds": 3,
+    "promptInfluence": 0.3,
+    "loop": false,
+    "promptEnhancer": false,
+    "publicSharing": false,
+    "variantsGenerated": 4,
+    "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+    "creditBatches": [
+      {
+        "description": "Initial three scream directions, four variants each",
+        "before": 10000,
+        "after": 9640,
+        "used": 360
+      },
+      {
+        "description": "Higher-pitched video-game zombie revision, four variants from one prompt",
+        "before": 9640,
+        "after": 9520,
+        "used": 120
+      }
+    ]
+  },
+  "generation_manifest": "tools/zombie-audio/elevenlabs-prompts.json",
+  "processed_at": "2026-09-29T05:11:00.034492+00:00",
+  "usage": "Scream takes for gameplay and comparison; see each asset's usage",
+  "created_by": "Offline processing of downloaded generated audio; no remote generation by this tool",
+  "processing": "Average channels to mono; scipy polyphase resample to 24000 Hz; second-order zero-phase Butterworth highpass 80 Hz and lowpass 8000 Hz (wider than the Medium batch to retain more upper-frequency scream content); 25 ms sine-squared fades; target -21 dBFS full-clip RMS with -3 dBFS peak ceiling; signed PCM16 WAV. No pitch shift, trimming, or compression.",
+  "auditory_qa": "Not performed by this processor; objective signal checks only. Downloaded variants are unranked.",
+  "assets": [
+    {
+      "file": "scream-elevenlabs-01.wav",
+      "direction": "Piercing shriek",
+      "usage": "Audition only; not included in the active game sound manifest",
+      "raw_file": "outputs/zombie-audio-elevenlabs/piercing-01-raw.wav",
+      "raw_sha256": "d929e874aeb6e063dccedd199eaaf229c0818b0408378973791d6bb2040ccf15",
+      "raw_bytes": 576078,
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 48000,
+        "decoded_dtype": "int16"
+      },
+      "source_duration_seconds": 3.0,
+      "source_signal": {
+        "rms_dbfs": -11.122,
+        "peak_dbfs": 0.0,
+        "dc_offset": 6.98e-06
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 3.0,
+      "normalization_gain_db": -9.8,
+      "rms_dbfs": -21.0,
+      "peak_dbfs": -9.51,
+      "dc_offset": 4.17e-06,
+      "clipped_samples": 0,
+      "generation_metadata_file": "tools/zombie-audio/elevenlabs-prompts.json",
+      "raw_sidecar_metadata_file": null,
+      "generation_metadata": {
+        "provider": "ElevenLabs",
+        "product": "Sound Effects",
+        "model": "eleven_text_to_sound_v2",
+        "modelEvidence": "Official Sound Effects API documentation lists v2 as the current default; the website did not show a model selector.",
+        "durationSeconds": 3,
+        "promptInfluence": 0.3,
+        "loop": false,
+        "promptEnhancer": false,
+        "publicSharing": false,
+        "variantsGenerated": 4,
+        "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+        "creditBatches": [
+          {
+            "description": "Initial three scream directions, four variants each",
+            "before": 10000,
+            "after": 9640,
+            "used": 360
+          },
+          {
+            "description": "Higher-pitched video-game zombie revision, four variants from one prompt",
+            "before": 9640,
+            "after": 9520,
+            "used": 120
+          }
+        ],
+        "file": "scream-elevenlabs-01.wav",
+        "rawFile": "piercing-01-raw.wav",
+        "direction": "Piercing shriek",
+        "historyId": "Bd179KZ76ZLvBntMzJe1",
+        "prompt": "A single high-pitched undead humanoid scream: AAAAAH-AH! Furious, feral, shrill and throaty, with a sharp nasal rasp, strained vocal cords and sudden cracking pitch. An aggressive male horror creature vocal performance, almost a shriek. One short attack followed by a ragged two-second sustain and abrupt breathy cutoff. Dry isolated close microphone sound for a survival horror game. No words, no laughter, no music, no ambience, no reverb.",
+        "creditsCharged": 120,
+        "balanceAfterGeneration": 9880,
+        "variation": 1,
+        "selection": "First variation exported for comparison; not ranked by listening."
+      },
+      "raw_sidecar_metadata": null,
+      "generation_metadata_status": "Captured browser settings and prompt from the generation manifest. The model ID is inferred from official documentation, not shown by the website. No seed was available.",
+      "sha256": "988c0acf14892e02ada7273230a3c31673050d0aebe3b68874096413e4782ba5",
+      "bytes": 144044
+    },
+    {
+      "file": "scream-elevenlabs-02.wav",
+      "direction": "Raspy scream",
+      "usage": "Audition only; not included in the active game sound manifest",
+      "raw_file": "outputs/zombie-audio-elevenlabs/rasp-01-raw.wav",
+      "raw_sha256": "0460ba78af7df5e4d6b2adef9efd669aa0527e33c1a4b1e839715f5265ef7cf4",
+      "raw_bytes": 576078,
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 48000,
+        "decoded_dtype": "int16"
+      },
+      "source_duration_seconds": 3.0,
+      "source_signal": {
+        "rms_dbfs": -19.512,
+        "peak_dbfs": -1.531,
+        "dc_offset": -1.61e-06
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 3.0,
+      "normalization_gain_db": -1.476,
+      "rms_dbfs": -21.0,
+      "peak_dbfs": -3.187,
+      "dc_offset": 5e-08,
+      "clipped_samples": 0,
+      "generation_metadata_file": "tools/zombie-audio/elevenlabs-prompts.json",
+      "raw_sidecar_metadata_file": null,
+      "generation_metadata": {
+        "provider": "ElevenLabs",
+        "product": "Sound Effects",
+        "model": "eleven_text_to_sound_v2",
+        "modelEvidence": "Official Sound Effects API documentation lists v2 as the current default; the website did not show a model selector.",
+        "durationSeconds": 3,
+        "promptInfluence": 0.3,
+        "loop": false,
+        "promptEnhancer": false,
+        "publicSharing": false,
+        "variantsGenerated": 4,
+        "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+        "creditBatches": [
+          {
+            "description": "Initial three scream directions, four variants each",
+            "before": 10000,
+            "after": 9640,
+            "used": 360
+          },
+          {
+            "description": "Higher-pitched video-game zombie revision, four variants from one prompt",
+            "before": 9640,
+            "after": 9520,
+            "used": 120
+          }
+        ],
+        "file": "scream-elevenlabs-02.wav",
+        "rawFile": "rasp-01-raw.wav",
+        "direction": "Raspy scream",
+        "prompt": "An enraged zombie gives a strained high-register scream: RRAAAAH-AAAH! Male humanoid creature with a dry saw-like rasp and shredded throaty texture. Forceful open AH vowels, rising pitch, two abrupt vocal cracks, then a breathless snarl. Frantic and hostile, like an angry horror character yelling at full force. One isolated three-second game sound. No speech, laughter, music, ambience or echo.",
+        "variation": 1,
+        "selection": "First variation exported for comparison; not ranked by listening."
+      },
+      "raw_sidecar_metadata": null,
+      "generation_metadata_status": "Captured browser settings and prompt from the generation manifest. The model ID is inferred from official documentation, not shown by the website. No seed was available.",
+      "sha256": "5909be4cafcde3e5875ddecc6dc08164c9cea2fef54152d2fba2091dc45becfa",
+      "bytes": 144044
+    },
+    {
+      "file": "scream-elevenlabs-03.wav",
+      "direction": "Scream with low growl",
+      "usage": "Previous last-zombie cue; comparison only after Takes A-D were selected",
+      "raw_file": "outputs/zombie-audio-elevenlabs/layered-01-raw.wav",
+      "raw_sha256": "7be21a78ff508113a50723020464f16f8d1a0d399eb1abc23e65a8f4e2f902cc",
+      "raw_bytes": 576078,
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 48000,
+        "decoded_dtype": "int16"
+      },
+      "source_duration_seconds": 3.0,
+      "source_signal": {
+        "rms_dbfs": -12.216,
+        "peak_dbfs": 0.0,
+        "dc_offset": -4.108e-05
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 3.0,
+      "normalization_gain_db": -8.679,
+      "rms_dbfs": -21.0,
+      "peak_dbfs": -8.219,
+      "dc_offset": -4.57e-06,
+      "clipped_samples": 0,
+      "generation_metadata_file": "tools/zombie-audio/elevenlabs-prompts.json",
+      "raw_sidecar_metadata_file": null,
+      "generation_metadata": {
+        "provider": "ElevenLabs",
+        "product": "Sound Effects",
+        "model": "eleven_text_to_sound_v2",
+        "modelEvidence": "Official Sound Effects API documentation lists v2 as the current default; the website did not show a model selector.",
+        "durationSeconds": 3,
+        "promptInfluence": 0.3,
+        "loop": false,
+        "promptEnhancer": false,
+        "publicSharing": false,
+        "variantsGenerated": 4,
+        "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+        "creditBatches": [
+          {
+            "description": "Initial three scream directions, four variants each",
+            "before": 10000,
+            "after": 9640,
+            "used": 360
+          },
+          {
+            "description": "Higher-pitched video-game zombie revision, four variants from one prompt",
+            "before": 9640,
+            "after": 9520,
+            "used": 120
+          }
+        ],
+        "file": "scream-elevenlabs-03.wav",
+        "rawFile": "layered-01-raw.wav",
+        "direction": "Scream with low growl",
+        "prompt": "One demonic undead creature screams a wordless RAAAAH! A piercing high male shriek dominates, with coarse rasp, cracking pitch and wild aggression. A much quieter guttural growl follows the same vocal shape underneath, adding weight while keeping the high scream in front. Explosive onset, wavering vowel, ragged cutoff. One isolated three-second horror game vocal. Dry recording. No words, laughter, music, impacts, ambience or reverb.",
+        "usage": "Previous last-zombie cue; comparison only after Takes A-D were selected",
+        "selection": "Selected by the user: 3. is the best you should use this one",
+        "variation": 1
+      },
+      "raw_sidecar_metadata": null,
+      "generation_metadata_status": "Captured browser settings and prompt from the generation manifest. The model ID is inferred from official documentation, not shown by the website. No seed was available.",
+      "sha256": "7251b41f72b407599cdb748235dae1ab60cca2b3e01533a5289335bbda841660",
+      "bytes": 144044
+    },
+    {
+      "file": "scream-elevenlabs-high-01.wav",
+      "direction": "Higher-pitched video-game zombie scream, take A",
+      "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user",
+      "raw_file": "outputs/zombie-audio-elevenlabs/high-scream-01-raw.wav",
+      "raw_sha256": "d0c9ceb2916572fd19ce82a6c2ded8a23b1d8c94f6834dce6dcceed0df2e5a0a",
+      "raw_bytes": 576078,
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 48000,
+        "decoded_dtype": "int16"
+      },
+      "source_duration_seconds": 3.0,
+      "source_signal": {
+        "rms_dbfs": -15.444,
+        "peak_dbfs": 0.0,
+        "dc_offset": 1.654e-05
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 3.0,
+      "normalization_gain_db": -5.456,
+      "rms_dbfs": -21.0,
+      "peak_dbfs": -5.05,
+      "dc_offset": -2.93e-06,
+      "clipped_samples": 0,
+      "generation_metadata_file": "tools/zombie-audio/elevenlabs-prompts.json",
+      "raw_sidecar_metadata_file": null,
+      "generation_metadata": {
+        "provider": "ElevenLabs",
+        "product": "Sound Effects",
+        "model": "eleven_text_to_sound_v2",
+        "modelEvidence": "Official Sound Effects API documentation lists v2 as the current default; the website did not show a model selector.",
+        "durationSeconds": 3,
+        "promptInfluence": 0.3,
+        "loop": false,
+        "promptEnhancer": false,
+        "publicSharing": false,
+        "variantsGenerated": 4,
+        "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+        "creditBatches": [
+          {
+            "description": "Initial three scream directions, four variants each",
+            "before": 10000,
+            "after": 9640,
+            "used": 360
+          },
+          {
+            "description": "Higher-pitched video-game zombie revision, four variants from one prompt",
+            "before": 9640,
+            "after": 9520,
+            "used": 120
+          }
+        ],
+        "file": "scream-elevenlabs-high-01.wav",
+        "rawFile": "high-scream-01-raw.wav",
+        "direction": "Higher-pitched video-game zombie scream, take A",
+        "prompt": "A terrifying high-pitched zombie noise for a survival-horror video game. One undead humanoid releases a piercing, feral RREEEAAAH! scream. Sharp strained upper register, shredded rasp, sudden upward pitch breaks, frantic predatory rage. A faint low growl adds weight, but the high shriek dominates. Explosive onset, ragged sustain, abrupt snarl at the end. Dry isolated 3-second vocal. No speech, music, ambience or reverb.",
+        "variation": 1,
+        "selection": "User approved all four top-list takes A-D and requested them throughout the rotation",
+        "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user"
+      },
+      "raw_sidecar_metadata": null,
+      "generation_metadata_status": "Captured browser settings and prompt from the generation manifest. The model ID is inferred from official documentation, not shown by the website. No seed was available.",
+      "sha256": "1b6c232842ad7c529041696a9355220c78b850aca2464a5fb7b023520de911af",
+      "bytes": 144044
+    },
+    {
+      "file": "scream-elevenlabs-high-02.wav",
+      "direction": "Higher-pitched video-game zombie scream, take B",
+      "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user",
+      "raw_file": "outputs/zombie-audio-elevenlabs/high-scream-02-raw.wav",
+      "raw_sha256": "4c2c064c9a287a44f9aa7622a8c1e6601e8a608b67379285e636bbc977533f12",
+      "raw_bytes": 576078,
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 48000,
+        "decoded_dtype": "int16"
+      },
+      "source_duration_seconds": 3.0,
+      "source_signal": {
+        "rms_dbfs": -14.368,
+        "peak_dbfs": 0.0,
+        "dc_offset": -2.997e-05
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 3.0,
+      "normalization_gain_db": -6.491,
+      "rms_dbfs": -21.0,
+      "peak_dbfs": -5.975,
+      "dc_offset": 2e-08,
+      "clipped_samples": 0,
+      "generation_metadata_file": "tools/zombie-audio/elevenlabs-prompts.json",
+      "raw_sidecar_metadata_file": null,
+      "generation_metadata": {
+        "provider": "ElevenLabs",
+        "product": "Sound Effects",
+        "model": "eleven_text_to_sound_v2",
+        "modelEvidence": "Official Sound Effects API documentation lists v2 as the current default; the website did not show a model selector.",
+        "durationSeconds": 3,
+        "promptInfluence": 0.3,
+        "loop": false,
+        "promptEnhancer": false,
+        "publicSharing": false,
+        "variantsGenerated": 4,
+        "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+        "creditBatches": [
+          {
+            "description": "Initial three scream directions, four variants each",
+            "before": 10000,
+            "after": 9640,
+            "used": 360
+          },
+          {
+            "description": "Higher-pitched video-game zombie revision, four variants from one prompt",
+            "before": 9640,
+            "after": 9520,
+            "used": 120
+          }
+        ],
+        "file": "scream-elevenlabs-high-02.wav",
+        "rawFile": "high-scream-02-raw.wav",
+        "direction": "Higher-pitched video-game zombie scream, take B",
+        "prompt": "A terrifying high-pitched zombie noise for a survival-horror video game. One undead humanoid releases a piercing, feral RREEEAAAH! scream. Sharp strained upper register, shredded rasp, sudden upward pitch breaks, frantic predatory rage. A faint low growl adds weight, but the high shriek dominates. Explosive onset, ragged sustain, abrupt snarl at the end. Dry isolated 3-second vocal. No speech, music, ambience or reverb.",
+        "variation": 2,
+        "selection": "User approved all four top-list takes A-D and requested them throughout the rotation",
+        "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user"
+      },
+      "raw_sidecar_metadata": null,
+      "generation_metadata_status": "Captured browser settings and prompt from the generation manifest. The model ID is inferred from official documentation, not shown by the website. No seed was available.",
+      "sha256": "9f59d472a67041f2f5d9a4b2f589b577cde2f104618391521e93de3dd35600da",
+      "bytes": 144044
+    },
+    {
+      "file": "scream-elevenlabs-high-03.wav",
+      "direction": "Higher-pitched video-game zombie scream, take C",
+      "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user",
+      "raw_file": "outputs/zombie-audio-elevenlabs/high-scream-03-raw.wav",
+      "raw_sha256": "b92d68f310a35380dbb6c47fef0bcab82e5f9157a0877582229cc2d14b8261ed",
+      "raw_bytes": 576078,
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 48000,
+        "decoded_dtype": "int16"
+      },
+      "source_duration_seconds": 3.0,
+      "source_signal": {
+        "rms_dbfs": -16.331,
+        "peak_dbfs": 0.0,
+        "dc_offset": 8.96e-06
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 3.0,
+      "normalization_gain_db": -4.631,
+      "rms_dbfs": -21.0,
+      "peak_dbfs": -4.286,
+      "dc_offset": 3e-08,
+      "clipped_samples": 0,
+      "generation_metadata_file": "tools/zombie-audio/elevenlabs-prompts.json",
+      "raw_sidecar_metadata_file": null,
+      "generation_metadata": {
+        "provider": "ElevenLabs",
+        "product": "Sound Effects",
+        "model": "eleven_text_to_sound_v2",
+        "modelEvidence": "Official Sound Effects API documentation lists v2 as the current default; the website did not show a model selector.",
+        "durationSeconds": 3,
+        "promptInfluence": 0.3,
+        "loop": false,
+        "promptEnhancer": false,
+        "publicSharing": false,
+        "variantsGenerated": 4,
+        "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+        "creditBatches": [
+          {
+            "description": "Initial three scream directions, four variants each",
+            "before": 10000,
+            "after": 9640,
+            "used": 360
+          },
+          {
+            "description": "Higher-pitched video-game zombie revision, four variants from one prompt",
+            "before": 9640,
+            "after": 9520,
+            "used": 120
+          }
+        ],
+        "file": "scream-elevenlabs-high-03.wav",
+        "rawFile": "high-scream-03-raw.wav",
+        "direction": "Higher-pitched video-game zombie scream, take C",
+        "prompt": "A terrifying high-pitched zombie noise for a survival-horror video game. One undead humanoid releases a piercing, feral RREEEAAAH! scream. Sharp strained upper register, shredded rasp, sudden upward pitch breaks, frantic predatory rage. A faint low growl adds weight, but the high shriek dominates. Explosive onset, ragged sustain, abrupt snarl at the end. Dry isolated 3-second vocal. No speech, music, ambience or reverb.",
+        "variation": 3,
+        "selection": "User approved all four top-list takes A-D and requested them throughout the rotation",
+        "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user"
+      },
+      "raw_sidecar_metadata": null,
+      "generation_metadata_status": "Captured browser settings and prompt from the generation manifest. The model ID is inferred from official documentation, not shown by the website. No seed was available.",
+      "sha256": "2028ed25451af3a3bdcc752b5015ba3bc580937d6087428f649c864b10f88dd6",
+      "bytes": 144044
+    },
+    {
+      "file": "scream-elevenlabs-high-04.wav",
+      "direction": "Higher-pitched video-game zombie scream, take D",
+      "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user",
+      "raw_file": "outputs/zombie-audio-elevenlabs/high-scream-04-raw.wav",
+      "raw_sha256": "27346b0d64cfbed5c5fd89995caf2b456cb0d9f0609238f394626a0d3da366ae",
+      "raw_bytes": 576078,
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 48000,
+        "decoded_dtype": "int16"
+      },
+      "source_duration_seconds": 3.0,
+      "source_signal": {
+        "rms_dbfs": -16.789,
+        "peak_dbfs": 0.0,
+        "dc_offset": 5.14e-06
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 3.0,
+      "normalization_gain_db": -4.171,
+      "rms_dbfs": -21.0,
+      "peak_dbfs": -4.044,
+      "dc_offset": 4e-07,
+      "clipped_samples": 0,
+      "generation_metadata_file": "tools/zombie-audio/elevenlabs-prompts.json",
+      "raw_sidecar_metadata_file": null,
+      "generation_metadata": {
+        "provider": "ElevenLabs",
+        "product": "Sound Effects",
+        "model": "eleven_text_to_sound_v2",
+        "modelEvidence": "Official Sound Effects API documentation lists v2 as the current default; the website did not show a model selector.",
+        "durationSeconds": 3,
+        "promptInfluence": 0.3,
+        "loop": false,
+        "promptEnhancer": false,
+        "publicSharing": false,
+        "variantsGenerated": 4,
+        "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+        "creditBatches": [
+          {
+            "description": "Initial three scream directions, four variants each",
+            "before": 10000,
+            "after": 9640,
+            "used": 360
+          },
+          {
+            "description": "Higher-pitched video-game zombie revision, four variants from one prompt",
+            "before": 9640,
+            "after": 9520,
+            "used": 120
+          }
+        ],
+        "file": "scream-elevenlabs-high-04.wav",
+        "rawFile": "high-scream-04-raw.wav",
+        "direction": "Higher-pitched video-game zombie scream, take D",
+        "prompt": "A terrifying high-pitched zombie noise for a survival-horror video game. One undead humanoid releases a piercing, feral RREEEAAAH! scream. Sharp strained upper register, shredded rasp, sudden upward pitch breaks, frantic predatory rage. A faint low growl adds weight, but the high shriek dominates. Explosive onset, ragged sustain, abrupt snarl at the end. Dry isolated 3-second vocal. No speech, music, ambience or reverb.",
+        "variation": 4,
+        "selection": "User approved all four top-list takes A-D and requested them throughout the rotation",
+        "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user"
+      },
+      "raw_sidecar_metadata": null,
+      "generation_metadata_status": "Captured browser settings and prompt from the generation manifest. The model ID is inferred from official documentation, not shown by the website. No seed was available.",
+      "sha256": "58659ee4b5d11789ff62e180a0cff4df8d5c56ffbe2b40ad785efff77c856b91",
+      "bytes": 144044
+    }
+  ]
+}
