@@ -92,6 +92,8 @@ export type GameView = {
   grenades: number;
   knifeReady: boolean;
   phase: "ready" | "playing" | "paused" | "dead";
+  stamina: number;
+  sprintExhausted: boolean;
   health: number;
   maxHealth: number;
   inventory: { id: WeaponId; label: string; owned: boolean }[];
@@ -180,6 +182,8 @@ export const initialView: GameView = {
   grenades: 2,
   knifeReady: true,
   phase: "ready",
+  stamina: 100,
+  sprintExhausted: false,
   health: 100,
   maxHealth: 100,
   inventory: WEAPON_ORDER.map((id) => ({
@@ -291,7 +295,9 @@ export class GameRuntime {
     );
   };
   private resize = () => this.renderer.resize();
+  private mouseAim = false;
   private clearInput() {
+    this.mouseAim = false;
     this.sim.aimHeld = false;
     this.slotWalkRemaining = 0;
     this.keys.clear();
@@ -354,6 +360,7 @@ export class GameRuntime {
     )
       e.preventDefault();
     this.keys.add(e.code);
+    if (e.code === "ShiftLeft" || e.code === "ShiftRight") this.sim.aimHeld = true;
     if (e.repeat) return;
     if (e.code === "KeyC") {this.sim.toggleChips();this.firing=false;}
     if (e.code === "KeyX") this.sim.takeBets();
@@ -392,7 +399,11 @@ export class GameRuntime {
       this.publish();
     }
   }
-  private keyUp = (e: KeyboardEvent) => this.keys.delete(e.code);
+  private keyUp = (e: KeyboardEvent) => {
+    this.keys.delete(e.code);
+    if (e.code === "ShiftLeft" || e.code === "ShiftRight")
+      this.sim.aimHeld = this.mouseAim || this.keys.has("ShiftLeft") || this.keys.has("ShiftRight");
+  };
   private previewInput = false;
   private rangeScenario: RangeScenario = "targets";
   private get rangeMode() { return process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("range"); }
@@ -419,6 +430,7 @@ export class GameRuntime {
       this.sim.phase === "playing" &&
       !this.sim.holdingChips
     ) {
+      this.mouseAim = true;
       this.sim.aimHeld = true;
       return;
     }
@@ -433,7 +445,10 @@ export class GameRuntime {
     this.firing = true;
   };
   private mouseUp = (e: MouseEvent) => {
-    if (e.button === 2) this.sim.aimHeld = false;
+    if (e.button === 2) {
+      this.mouseAim = false;
+      this.sim.aimHeld = this.keys.has("ShiftLeft") || this.keys.has("ShiftRight");
+    }
     if (e.button === 0) this.firing = false;
   };
   private wheel = (e: WheelEvent) => {
@@ -1062,7 +1077,7 @@ export class GameRuntime {
         this.sim.step(1 / 60, {
           forward: tourForward || (this.slotWalkRemaining > 0 ? 1 : +this.keys.has("KeyW") - +this.keys.has("KeyS")),
           strafe: +this.keys.has("KeyD") - +this.keys.has("KeyA"),
-          sprint: this.keys.has("ShiftLeft") || this.keys.has("ShiftRight"),
+          sprint: this.keys.has("Space"),
           fire: this.firing,
         });
         this.accumulated -= 1 / 60;
@@ -1187,6 +1202,8 @@ export class GameRuntime {
       knifeReady: s.knifeCooldown <= 0 && s.grenadeCooldown <= 0,
       phase: s.phase,
       previewControls: this.previewInput,
+      stamina: s.stamina,
+      sprintExhausted: s.sprintExhausted,
       health: s.health,
       maxHealth: s.maxHealth,
       inventory: WEAPON_ORDER.map((id) => ({

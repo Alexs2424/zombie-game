@@ -159,6 +159,11 @@ export const RULES = {
   health: 100,
   walk: 4.8,
   sprint: 6.8,
+  staminaMax: 100,
+  staminaDrain: 20,
+  staminaRecovery: 25,
+  staminaRecoveryDelay: 1,
+  staminaRestart: 30,
   regenDelay: 5.5,
   regenRate: 18,
   hurtGrace: 0.7,
@@ -531,6 +536,9 @@ export class Simulation {
   nextId = 1;
   moving = false;
   sprinting = false;
+  stamina = RULES.staminaMax;
+  staminaDelay = 0;
+  sprintExhausted = false;
   lastMessage = "";
   messageRemaining = 0;
   private seed = 527;
@@ -1662,7 +1670,17 @@ export class Simulation {
     }
     const length = Math.hypot(input.forward, input.strafe);
     this.moving = length > 0;
-    this.sprinting = input.sprint && length > 0 && !this.aiming;
+    if (this.sprintExhausted && this.stamina >= RULES.staminaRestart) this.sprintExhausted = false;
+    this.sprinting = input.sprint && length > 0 && !this.aiming && !input.fire && !this.sprintExhausted && this.stamina > 0;
+    if (this.sprinting) {
+      this.stamina = Math.max(0, this.stamina - RULES.staminaDrain * dt);
+      this.staminaDelay = RULES.staminaRecoveryDelay;
+      if (this.stamina <= 0) { this.sprintExhausted = true; this.sprinting = false; }
+    } else {
+      const recoveryTime = Math.max(0, dt - this.staminaDelay);
+      this.staminaDelay = Math.max(0, this.staminaDelay - dt);
+      this.stamina = Math.min(RULES.staminaMax, this.stamina + RULES.staminaRecovery * recoveryTime);
+    }
     if (length) {
       const f = input.forward / length,
         s = input.strafe / length,

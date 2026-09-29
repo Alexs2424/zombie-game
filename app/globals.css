@@ -2367,3 +2367,18 @@ h1 i {
 .range-workspace .hud-top { justify-content: center; }
 
 .range-spawn-buttons { display: flex; gap: 8px; }
+
+.stamina-meter { display: flex; align-items: center; gap: 10px; margin-top: 10px; font: 9px system-ui; letter-spacing: .12em; color: #b2c5c4; }
+.stamina-meter progress { width: 120px; height: 5px; accent-color: #b2c5c4; }
+.stamina-meter.exhausted { color: #d6a468; }
+.stamina-meter.exhausted progress { accent-color: #d6a468; }
+.hide-explanations .pickup-card,
+.hide-explanations .hud-hint,
+.hide-explanations .briefing,
+.hide-explanations .dev-preview-hint,
+.hide-explanations .casino-betting > p:not(.bet-hover-hint),
+.hide-explanations .secret-status > small,
+.hide-explanations .purchase-prompt > small,
+.hide-explanations .range-panel > p:not(.range-kicker),
+.hide-explanations .dev-tool-list section > p,
+.hide-explanations .settings-note { display: none; }

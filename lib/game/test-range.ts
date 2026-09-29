@@ -4,6 +4,7 @@ import { RANGE_SPAWN } from './test-range-layout.ts';
 export type RangeScenario = 'targets' | 'pursuit' | 'blast' | 'empty';
 export function refillRange(s: Simulation) {
   s.health = s.maxHealth;
+  s.stamina = 100; s.staminaDelay = 0; s.sprintExhausted = false;
   s.grenades = 20;
   for (const id of WEAPON_ORDER) s.inventory[id] = {owned:true,mag:s.capacity(id),reserve:WEAPONS[id].reserve};
 }

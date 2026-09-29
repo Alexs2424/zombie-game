@@ -14,6 +14,8 @@ const initial: GameView = {
   grenades: 2,
   knifeReady: true,
   phase: "ready",
+  stamina: 100,
+  sprintExhausted: false,
   health: 100,
   maxHealth: 100,
   inventory: [
@@ -84,7 +86,7 @@ const timeString = (n: number) =>
 function Controls() {
   return (
     <div className="keys">
-      <kbd>W A S D</kbd> MOVE <kbd>SHIFT</kbd> SPRINT
+      <kbd>W A S D</kbd> MOVE <kbd>SPACE</kbd> SPRINT
       <br />
       <kbd>MOUSE</kbd> LOOK <kbd>LEFT CLICK</kbd> FIRE
       <br />
@@ -96,7 +98,7 @@ function Controls() {
       <br />
       CHIPS: <kbd>R</kbd> VALUE <kbd>X</kbd> TAKE BETS <kbd>E</kbd> PUT AWAY / ROLL
       <br />
-      <kbd>RIGHT CLICK</kbd> HOLD AIM <kbd>B</kbd> BOTH BARRELS
+      <kbd>SHIFT / RMB</kbd> HOLD AIM <kbd>B</kbd> BOTH BARRELS
       <br />
       <kbd>1–0</kbd> <kbd>Q</kbd> <kbd>WHEEL</kbd> SWITCH <kbd>ESC</kbd> PAUSE
     </div>
@@ -390,6 +392,11 @@ export default function Home() {
   const [rangeMode, setRangeMode] = useState(false);
   const [scenario, setScenario] = useState("targets");
   const [god, setGod] = useState(false);
+  const [showExplanations, setShowExplanations] = useState(true);
+  const changeExplanations = (show: boolean) => {
+    setShowExplanations(show);
+    try { localStorage.setItem("last-jackpot-explanations", String(show)); } catch { /* Storage may be unavailable in private previews. */ }
+  };
   const [spawnBehavior, setSpawnBehavior] = useState("pursuit");
   useEffect(() => {
     if (!playtesting || rangeMode) return;
@@ -415,6 +422,7 @@ export default function Home() {
     import("../lib/game/runtime")
       .then(({ GameRuntime }) => {
         if (disposed || !canvas.current) return;
+        try { setShowExplanations(localStorage.getItem("last-jackpot-explanations") !== "false"); } catch {}
         setRangeMode(process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("range"));
         setPlaytesting(
           process.env.NODE_ENV !== "production" &&
@@ -490,7 +498,7 @@ export default function Home() {
   }, [ready, rangeMode]);
   const rangeAction = (action: string) => { runtime.current?.rangeAction(action); if (["targets","pursuit","blast","empty"].includes(action)) {setScenario(action);setGod(false);} if(action === "reset") setGod(false); };
   return (
-    <main className={`game-shell ${active ? "in-game" : ""} ${rangeMode ? "range-workspace" : playtesting ? "development-shell" : ""}`}>
+    <main className={`game-shell ${showExplanations ? "" : "hide-explanations"} ${active ? "in-game" : ""} ${rangeMode ? "range-workspace" : playtesting ? "development-shell" : ""}`}>
       <div className="game-viewport">
       <div className="casino-backdrop" />
       <canvas
@@ -932,6 +940,10 @@ export default function Home() {
                   style={{ width: `${(100 * view.health) / view.maxHealth}%` }}
                 />
               </div>
+              <div className={`stamina-meter ${view.sprintExhausted ? "exhausted" : ""}`}>
+                <span>{view.sprintExhausted ? "RECOVERING" : "STAMINA"}</span>
+                <progress aria-label="Sprint stamina" value={view.stamina} max={100} />
+              </div>
               <span className="hud-hint">
                 {view.health < view.maxHealth
                   ? "Health recovers when you avoid damage"
@@ -1182,6 +1194,10 @@ export default function Home() {
               }}
             />
           </label>
+          <label className="debug-check">
+            <input type="checkbox" checked={showExplanations} onChange={e => changeExplanations(e.target.checked)} />
+            Show tips & explanation cards
+          </label>
           <Controls />
           {process.env.NODE_ENV !== "production" && (
             <fieldset className="debug-actions">
@@ -1235,6 +1251,7 @@ export default function Home() {
         <p>Move freely. Test one variable. Reset and repeat.</p>
         <button className="range-play" disabled={!ready} onClick={() => {if(view.phase === "dead") setGod(false); enter(view.phase === "dead");}}>{active ? "Recapture mouse" : view.phase === "dead" ? "Restart scenario" : "Play scenario"}</button>
         <button onClick={() => runtime.current?.pause()}>Pause / release mouse · Esc</button>
+        <label><input type="checkbox" checked={showExplanations} onChange={e => changeExplanations(e.target.checked)} /> Show tips & explanation cards</label>
         <h2>Scenario</h2>
         <select aria-label="Test scenario" value={scenario} disabled={!ready} onChange={e => rangeAction(e.target.value)}>
           <option value="targets">Weapon range · 5 / 10 / 20 m</option>
@@ -1263,7 +1280,7 @@ export default function Home() {
         <h2>Live readout</h2>
         <output>{view.phase.toUpperCase()} · {Math.ceil(view.health)} HP<br />{view.enemies} enemies · {view.grenades} grenades<br />{Math.round(view.fps)} FPS · {view.p95.toFixed(1)} ms p95</output>
         <h2>Controls</h2>
-        <p>WASD move · Shift sprint · Mouse aim<br />LMB fire · RMB sights · R reload<br />G grenade · V melee · Q next weapon</p>
+        <p>WASD move · Space sprint · Mouse look<br />LMB fire · Shift / RMB sights · R reload<br />G grenade · V melee · Q next weapon</p>
         <p>Embedded preview: if mouse capture is unavailable, hold RMB and drag to look. Click the scene before moving.</p>
         <button onClick={()=>window.location.assign(new URL("/?playtest=1", window.location.origin))}>Casino integration tests →</button>
       </aside>}
