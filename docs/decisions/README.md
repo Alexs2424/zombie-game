@@ -14,7 +14,6 @@ This folder is the current source of truth for the game's narrative direction. I
 | [Contextual dialogue](contextual-dialogue.md) | Current action-specific noir dialogue, trigger conditions, exchanges and playback design |
 | [Dialogue samples](dialogue-samples.md) | Historical first tone samples, superseded for production writing |
 | [Voice audition pack](../voice-auditions/README.md) | First complete comic-line batch, generation prompts, preview scripts and access status |
-| [Gun sound direction](../gun-audio/README.md) | Firearm report palette, generation provenance, runtime behavior and listening preview |
 | [Decision log](decision-log.md) | Dated choices, their status and changes in direction |
 
 ## Status vocabulary
