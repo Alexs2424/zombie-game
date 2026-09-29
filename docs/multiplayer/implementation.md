@@ -75,6 +75,20 @@ If your friend prefers to run a frontend from their own checkout, they should us
 
 These HTTP/WS commands are for private-network playtesting. For friends on separate networks, use a configured private VPN or the HTTPS/WSS hosting setup below. Sharing the repository or a room code alone does not make a local server reachable over the internet.
 
+### LAN troubleshooting
+
+- Copy the complete `http://<host-ipv4>:3012/coop` address into the browser address bar, replacing `<host-ipv4>` with the host's current IPv4 address. Keep `http://`, the port, and `/coop`. Use the dotted IPv4 address from network settings, not the colon-separated MAC/Wi-Fi hardware address.
+- If the page never appears, record the exact browser error and check frontend reachability on port `3012`. If the co-op page loads but joining fails, check the game endpoint on port `2567`, the room code, and the exact frontend origin allowlist. Successful ping alone does not prove either application port is reachable.
+- On the joining Mac, if Chrome cannot reach the LAN page, check **System Settings → Privacy & Security → Local Network → Google Chrome** and enable access if it is listed and disabled. Quit and reopen Chrome, then retry the exact URL. Trying that URL in Safari can help distinguish a Chrome-specific problem. This permission is one possible cause, not a confirmed diagnosis; see [Apple's local-network access instructions](https://support.apple.com/en-nz/guide/mac-help/mchla4f49138/mac).
+
+An optional `.env.coop-lan` is private, machine-local configuration. Keep it ignored and never commit host keys or active session credentials. If using that personal file, load it explicitly when starting the standalone server:
+
+```sh
+node --env-file=.env.coop-lan --experimental-strip-types server/coop-server.mjs
+```
+
+The portable environment-variable examples above remain sufficient; no personal config file needs to be shared with a friend or included in the PR.
+
 ## Configuration
 
 These are the current environment variables, not planned options. Server variables must be supplied to the server process or hosting environment; the standalone server does not load a dotenv file itself.
