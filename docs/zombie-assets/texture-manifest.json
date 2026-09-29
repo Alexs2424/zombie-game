@@ -1,0 +1,23 @@
+{
+  "size": 512,
+  "seed": 271828,
+  "normal_convention": "OpenGL +Y",
+  "authoring": "Original procedural synthesis; no external image assets.",
+  "maps": {
+    "skin": {
+      "color": "skin-color.png",
+      "roughness": "skin-roughness.png",
+      "normal": "skin-normal.png"
+    },
+    "cloth": {
+      "color": "cloth-color.png",
+      "roughness": "cloth-roughness.png",
+      "normal": "cloth-normal.png"
+    },
+    "leather": {
+      "color": "leather-color.png",
+      "roughness": "leather-roughness.png",
+      "normal": "leather-normal.png"
+    }
+  }
+}
