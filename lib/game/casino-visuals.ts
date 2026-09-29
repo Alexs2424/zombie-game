@@ -2,6 +2,7 @@ import { Scene } from "@babylonjs/core/scene";
 import { FreeCamera } from "@babylonjs/core/Cameras/freeCamera";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
+import type { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { PointLight } from "@babylonjs/core/Lights/pointLight";
@@ -11,6 +12,7 @@ import type { AssetContainer } from "@babylonjs/core/assetContainer";
 import { BET_TARGETS, SECRET_DOOR, SECRET_OFFSET, CASINO_SECRET_ANCHORS, CRAPS_FELT_Y, placeAmount, type PlaceNumber } from "./casino";
 import { CRAPS_TABLES } from "./casino-layout";
 import { POKER_TABLES } from "./poker";
+import { createChipTemplate } from "./chip-template";
 type CrapsTableId = (typeof CRAPS_TABLES)[number]["id"];
 import type { Simulation } from "./simulation";
 
@@ -20,7 +22,9 @@ export class CasinoVisuals {
   private portrait?: TransformNode;
   private keypad?: TransformNode;
   private held?: TransformNode;
-  private piles = new Map<string, { tableId: CrapsTableId; number: PlaceNumber; chips: TransformNode[] }>();
+  private piles = new Map<string, { tableId: CrapsTableId; number: PlaceNumber; chips: TransformNode[]; bank?: number; count?: number }>();
+  private spawnChip?: (name: string, position: Vector3) => TransformNode;
+  private chipTemplate?: Mesh;
   private betHighlight?: ReturnType<typeof MeshBuilder.CreateBox>;
   private ghostChip?: TransformNode;
   private highlightMaterial?: StandardMaterial;
@@ -58,6 +62,13 @@ export class CasinoVisuals {
       }
       return root;
     };
+    const chipTemplate=createChipTemplate(assets[0]);
+    this.chipTemplate=chipTemplate;
+    this.spawnChip=(name,position)=>{
+      const chip=chipTemplate.clone(name,null,true);
+      chip.position.copyFrom(position);chip.setEnabled(true);
+      return chip;
+    };
     const evidenceTable=POKER_TABLES.find(table=>table.id==='poker-b')!;
     spawn(1,'pinned evidence cards',new Vector3(evidenceTable.x,.978,evidenceTable.z),Math.PI);
     this.portrait=spawn(2,'sliding portrait',new Vector3(SECRET_DOOR.x-.55,2,SECRET_DOOR.z),-Math.PI/2);
@@ -89,9 +100,9 @@ export class CasinoVisuals {
       finger.parent=this.held;finger.position.set((i-1.5)*.032,-.01,.025);finger.rotation.x=1.3;finger.material=glove;finger.renderingGroupId=1;
     }
     for(const target of BET_TARGETS.filter(t=>t.bank===0)) {
-      const stack:TransformNode[]=[];
-      for(let i=0;i<8;i++) stack.push(spawn(0,`bet ${target.tableId} ${target.number} chip ${i}`,new Vector3(target.x,CRAPS_FELT_Y+.007+i*.012,target.z+.065)));
-      this.piles.set(`${target.tableId}:${target.number}`,{ tableId: target.tableId as CrapsTableId, number: target.number, chips: stack });
+      // Keep the full-detail chip asset, but create table copies only when a bet needs them.
+      // Reuse each stack after settlement/reset instead of allocating during every round.
+      this.piles.set(`${target.tableId}:${target.number}`,{ tableId: target.tableId as CrapsTableId, number: target.number, chips: [] });
     }
   }
   update(sim:Simulation) {
@@ -109,18 +120,30 @@ export class CasinoVisuals {
     if(this.keypad) this.keypad.setEnabled(sim.paintingOpen && !sim.speakeasy);
     this.held?.setEnabled(sim.holdingChips);
     if(this.held) for(const child of this.held.getChildren()) if(child.name.startsWith('held chip')) child.setEnabled(Number(child.name.slice(-1))<sim.chipValue/25);
-    for(const {tableId,number,chips} of this.piles.values()) {
+    for(const pile of this.piles.values()) {
+      const {tableId,number,chips}=pile;
       const bank=sim.betBanksByTable[tableId][number]??0;
+      const count=Math.min(8,Math.ceil((sim.betsByTable[tableId][number]??0)/25));
+      if(pile.bank===bank && pile.count===count) continue;
       const box=BET_TARGETS.find(t=>t.tableId===tableId && t.number===number && t.bank===bank)!;
+      while(chips.length<count && this.spawnChip) {
+        const i=chips.length;
+        chips.push(this.spawnChip(`bet ${tableId} ${number} chip ${i}`,new Vector3(box.x,CRAPS_FELT_Y+.007+i*.012,box.z+.065)));
+      }
       chips.forEach((chip,i)=>{
         chip.position.x=box.x;chip.position.z=box.z+.065;
-        chip.setEnabled(i<Math.ceil((sim.betsByTable[tableId][number]??0)/25));
+        chip.setEnabled(i<count);
       });
+      pile.bank=bank;pile.count=count;
     }
     const spinning=!!sim.mystery&&!sim.mystery.resolved;
     this.cabinetLight.intensity=spinning?1.7+Math.sin(sim.time*19)*.5:1.4;
     for(let i=0;i<this.reels.length;i++) this.reels[i].rotation.x=spinning?Math.sin(sim.time*20+i)*.12:0;
     this.lockLight.diffuse=sim.speakeasy?new Color3(.2,1,.5):sim.codeFlash<0?new Color3(1,.08,.025):sim.codeFlash>0?new Color3(.3,1,.4):new Color3(1,.68,.25);
   }
-  dispose(){this.assets.forEach(a=>a.dispose());}
+  dispose(){
+    this.chipTemplate?.material?.dispose();
+    this.chipTemplate?.dispose();
+    this.assets.forEach(a=>a.dispose());
+  }
 }

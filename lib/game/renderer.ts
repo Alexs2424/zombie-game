@@ -12,9 +12,12 @@ import { ImageProcessingConfiguration } from "@babylonjs/core/Materials/imagePro
 import { DefaultRenderingPipeline } from "@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/defaultRenderingPipeline";
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent";
 import { Quaternion, Vector3 } from "@babylonjs/core/Maths/math.vector";
+import { Frustum } from "@babylonjs/core/Maths/math.frustum";
+import type { Plane } from "@babylonjs/core/Maths/math.plane";
 import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
+import type { AbstractMesh } from "@babylonjs/core/Meshes/abstractMesh";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { PBRMaterial } from "@babylonjs/core/Materials/PBR/pbrMaterial";
@@ -64,6 +67,7 @@ import {
 } from "./simulation";
 import "@babylonjs/core/Culling/ray";
 import { buildHotel } from "./hotel-scene";
+import { intersectsShadowFrustum } from "./shadow-culling";
 
 type ZombieView = ReturnType<typeof createZombie>;
 export class GameRenderer {
@@ -120,6 +124,7 @@ export class GameRenderer {
   private gates: Record<string, Mesh> = {};
   private gateSigns: Record<string, Mesh> = {};
   private shadows: ShadowGenerator[] = [];
+  private staticShadowFrusta = new Map<ShadowGenerator, Plane[]>();
   private loungeAccentLights: (PointLight | SpotLight)[] = [];
   private loungeShadow?: ShadowGenerator;
   private serviceAccentLights: (PointLight | SpotLight)[] = [];
@@ -144,6 +149,7 @@ export class GameRenderer {
   private impactTime = 0;
   private time = 0;
   private fpsFrames: number[] = [];
+  private fpsSampleCount = 0;
   fps = 60;
   frameP95 = 0;
   constructor(canvas: HTMLCanvasElement) {
@@ -390,6 +396,29 @@ export class GameRenderer {
     this.materials.set(name, m);
     return m;
   }
+  /** Fixed geometry only: animated casters retain their existing membership.
+   * These lights have fixed transforms and explicit near/far shadow planes.
+   */
+  private staticShadowMask(mesh: AbstractMesh) {
+    mesh.computeWorldMatrix(true);
+    const { minimumWorld, maximumWorld } = mesh.getBoundingInfo().boundingBox;
+    let mask = 0;
+    this.shadows.forEach((shadow, index) => {
+      let planes = this.staticShadowFrusta.get(shadow);
+      if (!planes) {
+        planes = Frustum.GetPlanes(shadow.getTransformMatrix());
+        this.staticShadowFrusta.set(shadow, planes);
+      }
+      if (intersectsShadowFrustum(minimumWorld, maximumWorld, planes, shadow.normalBias + 0.01))
+        mask |= 1 << index;
+    });
+    return mask;
+  }
+  private addStaticShadowCaster(mesh: AbstractMesh, mask = this.staticShadowMask(mesh)) {
+    this.shadows.forEach((shadow, index) => {
+      if (mask & (1 << index)) shadow.addShadowCaster(mesh, false);
+    });
+  }
   box(
     name: string,
     x: number,
@@ -549,7 +578,7 @@ export class GameRenderer {
         }
         for (const mesh of fallback.getChildMeshes()) {
           mesh.isPickable = false;
-          for (const shadow of this.shadows) shadow.addShadowCaster(mesh, false);
+          this.addStaticShadowCaster(mesh);
         }
         continue;
       }
@@ -728,28 +757,32 @@ export class GameRenderer {
       -0.6, 7, 0.36, "#c6b998", -Math.PI / 2);
     this.serviceWallFinish();
     buildLoungeDecor(this.scene);
-    // Fixed pieces share material draw calls; assets, cards, glass and shutters
-    // remain separate for instancing, transparency and per-table animation.
-    const groups = new Map<StandardMaterial, Mesh[]>();
+    // Batch fixed pieces by material and contributing shadow maps. A single
+    // world-spanning material batch defeats culling in every light's render list.
+    // Assets, cards, glass and shutters remain separate for their animations.
+    const groups = new Map<StandardMaterial, Map<number, Mesh[]>>();
     const gates = new Set(Object.values(this.gates));
     for (const mesh of [...this.scene.meshes]) {
       if (!(mesh instanceof Mesh) || mesh.parent || gates.has(mesh) || mesh === this.bartender?.shadow ||
         Object.values(this.gateSigns).includes(mesh) || !mesh.material || mesh.material.alpha < 1) continue;
       const material = mesh.material as StandardMaterial;
-      const group = groups.get(material) ?? [];
+      const castsShadow = material.emissiveColor.equals(Color3.Black()) &&
+        !material.name.includes("carpet") && !material.name.includes("rug") && !material.name.includes("concrete");
+      const mask = castsShadow ? this.staticShadowMask(mesh) : 0;
+      const byShadow = groups.get(material) ?? new Map<number, Mesh[]>();
+      const group = byShadow.get(mask) ?? [];
       group.push(mesh);
-      groups.set(material, group);
+      byShadow.set(mask, group);
+      groups.set(material, byShadow);
     }
-    for (const [material, meshes] of groups) {
+    for (const [material, byShadow] of groups) for (const [mask, meshes] of byShadow) {
       const merged = meshes.length > 1 ? Mesh.MergeMeshes(meshes, true, true) : meshes[0];
       if (!merged) continue;
       merged.name = "scenery: " + material.name;
       merged.isPickable = false;
       merged.receiveShadows = true;
       merged.freezeWorldMatrix();
-      if (!material.emissiveColor.equals(Color3.Black()) || material.name.includes("carpet") ||
-        material.name.includes("rug") || material.name.includes("concrete")) continue;
-      for (const shadow of this.shadows) shadow.addShadowCaster(merged, false);
+      this.addStaticShadowCaster(merged, mask);
     }
   }
   private purchaseDisplays() {
@@ -1381,13 +1414,37 @@ export class GameRenderer {
             mesh.receiveShadows = true;
             const material = mesh.material as unknown as { maxSimultaneousLights?: number };
             if (material && "maxSimultaneousLights" in material) material.maxSimultaneousLights = 8;
-            for (const shadow of this.shadows) shadow.addShadowCaster(mesh, false);
+            // Wheel, ball and dice move after loading; keep their conservative
+            // render lists. All fixed table geometry can be culled once.
+            const movingRoulettePart = roulette && [roulette.wheel, roulette.ball].some((node) =>
+              node && (mesh === node || mesh.isDescendantOf(node)));
+            if (name === "craps-table" || (name === "roulette-table" && !movingRoulettePart))
+              this.addStaticShadowCaster(mesh);
+            else for (const shadow of this.shadows) shadow.addShadowCaster(mesh, false);
           }
         }
       }),
     );
   }
   private async loadWeaponAssets() {
+    // Several weapons use the same hand model. Share its parsed source while
+    // cloning each rig's transform hierarchy for independent weapon animation.
+    const handAssets = new Map<string, Promise<AssetContainer | null>>();
+    const loadHands = (name: string) => {
+      let pending = handAssets.get(name);
+      if (!pending) {
+        pending = LoadAssetContainerAsync(`/models/hands-${name}.glb`, this.scene).then((asset) => {
+          if (this.scene.isDisposed) {
+            asset.dispose();
+            return null;
+          }
+          this.weaponAssets.push(asset);
+          return asset;
+        });
+        handAssets.set(name, pending);
+      }
+      return pending;
+    };
     await Promise.all(
       ([
         "pistol",
@@ -1416,16 +1473,9 @@ export class GameRenderer {
         for (const root of firstPerson.rootNodes) root.parent = this.guns[id];
         const hands = spec?.hands === null
           ? null
-          : await LoadAssetContainerAsync(
-              `/models/hands-${spec ? spec.hands : id}.glb`,
-              this.scene,
-            );
-        if (this.scene.isDisposed) {
-          hands?.dispose();
-          return;
-        }
+          : await loadHands(spec ? spec.hands : id);
+        if (this.scene.isDisposed) return;
         if (hands) {
-          this.weaponAssets.push(hands);
           const grip = hands.instantiateModelsToScene(
             (n) => `${id}-grip-${n}`,
             false,
@@ -1501,7 +1551,7 @@ export class GameRenderer {
           for (const root of world.rootNodes) root.parent = display;
           for (const m of display.getChildMeshes()) {
             m.receiveShadows = true;
-            for (const shadow of this.shadows) shadow.addShadowCaster(m, false);
+            this.addStaticShadowCaster(m);
           }
         }
       }),
@@ -1966,7 +2016,7 @@ export class GameRenderer {
     this.fps = this.engine.getFps();
     this.fpsFrames.push(this.engine.getDeltaTime());
     if (this.fpsFrames.length > 180) this.fpsFrames.shift();
-    if (this.fpsFrames.length % 30 === 0) {
+    if (++this.fpsSampleCount % 30 === 0) {
       const frames = [...this.fpsFrames].sort((a, b) => a - b);
       this.frameP95 = frames[Math.floor(frames.length * 0.95)] ?? 0;
     }
