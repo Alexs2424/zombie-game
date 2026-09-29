@@ -148,6 +148,16 @@ test("third Stickman hit plays its breaking sample, even for legacy untagged eve
   },true);
 });
 
+test("thrown grenades and launcher impacts share the heavy explosion sample", async () => {
+  await fixture(async audio => {
+    audio.setActive(true); await audio.weapons.preload('launcher');
+    for (const weapon of [undefined, 'launcher']) {
+      audio.play({type:'explosion',weapon,position:{x:1,z:2}});
+      assert.equal(audio.weapons.lastPlayback,'launcher/explode');
+    }
+  }, true);
+});
+
 test("weapon sounds stop on pause and reset, including delayed mechanics", async () => {
   await fixture(async audio => {
     audio.setActive(true);await audio.weapons.preload('lmg');

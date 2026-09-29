@@ -43,6 +43,7 @@ import { slotCabinetsForIsland } from "./slot-machines";
 import { CasinoVisuals } from "./casino-visuals";
 import { CASINO_SECRET_ANCHORS } from "./casino";
 import { aimPose } from "./weapon-aim";
+import { createExplosion } from "./explosion-visuals";
 import { VIEWMODELS } from "./weapon-viewmodels";
 import { ViewmodelState, WeaponRig } from "./weapon-rig";
 import { AXE_CABINET, meleeDuration } from "./weapon-expansion";
@@ -132,7 +133,8 @@ export class GameRenderer {
   private viewmodel = new ViewmodelState();
   private revealUntil = 0;
   private grenadeMeshes = new Map<number, Mesh>();
-  private blastMeshes = new Map<number, Mesh>();
+  private blastMeshes = new Map<number, ReturnType<typeof createExplosion>>();
+  private explosionRun: Simulation | null = null;
   private flashTime = 0;
   private impact: Mesh;
   private impactTime = 0;
@@ -1660,22 +1662,17 @@ export class GameRenderer {
         mesh.rotationQuaternion=axis.lengthSquared()>1e-8?Quaternion.RotationAxis(axis.normalize(),angle):Quaternion.Identity();
       } else mesh.rotation.set(sim.time*7,0,sim.time*4);
     }
-    for(const [id,mesh] of this.blastMeshes) if(!sim.explosions.some(g=>g.id===id)) {
-      mesh.material?.dispose();mesh.dispose();this.blastMeshes.delete(id);
+    if (this.explosionRun !== sim) {
+      for (const effect of this.blastMeshes.values()) effect.dispose();
+      this.blastMeshes.clear(); this.explosionRun = sim;
+    }
+    for(const [id,effect] of this.blastMeshes) if(sim.time-effect.started>2.2 || sim.time<effect.started) {
+      effect.dispose();this.blastMeshes.delete(id);
     }
     for(const blast of sim.explosions) {
-      let mesh=this.blastMeshes.get(blast.id);
-      if(!mesh) {
-        mesh=MeshBuilder.CreateSphere("grenade blast",{diameter:1,segments:16},this.scene);
-        const material=new StandardMaterial("blast flash",this.scene);
-        material.emissiveColor.set(1,.35,.035);material.disableLighting=true;
-        mesh.material=material;mesh.isPickable=false;this.blastMeshes.set(blast.id,mesh);
-      }
-      const progress=1-blast.remaining/.5;
-      mesh.position.set(blast.x,Math.max(.15,blast.y),blast.z);
-      mesh.scaling.setAll(.2+progress*8);
-      (mesh.material as StandardMaterial).alpha=(1-progress)*.65;
+      if(!this.blastMeshes.has(blast.id)) this.blastMeshes.set(blast.id,createExplosion(this.scene,blast,sim.time-(.5-blast.remaining),blast.id));
     }
+    for(const effect of this.blastMeshes.values()) effect.update(sim.time);
   }
   update(sim: Simulation, dt: number) {
     const priorGunPosition=this.gun.position.clone(),priorGunRotation=this.gun.rotation.clone();

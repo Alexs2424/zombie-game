@@ -530,11 +530,14 @@ export class GameRuntime {
     if (resume) void this.enter();
   }
   /** Small cheats for the current run; preserve pause, position, weapons and input mode. */
-  debugAction(action: "unlock-all" | "add-chips") {
+  debugAction(action: "unlock-all" | "add-chips" | "toggle-invulnerability") {
     if (process.env.NODE_ENV === "production") return;
     const s = this.sim;
     if (s.phase === "ready" || s.phase === "dead") return;
-    if (action === "unlock-all") {
+    if (action === "toggle-invulnerability") {
+      s.invulnerable = s.invulnerable > 1 ? 0 : 99999;
+      s.notify(s.invulnerable ? "DEBUG · Invulnerability on" : "DEBUG · Invulnerability off · damage enabled");
+    } else if (action === "unlock-all") {
       s.doorsOpen = { lounge: true, shortcut: true, vip: true, vipExit: true, supply: true, cashier: true };
       s.hotel = s.speakeasy = true;
       s.paintingOpen = true;
@@ -549,7 +552,7 @@ export class GameRuntime {
   /** Development-only UI controls exercise the real simulation and shop without pointer-lock automation. */
   testAction(action: string) {
     if (process.env.NODE_ENV === "production") return;
-    if (action === "unlock-all" || action === "add-chips") {
+    if (action === "unlock-all" || action === "add-chips" || action === "toggle-invulnerability") {
       this.debugAction(action);
       return;
     }

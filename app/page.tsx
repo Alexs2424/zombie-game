@@ -1157,6 +1157,7 @@ export default function Home() {
               <legend>Debug · current run</legend>
               <button disabled={!ready || view.phase === "ready" || view.phase === "dead"} onClick={() => runtime.current?.debugAction("unlock-all")}>Open all doors</button>
               <button disabled={!ready || view.phase === "ready" || view.phase === "dead"} onClick={() => runtime.current?.debugAction("add-chips")}>+10,000 chips</button>
+              <button disabled={!ready || view.phase === "ready" || view.phase === "dead"} onClick={() => runtime.current?.debugAction("toggle-invulnerability")}>Toggle invulnerability</button>
               <small>Start a run first. Includes the hotel and speakeasy. New runs reset these changes.</small>
             </fieldset>
           )}
@@ -1197,6 +1198,7 @@ export default function Home() {
             ["new", "Seed run"],
             ["unlock-all", "Open all doors"],
             ["add-chips", "+10,000 chips"],
+            ["toggle-invulnerability", "Toggle invulnerability"],
             ["hotel-entrance", "Hotel entrance"],
             ["hotel-lobby", "Hotel lobby"],
             ["hotel-reception", "Reception ledger"],
