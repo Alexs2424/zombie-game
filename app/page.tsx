@@ -841,13 +841,10 @@ export default function Home() {
                   </span>
                 ))}
               </div>
-              <img
-                className="weapon-portrait"
-                key={view.weapon}
-                src={`/ui/weapons/${view.weapon}-side.webp`}
-                alt=""
-              />
-              <span className="weapon-name">{view.weaponName}</span>
+              <div className="weapon-indicator">
+                <img src={`/ui/weapons/${view.weapon}-side.webp`} alt="" />
+                <span className="weapon-name">{view.weaponName}</span>
+              </div>
               {view.casino.holding && (
                 <span className="hud-hint">
                   CHIPS IN HAND · {view.casino.chip} · E / WEAPON KEY TO EQUIP
@@ -1055,6 +1052,14 @@ export default function Home() {
             />
           </label>
           <Controls />
+          {process.env.NODE_ENV !== "production" && (
+            <fieldset className="debug-actions">
+              <legend>Debug · current run</legend>
+              <button disabled={!ready || view.phase === "ready" || view.phase === "dead"} onClick={() => runtime.current?.debugAction("unlock-all")}>Open all doors</button>
+              <button disabled={!ready || view.phase === "ready" || view.phase === "dead"} onClick={() => runtime.current?.debugAction("add-chips")}>+10,000 chips</button>
+              <small>Start a run first. Includes the hotel and speakeasy. New runs reset these changes.</small>
+            </fieldset>
+          )}
           <label className="debug-check">
             <input
               type="checkbox"
@@ -1086,6 +1091,8 @@ export default function Home() {
           <span>{view.slotAudioStatus}</span>
           {[
             ["new", "Seed run"],
+            ["unlock-all", "Open all doors"],
+            ["add-chips", "+10,000 chips"],
             ["hotel-entrance", "Hotel entrance"],
             ["hotel-lobby", "Hotel lobby"],
             ["hotel-upper", "Restaurant"],

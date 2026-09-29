@@ -483,9 +483,29 @@ export class GameRuntime {
     if (document.pointerLockElement === this.canvas) document.exitPointerLock();
     this.publish();
   }
+  /** Small cheats for the current run; preserve pause, position, weapons and input mode. */
+  debugAction(action: "unlock-all" | "add-chips") {
+    if (process.env.NODE_ENV === "production") return;
+    const s = this.sim;
+    if (s.phase === "ready" || s.phase === "dead") return;
+    if (action === "unlock-all") {
+      s.lounge = s.shortcut = s.vip = s.tables = s.hotel = s.speakeasy = true;
+      s.paintingOpen = true;
+      s.refreshMap();
+      s.notify("DEBUG · All doors open, including the hotel and speakeasy");
+    } else {
+      s.points += 10000;
+      s.notify("DEBUG · Added 10,000 chips");
+    }
+    this.publish();
+  }
   /** Development-only UI controls exercise the real simulation and shop without pointer-lock automation. */
   testAction(action: string) {
     if (process.env.NODE_ENV === "production") return;
+    if (action === "unlock-all" || action === "add-chips") {
+      this.debugAction(action);
+      return;
+    }
     this.playtesting = true;
     const soundScenario = ["sound-chase", "sound-last", "sound-horde"].includes(action);
     const hotelScenario = action.startsWith("hotel-");
