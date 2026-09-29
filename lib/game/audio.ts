@@ -159,6 +159,7 @@ export class GameAudio {
   }
   setActive(playing: boolean) {
     this.active = playing;
+    this.weapons.setActive(playing);
     if (!playing) {
       this.stopZombieVoices();
       this.slotVoice?.stop();
@@ -252,6 +253,12 @@ export class GameAudio {
       this.tone(1567.98, 0.5, 0.045, "triangle", undefined, 0.38, 0, true);
     }
     if (event.type === "knife") this.burst(0.18, 0.13, 1800);
+    if (event.type === "melee") this.burst(0.25, 0.13, event.weapon === "axe" ? 700 : 1300);
+    if (event.type === "stickBreak") {
+      this.burst(0.22, 0.4, 2600);
+      this.tone(340, 0.16, 0.1, "triangle", 90);
+    }
+    if (event.type === "dry") this.burst(0.025, 0.12, 2600);
     if (event.type === "grenadeThrow") this.burst(0.12, 0.1, 900);
     if (event.type === "explosion") {
       this.burst(0.65, 0.45, 220);
@@ -465,6 +472,8 @@ export class GameAudio {
     }
   }
   resetSlots() {
+    this.weapons.stop();
+    this.weaponCues.reset();
     this.slotVoice?.stop();
     this.slotDirector.reset();
     this.slotSequence = 0;
@@ -602,6 +611,7 @@ export class GameAudio {
   }
   dispose() {
     this.resetSlots();
+    this.weapons.dispose();
     this.slotBuffers = [];
     this.stopZombieVoices();
     this.zombieFetch?.abort();

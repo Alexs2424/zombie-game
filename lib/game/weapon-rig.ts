@@ -24,6 +24,9 @@ export class WeaponRig {
   private left?: Rest;
   private right?: Rest;
   private touched = new Set<string>();
+  private recovering = 0;
+  private wasReloading = false;
+  private recoveryWeight = 1;
   constructor(readonly id: WeaponId, readonly spec: ViewmodelSpec, root: TransformNode) {
     const prefix = `${id}-`;
     for (const n of root.getDescendants(false)) {
@@ -45,7 +48,11 @@ export class WeaponRig {
   has(name: string) {
     return this.nodes.has(name);
   }
-  apply(pose: Pose) {
+  apply(pose: Pose, dt = 1/60, reloading = false) {
+    if (this.wasReloading && !reloading) this.recovering = .18;
+    this.wasReloading = reloading;
+    this.recovering = Math.max(0,this.recovering-dt);
+    this.recoveryWeight = this.recovering > 0 ? 1-Math.exp(-dt*32) : 1;
     const seen = new Set<string>();
     for (const [name, np] of Object.entries(pose.nodes)) {
       const rest = this.nodes.get(name);
@@ -55,7 +62,7 @@ export class WeaponRig {
     }
     // Reset anything animated last frame but not this frame.
     for (const name of this.touched) if (!seen.has(name)) this.pose(this.nodes.get(name)!, {});
-    this.touched = seen;
+    this.touched = this.recovering > 0 ? new Set([...this.touched,...seen]) : seen;
     for (const name of this.spec.hiddenAtRest ?? []) {
       const shown = pose.nodes[name]?.hidden === false;
       this.nodes.get(name)?.node.setEnabled(shown);
@@ -65,9 +72,15 @@ export class WeaponRig {
   }
   private pose(rest: Rest, np: NodePose) {
     const n = rest.node;
+    const previousPosition = n.position.clone();
+    const previousRotation = (n.rotationQuaternion ?? rest.rot).clone();
     n.position.copyFrom(rest.pos);
     if (np.pos) n.position.addInPlace(toGltfPos(np.pos));
     n.rotationQuaternion = np.rot ? toGltfRot(np.rot).multiply(rest.rot) : rest.rot.clone();
+    if (this.recoveryWeight<1) {
+      n.position.copyFrom(Vector3.Lerp(previousPosition,n.position,this.recoveryWeight));
+      n.rotationQuaternion=Quaternion.Slerp(previousRotation,n.rotationQuaternion,this.recoveryWeight);
+    }
     n.scaling.setAll(np.scale ?? 1);
     if (!this.spec.hideLeftHand || rest !== this.left) n.setEnabled(!np.hidden);
   }
@@ -101,6 +114,7 @@ export class ViewmodelState {
     const w = e.weapon;
     if (!w) return;
     if (e.type === "shot") {
+      this.reloadDone[w] = -100; // Interrupting a shell reload must not reapply its completion pose.
       this.lastShot[w] = now;
       this.shots[w] = (this.shots[w] ?? 0) + (e.alternate ? 2 : 1);
       this.alt[w] = !!e.alternate;

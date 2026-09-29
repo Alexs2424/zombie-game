@@ -501,6 +501,10 @@ def lever():
     place(y, spring(r, 0.14, 700, 380, 0.5), 0.03)                     # tubular magazine spring
     place(y, slide(r, 0.05, 1200, 4000, 0.25), 0.01)
     write(w, "reload-loop", room(y, 0.1, 0.4), "one cartridge thumbed through the gate: brass, gate snap, springy tube", 0.8)
+    y = canvas(.3)
+    place(y, steel_click(r, .9, level=.35), 0)
+    place(y, wood_knock(r, 1.15, level=.3), .065)
+    write(w, "reload-end", room(y, .08, .35), "loading gate settles and gloved hand returns to walnut wrist", .55)
     y = canvas(0.6)
     place(y, steel_clack(r, 1.25, 0.16, 0.7), 0); place(y, steel_clack(r, 1.1, 0.2, 0.8), 0.18); place(y, wood_resonance(r, 0.3, 0.2), 0.182)
     write(w, "pickup", room(y, 0.1, 0.4), "half-cock lever check", 0.8)
@@ -518,6 +522,10 @@ def autoshotgun():
     write(w, "fire", room(y, 0.24, 0.8), "broad 12 ga report with gas-operated bolt cycling layered underneath")
     y = canvas(0.3); place(y, steel_click(r, 0.9, level=0.8), 0)
     write(w, "dry", room(y, 0.1, 0.4), "firing pin on an empty chamber", 0.6)
+    y = canvas(.35)
+    place(y, plastic_knock(r, level=.35), 0)
+    place(y, brass_ring(r, .8, .12, .2, damp=3), .07)
+    write(w, "reload-start", room(y, .08, .35), "two loose shells gathered from a coat pocket", .55)
     y = canvas(0.4)
     place(y, plastic_knock(r, level=0.5), 0); place(y, brass_ring(r, 0.8, 0.1, 0.35, damp=3), 0.002)
     place(y, steel_click(r, 1.1, level=0.5), 0.04); place(y, spring(r, 0.08, 900, 600, 0.3), 0.045)
@@ -658,26 +666,25 @@ def stick():
     w = "stick"
     r = Rand(1100)
     y = whoosh(r, 0.42, 280, 1300, 520, 1.0, q=0.8)
-    for i in range(3):
-        place(y, brass_ring(r, 1.3, 0.1, 0.05, damp=3), 0.18 + i * 0.03)
-    write(w, "swing", room(y, 0.12, 0.5), "woody whoosh sweeping 280->1300->520 Hz, faint brass-head jingle", 0.7)
+    place(y, creak(r, .18, f0=410, level=.7), .12)
+    write(w, "swing", room(y, 0.12, 0.5), "flexing cane whistle sweeping 280->1300->520 Hz, dry wood creak", 0.7)
     for v in range(3):
         r = Rand(1110 + v)
         y = canvas(0.5)
         place(y, filt(r.noise(0.2), "low", 300) * env(0.2, 0.001, 0.04) * 1.2, 0)
         place(y, wood_knock(r, 0.8 + 0.1 * v, 0.2, 0.9), 0.002)
         place(y, modal([150, 240, 410], [0.05, 0.04, 0.03], [1, 0.7, 0.4], 0.2, r) * 0.6, 0)
-        place(y, brass_ring(r, 1.2, 0.15, 0.12, damp=2.5), 0.01)
-        write(w, f"impact-{v + 1}", room(y, 0.14, 0.5, seed=41 + v), "blunt impact: body thud, lacquered wood knock, brass head rattle", 0.9)
+        place(y, creak(r, .15, f0=380+v*45, level=.6), .01)
+        write(w, f"impact-{v + 1}", room(y, 0.14, 0.5, seed=41 + v), "blunt impact: body thud, lacquered cane knock and flex", 0.9)
     r = Rand(1120)
     y = canvas(1.0)
     place(y, filt(r.noise(0.03), "high", 800) * env(0.03, 0.0002, 0.005) * 1.4, 0)
     place(y, wood_knock(r, 0.6, 0.2, 1.0), 0.001)
     for i in range(22):                                                  # splinters
         place(y, filt(r.noise(0.01), "band", [1500, 7000]) * env(0.01, 0.0001, 0.002) * r.u(0.1, 0.5), 0.005 + r.u(0, 0.16) ** 1.4)
-    for i in range(5):                                                   # brass head falls
-        place(y, brass_ring(r, r.u(0.8, 1.2), 0.3, 0.35 * (1 - i * 0.15), damp=1.5), 0.25 + i * 0.07 + r.u(0, 0.03))
-    write(w, "break", room(y, 0.18, 0.6), "sharp wooden crack, splinter crackle, brass head rattles to the floor", 0.95)
+    for i in range(4):                                                   # curved end tumbles on carpet
+        place(y, wood_knock(r, r.u(.7,1.1), .12, .35*(1-i*.2)), .23+i*.09+r.u(0,.025))
+    write(w, "break", room(y, 0.18, 0.6), "sharp cane crack, fibrous splinters, wooden hook tumbles to the carpet", 0.95)
     y = canvas(0.5); place(y, wood_knock(r, 0.9, level=0.6), 0); place(y, brass_ring(r, 1.2, 0.2, 0.2, damp=2), 0.1)
     write(w, "pickup", room(y, 0.1, 0.4), "stick lifted off its brass hook", 0.75)
 

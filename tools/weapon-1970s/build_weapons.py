@@ -433,6 +433,11 @@ def machinepistol():
     fpost = box("Front sight post", (0, 0.054, 0.094), (0.0016, 0.008, 0.002), m["black"], bevel=0)
     rs = prism("Rear sight", [(-0.098, 0.046), (-0.08, 0.046), (-0.082, 0.058), (-0.096, 0.058)], -0.0065, 0.0065, fin, bevel=0.0005)
     rs = cut(rs, cyl("aperture", (0, 0.054, -0.089), 0.0018, 0.03, fin))
+    # Raise the stamped sight ears clear of the top-mounted cocking handle.
+    for part in (fs, fpost): move(part, (0,.014,0))
+    move(rs, (0,.018,0))
+    rs = join("Rear sight", [rs, box("Rear sight foot",(0,.054,-.089),(.013,.018,.012),fin,bevel=.001)])
+    fs = join("Front sight", [fs, box("Front sight foot",(0,.051,.094),(.008,.014,.012),fin,bevel=.001)])
     # ribbed Bakelite grip on the pistol envelope, magazine through it
     grip = grip_loft("Grip ribs", "pistol", "Grip frame", 0.0205, m["bakelite"], y0=-0.14, y1=-0.022, shrink_front=0.002, shrink_back=0.002)
     grooves = []
@@ -691,6 +696,8 @@ def lever():
     fbase = box("Front sight base", (0, by + 0.009, 0.56), (0.008, 0.004, 0.03), steel, bevel=0.0008)
     rsight = prism("Rear sight", [(0.14, by + 0.009), (0.17, by + 0.009), (0.168, by + 0.02), (0.142, by + 0.02)], -0.009, 0.009, steel, bevel=0.0005)
     rsight = cut(rsight, box("notch", (0, by + 0.02, 0.155), (0.003, 0.008, 0.05), steel, bevel=0))
+    move(rsight, (0,.023,0))
+    rsight = join("Rear sight", [rsight, prism("Elevated sight leaf",[(.11,.015),(.165,.015),(.165,.038),(.14,.038)],-.003,.003,steel,bevel=.0005)])
     rollmark = text("Barrel rollmark", "SILVER DOLLAR · .44-40 · MODEL OF 1973", (0.0098, by, 0.35), 0.0042, 0.0002, m["silver"], facing="+x")
     barrel_all = join("Barrel", [barrel, tube_mag, *bands, fsight, fbase, rsight, rollmark])
     # --- forearm (left hand) and straight-grip stock with silver dollar inlay
@@ -843,6 +850,8 @@ def tommy():
     guard = guard_band("Trigger guard", steel, -0.045, 0.035, -0.038, -0.078)
     rsight = prism("Rear sight", rounded_polygon([(-0.12, 0.046), (-0.085, 0.046), (-0.09, 0.066), (-0.114, 0.066)], 0.002), -0.009, 0.009, steel, bevel=0.0006)
     rsight = cut(rsight, cyl("Peep", (0, 0.06, -0.1), 0.0022, 0.05, steel))
+    move(rsight, (0,.022,0))
+    rsight = join("Rear sight", [rsight, box("Peep pedestal",(0,.057,-.1),(.015,.026,.018),steel,bevel=.001)])
     selector = [prism(f"Lever {i}", rounded_polygon([(z, -0.012), (z + 0.02, -0.008), (z + 0.02, -0.002), (z, -0.004)], 0.002), -0.0245, -0.0215, steel, bevel=0.0005)
                 for i, z in enumerate((-0.07, -0.04))]
     mark = text("Receiver mark", "CHICAGO TYPEWRITER · .45", (0.0217, 0.022, -0.06), 0.0056, 0.0002, m["silver"], facing="+x")
@@ -857,6 +866,7 @@ def tommy():
     comp = lathe("Compensator", [(0.0058, L - 0.052), (0.0125, L - 0.052), (0.0125, L), (0.0058, L)], steel, center=(0, by), segs=32, closed=True)
     comp = cut(comp, [box(f"Comp slot {i}", (0, by + 0.012, L - 0.042 + i * 0.0085), (0.018, 0.012, 0.004), steel, bevel=0) for i in range(4)])
     fsight = box("Front sight", (0, by + 0.017, L - 0.02), (0.002, 0.01, 0.006), steel, bevel=0.0004)
+    fsight = join("Front sight", [fsight, box("Front blade extension",(0,.06,L-.02),(.002,.04,.006),steel,bevel=.0004)])
     barrel_all = join("Barrel", [barrel, *fins, comp, fsight])
     # --- walnut: pistol grip (rifle hand envelope), horizontal forearm, compact stock
     grip = grip_loft("Pistol grip", "rifle", "Walnut pistol grip", 0.02, wood, y1=-0.036, extend_top=0.01)
@@ -911,6 +921,8 @@ def lmg():
     guard = guard_band("Trigger guard", steel, -0.045, 0.035, -0.034, -0.078)
     rsight = prism("Rear sight", rounded_polygon([(-0.13, 0.05), (-0.1, 0.05), (-0.104, 0.07), (-0.126, 0.07)], 0.002), -0.01, 0.01, steel, bevel=0.0006)
     rsight = cut(rsight, cyl("Peep", (0, 0.064, -0.115), 0.0022, 0.05, steel))
+    move(rsight, (0,.025,0))
+    rsight = join("Rear sight", [rsight, box("Rear sight pedestal",(0,.065,-.115),(.018,.03,.018),steel,bevel=.001)])
     body = join("Receiver", [receiver, *ribs, tray, plaque, plaque_t, sten, guard, rsight])
     # --- barrel, perforated shroud, flash hider, bipod (folded)
     L = 0.64
@@ -927,6 +939,7 @@ def lmg():
     hider = lathe("Flash hider", [(0.006, L - 0.07), (0.011, L - 0.07), (0.014, L), (0.011, L), (0.006, L - 0.06)], m["black"], center=(0, by), segs=28, closed=True)
     hider = cut(hider, [box(f"Hider slot {k}", (math.cos(k * TAU / 5) * 0.013, by + math.sin(k * TAU / 5) * 0.013, L - 0.02), (0.006, 0.006, 0.04), steel, bevel=0) for k in range(5)])
     fsight = box("Front sight", (0, by + 0.03, 0.5), (0.003, 0.018, 0.006), steel, bevel=0.0005)
+    fsight = join("Front sight", [fsight, box("Front blade extension",(0,.072,.5),(.003,.028,.006),steel,bevel=.0005)])
     bip_hinge = cyl("Bipod hinge", (0, by - 0.026, 0.48), 0.006, 0.05, steel, axis="x", segs=16)
     legs = [cyl(f"Bipod leg {s}", (s * 0.012, by - 0.03, 0.34), 0.0045, 0.28, steel, segs=12) for s in (1, -1)]
     feet = [box(f"Bipod foot {s}", (s * 0.012, by - 0.03, 0.2), (0.012, 0.006, 0.012), steel, bevel=0.001) for s in (1, -1)]
@@ -977,39 +990,42 @@ def lmg():
 def stick():
     m = M()
     # handle passes through both shotgun-hand grips: wrist (z -0.14, y -0.03) and pump (z 0.27, y -0.02)
-    y0, y1, z0, z1 = -0.031, -0.018, -0.32, 0.98
+    y0, y1, z0, z1 = -0.031, -0.018, -0.32, 0.84
     def hy(z):
         return y0 + (y1 - y0) * (z - z0) / (z1 - z0)
     handle = loft("Stick handle", [(z, ellipse(2 * r, 2 * r, 20, 0, hy(z))) for z, r in
-                                   ((z0, 0.011), (z0 + 0.01, 0.0135), (-0.2, 0.0142), (0.4, 0.0122), (0.8, 0.0098), (z1, 0.009))], m["walnut_dark"], sharp=70)
-    wraps = [loft(f"Grip wrap {i}", [(z, ellipse(0.0332, 0.0332, 20, 0, hy(z))) for z in (a, b)], m["leather"], sharp=70)
-             for i, (a, b) in enumerate(((-0.2, -0.09), (0.18, 0.36)))]
-    ferrule = lathe("Brass ferrule", [(0, z0 - 0.006), (0.0118, z0 - 0.006), (0.0138, z0 + 0.004), (0.0138, z0 + 0.016), (0.0118, z0 + 0.02), (0, z0 + 0.02)], m["brass"],
-                    center=(0, hy(z0)), segs=24)
-    bands = [lathe(f"Inlay band {i}", [(0.0126 - i * 0.001, z - 0.004), (0.0132 - i * 0.001, z - 0.004), (0.0132 - i * 0.001, z + 0.004), (0.0126 - i * 0.001, z + 0.004)],
-                   m["brass"], center=(0, hy(z)), segs=24, closed=True) for i, z in enumerate((0.45, 0.7))]
-    mark = text("Stick mark", "STICKMAN · TABLE 3", (0.0, hy(0.58) + 0.0115, 0.58), 0.006, 0.0002, m["brass"], facing="+y")
-    shaft = join("Stick", [handle, *wraps, ferrule, *bands, mark])
-    # rake head: brass crossbar with three blunt rounded teeth, pointing down toward the felt
-    hz, hyy = z1 + 0.004, hy(z1)
-    socket = lathe("Head socket", [(0, hz - 0.03), (0.0098, hz - 0.03), (0.0118, hz - 0.012), (0.0118, hz + 0.008), (0, hz + 0.008)], m["brass"], center=(0, hyy), segs=24)
-    bar = loft("Rake bar", [(x, rrect(0.02, 0.018, 0.006, 4, hz + 0.01, hyy - 0.004)) for x in (-0.075, 0.075)], m["brass"], along="x", sharp=40)
-    caps = [lathe(f"Bar cap {s}", [(0, 0.0), (0.0095, 0.0), (0.0095, 0.004), (0, 0.006)], m["brass"], center=(hyy - 0.004, hz + 0.01), axis="x", segs=20)
-            for s in (1, -1)]
-    move(caps[0], (0.075, 0, 0))
-    rotate(caps[1], "y", math.pi, (0, hyy - 0.004, hz + 0.01))
-    move(caps[1], (-0.075, 0, 0))
-    teeth = [loft(f"Tooth {i}", [(y, ellipse(0.016, 0.014, 18, x, hz + 0.012)) for y in (hyy - 0.012, hyy - 0.04)] +
-                  [(hyy - 0.046, ellipse(0.012, 0.010, 18, x, hz + 0.012)), (hyy - 0.05, ellipse(0.004, 0.004, 18, x, hz + 0.012))], m["brass"], along="y", sharp=70)
-             for i, x in enumerate((-0.055, 0.0, 0.055))]
-    suit = text("Head suit", "♠ ♥ ♣", (0, hyy - 0.004, hz + 0.0195), 0.0085, 0.0003, m["silver"], facing="+z")
-    head = join("Rake head", [socket, bar, *caps, *teeth, suit], pivot=(0, hyy, hz))
-    head.scale = (1.35, 1.35, 1.35)
-    bpy.context.view_layer.objects.active = head
-    bpy.ops.object.select_all(action="DESELECT"); head.select_set(True)
-    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+                                   ((z0, 0.011), (z0 + 0.01, 0.0135), (-0.2, 0.0142), (0.4, 0.0122), (0.78, 0.0098), (z1, 0.009))], m["hickory"], sharp=70)
+    # Casino dice sticks are a continuous bent cane, not toothed metal garden rakes.
+    # Keep the existing material's longitudinal grain, with dark natural cane joints.
+    bands = [lathe(f"Cane joint {i}", [(r, z - .002), (r + .0005, z), (r, z + .002)],
+                   m["walnut_dark"], center=(0, hy(z)), segs=24) for i, (z, r) in enumerate(((-.12,.014),(.36,.0123),(.7,.0104)))]
+    mark = text("Stick mark", "TABLE 3", (0, hy(.58)+.0108, .58), .006, .00015, m["black"], facing="+y")
+    shaft = join("Stick", [handle, *bands, mark])
+    # Steam-bent hook with a smooth rounded end. Seam is at the animation pivot;
+    # both pieces have the same grain/material and look like one continuous cane.
+    hz, hyy = z1, hy(z1)
+    vertices, faces = [], []
+    rings, sides, bend = 33, 20, .085
+    for i in range(rings):
+        a = math.pi * i / (rings-1)
+        center = Vector((-bend + bend*math.cos(a), hyy, hz + bend*math.sin(a)))
+        radial = Vector((math.cos(a), 0, math.sin(a)))
+        r = .009 * (1 - .22*i/(rings-1))
+        for j in range(sides):
+            theta = math.tau*j/sides
+            vertices.append(B(center + r*(math.cos(theta)*radial + Vector((0,math.sin(theta),0)))))
+    for i in range(rings-1):
+        for j in range(sides):
+            faces.append((i*sides+j, i*sides+(j+1)%sides, (i+1)*sides+(j+1)%sides, (i+1)*sides+j))
+    faces += [tuple(reversed(range(sides))), tuple((rings-1)*sides+j for j in range(sides))]
+    mesh = bpy.data.meshes.new("Bent cane hook mesh")
+    mesh.from_pydata(vertices, [], faces); mesh.update()
+    hook = bpy.data.objects.new("Bent cane hook", mesh); link(hook)
+    mesh.materials.append(m["hickory"])
+    for poly in mesh.polygons: poly.use_smooth = len(poly.vertices)==4
+    head = join("Rake head", [hook], pivot=(0,hyy,hz))
     parent(head, shaft)
-    return {"muzzle": (0, hyy - 0.03, hz + 0.02), "hands": "shotgun", "class": "craps stick (melee)", "animated": ["Stick", "Rake head"]}
+    return {"muzzle": (-bend, hyy, hz+bend), "hands": "shotgun", "class": "bent-cane craps stick (melee)", "animated": ["Stick", "Rake head"]}
 
 
 # ============================================================================= FIRE EXIT

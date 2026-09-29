@@ -82,9 +82,9 @@ function Controls() {
       <br />
       <kbd>C</kbd> HOLD CHIPS · AIM + CLICK TO BET
       <br />
-      CHIPS: <kbd>R</kbd> VALUE <kbd>1–6</kbd> PLACE <kbd>X</kbd> TAKE BETS
+      CHIPS: <kbd>R</kbd> VALUE <kbd>X</kbd> TAKE BETS <kbd>E</kbd> PUT AWAY / ROLL
       <br />
-      <kbd>RIGHT CLICK</kbd> BOTH BARRELS
+      <kbd>RIGHT CLICK</kbd> HOLD AIM <kbd>B</kbd> BOTH BARRELS
       <br />
       <kbd>1–0</kbd> <kbd>Q</kbd> <kbd>WHEEL</kbd> SWITCH <kbd>ESC</kbd> PAUSE
     </div>
@@ -502,8 +502,9 @@ export default function Home() {
                 <section className="casino-betting" aria-label="Craps place bets">
                   <small>THE DEVIL’S TABLES · PLACE BETS</small>
                   <strong>{view.casino.holding ? `HOLDING ${view.casino.chip} CHIPS` : "C · TAKE CHIPS IN HAND"}</strong>
-                  <div className="bet-number-row">{[4,5,6,8,9,10].map((n,i)=><div key={n}><b>{n}</b><span>{view.casino.bets[n]??0} ON</span><small>{i+1} · +{Math.ceil(view.casino.chip/(n===6||n===8?6:5))*(n===6||n===8?6:5)}</small></div>)}</div>
-                  <p>Aim + click to place · 1–6 quick place · R chip value<br/>E roll · X return bets · C put chips away</p>
+                  <div className="bet-number-row">{[4,5,6,8,9,10].map(n=><div key={n}><b>{n}</b><span>{view.casino.bets[n]??0} ON</span><small>+{Math.ceil(view.casino.chip/(n===6||n===8?6:5))*(n===6||n===8?6:5)} CHIPS</small></div>)}</div>
+                  <p>Aim at a printed number + click · R chip value<br/>E put away / roll · X return bets · weapon keys put chips away</p>
+                  {view.casino.hover && <p className="bet-hover-hint">{view.casino.hover.affordable ? `CLICK · ${view.casino.hover.amount} CHIPS ON ${view.casino.hover.number}` : `NEED ${view.casino.hover.amount} CHIPS`}</p>}
                   <small>4/10 pay 9:5 · 5/9 pay 7:5 · 6/8 pay 7:6<br/>Bets always work. Wins pay automatically. Seven clears all bets.</small>
                   {view.dice && <p role="status">{view.dice.resolved ? `${view.dice.values[0]} + ${view.dice.values[1]} · ${view.casino.result}` : "⚄ ⚂ Rolling… bets locked"}</p>}
                 </section>
@@ -686,13 +687,14 @@ export default function Home() {
               )}
 
               <div
-                className={`crosshair ${view.hit > 0 ? "hit" : ""} ${view.headshot ? "headshot" : ""}`}
+                className={`crosshair ${view.aiming ? "aiming" : ""} ${view.hit > 0 ? "hit" : ""} ${view.headshot ? "headshot" : ""}`}
               >
                 <i />
                 <i />
                 <i />
                 <i />
               </div>
+              {view.scoped && <div className="scope-view" aria-label="Fixed four-power scope"><div className="scope-reticle" /></div>}
               {view.damage > 0 && (
                 <div
                   className="damage-vignette"
@@ -829,7 +831,7 @@ export default function Home() {
               <span className="weapon-name">{view.weaponName}</span>
               {view.casino.holding && (
                 <span className="hud-hint">
-                  CHIPS IN HAND · {view.casino.chip} · C TO EQUIP GUN
+                  CHIPS IN HAND · {view.casino.chip} · E / WEAPON KEY TO EQUIP
                 </span>
               )}
               <span className="hud-hint">

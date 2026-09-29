@@ -200,8 +200,12 @@
     "seconds": 0.442,
     "recipe": "one cartridge thumbed through the gate: brass, gate snap, springy tube"
    },
+   "reload-end": {
+    "seconds": 0.392,
+    "recipe": "loading gate settles and gloved hand returns to walnut wrist"
+   },
    "pickup": {
-    "seconds": 0.724,
+    "seconds": 0.697,
     "recipe": "half-cock lever check"
    }
   },
@@ -214,16 +218,20 @@
     "seconds": 0.35,
     "recipe": "firing pin on an empty chamber"
    },
+   "reload-start": {
+    "seconds": 0.372,
+    "recipe": "two loose shells gathered from a coat pocket"
+   },
    "reload-loop": {
-    "seconds": 0.429,
+    "seconds": 0.42,
     "recipe": "shell pressed past the carrier: brass-and-plastic click, magazine spring"
    },
    "reload-end": {
-    "seconds": 0.502,
+    "seconds": 0.503,
     "recipe": "bolt release: distinct final bolt closure"
    },
    "pickup": {
-    "seconds": 0.593,
+    "seconds": 0.603,
     "recipe": "shells rattle in the tube, bolt handle tap"
    }
   },
@@ -352,26 +360,26 @@
   "stick": {
    "swing": {
     "seconds": 0.803,
-    "recipe": "woody whoosh sweeping 280->1300->520 Hz, faint brass-head jingle"
+    "recipe": "flexing cane whistle sweeping 280->1300->520 Hz, dry wood creak"
    },
    "impact-1": {
     "seconds": 0.567,
-    "recipe": "blunt impact: body thud, lacquered wood knock, brass head rattle"
+    "recipe": "blunt impact: body thud, lacquered cane knock and flex"
    },
    "impact-2": {
-    "seconds": 0.498,
-    "recipe": "blunt impact: body thud, lacquered wood knock, brass head rattle"
+    "seconds": 0.51,
+    "recipe": "blunt impact: body thud, lacquered cane knock and flex"
    },
    "impact-3": {
     "seconds": 0.488,
-    "recipe": "blunt impact: body thud, lacquered wood knock, brass head rattle"
+    "recipe": "blunt impact: body thud, lacquered cane knock and flex"
    },
    "break": {
-    "seconds": 0.951,
-    "recipe": "sharp wooden crack, splinter crackle, brass head rattles to the floor"
+    "seconds": 0.796,
+    "recipe": "sharp cane crack, fibrous splinters, wooden hook tumbles to the carpet"
    },
    "pickup": {
-    "seconds": 0.499,
+    "seconds": 0.486,
     "recipe": "stick lifted off its brass hook"
    }
   },

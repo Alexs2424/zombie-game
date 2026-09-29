@@ -604,6 +604,12 @@ export class Simulation {
   codeProgress = 0;
   codeFlash = 0;
   holdingChips = false;
+  aimHeld = false;
+  get aiming() {
+    return this.aimHeld && this.phase === "playing" && !this.holdingChips &&
+      !isMelee(this.weapon) && this.reloadRemaining <= 0 && this.knifeRemaining <= 0 && this.grenadeCooldown <= 0;
+  }
+  betBanks: Partial<Record<PlaceNumber, number>> = {};
   chipValue = 25;
   bets: Partial<Record<PlaceNumber, number>> = {};
   crapsResult = "";
@@ -886,6 +892,7 @@ export class Simulation {
     this.messageRemaining = 2.6;
   }
   switchWeapon(w: WeaponId) {
+    if (this.phase === "playing") this.stowChips();
     if (
       this.phase !== "playing" ||
       this.meleeRemaining > 0 ||
@@ -895,6 +902,7 @@ export class Simulation {
       return;
     if (!isMelee(this.weapon)) this.lastFirearm = this.weapon;
     this.weapon = w;
+    this.aimHeld = false;
     this.bloom = 0;
     this.holdingChips = false;
     this.reloadRemaining = 0;
@@ -1177,6 +1185,10 @@ export class Simulation {
     if (this.phase !== "playing") return;
     this.holdingChips = !this.holdingChips;
     this.reloadRemaining = 0;
+    this.aimHeld = false;
+  }
+  stowChips() {
+    this.holdingChips = false;
   }
   placeBet(number: PlaceNumber) {
     if (!this.holdingChips || !this.canBet() || !PLACE_NUMBERS.includes(number)) return false;
@@ -1188,14 +1200,19 @@ export class Simulation {
     return true;
   }
   placeAimedBet() {
-    if (!this.canBet()) return false;
+    const target = this.aimedBetTarget();
+    if (!target || !this.placeBet(target.number)) return false;
+    this.betBanks[target.number] = target.bank;
+    return true;
+  }
+  aimedBetTarget() {
+    if (!this.holdingChips || !this.canBet()) return undefined;
     const dy = -Math.sin(this.pitch);
-    if (dy >= -.01) return false;
-    const t = (1.075-1.65)/dy;
+    if (dy >= -.01) return undefined;
+    const t = (BET_TARGETS[0].y-1.65)/dy;
     const x=this.player.x+Math.sin(this.yaw)*Math.cos(this.pitch)*t;
     const z=this.player.z+Math.cos(this.yaw)*Math.cos(this.pitch)*t;
-    const target=BET_TARGETS.find(b=>Math.abs(b.x-x)<.36 && Math.abs(b.z-z)<.62);
-    return target ? this.placeBet(target.number) : false;
+    return BET_TARGETS.find(b=>Math.abs(b.x-x)<b.halfWidth && Math.abs(b.z-z)<b.halfDepth);
   }
   takeBets() {
     if (!this.canBet()) return false;
@@ -1339,7 +1356,7 @@ export class Simulation {
     if (hits && id === "stick") {
       this.inventory.stick.mag--;
       if (!this.inventory.stick.mag) {
-        this.events.push({type:"stickBreak"});this.notify("The craps rake splinters after its third hit!");
+        this.events.push({type:"stickBreak",weapon:"stick"});this.notify("The craps rake splinters after its third hit!");
       }
     }
   }
@@ -1372,7 +1389,7 @@ export class Simulation {
     w.mag -= shells;
     this.fireCooldown = cfg.interval;
     this.events.push({ type: "shot", weapon: this.weapon, alternate: shells > 1, side });
-    const spread = cfg.spread + this.bloom;
+    const spread = cfg.spread * (this.aiming && cfg.pellets === 1 ? .35 : 1) + this.bloom;
     this.bloom = Math.min(maxBloom(this.weapon), this.bloom + bloomPerShot(this.weapon));
     if (this.weapon === "launcher" || this.weapon === "flare") {
       this.projectiles.push({id:this.nextGrenadeId++,...this.player,y:1.5,
@@ -1592,7 +1609,7 @@ export class Simulation {
     }
     const length = Math.hypot(input.forward, input.strafe);
     this.moving = length > 0;
-    this.sprinting = input.sprint && length > 0;
+    this.sprinting = input.sprint && length > 0 && !this.aiming;
     if (length) {
       const f = input.forward / length,
         s = input.strafe / length,

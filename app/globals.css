@@ -660,6 +660,16 @@ h1 i {
   height: 24px;
   transform: translate(-50%, -50%);
 }
+.crosshair.aiming:not(.hit) { opacity: 0; }
+.bet-hover-hint { color: #f4d879; font-weight: 700; }
+.scope-view {
+  position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background: radial-gradient(circle at center, transparent 0 28vh, rgba(10,8,5,.3) 28.3vh, #080807 29.5vh);
+}
+.scope-reticle { position: absolute; left: 50%; top: 50%; width: 56vh; height: 56vh; transform: translate(-50%,-50%); border-radius: 50%; overflow: hidden; }
+.scope-reticle::before, .scope-reticle::after { content: ''; position: absolute; background: #14120c; }
+.scope-reticle::before { left: 0; right: 0; top: calc(50% - .5px); height: 1px; }
+.scope-reticle::after { top: 0; bottom: 0; left: calc(50% - .5px); width: 1px; }
 .crosshair i {
   position: absolute;
   display: block;

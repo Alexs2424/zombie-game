@@ -21,7 +21,7 @@ import {
   type CardSuit,
   type PokerTableId,
 } from "./poker";
-import { PLACE_NUMBERS, KEYPAD_TARGETS } from "./casino";
+import { PLACE_NUMBERS, KEYPAD_TARGETS, placeAmount } from "./casino";
 import { WEAPON_FLAVOR, isMelee, weaponSpeed } from "./weapon-expansion";
 
 const BASE_SLOTS: WeaponId[] = ["pistol", "shotgun", "smg", "rifle", "revolver"];
@@ -59,6 +59,7 @@ export type CasinoView = {
   nearTable: boolean; result: string; speakeasy: boolean;
   nearPainting: boolean; paintingOpen: boolean; codeProgress: number;
   mystery: string; nearMystery: boolean;
+  hover?: { number: number; amount: number; affordable: boolean };
 };
 export type WeaponCard = {
   id: WeaponId;
@@ -72,6 +73,8 @@ export type WeaponCard = {
   at: number;
 };
 export type GameView = {
+  aiming?: boolean;
+  scoped?: boolean;
   casino: CasinoView;
   /** Owned weapons in slot order with their hotkey (1-5 house guns, 6-0 for Mystery Box finds). */
   owned: { id: WeaponId; label: string; key: string }[];
@@ -260,6 +263,7 @@ export class GameRuntime {
   };
   private resize = () => this.renderer.resize();
   private clearInput() {
+    this.sim.aimHeld = false;
     this.slotWalkRemaining = 0;
     this.keys.clear();
     this.firing = false;
@@ -306,6 +310,7 @@ export class GameRuntime {
         "Digit9",
         "Digit0",
         "KeyQ",
+        "KeyB",
         "Space",
         "Tab",
       ].includes(e.code)
@@ -317,12 +322,12 @@ export class GameRuntime {
     if (e.code === "KeyX") this.sim.takeBets();
     if (this.sim.holdingChips) {
       if (e.code === "KeyR") {this.sim.chipValue = this.sim.chipValue === 25 ? 50 : this.sim.chipValue === 50 ? 100 : 25;return;}
-      const number=PLACE_NUMBERS[Number(e.code.replace("Digit",""))-1];
-      if(e.code.startsWith("Digit") && number) {this.sim.placeBet(number);return;}
     }
     if (e.code === "KeyR") this.sim.reload();
     if (e.code === "KeyG") this.sim.throwGrenade();
     if (e.code === "KeyV") this.sim.knife();
+    if (e.code === "KeyB" && !this.sim.holdingChips) this.sim.fire(true);
+    if (e.code.startsWith("Digit") || e.code === "KeyQ") this.sim.stowChips();
     if (e.code === "Digit1") this.sim.switchWeapon("pistol");
     if (e.code === "Digit2") this.sim.switchWeapon("shotgun");
     if (e.code === "Digit3") this.sim.switchWeapon("smg");
@@ -338,8 +343,11 @@ export class GameRuntime {
     if (e.code === "Escape") this.pause();
   };
   private interact() {
+    const wasHolding = this.sim.holdingChips;
+    this.sim.stowChips();
+    this.firing = false;
     const p = this.sim.nearestPurchase();
-    if (p) this.sim.purchase(p.id);
+    if (p && (!wasHolding || (p.id === "craps" && Object.values(this.sim.bets).some(b=>b>0)))) this.sim.purchase(p.id);
     if (this.sim.shopOpen || this.sim.pokerOpen) {
       this.clearInput();
       if (document.pointerLockElement === this.canvas)
@@ -354,21 +362,22 @@ export class GameRuntime {
       this.sim.phase !== "playing"
     )
       return;
-    this.sim.yaw += e.movementX * 0.002 * this.sensitivity;
+    const aimSensitivity = this.sim.aiming ? (this.sim.weapon === "sniper" ? .28 : .65) : 1;
+    this.sim.yaw += e.movementX * 0.002 * this.sensitivity * aimSensitivity;
     this.sim.pitch = Math.max(
       -1.3,
-      Math.min(1.3, this.sim.pitch + e.movementY * 0.002 * this.sensitivity),
+      Math.min(1.3, this.sim.pitch + e.movementY * 0.002 * this.sensitivity * aimSensitivity),
     );
   };
   private mouseDown = (e: MouseEvent) => {
-    // Right button: alternate fire (Double or Nothing discharges both barrels).
+    // Hold right button for aligned sights; B retains the double-barrel alternate shot.
     if (
       e.button === 2 &&
       document.pointerLockElement === this.canvas &&
       this.sim.phase === "playing" &&
       !this.sim.holdingChips
     ) {
-      this.sim.fire(true);
+      this.sim.aimHeld = true;
       return;
     }
     if (
@@ -381,8 +390,9 @@ export class GameRuntime {
     if (this.sim.holdingChips) {this.sim.placeAimedBet();return;}
     this.firing = true;
   };
-  private mouseUp = () => {
-    this.firing = false;
+  private mouseUp = (e: MouseEvent) => {
+    if (e.button === 2) this.sim.aimHeld = false;
+    if (e.button === 0) this.firing = false;
   };
   private wheel = (e: WheelEvent) => {
     if (document.pointerLockElement !== this.canvas || this.sim.phase !== "playing" || !e.deltaY) return;
@@ -683,6 +693,8 @@ export class GameRuntime {
       s.enemies=[{id:500,x:-12,z:-5.8,health:80,maxHealth:80,speed:0,yaw:Math.PI,attack:0,cooldown:0,stuck:0,flash:0,age:0}];
     }
     if (action === "reload") s.reload();
+    if (action === "aim") s.aimHeld = true;
+    if (action === "hip") s.aimHeld = false;
     if (action.startsWith("weapon-"))
       s.switchWeapon(action.slice(7) as WeaponId);
     if (action.startsWith("give-")) {
@@ -877,8 +889,10 @@ export class GameRuntime {
     const pokerState = pokerId ? s.pokerTables[pokerId] : null;
     const bestSuit = bestPokerSuit(pokerState?.hand ?? []);
     this.audio.setActive(s.phase === "playing");
-    const card = this.pickupCard && performance.now() - this.pickupCard.at < 4200 ? this.pickupCard : null;
+    const card = !s.aiming && !s.holdingChips && this.pickupCard && performance.now() - this.pickupCard.at < 4200 ? this.pickupCard : null;
     this.onView({
+      aiming: this.renderer.aimBlend > .85,
+      scoped: this.renderer.aimBlend > .95 && s.weapon === "sniper",
       owned: ownedSlots(s),
       pickup: card,
       mysteryReel: {
@@ -886,6 +900,7 @@ export class GameRuntime {
         id: s.mystery?.resolved ? s.mystery.reward : null,
       },
       casino: {holding:s.holdingChips,chip:s.chipValue,bets:{...s.bets},nearTable:s.tables&&Math.hypot(s.player.x-35,s.player.z+5)<3,result:s.crapsResult,
+        hover: s.aimedBetTarget() ? {number:s.aimedBetTarget()!.number,amount:placeAmount(s.aimedBetTarget()!.number,s.chipValue),affordable:s.points>=placeAmount(s.aimedBetTarget()!.number,s.chipValue)} : undefined,
         speakeasy:s.speakeasy,nearPainting:s.tables&&Math.hypot(s.player.x-41,s.player.z+4.1)<4,paintingOpen:s.paintingOpen,codeProgress:s.codeProgress,
         mystery:s.mystery?.message??"",nearMystery:s.speakeasy&&Math.hypot(s.player.x-48,s.player.z+7.3)<4},
       grenades: s.grenades,

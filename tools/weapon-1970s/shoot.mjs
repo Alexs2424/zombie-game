@@ -2,11 +2,11 @@
 // node tools/weapon-1970s/shoot.mjs <outDir> '<json script>'
 // The script is a list of steps: {"action":"give-magnum"} | {"wait":ms} | {"shot":"name"} | {"eval":"js"}
 import { spawn } from "node:child_process";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { setTimeout as sleep } from "node:timers/promises";
 
 const [outDir, scriptJson, url = "http://127.0.0.1:5173/?playtest=1"] = process.argv.slice(2);
-const steps = JSON.parse(scriptJson);
+const steps = JSON.parse(scriptJson.startsWith('@') ? readFileSync(scriptJson.slice(1),'utf8') : scriptJson);
 mkdirSync(outDir, { recursive: true });
 const chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const port = 9300 + Math.floor(Math.random() * 400);
@@ -76,6 +76,7 @@ try {
   }
 } catch (e) {
   console.error("driver error:", e.message);
+  process.exitCode = 1;
 } finally {
   if (logs.length) console.log(logs.filter((l) => !/Download the React DevTools|\[vite\]/.test(l)).slice(0, 40).join("\n"));
   ws?.close();

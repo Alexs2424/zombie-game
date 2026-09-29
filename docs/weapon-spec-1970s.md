@@ -85,7 +85,7 @@ Sound: softer semiautomatic cycling layered under a broad shotgun report. Shell 
 
 ### Eye in the Sky (`sniper`)
 
-Military-surplus bolt-action rifle with a wood stock, leather sling, simple fixed 3x or 4x scope, and a scratched inventory number. The scope is a period tube with external adjustment caps and no illuminated reticle, rangefinder, or modern mounting rail. Keep the optic readable but avoid adding an aim-down-sights system unless the game already supports one.
+Military-surplus bolt-action rifle with a wood stock, leather sling, simple fixed 4x scope, and a scratched inventory number. The scope is a period tube with external adjustment caps and no illuminated reticle, rangefinder, or modern mounting rail. Hold the right mouse button for the fixed optical view with a plain crosshair and circular vignette.
 
 Gameplay target: five-round internal magazine, lowest spread, very high damage, and penetration through four lined-up enemies. Its bolt cycle should impose the longest shot-to-shot delay of the firearms. The player must commit to a target and reposition rather than spray.
 
@@ -111,11 +111,13 @@ Sound: hollow low-frequency thump, brief projectile flight hiss, and a concussiv
 
 ### Stickman craps rake (`stick`)
 
-The prop is the long wooden or lacquered craps stick used by a stickperson to move chips and dice. Place it on a small brass hook or against the craps table at approximately hand height, with the rake head pointing toward the felt. The handle is dark polished wood; the head is aged brass or nickel-plated steel with three blunt rounded teeth. It must look like casino equipment first and a weapon only after the player picks it up.
+The prop is a long, slender, lacquered rattan-style craps stick, chiefly used by the stickperson to retrieve dice. Place it beside the craps table with its curved hook toward the felt. Use a continuous bent wooden hook, warm grain, subtle cane nodes, worn varnish and a small TABLE 3 inventory mark. It has no metal teeth or garden-rake head. The flexible casino tool is the visual reference; its powerful crowd sweep is deliberately fictional game behavior.
 
 Gameplay contract: this is a melee-only pickup beside the craps table. It survives **three successful hits**, not three swings. Each successful hit consumes one durability point and can damage every zombie in a forward fan roughly 2.8 m long and 100 degrees wide. A swing that hits nothing consumes no durability. On the third successful hit, play the break effect and immediately return the player to the last owned firearm. It has no ammo, cannot be upgraded, and cannot be awarded by the mystery box.
 
-Animation and sound: the player sweeps from low right to high left, with a visible brass head arc. Use a woody whoosh, multiple blunt impacts for multi-zombie contact, and a sharp wooden crack plus brass rattle on the final hit. Do not use a sword clang or a modern melee foley. The pickup message should explicitly show `3 SWEEPS` so the limited life is legible.
+Animation and sound: the player sweeps from low right to high left, with a visible curved hook arc and slight flex. Use a cane whistle, dry wood creak, blunt impacts for multi-zombie contact, and a fibrous crack, splinters and tumbling wood on the final hit. The broken hook separates during the last sweep. The pickup message shows `3 SWEEPS`; only successful contact consumes durability.
+
+Construction references: [commercial flexible-rattan casino stick](https://www.texaspokersupply.com/store/casino-craps-sticks-usa-made/) and the [background description of conventional single-piece rattan hooks](https://patents.google.com/patent/US7090217B1/en). These support the material and shape; they are not dated evidence for a particular 1970s casino prop. All house weapons are fictional period-inspired designs, not exact historic reproductions.
 
 ### Fire Exit axe (`axe`, optional)
 
@@ -123,7 +125,15 @@ Short red-painted fire axe with a black forged head, worn yellow safety label, a
 
 Gameplay target: very slow single-target or narrow-cone melee strike with high damage. Unlike Stickman, it does not break after three hits, but it should have a long recovery and prevent firearm use during the swing. Use it only if the level needs a second special pickup; the craps-rake rule remains the featured casino interaction.
 
-## Blender deliverables
+## Player handling and acceptance criteria
+
+- Hold RMB to aim. Each firearm aligns its actual rear/front sight geometry to the camera center; blade tips, not the middle of the receiver, determine the firing line. Raise conventional sight bases where the receiver, bolt or feed cover otherwise blocks the view. No floating HUD iron sights. Snake Eyes aims over the right pistol; the sniper uses the fixed optical view above. B retains Double or Nothing's two-barrel alternate blast.
+- Aim transitions reduce movement bob and mouse sensitivity, tighten firearm spread and prevent sprinting. Shotgun pellet spread remains unchanged. Reloading, melee and chip handling lower the sights; releasing RMB clears aim.
+- R reloads. Animate the named action, ammunition and hand nodes at the same normalized timing as their sound cues. Smooth the return to the resting grip; clear completed reload state when firing interrupts a shell reload. Pause and fresh-run reset must stop queued sounds.
+- C arms chips. E puts them away (and rolls placed bets at the table). Any weapon selection key, Q or the wheel releases chips, including selecting the already equipped gun.
+- Craps bets land on the printed felt at y = 0.810 m, on either number bank. The target outline and translucent chip preview share the placement hit test. Gold indicates a valid affordable target; red indicates insufficient chips. No raised betting board or hovering number slots.
+
+## Blender deliverables (files)
 
 For each ID, deliver one `.blend` source and one exported `.glb` in `public/models/`. The source scene should contain a collection named after the weapon, a neutral studio camera, a three-quarter preview render, and named nodes for every animated part. Apply transforms, preserve explicit normals, and keep meshes watertight where practical. Use separate materials for steel, wood, Bakelite, brass, rubber, and any inlaid casino detail.
 
@@ -134,4 +144,3 @@ The first-person asset should have its grip and sight line aligned to the existi
 Create original synthesized or recorded foley under `public/audio/weapons/`, with source notes in the same asset folder. Every firearm needs: `fire`, `dry`, `reload-start`, `reload-loop` if applicable, `reload-end`, and `pickup`. Special weapons need `swing`, `impact`, and `break` where applicable. Mix for the existing casino reverb: short, warm room reflections, no contemporary trailer booms, and no recognizable commercial weapon sample.
 
 The runtime should select sounds by weapon ID and action, with the LMG, launcher, and Stickman receiving unique signatures. Sound design must reinforce the period materials: wood, brass, Bakelite, spring steel, and mechanical actions are as important as the report itself.
-

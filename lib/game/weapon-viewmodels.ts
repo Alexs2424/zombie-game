@@ -361,7 +361,7 @@ const autoshotgun: ViewmodelSpec = {
   flash: 1.35,
   hiddenAtRest: ["Loading shell"],
   reloadCues: [[0.5, "reload-loop"]],
-  shotCues: [[0.03, "cycle"]],
+  // Gas-action clacks are already baked into the report at 34 ms and 78 ms.
   animate(a) {
     const p = base(a, 1.1);
     const k = recoil(p, a, 0.055, 0.2, -0.03, 0.02, 0.1);
@@ -555,17 +555,21 @@ const stick: ViewmodelSpec = {
   reloadCues: [],
   animate(a) {
     const p = base(a);
-    // Carried like a croupier: across the body, brass rake raised toward the left of frame.
+    // Carried like a croupier: across the body, bent cane raised toward the left of frame.
     let rot: Vec = STICK_IDLE;
     let pos: Vec = Z;
     if (a.melee >= 0) {
-      // Low-right wind-up, fast sweep to high-left so the brass head arcs across the view.
+      // Low-right wind-up, fast sweep to high-left so the curved hook arcs across the view.
       const m = a.melee;
       rot = track(m, [[0, STICK_IDLE], [0.26, [0.3, 0.45, 0.65]], [0.36, [0.28, 0.3, 0.55]], [0.5, [-0.5, -1.05, -0.35]],
         [0.64, [-0.55, -1.15, -0.4]], [1, STICK_IDLE]]);
       pos = track(m, [[0, Z], [0.26, [0.1, -0.1, -0.05]], [0.5, [-0.18, 0.1, 0.04]], [0.64, [-0.2, 0.12, 0.02]], [1, Z]]);
       if (a.meleeHit) pos = add(pos, [0.01 * Math.sin(a.time * 90), 0.008 * Math.cos(a.time * 70), 0]);
-      p.nodes["Rake head"] = { rot: [0, 0, -0.35 * hump(m, 0.3, 0.42, 0.56, 0.75)] };
+      const broken = a.mag === 0 ? Math.max(0, (m - .46) / .54) : 0;
+      p.nodes["Rake head"] = {
+        rot: [broken * 3, 0, -0.09 * hump(m, 0.3, 0.42, 0.56, 0.75)],
+        pos: [-broken*.2, -broken*broken*.8, broken*.1],
+      };
     }
     p.rot = add(p.rot, rot);
     p.pos = add(p.pos, pos);

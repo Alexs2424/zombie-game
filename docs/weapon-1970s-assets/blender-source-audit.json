@@ -1,0 +1,727 @@
+{
+  "blender": "5.2.2 LTS",
+  "weapons": {
+    "magnum": {
+      "meshes": 10,
+      "animated": [
+        "Hammer",
+        "Trigger",
+        "Crane",
+        "Cylinder",
+        "Cartridges",
+        "Ejector rod"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 0.0
+    },
+    "dual": {
+      "meshes": 9,
+      "animated": [
+        "Right pistol",
+        "Right Slide",
+        "Right Trigger",
+        "Right Hammer",
+        "Right Magazine",
+        "Left pistol",
+        "Left Slide",
+        "Left Trigger",
+        "Left Magazine"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 7.9
+    },
+    "machinepistol": {
+      "meshes": 6,
+      "animated": [
+        "Bolt",
+        "Trigger",
+        "Magazine",
+        "Stock"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 16.6
+    },
+    "doublebarrel": {
+      "meshes": 9,
+      "animated": [
+        "Barrels",
+        "Shells",
+        "Right hammer",
+        "Left hammer",
+        "Front trigger",
+        "Rear trigger",
+        "Top lever"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 24.033333333333335
+    },
+    "autoshotgun": {
+      "meshes": 8,
+      "animated": [
+        "Bolt",
+        "Carrier",
+        "Trigger",
+        "Loading shell"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 33.93333333333333
+    },
+    "lever": {
+      "meshes": 8,
+      "animated": [
+        "Lever",
+        "Hammer",
+        "Trigger",
+        "Loading round"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 39.86666666666667
+    },
+    "sniper": {
+      "meshes": 8,
+      "animated": [
+        "Bolt",
+        "Trigger",
+        "Stripper clip"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 47.6
+    },
+    "launcher": {
+      "meshes": 6,
+      "animated": [
+        "Barrel",
+        "Shell",
+        "Latch",
+        "Trigger"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 56.46666666666667
+    },
+    "tommy": {
+      "meshes": 7,
+      "animated": [
+        "Drum",
+        "Drum key",
+        "Bolt",
+        "Trigger"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 70.56666666666666
+    },
+    "lmg": {
+      "meshes": 8,
+      "animated": [
+        "Feed cover",
+        "Ammo box",
+        "Belt",
+        "Charging handle",
+        "Trigger"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 79.1
+    },
+    "stick": {
+      "meshes": 2,
+      "animated": [
+        "Stick",
+        "Rake head"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 90.96666666666667
+    },
+    "axe": {
+      "meshes": 2,
+      "animated": [
+        "Axe",
+        "Axe head"
+      ],
+      "missing_textures": [],
+      "native_source_verified": true,
+      "audition_start_seconds": 97.33333333333333
+    },
+    "fire-cabinet": {
+      "meshes": 1,
+      "animated": [],
+      "missing_textures": [],
+      "native_source_verified": true
+    }
+  },
+  "audio_cues": [
+    {
+      "weapon": "magnum",
+      "sound": "dry",
+      "frame": 1,
+      "seconds": 0.3813832199546485
+    },
+    {
+      "weapon": "magnum",
+      "sound": "eject",
+      "frame": 22,
+      "seconds": 0.9823356009070294
+    },
+    {
+      "weapon": "magnum",
+      "sound": "fire",
+      "frame": 61,
+      "seconds": 0.8534693877551021
+    },
+    {
+      "weapon": "magnum",
+      "sound": "pickup",
+      "frame": 96,
+      "seconds": 1.1026757369614513
+    },
+    {
+      "weapon": "magnum",
+      "sound": "reload-end",
+      "frame": 139,
+      "seconds": 0.518140589569161
+    },
+    {
+      "weapon": "magnum",
+      "sound": "reload-loop",
+      "frame": 164,
+      "seconds": 0.5172108843537415
+    },
+    {
+      "weapon": "magnum",
+      "sound": "reload-start",
+      "frame": 189,
+      "seconds": 0.5328344671201815
+    },
+    {
+      "weapon": "dual",
+      "sound": "dry",
+      "frame": 238,
+      "seconds": 0.35351473922902493
+    },
+    {
+      "weapon": "dual",
+      "sound": "fire-left-1",
+      "frame": 258,
+      "seconds": 0.6035374149659863
+    },
+    {
+      "weapon": "dual",
+      "sound": "fire-left-2",
+      "frame": 286,
+      "seconds": 0.6005442176870748
+    },
+    {
+      "weapon": "dual",
+      "sound": "fire-right-1",
+      "frame": 314,
+      "seconds": 0.606734693877551
+    },
+    {
+      "weapon": "dual",
+      "sound": "fire-right-2",
+      "frame": 342,
+      "seconds": 0.6021541950113378
+    },
+    {
+      "weapon": "dual",
+      "sound": "pickup",
+      "frame": 370,
+      "seconds": 0.6721315192743764
+    },
+    {
+      "weapon": "dual",
+      "sound": "reload-end",
+      "frame": 400,
+      "seconds": 0.4984580498866213
+    },
+    {
+      "weapon": "dual",
+      "sound": "reload-loop",
+      "frame": 424,
+      "seconds": 0.47122448979591836
+    },
+    {
+      "weapon": "dual",
+      "sound": "reload-start",
+      "frame": 448,
+      "seconds": 0.5839909297052154
+    },
+    {
+      "weapon": "machinepistol",
+      "sound": "dry",
+      "frame": 499,
+      "seconds": 0.33179138321995466
+    },
+    {
+      "weapon": "machinepistol",
+      "sound": "fire-1",
+      "frame": 518,
+      "seconds": 0.5128798185941043
+    },
+    {
+      "weapon": "machinepistol",
+      "sound": "fire-2",
+      "frame": 543,
+      "seconds": 0.518639455782313
+    },
+    {
+      "weapon": "machinepistol",
+      "sound": "fire-3",
+      "frame": 568,
+      "seconds": 0.5314739229024943
+    },
+    {
+      "weapon": "machinepistol",
+      "sound": "pickup",
+      "frame": 593,
+      "seconds": 0.6215192743764172
+    },
+    {
+      "weapon": "machinepistol",
+      "sound": "reload-end",
+      "frame": 621,
+      "seconds": 0.5994557823129252
+    },
+    {
+      "weapon": "machinepistol",
+      "sound": "reload-loop",
+      "frame": 648,
+      "seconds": 0.38922902494331063
+    },
+    {
+      "weapon": "machinepistol",
+      "sound": "reload-start",
+      "frame": 669,
+      "seconds": 0.6375056689342403
+    },
+    {
+      "weapon": "doublebarrel",
+      "sound": "cock",
+      "frame": 722,
+      "seconds": 0.5114285714285715
+    },
+    {
+      "weapon": "doublebarrel",
+      "sound": "dry",
+      "frame": 747,
+      "seconds": 0.3694557823129252
+    },
+    {
+      "weapon": "doublebarrel",
+      "sound": "eject",
+      "frame": 768,
+      "seconds": 0.6761678004535148
+    },
+    {
+      "weapon": "doublebarrel",
+      "sound": "fire-alt",
+      "frame": 798,
+      "seconds": 1.072517006802721
+    },
+    {
+      "weapon": "doublebarrel",
+      "sound": "fire",
+      "frame": 840,
+      "seconds": 0.9414285714285714
+    },
+    {
+      "weapon": "doublebarrel",
+      "sound": "pickup",
+      "frame": 878,
+      "seconds": 0.6059637188208616
+    },
+    {
+      "weapon": "doublebarrel",
+      "sound": "reload-end",
+      "frame": 906,
+      "seconds": 0.7350340136054422
+    },
+    {
+      "weapon": "doublebarrel",
+      "sound": "reload-loop",
+      "frame": 938,
+      "seconds": 0.6165079365079366
+    },
+    {
+      "weapon": "doublebarrel",
+      "sound": "reload-start",
+      "frame": 966,
+      "seconds": 0.6646258503401361
+    },
+    {
+      "weapon": "autoshotgun",
+      "sound": "dry",
+      "frame": 1019,
+      "seconds": 0.35036281179138323
+    },
+    {
+      "weapon": "autoshotgun",
+      "sound": "fire",
+      "frame": 1039,
+      "seconds": 0.939297052154195
+    },
+    {
+      "weapon": "autoshotgun",
+      "sound": "pickup",
+      "frame": 1077,
+      "seconds": 0.6025170068027211
+    },
+    {
+      "weapon": "autoshotgun",
+      "sound": "reload-end",
+      "frame": 1105,
+      "seconds": 0.5029931972789116
+    },
+    {
+      "weapon": "autoshotgun",
+      "sound": "reload-loop",
+      "frame": 1130,
+      "seconds": 0.42002267573696145
+    },
+    {
+      "weapon": "autoshotgun",
+      "sound": "reload-start",
+      "frame": 1152,
+      "seconds": 0.3721541950113379
+    },
+    {
+      "weapon": "lever",
+      "sound": "cycle-close",
+      "frame": 1197,
+      "seconds": 0.6713605442176871
+    },
+    {
+      "weapon": "lever",
+      "sound": "cycle",
+      "frame": 1227,
+      "seconds": 0.46426303854875284
+    },
+    {
+      "weapon": "lever",
+      "sound": "dry",
+      "frame": 1250,
+      "seconds": 0.34736961451247167
+    },
+    {
+      "weapon": "lever",
+      "sound": "fire",
+      "frame": 1270,
+      "seconds": 0.9211791383219955
+    },
+    {
+      "weapon": "lever",
+      "sound": "pickup",
+      "frame": 1307,
+      "seconds": 0.6968480725623583
+    },
+    {
+      "weapon": "lever",
+      "sound": "reload-end",
+      "frame": 1337,
+      "seconds": 0.39170068027210886
+    },
+    {
+      "weapon": "lever",
+      "sound": "reload-loop",
+      "frame": 1358,
+      "seconds": 0.4417233560090703
+    },
+    {
+      "weapon": "lever",
+      "sound": "reload-start",
+      "frame": 1381,
+      "seconds": 0.480249433106576
+    },
+    {
+      "weapon": "sniper",
+      "sound": "bolt-close",
+      "frame": 1429,
+      "seconds": 0.573015873015873
+    },
+    {
+      "weapon": "sniper",
+      "sound": "bolt-open",
+      "frame": 1456,
+      "seconds": 0.7052154195011338
+    },
+    {
+      "weapon": "sniper",
+      "sound": "dry",
+      "frame": 1487,
+      "seconds": 0.3570975056689342
+    },
+    {
+      "weapon": "sniper",
+      "sound": "fire",
+      "frame": 1507,
+      "seconds": 1.2216326530612245
+    },
+    {
+      "weapon": "sniper",
+      "sound": "pickup",
+      "frame": 1553,
+      "seconds": 0.7027437641723356
+    },
+    {
+      "weapon": "sniper",
+      "sound": "reload-end",
+      "frame": 1584,
+      "seconds": 0.6060544217687075
+    },
+    {
+      "weapon": "sniper",
+      "sound": "reload-loop",
+      "frame": 1612,
+      "seconds": 0.677687074829932
+    },
+    {
+      "weapon": "sniper",
+      "sound": "reload-start",
+      "frame": 1642,
+      "seconds": 0.6490022675736962
+    },
+    {
+      "weapon": "launcher",
+      "sound": "dry",
+      "frame": 1695,
+      "seconds": 0.3515192743764172
+    },
+    {
+      "weapon": "launcher",
+      "sound": "eject",
+      "frame": 1715,
+      "seconds": 0.7623809523809524
+    },
+    {
+      "weapon": "launcher",
+      "sound": "explode",
+      "frame": 1747,
+      "seconds": 3.475827664399093
+    },
+    {
+      "weapon": "launcher",
+      "sound": "fire",
+      "frame": 1861,
+      "seconds": 0.9943990929705215
+    },
+    {
+      "weapon": "launcher",
+      "sound": "flight",
+      "frame": 1900,
+      "seconds": 1.8567573696145125
+    },
+    {
+      "weapon": "launcher",
+      "sound": "hinge",
+      "frame": 1965,
+      "seconds": 0.6043990929705215
+    },
+    {
+      "weapon": "launcher",
+      "sound": "pickup",
+      "frame": 1993,
+      "seconds": 0.48895691609977326
+    },
+    {
+      "weapon": "launcher",
+      "sound": "reload-end",
+      "frame": 2017,
+      "seconds": 0.5779818594104308
+    },
+    {
+      "weapon": "launcher",
+      "sound": "reload-loop",
+      "frame": 2044,
+      "seconds": 0.6542630385487528
+    },
+    {
+      "weapon": "launcher",
+      "sound": "reload-start",
+      "frame": 2073,
+      "seconds": 0.3838548752834467
+    },
+    {
+      "weapon": "tommy",
+      "sound": "dry",
+      "frame": 2118,
+      "seconds": 0.3533560090702948
+    },
+    {
+      "weapon": "tommy",
+      "sound": "fire-1",
+      "frame": 2138,
+      "seconds": 0.710249433106576
+    },
+    {
+      "weapon": "tommy",
+      "sound": "fire-2",
+      "frame": 2169,
+      "seconds": 0.6723356009070295
+    },
+    {
+      "weapon": "tommy",
+      "sound": "fire-3",
+      "frame": 2199,
+      "seconds": 0.6609297052154195
+    },
+    {
+      "weapon": "tommy",
+      "sound": "pickup",
+      "frame": 2228,
+      "seconds": 0.6602721088435374
+    },
+    {
+      "weapon": "tommy",
+      "sound": "reload-end",
+      "frame": 2257,
+      "seconds": 0.8236734693877551
+    },
+    {
+      "weapon": "tommy",
+      "sound": "reload-loop",
+      "frame": 2291,
+      "seconds": 0.6007256235827665
+    },
+    {
+      "weapon": "tommy",
+      "sound": "reload-start",
+      "frame": 2319,
+      "seconds": 0.7295918367346939
+    },
+    {
+      "weapon": "lmg",
+      "sound": "belt-end",
+      "frame": 2374,
+      "seconds": 0.7345804988662131
+    },
+    {
+      "weapon": "lmg",
+      "sound": "cover",
+      "frame": 2406,
+      "seconds": 0.5841043083900227
+    },
+    {
+      "weapon": "lmg",
+      "sound": "dry",
+      "frame": 2433,
+      "seconds": 0.35027210884353743
+    },
+    {
+      "weapon": "lmg",
+      "sound": "eject",
+      "frame": 2453,
+      "seconds": 0.8156916099773243
+    },
+    {
+      "weapon": "lmg",
+      "sound": "fire-1",
+      "frame": 2487,
+      "seconds": 0.7732199546485261
+    },
+    {
+      "weapon": "lmg",
+      "sound": "fire-2",
+      "frame": 2520,
+      "seconds": 0.8461904761904762
+    },
+    {
+      "weapon": "lmg",
+      "sound": "fire-3",
+      "frame": 2555,
+      "seconds": 0.8066213151927437
+    },
+    {
+      "weapon": "lmg",
+      "sound": "pickup",
+      "frame": 2589,
+      "seconds": 0.6201133786848072
+    },
+    {
+      "weapon": "lmg",
+      "sound": "reload-end",
+      "frame": 2617,
+      "seconds": 0.8802267573696145
+    },
+    {
+      "weapon": "lmg",
+      "sound": "reload-loop",
+      "frame": 2653,
+      "seconds": 0.5948072562358276
+    },
+    {
+      "weapon": "lmg",
+      "sound": "reload-start",
+      "frame": 2680,
+      "seconds": 0.5594331065759637
+    },
+    {
+      "weapon": "stick",
+      "sound": "break",
+      "frame": 2730,
+      "seconds": 0.7963718820861678
+    },
+    {
+      "weapon": "stick",
+      "sound": "impact-1",
+      "frame": 2763,
+      "seconds": 0.5668480725623583
+    },
+    {
+      "weapon": "stick",
+      "sound": "impact-2",
+      "frame": 2790,
+      "seconds": 0.5098639455782313
+    },
+    {
+      "weapon": "stick",
+      "sound": "impact-3",
+      "frame": 2815,
+      "seconds": 0.4880045351473923
+    },
+    {
+      "weapon": "stick",
+      "sound": "pickup",
+      "frame": 2839,
+      "seconds": 0.4862358276643991
+    },
+    {
+      "weapon": "stick",
+      "sound": "swing",
+      "frame": 2863,
+      "seconds": 0.8026530612244898
+    },
+    {
+      "weapon": "axe",
+      "sound": "impact-1",
+      "frame": 2921,
+      "seconds": 0.5750340136054422
+    },
+    {
+      "weapon": "axe",
+      "sound": "impact-2",
+      "frame": 2948,
+      "seconds": 0.5959183673469388
+    },
+    {
+      "weapon": "axe",
+      "sound": "pickup",
+      "frame": 2975,
+      "seconds": 0.7338321995464853
+    },
+    {
+      "weapon": "axe",
+      "sound": "swing",
+      "frame": 3007,
+      "seconds": 0.8928571428571429
+    }
+  ]
+}

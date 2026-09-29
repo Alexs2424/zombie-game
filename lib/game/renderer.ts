@@ -34,6 +34,7 @@ import { buildLoungeDecor } from "./lounge-decor";
 import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
 import { slotCabinetsForIsland } from "./slot-machines";
 import { CasinoVisuals } from "./casino-visuals";
+import { aimPose } from "./weapon-aim";
 import { VIEWMODELS } from "./weapon-viewmodels";
 import { ViewmodelState, WeaponRig } from "./weapon-rig";
 import { AXE_CABINET, meleeDuration } from "./weapon-expansion";
@@ -58,6 +59,10 @@ import "@babylonjs/core/Culling/ray";
 
 type ZombieView = ReturnType<typeof createZombie>;
 export class GameRenderer {
+  aimBlend = 0;
+  private aimedWeapon = "";
+  private reloadRecover = 0;
+  private wasReloading = false;
   engine: Engine;
   scene: Scene;
   camera: FreeCamera;
@@ -2068,6 +2073,14 @@ export class GameRenderer {
     }
   }
   update(sim: Simulation, dt: number) {
+    const priorGunPosition=this.gun.position.clone(),priorGunRotation=this.gun.rotation.clone();
+    if(this.wasReloading && !sim.reloadRemaining) this.reloadRecover=.18;
+    this.wasReloading=sim.reloadRemaining>0;
+    this.reloadRecover=Math.max(0,this.reloadRecover-dt);
+    const aim = aimPose(sim.weapon);
+    if (this.aimedWeapon !== sim.weapon) { this.aimBlend = 0; this.aimedWeapon = sim.weapon; }
+    this.aimBlend += ((sim.aiming && aim ? 1 : 0) - this.aimBlend) * (1-Math.exp(-dt*18));
+    this.camera.fov = 1.32 + ((aim?.fov ?? 1.32)-1.32)*this.aimBlend;
     this.casino.update(sim);
     this.stickProp?.setEnabled(!sim.stickTaken);
     this.axeProp?.setEnabled(!sim.axeTaken);
@@ -2096,7 +2109,7 @@ export class GameRenderer {
       sim.player.x,
       1.65 +
         (sim.moving && sim.phase === "playing"
-          ? Math.sin(sim.time * 12) * 0.018
+          ? Math.sin(sim.time * 12) * 0.018 * (1-this.aimBlend)
           : 0),
       sim.player.z,
     );
@@ -2141,10 +2154,24 @@ export class GameRenderer {
       const [rx, ry, rz] = rig.spec.root;
       this.gun.position.set(rx + pose.pos[0], ry + pose.pos[1], rz + pose.pos[2]);
       this.gun.rotation.set(pose.rot[0], pose.rot[1], pose.rot[2]);
-      rig.apply(pose);
+      rig.apply(pose,dt,sim.reloadRemaining>0);
+    }
+    if(this.reloadRecover>0) {
+      const recover=1-Math.exp(-dt*32);
+      this.gun.position.copyFrom(Vector3.Lerp(priorGunPosition,this.gun.position,recover));
+      this.gun.rotation.copyFrom(Vector3.Lerp(priorGunRotation,this.gun.rotation,recover));
+    }
+    if (aim && this.aimBlend > .001) {
+      const a = this.aimBlend;
+      this.gun.position.x += (aim.x-this.gun.position.x)*a;
+      this.gun.position.y += (aim.y-this.gun.position.y)*a;
+      this.gun.position.z += (aim.z-this.gun.position.z)*a;
+      this.gun.rotation.x += (aim.pitch-this.gun.rotation.x)*a;
+      this.gun.rotation.y *= 1-a;
+      this.gun.rotation.z *= 1-a;
     }
     this.gun.position.y -= sim.grenadeCooldown > 0 ? Math.sin(sim.grenadeCooldown/.65*Math.PI)*.25 : 0;
-    for (const id of WEAPON_ORDER) this.guns[id].setEnabled(sim.weapon === id && sim.knifeRemaining <= 0 && !sim.holdingChips);
+    for (const id of WEAPON_ORDER) this.guns[id].setEnabled(sim.weapon === id && sim.knifeRemaining <= 0 && !sim.holdingChips && !(aim?.scope && this.aimBlend>.95));
     for (const [mesh,finish] of this.relicFinishes) mesh.material=sim.relics[finish.weapon]?finish.gilded:finish.original;
     const reloadProgress =
       sim.reloadRemaining > 0

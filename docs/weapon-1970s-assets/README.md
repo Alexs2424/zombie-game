@@ -14,16 +14,16 @@ serial systems or trade dress are used.
 | ID | House name | Class | Triangles | GLB | Fitted hands | Animated nodes |
 | --- | --- | --- | ---: | ---: | --- | --- |
 | `magnum` | High Roller | 6″ double-action magnum revolver, nickel, checkered walnut | 19,808 | 924 KB | pistol | Hammer, Trigger, Crane, Cylinder, Cartridges, Ejector rod |
-| `tommy` | Chicago Typewriter | drum-fed SMG, finned barrel, walnut | 21,902 | 1.03 MB | rifle (left hand +11.5 cm) | Drum, Drum key, Bolt, Trigger |
+| `tommy` | Chicago Typewriter | drum-fed SMG, finned barrel, walnut | 22,118 | 1.04 MB | rifle (left hand +11.5 cm) | Drum, Drum key, Bolt, Trigger |
 | `doublebarrel` | Double or Nothing | side-by-side coach gun, exposed hammers, engraved action | 13,808 | 817 KB | shotgun | Barrels (hinge), Shells, Right/Left hammer, Front/Rear trigger, Top lever |
 | `dual` | Snake Eyes | two mismatched pocket pistols (nickel/pearl .25, blued/Bakelite .32) | 13,432 | 706 KB | pistol right hand, mirrored copy for the left | Right/Left pistol, Slide, Trigger, Magazine, Right Hammer |
-| `machinepistol` | The Enforcer | stamped machine pistol, folded wire stock, ribbed Bakelite grip | 11,796 | 612 KB | pistol | Bolt, Trigger, Magazine, Stock |
-| `lever` | Silver Dollar | brass-receiver lever rifle, octagonal barrel, silver-dollar inlay | 14,187 | 758 KB | shotgun | Lever (pivot), Hammer, Trigger, Loading round |
+| `machinepistol` | The Enforcer | stamped machine pistol, folded wire stock, ribbed Bakelite grip | 12,012 | 619 KB | pistol | Bolt, Trigger, Magazine, Stock |
+| `lever` | Silver Dollar | brass-receiver lever rifle, octagonal barrel, silver-dollar inlay | 14,295 | 761 KB | shotgun | Lever (pivot), Hammer, Trigger, Loading round |
 | `autoshotgun` | Last Call | 1970s gas semi-auto, vent rib, oxblood pad, HOUSE tag | 13,048 | 779 KB | shotgun | Bolt, Carrier, Trigger, Loading shell |
 | `sniper` | The Eye in the Sky | surplus bolt action, fixed 4× scope with caps, leather sling, "No 1106" | 14,820 | 827 KB | shotgun | Bolt (turn + draw), Trigger, Stripper clip |
-| `lmg` | House Edge | belt-fed LMG, perforated shroud, folded bipod, side belt box, brass plaque | 23,828 | 1.14 MB | rifle (left hand +11 cm) | Feed cover (hinge), Ammo box, Belt, Charging handle, Trigger |
+| `lmg` | House Edge | belt-fed LMG, perforated shroud, folded bipod, side belt box, brass plaque | 24,044 | 1.15 MB | rifle (left hand +11 cm) | Feed cover (hinge), Ammo box, Belt, Charging handle, Trigger |
 | `launcher` | The Debt Collector | break-open 40 mm, ladder sight, inventory stencil | 12,564 | 746 KB | shotgun | Barrel (hinge), Shell, Latch, Trigger |
-| `stick` | Stickman | lacquered craps stick, brass three-tooth rake head | 4,032 | 334 KB | shotgun | Stick, Rake head |
+| `stick` | Stickman | lacquered cane craps stick, continuous curved wooden hook | 2,736 | 245 KB | shotgun | Stick, Rake head (legacy node name for the wooden hook) |
 | `axe` | Fire Exit | red-painted hickory fire axe, forged head, yellow safety label | 5,300 | 453 KB | shotgun | Axe, Axe head |
 | `fire-cabinet` | — | break-glass wall cabinet (world display for the axe) | 3,304 | 293 KB | — | — |
 
@@ -52,7 +52,7 @@ saved in `assets/source/weapons-1970s/<id>.blend` (one collection named after th
 - Casino details: suit inlay and brass house plaque (High Roller), witness mark (Chicago
   Typewriter), dice and split-suit engraving (Double or Nothing), diamond inlays (Snake Eyes),
   silver dollar (Silver Dollar), HOUSE tag (Last Call), inventory number (Eye in the Sky), serial
-  plaque and stencil (House Edge), inventory stencil (Debt Collector), suits on the rake head.
+  plaque and stencil (House Edge), inventory stencil (Debt Collector), TABLE 3 mark (Stickman).
 
 ## Animation (lib/game/weapon-viewmodels.ts, weapon-rig.ts)
 
@@ -77,11 +77,16 @@ Pour speeds animation and sound together). Highlights:
 - Debt Collector: latch, hinge drop, case extraction, new shell, latch closed.
 - Stickman sweeps low-right to high-left; Fire Exit raises and chops.
 
+RMB holds aligned sights, with a fixed optical view on Eye in the Sky. B fires both barrels of Double or Nothing. The four obstructed arsenal sight lines were corrected in native Blender geometry; the house shotgun also has a calibrated source in `assets/source/weapons-1970s/shotgun-sights.blend`. `lib/game/weapon-aim.ts` records the sight anchors. Reload end recovery blends back to the grip over 0.18 seconds.
+
+C equips chips; E, weapon keys, Q and the wheel release them. Both printed craps number banks accept bets on the felt, with a matching target highlight and chip preview.
+
 ## Sound
 
 See [`public/audio/weapons/README.md`](../../public/audio/weapons/README.md). Samples load lazily per
 weapon (the Velvet Fortune preloads its payout during the spin) and are triggered by simulation events
 plus a cue director that fires each reload/action beat at the same fractions the animators use.
+Missing or failed samples use the game synthesizer fallback. Pause, reset and disposal cancel pending playback. The native [Blender audition project](../../assets/source/weapons-1970s/weapon-sound-audition.blend) contains all 94 samples; the [32-second sound showcase](weapon-sound-showcase.wav) is a quick review mix.
 
 ## HUD
 
@@ -101,10 +106,14 @@ python3 tools/weapon-1970s/make_textures.py
 /Applications/Blender.app/Contents/MacOS/Blender -b --python tools/weapon-1970s/render_ui.py -- [ids]
 python3 tools/weapon-1970s/pack_ui.py
 python3 tools/weapon-1970s/make_sounds.py
+/Applications/Blender.app/Contents/MacOS/Blender -b --python tools/weapon-1970s/audit_blender.py
+python3 tools/weapon-1970s/review_assets.py
+node --experimental-strip-types tools/weapon-1970s/check_sights.mjs
 ```
 
 Tested with Blender 5.2 LTS, Python 3.11 + numpy/scipy/Pillow. `tools/weapon-1970s/shoot.mjs` is the
 headless-Chrome screenshot driver used for in-game review (`/?playtest=1`, development builds only).
+See [the completion review](review-2026-09-28.md) for checks and in-game evidence.
 
 ## Known limitations
 

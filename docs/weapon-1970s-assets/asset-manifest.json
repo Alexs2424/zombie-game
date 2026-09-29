@@ -105,7 +105,7 @@
    "Magazine",
    "Stock"
   ],
-  "triangles": 11796,
+  "triangles": 12012,
   "nodes": [
    "Bolt",
    "Grip",
@@ -116,7 +116,7 @@
   ],
   "glb": "public/models/machinepistol.glb",
   "source": "assets/source/weapons-1970s/machinepistol.blend",
-  "bytes": 611568
+  "bytes": 619004
  },
  "doublebarrel": {
   "muzzle": [
@@ -230,7 +230,7 @@
     -0.07
    ]
   },
-  "triangles": 14187,
+  "triangles": 14295,
   "nodes": [
    "Barrel",
    "Forearm",
@@ -243,7 +243,7 @@
   ],
   "glb": "public/models/lever.glb",
   "source": "assets/source/weapons-1970s/lever.blend",
-  "bytes": 757720
+  "bytes": 761444
  },
  "sniper": {
   "muzzle": [
@@ -328,7 +328,7 @@
     0.1
    ]
   },
-  "triangles": 21902,
+  "triangles": 22118,
   "nodes": [
    "Barrel",
    "Bolt",
@@ -340,7 +340,7 @@
   ],
   "glb": "public/models/tommy.glb",
   "source": "assets/source/weapons-1970s/tommy.blend",
-  "bytes": 1031588
+  "bytes": 1039028
  },
  "lmg": {
   "muzzle": [
@@ -357,7 +357,7 @@
    "Charging handle",
    "Trigger"
   ],
-  "triangles": 23828,
+  "triangles": 24044,
   "nodes": [
    "Ammo box",
    "Barrel",
@@ -370,28 +370,28 @@
   ],
   "glb": "public/models/lmg.glb",
   "source": "assets/source/weapons-1970s/lmg.blend",
-  "bytes": 1137620
+  "bytes": 1145060
  },
  "stick": {
   "muzzle": [
-   0,
-   -0.048,
-   1.004
+   -0.085,
+   -0.018,
+   0.9249999999999999
   ],
   "hands": "shotgun",
-  "class": "craps stick (melee)",
+  "class": "bent-cane craps stick (melee)",
   "animated": [
    "Stick",
    "Rake head"
   ],
-  "triangles": 4032,
+  "triangles": 2736,
   "nodes": [
    "Rake head",
    "Stick"
   ],
   "glb": "public/models/stick.glb",
   "source": "assets/source/weapons-1970s/stick.blend",
-  "bytes": 333556
+  "bytes": 244808
  },
  "axe": {
   "muzzle": [
