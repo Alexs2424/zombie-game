@@ -1,6 +1,6 @@
 # Current 2D room map
 
-`last-jackpot-map.png` is the full-size **2120 × 1650** map.
+`last-jackpot-map.png` is the full-size **2270 × 1650** map.
 `last-jackpot-map.svg` is the editable, resolution-independent version.
 `map-data.json` records the source world coordinates, geometry and placements.
 
@@ -8,8 +8,9 @@ The implemented map contains the **60 × 32 m Grand Casino**, west Last Call
 Lounge, south High Roller, east cashier public room and inaccessible secure cash
 area, northwest Supply Room, hotel entrance, unchanged Grand Hotel Lobby, and
 upstairs restaurant. The hotel’s concealed luggage gallery is shown within the
-lobby. Ground and upper plans both use **14 pixels per metre**, with +Z north.
-The overall ground bounds are **88 × 89 m**; the restaurant is four metres above
+lobby. The Velvet Hour speakeasy is east of the cashier public room, preserving
+the portrait/keypad and Mystery Slot features integrated from the main branch. Ground and upper plans both use **14 pixels per metre**, with +Z north.
+The overall ground bounds are **98 × 89 m**; the restaurant is four metres above
 its rear lobby.
 
 The main casino shows all **8 slot banks / 48 cabinets**, **2 craps tables**,
@@ -55,7 +56,9 @@ move again, update the curated annotations as well as regenerating geometry.
   are reserved; no usable lower level is implied by the map.
 - Purple hotel panels belong to the existing key puzzle. They provide access
   to the concealed luggage gallery and are separate from the purchased supply
-  room and its moved truck/storage assets.
+  room and its moved truck/storage assets. The purple doorway east of the cashier
+  belongs to the separate portrait/keypad puzzle; it leads to the Velvet Hour
+  without opening the glass-secured cash area.
 - Room sizes are nominal bounds. The hotel lobby and restaurant are polygons;
   their bounding rectangles are not fully walkable floor area.
 - Furniture rectangles are physical collision footprints, not mesh outlines.

@@ -5,6 +5,7 @@ import { HOTEL, HOTEL_SURFACES } from '../../lib/game/world.ts';
 import { CASINO_ROOMS, CASINO_ANCHORS, SLOT_ISLANDS, CRAPS_TABLES, ROULETTE_TABLES } from '../../lib/game/casino-layout.ts';
 import { SLOT_MACHINE_SOURCES } from '../../lib/game/slot-machines.ts';
 import { HOTEL_MYSTERY_GATES, HOTEL_MYSTERY_ANCHORS } from '../../lib/game/hotel-mystery.ts';
+import { SECRET_DOOR, CASINO_SECRET_ANCHORS } from '../../lib/game/casino.ts';
 
 const rect = (minX, maxX, minZ, maxZ) => [
   { x: minX, z: minZ }, { x: maxX, z: minZ }, { x: maxX, z: maxZ }, { x: minX, z: maxZ },
@@ -23,6 +24,7 @@ const rooms = [
   { id: '07', key: 'foyer', name: 'Hotel Entrance', polygon: rect(-5.5, -0.5, 12, 15), level: 0, label: [-3, 13.5], dimensions: '5 × 3 m connector' },
   { id: '08', key: 'hotel', name: 'Grand Hotel Lobby', polygon: HOTEL.lobbyPolygon, level: 0, label: [-4, 29], lines: ['Grand Hotel Lobby'], dimensions: '38 × 36 m bounds' },
   { id: '09', key: 'restaurant', name: 'Grand Hotel Restaurant', polygon: HOTEL.upperPolygon, level: HOTEL.floorY, label: [-4, 42], lines: ['Grand Hotel', 'Restaurant'], dimensions: '30 × 16.5 m bounds' },
+  casinoRoom('speakeasy', '10', [48, -3.5], ['The Velvet', 'Hour']),
 ];
 const connections = [
   { id: 'lounge', from: '01', to: '02', group: 'A', name: 'Lounge · north entrance' },
@@ -62,11 +64,13 @@ const data = {
   start: CASINO_ANCHORS.spawn,
   slotBanks: SLOT_ISLANDS, slotCabinets: SLOT_MACHINE_SOURCES, crapsTables: CRAPS_TABLES, rouletteTables: ROULETTE_TABLES,
   mystery: { polygon: galleryPolygon, gates: HOTEL_MYSTERY_GATES, anchors: HOTEL_MYSTERY_ANCHORS },
+  casinoSecret: { gate: SECRET_DOOR, anchors: CASINO_SECRET_ANCHORS },
   notes: [
     'Geometry and prices come directly from the implemented game modules. The starting casino is 60 × 32 m.',
     'Only the central casino is initially accessible. Every gold door is purchased separately.',
     'Cashier rear area is inaccessible. Future stairs and trapdoor are reserved only, with no playable level.',
     'The concealed hotel luggage gallery is preserved; both hidden panels open through the existing key puzzle.',
+    'The Velvet Hour is reached through the cashier public room portrait and shootable keypad; it does not open the secure cash area.',
     'Furniture shows collision footprints, not model silhouettes. Glass is shown at its actual barrier line.',
     'Restaurant overlaps the rear lobby at +4 m; the lobby octagon and curved stairs are unchanged.',
   ],

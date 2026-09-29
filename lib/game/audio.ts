@@ -3,6 +3,8 @@ import type { WorldPosition } from "./world";
 import { HOTEL_FIXTURES } from "./hotel-fixtures.ts";
 import { SlotAudioDirector, slotSourceAudible, type SlotCue } from "./slot-audio-director.ts";
 import { slotSoundSamples, SLOT_SOUND_NAMES } from "./slot-sounds.ts";
+import { WeaponCueDirector, WeaponSounds } from "./weapon-audio.ts";
+import type { WeaponId } from "./simulation";
 
 type ZombieCue = "chase" | "last" | "horde";
 const ZOMBIE_SOUNDS: Record<ZombieCue, string[]> = {
@@ -40,6 +42,12 @@ export class GameAudio {
   get slotStatus() {
     return `Slots · last cue: ${this.lastSlotPlayback}`;
   }
+  /** Sampled 1970s arsenal: lazily loaded per weapon, cue-locked to the viewmodel animation. */
+  readonly weapons = new WeaponSounds(() =>
+    this.context && this.world ? { context: this.context, world: this.world, reverb: this.reverb } : null,
+  );
+  private weaponCues = new WeaponCueDirector(this.weapons);
+  private listener = { player: { x: 0, z: 0 } as V2, yaw: 0 };
   private zombieBuffers = new Map<string, AudioBuffer>();
   private zombieLoading: Promise<void> | null = null;
   private zombieFetch: AbortController | null = null;
@@ -155,6 +163,7 @@ export class GameAudio {
   }
   setActive(playing: boolean) {
     this.active = playing;
+    this.weapons.setActive(playing);
     if (!playing) {
       this.stopZombieVoices();
       this.slotVoice?.stop();
@@ -230,7 +239,13 @@ export class GameAudio {
       panner.disconnect();
     };
   }
+  /** Per-frame weapon cue timing (reload beats, lever/bolt cycles, LMG belt run-out). */
+  weaponFrame(dt: number, s: { weapon: WeaponId; reloadRemaining: number; reloadDuration: number; mag: number; playing: boolean }) {
+    this.weaponCues.update(dt, s);
+  }
   play(event: GameEvent) {
+    if (event.type === "shot" && event.weapon) this.weaponCues.shot(event.weapon);
+    if (this.weapons.event(event, this.listener.player, this.listener.yaw)) return;
     if (event.type === "hotelBell") {
       this.tone(1568, 1.1, 0.15, "sine");
       this.tone(2352, 0.65, 0.065, "sine");
@@ -254,6 +269,12 @@ export class GameAudio {
       this.tone(1567.98, 0.5, 0.045, "triangle", undefined, 0.38, 0, true);
     }
     if (event.type === "knife") this.burst(0.18, 0.13, 1800);
+    if (event.type === "melee") this.burst(0.25, 0.13, event.weapon === "axe" ? 700 : 1300);
+    if (event.type === "stickBreak") {
+      this.burst(0.22, 0.4, 2600);
+      this.tone(340, 0.16, 0.1, "triangle", 90);
+    }
+    if (event.type === "dry") this.burst(0.025, 0.12, 2600);
     if (event.type === "grenadeThrow") this.burst(0.12, 0.1, 900);
     if (event.type === "explosion") {
       this.burst(0.65, 0.45, 220);
@@ -376,6 +397,8 @@ export class GameAudio {
     moving: boolean,
     sprinting: boolean,
   ) {
+    this.listener.player = player;
+    this.listener.yaw = yaw;
     const c = this.context;
     if (!c || !this.master || !this.ambience || !this.ambienceFilter) return;
     if (playing !== this.active) this.setActive(playing);
@@ -479,6 +502,8 @@ export class GameAudio {
     }
   }
   resetSlots() {
+    this.weapons.stop();
+    this.weaponCues.reset();
     this.slotVoice?.stop();
     this.slotDirector.reset();
     this.slotSequence = 0;
@@ -652,6 +677,7 @@ export class GameAudio {
   }
   dispose() {
     this.resetSlots();
+    this.weapons.dispose();
     this.slotBuffers = [];
     this.stopZombieVoices();
     this.zombieFetch?.abort();

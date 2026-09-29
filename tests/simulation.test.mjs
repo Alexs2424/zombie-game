@@ -719,45 +719,52 @@ function wagering() {
   return s;
 }
 
-test("craps charges once, blocks distant/paused/unaffordable attempts, and pays once", () => {
+test("craps place bets charge once, lock during rolls, and pay profit while keeping the stake", () => {
   const s = wagering();
+  s.holdingChips = true;
   s.player = { x: 31, z: -5 };
   assert.equal(s.purchase("craps"), false);
   s.player = { x: CRAPS_TABLES[0].x, z: CRAPS_TABLES[0].approachZ };
   s.pause();
   assert.equal(s.purchase("craps"), false);
   s.resume();
-  s.points = 249;
-  assert.equal(s.purchase("craps"), false);
-  assert.equal(s.points, 249);
+  s.points = 24;
+  assert.equal(s.placeBet(10), false);
+  assert.equal(s.points, 24);
   s.points = 1000;
+  assert.equal(s.placeBet(10), true);
   s.random = () => 0.7; // two fives
   assert.equal(s.purchase("craps"), true);
-  assert.equal(s.points, 750);
+  assert.equal(s.points, 975);
   assert.equal(s.purchase("craps"), false);
+  assert.equal(s.placeBet(4), false);
+  assert.equal(s.takeBets(), false);
   s.pause();
   tick(s, 3);
   assert.equal(s.dice.remaining, 1.6);
   s.resume();
   tick(s, 1.7);
   assert.deepEqual(s.dice.values, [5, 5]);
-  assert.equal(s.points, 1250);
+  assert.equal(s.points, 1020);
+  assert.equal(s.bets[10],25);
   tick(s, 4);
-  assert.equal(s.points, 1250);
+  assert.equal(s.points, 1020);
   assert.equal(s.slowRound, 0);
   assert.equal(s.purchase("craps"), false);
   assert.equal(s.events.filter((e) => e.type === "diceWin").length, 1);
 });
 
-test("seven slows both movement modes for one round and preserves Night Shift multiplier", () => {
+test("seven clears place bets and applies the shared single-round movement curse", () => {
   const s = wagering();
+  s.holdingChips=true;s.placeBet(4);s.placeBet(6);
   let n = 0;
   s.random = () => (n++ % 2 ? 0.51 : 0.34); // three + four
   assert.equal(s.purchase("craps"), true);
   tick(s, 1.7);
   assert.equal(s.slowRound, 3);
   assert.equal(s.slowed, true);
-  assert.equal(s.points, 750);
+  assert.equal(s.points, 945);
+  assert.deepEqual(s.bets,{});
   for (const sprint of [false, true]) {
     s.player = { x: -3, z: 0 };
     s.yaw = 0;
@@ -765,7 +772,7 @@ test("seven slows both movement modes for one round and preserves Night Shift mu
     s.step(0.05, { ...idle, forward: 1, sprint });
     assert.ok(
       Math.abs(
-        s.player.z - (sprint ? RULES.sprint * 1.15 : RULES.walk) * 0.8 * 0.05,
+        s.player.z - (sprint ? RULES.sprint * 1.15 : RULES.walk) * .8 * 0.05,
       ) < 1e-8,
     );
   }
@@ -775,25 +782,25 @@ test("seven slows both movement modes for one round and preserves Night Shift mu
   assert.equal(s.purchaseInfo("craps").reason, "");
 });
 
-test("intermission and boundary-crossing wagers target the next round, then clear", () => {
+test("table stakes persist across round boundaries and fresh runs reset casino state", () => {
   for (const finishDuringRoll of [false, true]) {
     const s = wagering();
     s.intermission = finishDuringRoll ? 0 : 8;
     let n = 0;
-    s.random = () => (n++ % 2 ? 0.51 : 0.34);
+    s.random = () => (n++ % 2 ? 0.51 : 0.51); // eight: no winning bet
+    s.holdingChips=true;s.placeBet(4);
     s.purchase("craps");
     if (finishDuringRoll) {
       s.waveRemaining = 0;
       s.enemies = [];
     }
     tick(s, 1.7);
-    assert.equal(s.slowRound, 4);
-    assert.equal(s.dice.round, 4);
+    assert.equal(s.bets[4],25);
     assert.equal(s.slowed, false);
     s.intermission = 0;
     s.beginRound();
-    assert.equal(s.slowed, true);
-    assert.equal(s.purchase("craps"), false);
+    assert.equal(s.slowed, false);
+    assert.equal(s.bets[4],25);
     s.enemies = [];
     s.waveRemaining = 0;
     s.step(0.05, idle);
@@ -804,5 +811,6 @@ test("intermission and boundary-crossing wagers target the next round, then clea
     assert.equal(fresh.dice, null);
     assert.equal(fresh.slowRound, 0);
     assert.equal(fresh.lastWagerRound, -1);
+    assert.deepEqual(fresh.bets,{});assert.equal(fresh.speakeasy,false);assert.equal(fresh.mystery,null);
   }
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element -- HUD weapon art is static, pre-sized WebP drawn over the WebGL canvas. */
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { GameRuntime, GameView } from "../lib/game/runtime";
@@ -5,6 +6,10 @@ import { PRICES, ROULETTE_RULES, WEAPONS } from "../lib/game/simulation";
 import { cardName, cardRank, suitSymbol } from "../lib/game/poker";
 import { HOTEL_RULES } from "../lib/game/hotel-gameplay";
 const initial: GameView = {
+  owned: [{ id: "pistol", label: "Pistol", key: "1" }],
+  pickup: null,
+  mysteryReel: { spinning: false, id: null },
+  casino: {holding:false,chip:25,bets:{},nearTable:false,result:"",speakeasy:false,nearPainting:false,paintingOpen:false,codeProgress:0,mystery:"",nearMystery:false},
   grenades: 2,
   knifeReady: true,
   phase: "ready",
@@ -86,7 +91,41 @@ function Controls() {
       <br />
       <kbd>G</kbd> GRENADE <kbd>V</kbd> KNIFE
       <br />
-      <kbd>1–6</kbd> SWITCH <kbd>ESC</kbd> PAUSE
+      <kbd>C</kbd> HOLD CHIPS · AIM + CLICK TO BET
+      <br />
+      CHIPS: <kbd>R</kbd> VALUE <kbd>X</kbd> TAKE BETS <kbd>E</kbd> PUT AWAY / ROLL
+      <br />
+      <kbd>RIGHT CLICK</kbd> HOLD AIM <kbd>B</kbd> BOTH BARRELS
+      <br />
+      <kbd>1–0</kbd> <kbd>Q</kbd> <kbd>WHEEL</kbd> SWITCH <kbd>ESC</kbd> PAUSE
+    </div>
+  );
+}
+const MYSTERY_REEL = [
+  "magnum",
+  "tommy",
+  "doublebarrel",
+  "dual",
+  "machinepistol",
+  "lever",
+  "autoshotgun",
+  "sniper",
+  "lmg",
+  "launcher",
+] as const;
+/** Cycles the ten Blender renders while the cabinet spins, then shows the payout. */
+function MysteryReel({ reel }: { reel: GameView["mysteryReel"] }) {
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    if (!reel.spinning) return;
+    const timer = window.setInterval(() => setTick((n) => n + 1), 95);
+    return () => window.clearInterval(timer);
+  }, [reel.spinning]);
+  const id = reel.spinning ? MYSTERY_REEL[tick % MYSTERY_REEL.length] : reel.id;
+  if (!id) return null;
+  return (
+    <div className={`mystery-reel ${reel.spinning ? "spinning" : "paid"}`}>
+      <img src={`/ui/weapons/${id}-side.webp`} alt="" />
     </div>
   );
 }
@@ -358,6 +397,13 @@ export default function Home() {
         );
         try {
           runtime.current = new GameRuntime(canvas.current, setView, setError);
+          if (
+            process.env.NODE_ENV !== "production" &&
+            new URLSearchParams(window.location.search).has("playtest")
+          )
+            // Browser automation hook for development screenshots only.
+            (window as unknown as { __lastJackpot?: GameRuntime }).__lastJackpot =
+              runtime.current;
           void runtime.current.renderer.ready
             .then(() => {
               if (!disposed) setReady(true);
@@ -395,7 +441,13 @@ export default function Home() {
     if (paused) resumeButton.current?.focus();
   }, [paused]);
   const runPlaytestAction = useCallback((id: string) => runtime.current?.testAction(id), []);
-  const diceResults = view.diceResults.filter(({ dice }) => !dice.resolved || dice.resultRemaining > 0);
+  const tableDice = view.diceResults.find(({ tableId }) => tableId === view.casino.tableId)?.dice;
+  const showBetting = view.casino.nearTable && (
+    view.casino.holding || Object.values(view.casino.bets).some(value => (value ?? 0) > 0) ||
+    tableDice?.quickWager === false
+  );
+  const diceResults = view.diceResults.filter(({ tableId, dice }) =>
+    (!dice.resolved || dice.resultRemaining > 0) && !(showBetting && tableId === view.casino.tableId));
   const rouletteResults = view.rouletteResults.filter(({ roulette }) => !roulette.resolved || roulette.resultRemaining > 0);
   const showDice = diceResults.length > 0;
   const showRoulette = rouletteResults.length > 0;
@@ -524,6 +576,28 @@ export default function Home() {
           </div>
           {active && (
             <>
+              {showBetting && (
+                <section className="casino-betting" aria-label="Craps place bets">
+                  <small>CRAPS {view.casino.tableId === "craps-b" ? "2" : "1"} · PLACE BETS</small>
+                  <strong>{view.casino.holding ? `HOLDING ${view.casino.chip} CHIPS` : "C · TAKE CHIPS IN HAND"}</strong>
+                  <div className="bet-number-row">{[4,5,6,8,9,10].map(n=><div key={n}><b>{n}</b><span>{view.casino.bets[n]??0} ON</span><small>+{Math.ceil(view.casino.chip/(n===6||n===8?6:5))*(n===6||n===8?6:5)} CHIPS</small></div>)}</div>
+                  <p>Aim at a printed number + click · R chip value<br/>E put away / roll · X return bets · weapon keys put chips away</p>
+                  {view.casino.hover && <p className="bet-hover-hint">{view.casino.hover.affordable ? `CLICK · ${view.casino.hover.amount} CHIPS ON ${view.casino.hover.number}` : `NEED ${view.casino.hover.amount} CHIPS`}</p>}
+                  <small>4/10 pay 9:5 · 5/9 pay 7:5 · 6/8 pay 7:6<br/>One roll per table each round. Seven clears this table’s bets.</small>
+                  {tableDice && <p role="status">{tableDice.resolved ? `${tableDice.values[0]} + ${tableDice.values[1]} · ${view.casino.result}` : "⚄ ⚂ Rolling… bets locked"}</p>}
+                </section>
+              )}
+              {view.casino.nearPainting && view.casino.paintingOpen && !view.casino.speakeasy && <div className="secret-status">THE LOCK · {view.casino.codeProgress} / 8<br/><small>Read the pinned cards left to right. Shoot suit, then number.</small></div>}
+              {view.casino.nearMystery && (
+                <div className="secret-status mystery-status">
+                  <strong>THE VELVET FORTUNE</strong>
+                  <MysteryReel reel={view.mysteryReel} />
+                  <p>
+                    {view.casino.mystery ||
+                      "400 chips · 50% one of ten 1970s house guns / 50% nothing · E spin"}
+                  </p>
+                </div>
+              )}
               {(view.slowRound > 0 || view.damageBoostRemaining > 0) && (
                 <div className="status-effects">
                   {view.slowRound > 0 && (
@@ -566,13 +640,13 @@ export default function Home() {
                   className={`gambling-results ${diceResults.length + rouletteResults.length > 2 ? "multiple-wagers" : ""}`}
                   aria-label="Table game results"
                 >
-                  {diceResults.map(({ tableId, label, dice }) => (
+                  {diceResults.map(({ tableId, label, dice, result }) => (
                     <div
                       className={`gambling-card dice-result ${dice.resolved && dice.values[0] + dice.values[1] === 7 ? "cursed" : ""}`}
                       key={tableId}
                       role="status"
                     >
-                      <span>SEVEN’S CURSE · {label}</span>
+                      <span>{dice.quickWager === false ? "PLACE BETS" : "SEVEN’S CURSE"} · {label}</span>
                       <div
                         className={
                           dice.resolved
@@ -596,14 +670,18 @@ export default function Home() {
                       <strong>
                         {!dice.resolved
                           ? "Rolling…"
-                          : dice.values[0] + dice.values[1] === 7
+                          : dice.quickWager === false
+                            ? result
+                            : dice.values[0] + dice.values[1] === 7
                             ? "SEVEN. THE HOUSE COLLECTS."
                             : `${dice.values[0] + dice.values[1]} · +500 CHIPS`}
                       </strong>
                       <p>
                         {!dice.resolved
                           ? "Stay alert. The game keeps moving."
-                          : dice.values[0] + dice.values[1] === 7
+                          : dice.quickWager === false
+                            ? "Winnings paid. Remaining bets stay on this table."
+                            : dice.values[0] + dice.values[1] === 7
                             ? `Movement reduced 20% for round ${dice.round}.`
                             : "Your luck holds. Come back next round."}
                       </p>
@@ -707,13 +785,14 @@ export default function Home() {
               )}
 
               <div
-                className={`crosshair ${view.hit > 0 ? "hit" : ""} ${view.headshot ? "headshot" : ""}`}
+                className={`crosshair ${view.aiming ? "aiming" : ""} ${view.hit > 0 ? "hit" : ""} ${view.headshot ? "headshot" : ""}`}
               >
                 <i />
                 <i />
                 <i />
                 <i />
               </div>
+              {view.scoped && <div className="scope-view" aria-label="Fixed four-power scope"><div className="scope-reticle" /></div>}
               {view.damage > 0 && (
                 <div
                   className="damage-vignette"
@@ -741,6 +820,10 @@ export default function Home() {
                           {view.prompt.price.toLocaleString()}{" "}
                           <small>CHIPS</small>
                         </>
+                      ) : view.prompt.name.startsWith("Craps") ? (
+                        "ROLL DICE"
+                      ) : view.prompt.name === "The crooked portrait" ? (
+                        "REVEAL"
                       ) : (
                         "VIEW MENU"
                       ))}
@@ -760,6 +843,46 @@ export default function Home() {
                 </div>
               )}
             </>
+          )}
+          {view.pickup && (
+            <section
+              className="pickup-card"
+              key={`${view.pickup.id}-${view.pickup.at}`}
+              role="status"
+              aria-label={`${view.pickup.name} acquired`}
+            >
+              <span className="pickup-eyebrow">
+                {view.pickup.melee ? "IN HAND" : "THE HOUSE PAYS OUT"}
+              </span>
+              <img src={`/ui/weapons/${view.pickup.id}-card.webp`} alt="" />
+              <strong>{view.pickup.name}</strong>
+              <small>
+                {view.pickup.label.toUpperCase()}
+                {view.pickup.id === "stick"
+                  ? " · 3 SWEEPS"
+                  : view.pickup.melee
+                    ? " · MELEE"
+                    : ` · ${view.pickup.capacity} ROUNDS`}
+              </small>
+              <dl>
+                {(
+                  [
+                    ["Damage", view.pickup.stats.damage],
+                    ["Fire rate", view.pickup.stats.rate],
+                    ["Capacity", view.pickup.stats.capacity],
+                    ["Mobility", view.pickup.stats.mobility],
+                  ] as const
+                ).map(([label, value]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>
+                      <i style={{ width: `${Math.round(value * 100)}%` }} />
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              <p>{view.pickup.flavor}</p>
+            </section>
           )}
           {view.perks.length > 0 && (
             <div className="perk-badges">
@@ -785,27 +908,46 @@ export default function Home() {
               </span>
             </div>
             <div className="weapon-panel">
-              <div className="weapon-slots">
-                {view.inventory.map((w, i) => (
+              <div className="weapon-slots" aria-label="Owned weapons">
+                {view.owned.map((w) => (
                   <span
                     key={w.id}
                     className={view.weapon === w.id ? "selected" : ""}
+                    title={w.label}
                   >
-                    {i + 1} {w.owned ? w.label.toUpperCase() : "—"}
+                    <b>{w.key}</b>
+                    <img src={`/ui/weapons/${w.id}-side.webp`} alt={w.label} />
                   </span>
                 ))}
               </div>
-              <span className="weapon-name">{view.weaponName}</span>
+              <div className="weapon-indicator">
+                <img src={`/ui/weapons/${view.weapon}-side.webp`} alt="" />
+                <span className="weapon-name">{view.weaponName}</span>
+              </div>
+              {view.casino.holding && (
+                <span className="hud-hint">
+                  CHIPS IN HAND · {view.casino.chip} · E / WEAPON KEY TO EQUIP
+                </span>
+              )}
               <span className="hud-hint">
                 G GRENADE · {view.grenades} / 4 &nbsp; V KNIFE ·{" "}
                 {view.knifeReady ? "READY" : "RECOVERING"}
               </span>
-              <div className="ammo">
-                <strong className={view.mag === 0 ? "empty" : ""}>
-                  {String(view.mag).padStart(2, "0")}
-                </strong>
-                <span>/ {view.reserve}</span>
-              </div>
+              {view.weapon === "stick" || view.weapon === "axe" ? (
+                <div className="ammo melee">
+                  <strong>
+                    {view.weapon === "stick" ? view.mag : "∞"}
+                  </strong>
+                  <span>{view.weapon === "stick" ? "SWEEPS LEFT" : "NEVER BREAKS"}</span>
+                </div>
+              ) : (
+                <div className="ammo">
+                  <strong className={view.mag === 0 ? "empty" : ""}>
+                    {String(view.mag).padStart(2, "0")}
+                  </strong>
+                  <span>/ {view.reserve}</span>
+                </div>
+              )}
               <span className="hud-hint">
                 {view.mag === 0
                   ? "R TO RELOAD"
@@ -1010,6 +1152,14 @@ export default function Home() {
             />
           </label>
           <Controls />
+          {process.env.NODE_ENV !== "production" && (
+            <fieldset className="debug-actions">
+              <legend>Debug · current run</legend>
+              <button disabled={!ready || view.phase === "ready" || view.phase === "dead"} onClick={() => runtime.current?.debugAction("unlock-all")}>Open all doors</button>
+              <button disabled={!ready || view.phase === "ready" || view.phase === "dead"} onClick={() => runtime.current?.debugAction("add-chips")}>+10,000 chips</button>
+              <small>Start a run first. Includes the hotel and speakeasy. New runs reset these changes.</small>
+            </fieldset>
+          )}
           <label className="debug-check">
             <input
               type="checkbox"
@@ -1045,6 +1195,8 @@ export default function Home() {
           <span>{view.slotAudioStatus}</span></>}
           {[
             ["new", "Seed run"],
+            ["unlock-all", "Open all doors"],
+            ["add-chips", "+10,000 chips"],
             ["hotel-entrance", "Hotel entrance"],
             ["hotel-lobby", "Hotel lobby"],
             ["hotel-reception", "Reception ledger"],
@@ -1099,6 +1251,21 @@ export default function Home() {
             ["roulette", "Roulette table I"],
             ["rouletteB", "Roulette table II"],
             ["roulette-spin-b", "Spin roulette II"],
+            ["hold-chips", "Hold chips"],
+            ["bet-4", "Place 4"],
+            ["bet-6", "Place 6"],
+            ["take-bets", "Take bets"],
+            ["clue", "Clue table"],
+            ["portrait", "Secret portrait"],
+            ["key-spade", "Shoot spade"],
+            ["key-7", "Shoot 7"],
+            ["key-heart", "Shoot heart"],
+            ["key-4", "Shoot 4"],
+            ["key-club", "Shoot club"],
+            ["key-9", "Shoot 9"],
+            ["key-diamond", "Shoot diamond"],
+            ["key-2", "Shoot 2"],
+            ["mystery-view", "Mystery machine"],
             ["rouletteClose", "Wheel close-up"],
             ["roulette-spin", "Spin roulette"],
             ["roulette-4", "Test 4 ammo"],

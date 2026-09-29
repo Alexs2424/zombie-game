@@ -25,6 +25,7 @@ import {
   ROULETTE_RULES,
   hasSight,
 } from "../lib/game/simulation.ts";
+import { isMelee } from "../lib/game/weapon-expansion.ts";
 
 const idle = { forward: 0, strafe: 0, sprint: false, fire: false };
 const key = (card) => `${card.suit}/${card.rank}`;
@@ -564,7 +565,7 @@ test("revolver upgrades retain six chambers, improve reload and damage, and shar
     assert.equal(s.reload(), true);
     advance(s, s.reloadDuration() + 0.05);
     assert.deepEqual(s.inventory.revolver, { owned: true, mag: 6, reserve: 2 });
-    for (const weapon of WEAPON_ORDER.filter((w) => w !== "revolver")) {
+    for (const weapon of WEAPON_ORDER.filter((w) => w !== "revolver" && !isMelee(w))) {
       s.upgrades[weapon] = true;
       assert.equal(s.capacity(weapon), Math.round(WEAPONS[weapon].magazine * 1.5));
       assert.equal(s.reloadDuration(weapon), WEAPONS[weapon].reload * 0.7);

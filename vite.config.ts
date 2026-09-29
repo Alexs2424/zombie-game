@@ -55,6 +55,8 @@ export default defineConfig(async () => {
       cloudflare({
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
         config: localBindingConfig,
+        // The optional Wrangler inspector cannot bind inside the local sandbox.
+        inspectorPort: false,
       }),
     ],
   };

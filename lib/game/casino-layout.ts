@@ -15,7 +15,10 @@ function room(id: string, name: string, minX: number, maxX: number, minZ: number
     polygon: [{ x: minX, z: minZ }, { x: maxX, z: minZ }, { x: maxX, z: maxZ }, { x: minX, z: maxZ }] };
 }
 
+export const SECRET_ROOM = room('speakeasy', 'The Velvet Hour · Speakeasy', 43, 53, -24, 0);
+
 export const CASINO_ROOMS = {
+  speakeasy: SECRET_ROOM,
   casino: room('casino', 'Grand Casino', -33, 27, -20, 12, 6.8),
   lounge: room('lounge', 'The Last Call Lounge', -45, -33, -20, 4),
   cashier: room('cashier', 'Cashier', 27, 43, -20, -12),
@@ -24,7 +27,7 @@ export const CASINO_ROOMS = {
   supply: room('supply', 'Supply Room', -37, -23, 35, 49),
 };
 export const CASINO_GROUND_POLYGONS = Object.values(CASINO_ROOMS).filter(r => r.accessibleGround).map(r => r.polygon);
-export const CASINO_BOUNDS = { minX: -45, maxX: 43, minZ: -38, maxZ: 49 };
+export const CASINO_BOUNDS = { minX: -45, maxX: 53, minZ: -38, maxZ: 49 };
 export const LOUNGE_OFFSET = { x: -50, z: -5 };
 export const SERVICE_OFFSET = { x: -40, z: 35 };
 
@@ -103,6 +106,7 @@ export const CASINO_ANCHORS = {
 } as const;
 
 export const CASINO_SPAWNS = {
+  speakeasy: [{ x: 51.5, z: -22.5 }, { x: 51.5, z: -1.5 }],
   casino: [{ x: -31.5, z: 9.5 }, { x: 25.5, z: 9.5 }, { x: -30.5, z: -18.5 }, { x: 25.5, z: -18.5 }, { x: 10, z: 10.5 }],
   lounge: [{ x: -43.5, z: 2.5 }, { x: -43.5, z: -18.5 }],
   vip: [{ x: -26.5, z: -36.5 }, { x: -7.5, z: -36.5 }],

@@ -1,16 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  CASINO_ROOMS, CASINO_WALLS, CASINO_FIXTURES, CASINO_DOORS, CASINO_ANCHORS,
+  CASINO_ROOMS, CASINO_DOORS, CASINO_ANCHORS,
   CASINO_SPAWNS, CRAPS_TABLES, ROULETTE_TABLES,
 } from '../lib/game/casino-layout.ts';
-import { LOUNGE_RECTS } from '../lib/game/lounge-layout.ts';
-import { SERVICE_RECTS } from '../lib/game/service-layout.ts';
+import { STATIC_RECTS } from '../lib/game/simulation.ts';
 import { POKER_TABLES } from '../lib/game/poker.ts';
-import { HOTEL, HOTEL_RECTS, Navigation, collides, moveActor, hasSight, raycastWorld } from '../lib/game/world.ts';
+import { HOTEL, Navigation, collides, moveActor, hasSight, raycastWorld } from '../lib/game/world.ts';
 import { HOTEL_GATE } from '../lib/game/hotel-gameplay.ts';
 
-const solids = [...CASINO_WALLS, ...CASINO_FIXTURES, ...HOTEL_RECTS, ...LOUNGE_RECTS, ...SERVICE_RECTS];
+const solids = STATIC_RECTS;
 const ground = (x, z) => ({ x, z, y: 0, surfaceId: 'ground' });
 
 test('grand casino is 60 by 32 metres and the hotel footprint remains exact', () => {

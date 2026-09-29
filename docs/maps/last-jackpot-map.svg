@@ -1,18 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2120" height="1650" viewBox="0 0 2120 1650" role="img" aria-labelledby="title desc">
-<title id="title">The Last Jackpot — implemented casino and hotel floor plan</title><desc id="desc">Accurate two-dimensional plan of the new 60 by 32 metre starting casino, west bar, east cashier public room and inaccessible cash area, south High Roller, northwest supply, unchanged hotel lobby, upstairs restaurant and concealed luggage gallery. Forty-eight slot cabinets, two craps tables, two roulette tables, two existing flush tables and seven individually purchased doors are shown.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="2270" height="1650" viewBox="0 0 2270 1650" role="img" aria-labelledby="title desc">
+<title id="title">The Last Jackpot — implemented casino and hotel floor plan</title><desc id="desc">Accurate two-dimensional plan of the new 60 by 32 metre starting casino, west bar, east cashier public room and inaccessible cash area, south High Roller, northwest supply, unchanged hotel lobby, upstairs restaurant and concealed luggage gallery. The Velvet Hour speakeasy connects to the cashier public room through a portrait puzzle. Forty-eight slot cabinets, two craps tables, two roulette tables, two existing flush tables and seven individually purchased doors are shown.</desc>
 <defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M0,0L7,3.5L0,7Z" fill="#567868"/></marker><pattern id="grid" width="70" height="70" patternUnits="userSpaceOnUse"><path d="M70,0H0V70" fill="none" stroke="#D4DED5" stroke-width="0.6" opacity=".6"/></pattern><pattern id="restricted" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="14" height="14" fill="#EBECE5"/><path d="M0,0V14" stroke="#D7DBD0" stroke-width="3"/></pattern><style>text{font-family:Arial,Helvetica,sans-serif}.halo{paint-order:stroke;stroke:#F8F7F2;stroke-width:4px;stroke-linejoin:round}</style></defs>
-<rect width="2120" height="1650" fill="#F8F7F2"/>
+<rect width="2270" height="1650" fill="#F8F7F2"/>
 <rect x="55" y="42" width="5" height="72" fill="#567868"/>
 <text x="80" y="58" font-size="14" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="2.5">THE LAST JACKPOT / WORLD ATLAS</text>
 <text x="77" y="105" font-size="37" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">A grander casino. The same Grand Hotel.</text>
-<text x="2055" y="60" font-size="13" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="1.5">IMPLEMENTED FLOOR PLAN</text>
-<text x="2055" y="91" font-size="16" fill="#687872" font-weight="400" text-anchor="end" letter-spacing="0">60 × 32 m starting casino · 48 slots · 7 paid doors</text>
-<line x1="55" y1="135" x2="2055" y2="135" stroke="#243B39" stroke-width="1.2"/>
+<text x="2205" y="60" font-size="13" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="1.5">IMPLEMENTED FLOOR PLAN</text>
+<text x="2205" y="91" font-size="16" fill="#687872" font-weight="400" text-anchor="end" letter-spacing="0">60 × 32 m starting casino · 48 slots · 7 paid doors</text>
+<line x1="55" y1="135" x2="2205" y2="135" stroke="#243B39" stroke-width="1.2"/>
 <text x="80" y="171" font-size="17" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="1.4">00 / GROUND FLOOR</text>
 <text x="80" y="194" font-size="14" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">All rooms in their actual positions · elevation 0 m</text>
-<text x="1425" y="171" font-size="17" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="1.4">01 / UPSTAIRS RESTAURANT</text>
-<text x="1425" y="194" font-size="14" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Elevation +4 m · same scale and orientation</text>
-<line x1="1370" y1="154" x2="1370" y2="1572" stroke="#CDD5CF"/>
+<text x="1575" y="171" font-size="17" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="1.4">01 / UPSTAIRS RESTAURANT</text>
+<text x="1575" y="194" font-size="14" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Elevation +4 m · same scale and orientation</text>
+<line x1="1520" y1="154" x2="1520" y2="1572" stroke="#CDD5CF"/>
 <polygon points="248,1204 1088,1204 1088,756 248,756" fill="#FFFEFA"/>
 <polygon points="248,1204 1088,1204 1088,756 248,756" fill="url(#grid)"/>
 <polygon points="80,1204 248,1204 248,868 80,868" fill="#FFFEFA"/>
@@ -28,6 +28,8 @@
 <polygon points="633,756 703,756 703,714 633,714" fill="url(#grid)"/>
 <polygon points="500,714 808,714 920,602 920,322 808,210 500,210 388,322 388,602" fill="#FFFEFA"/>
 <polygon points="500,714 808,714 920,602 920,322 808,210 500,210 388,322 388,602" fill="url(#grid)"/>
+<polygon points="1312,1260 1452,1260 1452,924 1312,924" fill="#FFFEFA"/>
+<polygon points="1312,1260 1452,1260 1452,924 1312,924" fill="url(#grid)"/>
 <polygon points="878,280 808,210 500,210 430,280" fill="#E4DEED" fill-opacity=".8"/>
 <polygon points="500,469 808,469 808,427 864,427 864,294 794,238 514,238 444,294 444,427 500,427" fill="none" stroke="#978AA9" stroke-width="1.4" stroke-dasharray="7 5"/>
 <rect x="-66.5" y="-1.4" width="133" height="2.8" transform="translate(566.5 714) rotate(0)" fill="#243B39"><title>hotel-wall-0-left</title></rect>
@@ -58,7 +60,6 @@
 <rect x="-3.15" y="-168" width="6.3" height="336" transform="translate(80 1036) rotate(0)" fill="#243B39"><title>lounge-wall-west</title></rect>
 <rect x="-84" y="-3.15" width="168" height="6.3" transform="translate(164 868) rotate(0)" fill="#243B39"><title>lounge-wall-north</title></rect>
 <rect x="-84" y="-3.15" width="168" height="6.3" transform="translate(164 1204) rotate(0)" fill="#243B39"><title>lounge-wall-south</title></rect>
-<rect x="-3.15" y="-168" width="6.3" height="336" transform="translate(1312 1036) rotate(0)" fill="#243B39"><title>cashier-wall-east</title></rect>
 <rect x="-112" y="-3.15" width="224" height="6.3" transform="translate(1200 868) rotate(0)" fill="#243B39"><title>cashier-wall-north</title></rect>
 <rect x="-112" y="-3.15" width="224" height="6.3" transform="translate(1200 1204) rotate(0)" fill="#243B39"><title>cashier-wall-south</title></rect>
 <rect x="-3.15" y="-126" width="6.3" height="252" transform="translate(318 1330) rotate(0)" fill="#243B39"><title>vip-wall-west</title></rect>
@@ -68,6 +69,11 @@
 <rect x="-98" y="-3.15" width="196" height="6.3" transform="translate(290 238) rotate(0)" fill="#243B39"><title>supply-wall-north</title></rect>
 <rect x="-98" y="-3.15" width="196" height="6.3" transform="translate(290 434) rotate(0)" fill="#243B39"><title>supply-wall-south</title></rect>
 <rect x="-3.15" y="-42" width="6.3" height="84" transform="translate(388 280) rotate(0)" fill="#243B39"><title>supply-wall-east</title></rect>
+<rect x="-3.15" y="-42" width="6.3" height="84" transform="translate(1312 1218) rotate(0)" fill="#243B39"><title>secret-wall-west-s</title></rect>
+<rect x="-3.15" y="-127.4" width="6.3" height="254.8" transform="translate(1312 995.4) rotate(0)" fill="#243B39"><title>secret-wall-west-n</title></rect>
+<rect x="-3.15" y="-171.15" width="6.3" height="342.3" transform="translate(1452 1092) rotate(0)" fill="#243B39"><title>secret-wall-east</title></rect>
+<rect x="-73.15" y="-3.15" width="146.3" height="6.3" transform="translate(1382 1260) rotate(0)" fill="#243B39"><title>secret-wall-south</title></rect>
+<rect x="-73.15" y="-3.15" width="146.3" height="6.3" transform="translate(1382 924) rotate(0)" fill="#243B39"><title>secret-wall-north</title></rect>
 <rect x="-53.2" y="-11.55" width="106.4" height="23.1" transform="translate(542 638.4) rotate(-180)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-reception</title></rect>
 <rect x="-57.4" y="-4.55" width="114.8" height="9.1" transform="translate(542 688.8) rotate(-180)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-reception-backdrop</title></rect>
 <rect x="-8.75" y="-5.95" width="17.5" height="11.9" transform="translate(600.8 578.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-guest-suitcase</title></rect>
@@ -90,6 +96,8 @@
 <rect x="-8.4" y="-4.9" width="16.8" height="9.8" transform="translate(710 233.8) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-gallery-cache</title></rect>
 <rect x="-5.04" y="-5.04" width="10.08" height="10.08" transform="translate(584 445.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-salon-column-west</title></rect>
 <rect x="-5.04" y="-5.04" width="10.08" height="10.08" transform="translate(724 445.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-salon-column-east</title></rect>
+<rect x="-11.2" y="-7.7" width="22.4" height="15.4" transform="translate(1396 1212.4) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>mystery-cabinet</title></rect>
+<rect x="-9.8" y="-56" width="19.6" height="112" transform="translate(1328.8 1050) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>secret-bar</title></rect>
 <rect x="-23.8" y="-35" width="47.6" height="70" transform="translate(467.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width="0.9"><title>slots-a</title></rect>
 <rect x="-23.8" y="-35" width="47.6" height="70" transform="translate(467.8 987) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width="0.9"><title>slots-b</title></rect>
 <rect x="-23.8" y="-35" width="47.6" height="70" transform="translate(593.8 847) rotate(0)" fill="#B4D7F8" stroke="#3068A1" stroke-width="0.9"><title>slots-c</title></rect>
@@ -276,6 +284,7 @@
 <text x="1088" y="1152" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">G</text>
 <rect x="-18.2" y="-1.68" width="36.4" height="3.36" transform="translate(542 280) rotate(0)" fill="#B39BCD" stroke="#79569C" stroke-width="2" stroke-dasharray="4 2"><title>hotel-secret-left</title></rect>
 <rect x="-18.2" y="-1.68" width="36.4" height="3.36" transform="translate(766 280) rotate(0)" fill="#B39BCD" stroke="#79569C" stroke-width="2" stroke-dasharray="4 2"><title>hotel-secret-right</title></rect>
+<rect x="-3.15" y="-26.6" width="6.3" height="53.2" transform="translate(1312 1149.4) rotate(0)" fill="#B39BCD" stroke="#79569C" stroke-width="2" stroke-dasharray="4 2"><title>speakeasy</title></rect>
 <circle cx="668" cy="889.4" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
 <text x="668" y="893.4" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">01</text>
 <text x="668" y="911.4" font-size="22" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">GRAND CASINO</text>
@@ -305,6 +314,11 @@
 <text x="654" y="500" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">08</text>
 <text x="654" y="518" font-size="21" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Grand Hotel Lobby</text>
 <text x="654" y="544" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">38 × 36 m bounds</text>
+<circle cx="1382" cy="951" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1382" y="955" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">10</text>
+<text x="1382" y="973" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">The Velvet</text>
+<text x="1382" y="992" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Hour</text>
+<text x="1382" y="1013" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">10 × 24 m</text>
 <circle cx="668" cy="735" r="9" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
 <text x="668" y="739" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">07</text>
 <line x1="680" y1="735" x2="740" y2="735" stroke="#687872"/>
@@ -314,6 +328,8 @@
 <text x="654" y="375.2" font-size="10" fill="#567868" font-weight="400" text-anchor="middle" letter-spacing="1">LOBBY SEATING</text>
 <text x="1200" y="1055.6" font-size="9" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">CASH + SAFE BEHIND GLASS</text>
 <text x="1200" y="950.6" font-size="10" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">Future stairs / trapdoor only</text>
+<text x="1382" y="1110.2" font-size="8" fill="#715384" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">PORTRAIT + KEYPAD</text>
+<text x="1396" y="1169" font-size="8" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">MYSTERY SLOT</text>
 <text x="542" y="641.48" font-size="10" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">RECEPTION</text>
 <text x="178" y="1118.88" font-size="10" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">BAR</text>
 <text x="259.2" y="357.98" font-size="10" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">TRUCK</text>
@@ -346,7 +362,7 @@
 <text x="1020" y="416" font-size="11" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">0</text>
 <text x="1090" y="416" font-size="11" fill="#243B39" font-weight="400" text-anchor="middle" letter-spacing="0">5</text>
 <text x="1160" y="416" font-size="11" fill="#243B39" font-weight="400" text-anchor="end" letter-spacing="0">10 m</text>
-<text x="1020" y="473" font-size="29" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">88 × 89 m</text>
+<text x="1020" y="473" font-size="29" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">98 × 89 m</text>
 <text x="1020" y="495" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Overall ground bounds</text>
 <line x1="1020" y1="520" x2="1290" y2="520" stroke="#CDD5CF"/>
 <text x="1020" y="548" font-size="12" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1">HOTEL PRESERVED</text>
@@ -354,189 +370,193 @@
 <text x="1020" y="599" font-size="16" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Same two curved stairs.</text>
 <text x="1020" y="626" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Only the supply connection</text>
 <text x="1020" y="646" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">changes the lobby boundary.</text>
-<polygon points="1562,478 1870,478 1870,436 1926,436 1926,303 1856,247 1576,247 1506,303 1506,436 1562,436" fill="#FFFEFA"/>
-<rect x="-154" y="-0.98" width="308" height="1.96" transform="translate(1716 478) rotate(0)" fill="#243B39"><title>hotel-upper-rail-0</title></rect>
-<rect x="-28" y="-0.98" width="56" height="1.96" transform="translate(1898 436) rotate(0)" fill="#243B39"><title>hotel-upper-rail-2</title></rect>
-<rect x="-66.5" y="-0.98" width="133" height="1.96" transform="translate(1926 369.5) rotate(-90)" fill="#243B39"><title>hotel-upper-rail-3</title></rect>
-<rect x="-44.822" y="-0.98" width="89.644" height="1.96" transform="translate(1891 275) rotate(-141.34)" fill="#243B39"><title>hotel-upper-rail-4</title></rect>
-<rect x="-140" y="-0.98" width="280" height="1.96" transform="translate(1716 247) rotate(-180)" fill="#243B39"><title>hotel-upper-rail-5</title></rect>
-<rect x="-44.822" y="-0.98" width="89.644" height="1.96" transform="translate(1541 275) rotate(141.34)" fill="#243B39"><title>hotel-upper-rail-6</title></rect>
-<rect x="-66.5" y="-0.98" width="133" height="1.96" transform="translate(1506 369.5) rotate(90)" fill="#243B39"><title>hotel-upper-rail-7</title></rect>
-<rect x="-28" y="-0.98" width="56" height="1.96" transform="translate(1534 436) rotate(0)" fill="#243B39"><title>hotel-upper-rail-8</title></rect>
-<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1618 384.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-nw</title></rect>
-<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1814 384.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-ne</title></rect>
-<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1618 303) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-sw</title></rect>
-<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1814 303) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-se</title></rect>
-<rect x="-14" y="-42" width="28" height="84" transform="translate(1531.2 366) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-west-booth</title></rect>
-<rect x="-14" y="-42" width="28" height="84" transform="translate(1900.8 366) rotate(-180)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-east-booth</title></rect>
-<rect x="-44.8" y="-9.1" width="89.6" height="18.2" transform="translate(1716 275) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-service</title></rect>
-<rect x="-9.45" y="-6.3" width="18.9" height="12.6" transform="translate(1716 437.4) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-host</title></rect>
-<rect x="-5.25" y="-3.85" width="10.5" height="7.7" transform="translate(1728.6 426.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-ammo-crate</title></rect>
-<polygon points="1562,590 1555.959,589.763 1549.955,589.052 1544.025,587.872 1538.206,586.231 1532.533,584.139 1527.043,581.608 1521.768,578.653 1516.741,575.294 1511.993,571.551 1507.553,567.447 1503.449,563.007 1499.706,558.259 1496.347,553.232 1493.392,547.957 1490.861,542.467 1488.769,536.794 1487.128,530.975 1485.948,525.045 1485.237,519.041 1485,513 1485.237,506.959 1485.948,500.955 1487.128,495.025 1488.769,489.206 1490.861,483.533 1493.392,478.043 1496.347,472.768 1499.706,467.741 1503.449,462.993 1507.553,458.553 1511.993,454.449 1516.741,450.706 1521.768,447.347 1527.043,444.392 1532.533,441.861 1538.206,439.769 1544.025,438.128 1549.955,436.948 1555.959,436.237 1562,436 1562,478 1559.254,478.108 1556.525,478.431 1553.829,478.967 1551.184,479.713 1548.606,480.664 1546.11,481.815 1543.713,483.158 1541.428,484.684 1539.269,486.386 1537.251,488.251 1535.386,490.269 1533.684,492.428 1532.158,494.713 1530.815,497.11 1529.664,499.606 1528.713,502.184 1527.967,504.829 1527.431,507.525 1527.108,510.254 1527,513 1527.108,515.746 1527.431,518.475 1527.967,521.171 1528.713,523.816 1529.664,526.394 1530.815,528.89 1532.158,531.287 1533.684,533.572 1535.386,535.731 1537.251,537.749 1539.269,539.614 1541.428,541.316 1543.713,542.842 1546.11,544.185 1548.606,545.336 1551.184,546.287 1553.829,547.033 1556.525,547.569 1559.254,547.892 1562,548" fill="#E3E9E1" stroke="#243B39" stroke-width="1.1"/>
-<line x1="1562" y1="548" x2="1562" y2="590" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1557.432" y1="547.701" x2="1551.949" y2="589.341" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1552.941" y1="546.807" x2="1542.071" y2="587.376" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1548.606" y1="545.336" x2="1532.533" y2="584.139" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1544.5" y1="543.311" x2="1523.5" y2="579.684" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1540.693" y1="540.767" x2="1515.125" y2="574.088" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1537.251" y1="537.749" x2="1507.553" y2="567.447" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1534.233" y1="534.307" x2="1500.912" y2="559.875" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1531.689" y1="530.5" x2="1495.316" y2="551.5" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1529.664" y1="526.394" x2="1490.861" y2="542.467" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1528.193" y1="522.059" x2="1487.624" y2="532.929" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1527.299" y1="517.568" x2="1485.659" y2="523.051" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1527" y1="513" x2="1485" y2="513" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1527.299" y1="508.432" x2="1485.659" y2="502.949" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1528.193" y1="503.941" x2="1487.624" y2="493.071" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1529.664" y1="499.606" x2="1490.861" y2="483.533" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1531.689" y1="495.5" x2="1495.316" y2="474.5" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1534.233" y1="491.693" x2="1500.912" y2="466.125" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1537.251" y1="488.251" x2="1507.553" y2="458.553" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1540.693" y1="485.233" x2="1515.125" y2="451.912" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1544.5" y1="482.689" x2="1523.5" y2="446.316" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1548.606" y1="480.664" x2="1532.533" y2="441.861" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1552.941" y1="479.193" x2="1542.071" y2="438.624" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1557.432" y1="478.299" x2="1551.949" y2="436.659" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1562" y1="478" x2="1562" y2="436" stroke="#A2B2A5" stroke-width="0.75"/>
-<path d="M1548.073,458.759 L1543.259,460.229 L1538.596,462.125 L1534.123,464.432 L1529.874,467.131 L1525.885,470.201 L1522.188,473.617 L1518.813,477.351 L1515.786,481.373 L1513.133,485.65 L1510.874,490.149 L1509.029,494.832 L1507.612,499.662 L1506.634,504.599 L1506.103,509.605 L1506.024,514.638 L1506.397,519.657 L1507.22,524.623 L1508.485,529.495 L1510.182,534.234 L1512.298,538.801 L1514.815,543.16 L1517.714,547.275 L1520.971,551.113 L1524.559,554.643 L1528.449,557.837 L1532.611,560.668 L1537.01,563.115 L1541.611,565.156 L1546.376,566.776" fill="none" stroke="#567868" stroke-width="2" marker-end="url(#arrow)"/>
-<text x="1562" y="506" font-size="10" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0">STAIR A</text>
-<text x="1562" y="521.4" font-size="9" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">DOWN</text>
-<polygon points="1870,590 1876.041,589.763 1882.045,589.052 1887.975,587.872 1893.794,586.231 1899.467,584.139 1904.957,581.608 1910.232,578.653 1915.259,575.294 1920.007,571.551 1924.447,567.447 1928.551,563.007 1932.294,558.259 1935.653,553.232 1938.608,547.957 1941.139,542.467 1943.231,536.794 1944.872,530.975 1946.052,525.045 1946.763,519.041 1947,513 1946.763,506.959 1946.052,500.955 1944.872,495.025 1943.231,489.206 1941.139,483.533 1938.608,478.043 1935.653,472.768 1932.294,467.741 1928.551,462.993 1924.447,458.553 1920.007,454.449 1915.259,450.706 1910.232,447.347 1904.957,444.392 1899.467,441.861 1893.794,439.769 1887.975,438.128 1882.045,436.948 1876.041,436.237 1870,436 1870,478 1872.746,478.108 1875.475,478.431 1878.171,478.967 1880.816,479.713 1883.394,480.664 1885.89,481.815 1888.287,483.158 1890.572,484.684 1892.731,486.386 1894.749,488.251 1896.614,490.269 1898.316,492.428 1899.842,494.713 1901.185,497.11 1902.336,499.606 1903.287,502.184 1904.033,504.829 1904.569,507.525 1904.892,510.254 1905,513 1904.892,515.746 1904.569,518.475 1904.033,521.171 1903.287,523.816 1902.336,526.394 1901.185,528.89 1899.842,531.287 1898.316,533.572 1896.614,535.731 1894.749,537.749 1892.731,539.614 1890.572,541.316 1888.287,542.842 1885.89,544.185 1883.394,545.336 1880.816,546.287 1878.171,547.033 1875.475,547.569 1872.746,547.892 1870,548" fill="#E3E9E1" stroke="#243B39" stroke-width="1.1"/>
-<line x1="1870" y1="548" x2="1870" y2="590" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1874.568" y1="547.701" x2="1880.051" y2="589.341" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1879.059" y1="546.807" x2="1889.929" y2="587.376" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1883.394" y1="545.336" x2="1899.467" y2="584.139" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1887.5" y1="543.311" x2="1908.5" y2="579.684" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1891.307" y1="540.767" x2="1916.875" y2="574.088" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1894.749" y1="537.749" x2="1924.447" y2="567.447" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1897.767" y1="534.307" x2="1931.088" y2="559.875" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1900.311" y1="530.5" x2="1936.684" y2="551.5" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1902.336" y1="526.394" x2="1941.139" y2="542.467" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1903.807" y1="522.059" x2="1944.376" y2="532.929" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1904.701" y1="517.568" x2="1946.341" y2="523.051" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1905" y1="513" x2="1947" y2="513" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1904.701" y1="508.432" x2="1946.341" y2="502.949" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1903.807" y1="503.941" x2="1944.376" y2="493.071" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1902.336" y1="499.606" x2="1941.139" y2="483.533" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1900.311" y1="495.5" x2="1936.684" y2="474.5" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1897.767" y1="491.693" x2="1931.088" y2="466.125" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1894.749" y1="488.251" x2="1924.447" y2="458.553" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1891.307" y1="485.233" x2="1916.875" y2="451.912" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1887.5" y1="482.689" x2="1908.5" y2="446.316" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1883.394" y1="480.664" x2="1899.467" y2="441.861" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1879.059" y1="479.193" x2="1889.929" y2="438.624" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1874.568" y1="478.299" x2="1880.051" y2="436.659" stroke="#A2B2A5" stroke-width="0.75"/>
-<line x1="1870" y1="478" x2="1870" y2="436" stroke="#A2B2A5" stroke-width="0.75"/>
-<path d="M1883.927,458.759 L1888.741,460.229 L1893.404,462.125 L1897.877,464.432 L1902.126,467.131 L1906.115,470.201 L1909.812,473.617 L1913.187,477.351 L1916.214,481.373 L1918.867,485.65 L1921.126,490.149 L1922.971,494.832 L1924.388,499.662 L1925.366,504.599 L1925.897,509.605 L1925.976,514.638 L1925.603,519.657 L1924.78,524.623 L1923.515,529.495 L1921.818,534.234 L1919.702,538.801 L1917.185,543.16 L1914.286,547.275 L1911.029,551.113 L1907.441,554.643 L1903.551,557.837 L1899.389,560.668 L1894.99,563.115 L1890.389,565.156 L1885.624,566.776" fill="none" stroke="#567868" stroke-width="2" marker-end="url(#arrow)"/>
-<text x="1870" y="506" font-size="10" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0">STAIR B</text>
-<text x="1870" y="521.4" font-size="9" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">DOWN</text>
-<path d="M1814,255.19999999999996L1818.4,259.59999999999997L1814,263.99999999999994L1809.6,259.59999999999997Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>hotel-restaurant-service — enemy entry</title></path>
-<rect x="-12.6" y="-0.84" width="25.2" height="1.68" transform="translate(1814 248.4) rotate(-180)" fill="#AB635C"><title>hotel-service-door-hotel-restaurant-service</title></rect>
-<path d="M1525.6,424.6L1530,429L1525.6,433.4L1521.1999999999998,429Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>hotel-restaurant-west — enemy entry</title></path>
-<rect x="-12.6" y="-0.84" width="25.2" height="1.68" transform="translate(1507.4 429) rotate(-90)" fill="#AB635C"><title>hotel-service-door-hotel-restaurant-west</title></rect>
-<circle cx="1716" cy="323" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1716" y="327" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">09</text>
-<text x="1716" y="345" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Grand Hotel</text>
-<text x="1716" y="364" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Restaurant</text>
-<text x="1716" y="385" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">30 × 16.5 m bounds</text>
-<text x="1618" y="387.28" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
-<text x="1814" y="387.28" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
-<text x="1618" y="306.08" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
-<text x="1814" y="306.08" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
-<text x="1716" y="278.08" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">SERVICE</text>
-<text x="1716" y="472.4" font-size="10" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">OVERLOOK TO LOBBY</text>
-<text x="1425" y="625" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">The restaurant sits above the rear lobby and concealed gallery.</text>
-<line x1="1425" y1="646" x2="2055" y2="646" stroke="#CDD5CF"/>
-<text x="1425" y="678" font-size="13" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.3">ROOM REGISTER</text>
-<circle cx="1435" cy="706" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="710" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">01</text>
-<text x="1454" y="710" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Grand Casino</text>
-<text x="1454" y="728" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">60 × 32 m</text>
-<circle cx="1760" cy="706" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1760" y="710" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">02</text>
-<text x="1779" y="710" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Last Call Lounge</text>
-<text x="1779" y="728" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">12 × 24 m</text>
-<circle cx="1435" cy="754" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="758" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">03</text>
-<text x="1454" y="758" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">High Roller</text>
-<text x="1454" y="776" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">22 × 18 m</text>
-<circle cx="1760" cy="754" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1760" y="758" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">04</text>
-<text x="1779" y="758" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Cashier</text>
-<text x="1779" y="776" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">16 × 8 m</text>
-<circle cx="1435" cy="802" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="806" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">05</text>
-<text x="1454" y="806" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Secure cash area</text>
-<text x="1454" y="824" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">16 × 16 m</text>
-<circle cx="1760" cy="802" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1760" y="806" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">06</text>
-<text x="1779" y="806" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Supply Room</text>
-<text x="1779" y="824" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">14 × 14 m</text>
-<circle cx="1435" cy="850" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="854" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">07</text>
-<text x="1454" y="854" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Hotel Entrance</text>
-<text x="1454" y="872" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">5 × 3 m connector</text>
-<circle cx="1760" cy="850" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1760" y="854" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">08</text>
-<text x="1779" y="854" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Grand Hotel Lobby</text>
-<text x="1779" y="872" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">38 × 36 m bounds</text>
-<circle cx="1435" cy="898" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="902" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">09</text>
-<text x="1454" y="902" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Grand Hotel Restaurant</text>
-<text x="1454" y="920" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">30 × 16.5 m bounds</text>
-<line x1="1425" y1="943" x2="2055" y2="943" stroke="#CDD5CF"/>
-<text x="1425" y="978" font-size="13" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.3">DOORS / INDIVIDUAL UNLOCK COST</text>
-<circle cx="1435" cy="1006" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="1010" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">A</text>
-<text x="1457" y="1010" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Lounge · north entrance</text>
-<text x="2055" y="1010" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">900 chips</text>
-<circle cx="1435" cy="1034" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="1038" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">B</text>
-<text x="1457" y="1038" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Lounge · south entrance</text>
-<text x="2055" y="1038" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">600 chips</text>
-<circle cx="1435" cy="1062" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="1066" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">C</text>
-<text x="1457" y="1066" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">High Roller · west entrance</text>
-<text x="2055" y="1066" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">1,300 chips</text>
-<circle cx="1435" cy="1090" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="1094" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">D</text>
-<text x="1457" y="1094" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">High Roller · east entrance</text>
-<text x="2055" y="1094" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">800 chips</text>
-<circle cx="1435" cy="1118" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="1122" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">E</text>
-<text x="1457" y="1122" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Hotel · lobby + restaurant</text>
-<text x="2055" y="1122" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">2,000 chips</text>
-<circle cx="1435" cy="1146" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="1150" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">F</text>
-<text x="1457" y="1150" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Supply · from hotel lobby</text>
-<text x="2055" y="1150" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">1,200 chips</text>
-<circle cx="1435" cy="1174" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
-<text x="1435" y="1178" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">G</text>
-<text x="1457" y="1178" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Cashier · public room</text>
-<text x="2055" y="1178" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">600 chips</text>
-<text x="1425" y="1213" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Each door has its own purchase. Buying A does not open B;</text>
-<text x="1425" y="1233" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">buying C does not open D. Supply requires hotel access first.</text>
-<line x1="1425" y1="1254" x2="2055" y2="1254" stroke="#CDD5CF"/>
-<text x="1425" y="1287" font-size="13" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.1">GAME FLOOR / MATCHING YOUR COLOR KEY</text>
-<rect x="1425" y="1306" width="20" height="12" rx="2" fill="#B4D7F8" stroke="#3068A1"/>
-<text x="1457" y="1316" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">48 slot cabinets / 8 banks</text>
-<rect x="1425" y="1331" width="20" height="12" rx="2" fill="#F1BDB5" stroke="#B14B43"/>
-<text x="1457" y="1341" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">2 craps tables / separate wagers</text>
-<rect x="1425" y="1356" width="20" height="12" rx="2" fill="#D0C2EE" stroke="#756098"/>
-<text x="1457" y="1366" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">2 roulette tables</text>
-<rect x="1425" y="1381" width="20" height="12" rx="2" fill="#C6E6AC" stroke="#527C34"/>
-<text x="1457" y="1391" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">1 flush in the casino + 1 in High Roller</text>
-<text x="1425" y="1427" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">P  Pistol ammo     S  Shotgun     M  SMG     R  Pit Boss rifle</text>
-<text x="1425" y="1448" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">U  Upgrade workshop     ◆  Enemy entry     - -  Floor above</text>
-<text x="1425" y="1484" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Teal barrier: intact cashier glass; actors and shots stop here.</text>
-<text x="1425" y="1505" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Purple panels: concealed hotel gallery; existing key puzzle.</text>
-<text x="1425" y="1526" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Hatching: inaccessible cashier staff area reserved for later.</text>
-<text x="1425" y="1555" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Furniture footprints are physical bounds, not mesh silhouettes.</text>
+<polygon points="1712,478 2020,478 2020,436 2076,436 2076,303 2006,247 1726,247 1656,303 1656,436 1712,436" fill="#FFFEFA"/>
+<rect x="-154" y="-0.98" width="308" height="1.96" transform="translate(1866 478) rotate(0)" fill="#243B39"><title>hotel-upper-rail-0</title></rect>
+<rect x="-28" y="-0.98" width="56" height="1.96" transform="translate(2048 436) rotate(0)" fill="#243B39"><title>hotel-upper-rail-2</title></rect>
+<rect x="-66.5" y="-0.98" width="133" height="1.96" transform="translate(2076 369.5) rotate(-90)" fill="#243B39"><title>hotel-upper-rail-3</title></rect>
+<rect x="-44.822" y="-0.98" width="89.644" height="1.96" transform="translate(2041 275) rotate(-141.34)" fill="#243B39"><title>hotel-upper-rail-4</title></rect>
+<rect x="-140" y="-0.98" width="280" height="1.96" transform="translate(1866 247) rotate(-180)" fill="#243B39"><title>hotel-upper-rail-5</title></rect>
+<rect x="-44.822" y="-0.98" width="89.644" height="1.96" transform="translate(1691 275) rotate(141.34)" fill="#243B39"><title>hotel-upper-rail-6</title></rect>
+<rect x="-66.5" y="-0.98" width="133" height="1.96" transform="translate(1656 369.5) rotate(90)" fill="#243B39"><title>hotel-upper-rail-7</title></rect>
+<rect x="-28" y="-0.98" width="56" height="1.96" transform="translate(1684 436) rotate(0)" fill="#243B39"><title>hotel-upper-rail-8</title></rect>
+<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1768 384.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-nw</title></rect>
+<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1964 384.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-ne</title></rect>
+<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1768 303) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-sw</title></rect>
+<rect x="-29.4" y="-25.2" width="58.8" height="50.4" transform="translate(1964 303) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-dining-se</title></rect>
+<rect x="-14" y="-42" width="28" height="84" transform="translate(1681.2 366) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-west-booth</title></rect>
+<rect x="-14" y="-42" width="28" height="84" transform="translate(2050.8 366) rotate(-180)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-east-booth</title></rect>
+<rect x="-44.8" y="-9.1" width="89.6" height="18.2" transform="translate(1866 275) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-service</title></rect>
+<rect x="-9.45" y="-6.3" width="18.9" height="12.6" transform="translate(1866 437.4) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-prop-host</title></rect>
+<rect x="-5.25" y="-3.85" width="10.5" height="7.7" transform="translate(1878.6 426.2) rotate(0)" fill="#D0E0D4" stroke="#567868" stroke-width="0.9"><title>hotel-ammo-crate</title></rect>
+<polygon points="1712,590 1705.959,589.763 1699.955,589.052 1694.025,587.872 1688.206,586.231 1682.533,584.139 1677.043,581.608 1671.768,578.653 1666.741,575.294 1661.993,571.551 1657.553,567.447 1653.449,563.007 1649.706,558.259 1646.347,553.232 1643.392,547.957 1640.861,542.467 1638.769,536.794 1637.128,530.975 1635.948,525.045 1635.237,519.041 1635,513 1635.237,506.959 1635.948,500.955 1637.128,495.025 1638.769,489.206 1640.861,483.533 1643.392,478.043 1646.347,472.768 1649.706,467.741 1653.449,462.993 1657.553,458.553 1661.993,454.449 1666.741,450.706 1671.768,447.347 1677.043,444.392 1682.533,441.861 1688.206,439.769 1694.025,438.128 1699.955,436.948 1705.959,436.237 1712,436 1712,478 1709.254,478.108 1706.525,478.431 1703.829,478.967 1701.184,479.713 1698.606,480.664 1696.11,481.815 1693.713,483.158 1691.428,484.684 1689.269,486.386 1687.251,488.251 1685.386,490.269 1683.684,492.428 1682.158,494.713 1680.815,497.11 1679.664,499.606 1678.713,502.184 1677.967,504.829 1677.431,507.525 1677.108,510.254 1677,513 1677.108,515.746 1677.431,518.475 1677.967,521.171 1678.713,523.816 1679.664,526.394 1680.815,528.89 1682.158,531.287 1683.684,533.572 1685.386,535.731 1687.251,537.749 1689.269,539.614 1691.428,541.316 1693.713,542.842 1696.11,544.185 1698.606,545.336 1701.184,546.287 1703.829,547.033 1706.525,547.569 1709.254,547.892 1712,548" fill="#E3E9E1" stroke="#243B39" stroke-width="1.1"/>
+<line x1="1712" y1="548" x2="1712" y2="590" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1707.432" y1="547.701" x2="1701.949" y2="589.341" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1702.941" y1="546.807" x2="1692.071" y2="587.376" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1698.606" y1="545.336" x2="1682.533" y2="584.139" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1694.5" y1="543.311" x2="1673.5" y2="579.684" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1690.693" y1="540.767" x2="1665.125" y2="574.088" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1687.251" y1="537.749" x2="1657.553" y2="567.447" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1684.233" y1="534.307" x2="1650.912" y2="559.875" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1681.689" y1="530.5" x2="1645.316" y2="551.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1679.664" y1="526.394" x2="1640.861" y2="542.467" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1678.193" y1="522.059" x2="1637.624" y2="532.929" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1677.299" y1="517.568" x2="1635.659" y2="523.051" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1677" y1="513" x2="1635" y2="513" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1677.299" y1="508.432" x2="1635.659" y2="502.949" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1678.193" y1="503.941" x2="1637.624" y2="493.071" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1679.664" y1="499.606" x2="1640.861" y2="483.533" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1681.689" y1="495.5" x2="1645.316" y2="474.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1684.233" y1="491.693" x2="1650.912" y2="466.125" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1687.251" y1="488.251" x2="1657.553" y2="458.553" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1690.693" y1="485.233" x2="1665.125" y2="451.912" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1694.5" y1="482.689" x2="1673.5" y2="446.316" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1698.606" y1="480.664" x2="1682.533" y2="441.861" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1702.941" y1="479.193" x2="1692.071" y2="438.624" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1707.432" y1="478.299" x2="1701.949" y2="436.659" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="1712" y1="478" x2="1712" y2="436" stroke="#A2B2A5" stroke-width="0.75"/>
+<path d="M1698.073,458.759 L1693.259,460.229 L1688.596,462.125 L1684.123,464.432 L1679.874,467.131 L1675.885,470.201 L1672.188,473.617 L1668.813,477.351 L1665.786,481.373 L1663.133,485.65 L1660.874,490.149 L1659.029,494.832 L1657.612,499.662 L1656.634,504.599 L1656.103,509.605 L1656.024,514.638 L1656.397,519.657 L1657.22,524.623 L1658.485,529.495 L1660.182,534.234 L1662.298,538.801 L1664.815,543.16 L1667.714,547.275 L1670.971,551.113 L1674.559,554.643 L1678.449,557.837 L1682.611,560.668 L1687.01,563.115 L1691.611,565.156 L1696.376,566.776" fill="none" stroke="#567868" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="1712" y="506" font-size="10" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0">STAIR A</text>
+<text x="1712" y="521.4" font-size="9" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">DOWN</text>
+<polygon points="2020,590 2026.041,589.763 2032.045,589.052 2037.975,587.872 2043.794,586.231 2049.467,584.139 2054.957,581.608 2060.232,578.653 2065.259,575.294 2070.007,571.551 2074.447,567.447 2078.551,563.007 2082.294,558.259 2085.653,553.232 2088.608,547.957 2091.139,542.467 2093.231,536.794 2094.872,530.975 2096.052,525.045 2096.763,519.041 2097,513 2096.763,506.959 2096.052,500.955 2094.872,495.025 2093.231,489.206 2091.139,483.533 2088.608,478.043 2085.653,472.768 2082.294,467.741 2078.551,462.993 2074.447,458.553 2070.007,454.449 2065.259,450.706 2060.232,447.347 2054.957,444.392 2049.467,441.861 2043.794,439.769 2037.975,438.128 2032.045,436.948 2026.041,436.237 2020,436 2020,478 2022.746,478.108 2025.475,478.431 2028.171,478.967 2030.816,479.713 2033.394,480.664 2035.89,481.815 2038.287,483.158 2040.572,484.684 2042.731,486.386 2044.749,488.251 2046.614,490.269 2048.316,492.428 2049.842,494.713 2051.185,497.11 2052.336,499.606 2053.287,502.184 2054.033,504.829 2054.569,507.525 2054.892,510.254 2055,513 2054.892,515.746 2054.569,518.475 2054.033,521.171 2053.287,523.816 2052.336,526.394 2051.185,528.89 2049.842,531.287 2048.316,533.572 2046.614,535.731 2044.749,537.749 2042.731,539.614 2040.572,541.316 2038.287,542.842 2035.89,544.185 2033.394,545.336 2030.816,546.287 2028.171,547.033 2025.475,547.569 2022.746,547.892 2020,548" fill="#E3E9E1" stroke="#243B39" stroke-width="1.1"/>
+<line x1="2020" y1="548" x2="2020" y2="590" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2024.568" y1="547.701" x2="2030.051" y2="589.341" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2029.059" y1="546.807" x2="2039.929" y2="587.376" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2033.394" y1="545.336" x2="2049.467" y2="584.139" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2037.5" y1="543.311" x2="2058.5" y2="579.684" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2041.307" y1="540.767" x2="2066.875" y2="574.088" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2044.749" y1="537.749" x2="2074.447" y2="567.447" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2047.767" y1="534.307" x2="2081.088" y2="559.875" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2050.311" y1="530.5" x2="2086.684" y2="551.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2052.336" y1="526.394" x2="2091.139" y2="542.467" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2053.807" y1="522.059" x2="2094.376" y2="532.929" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2054.701" y1="517.568" x2="2096.341" y2="523.051" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2055" y1="513" x2="2097" y2="513" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2054.701" y1="508.432" x2="2096.341" y2="502.949" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2053.807" y1="503.941" x2="2094.376" y2="493.071" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2052.336" y1="499.606" x2="2091.139" y2="483.533" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2050.311" y1="495.5" x2="2086.684" y2="474.5" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2047.767" y1="491.693" x2="2081.088" y2="466.125" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2044.749" y1="488.251" x2="2074.447" y2="458.553" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2041.307" y1="485.233" x2="2066.875" y2="451.912" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2037.5" y1="482.689" x2="2058.5" y2="446.316" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2033.394" y1="480.664" x2="2049.467" y2="441.861" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2029.059" y1="479.193" x2="2039.929" y2="438.624" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2024.568" y1="478.299" x2="2030.051" y2="436.659" stroke="#A2B2A5" stroke-width="0.75"/>
+<line x1="2020" y1="478" x2="2020" y2="436" stroke="#A2B2A5" stroke-width="0.75"/>
+<path d="M2033.927,458.759 L2038.741,460.229 L2043.404,462.125 L2047.877,464.432 L2052.126,467.131 L2056.115,470.201 L2059.812,473.617 L2063.187,477.351 L2066.214,481.373 L2068.867,485.65 L2071.126,490.149 L2072.971,494.832 L2074.388,499.662 L2075.366,504.599 L2075.897,509.605 L2075.976,514.638 L2075.603,519.657 L2074.78,524.623 L2073.515,529.495 L2071.818,534.234 L2069.702,538.801 L2067.185,543.16 L2064.286,547.275 L2061.029,551.113 L2057.441,554.643 L2053.551,557.837 L2049.389,560.668 L2044.99,563.115 L2040.389,565.156 L2035.624,566.776" fill="none" stroke="#567868" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="2020" y="506" font-size="10" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0">STAIR B</text>
+<text x="2020" y="521.4" font-size="9" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">DOWN</text>
+<path d="M1964,255.19999999999996L1968.4,259.59999999999997L1964,263.99999999999994L1959.6,259.59999999999997Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>hotel-restaurant-service — enemy entry</title></path>
+<rect x="-12.6" y="-0.84" width="25.2" height="1.68" transform="translate(1964 248.4) rotate(-180)" fill="#AB635C"><title>hotel-service-door-hotel-restaurant-service</title></rect>
+<path d="M1675.6,424.6L1680,429L1675.6,433.4L1671.1999999999998,429Z" fill="#AB635C" stroke="#F8F7F2" stroke-width="1.2"><title>hotel-restaurant-west — enemy entry</title></path>
+<rect x="-12.6" y="-0.84" width="25.2" height="1.68" transform="translate(1657.4 429) rotate(-90)" fill="#AB635C"><title>hotel-service-door-hotel-restaurant-west</title></rect>
+<circle cx="1866" cy="323" r="11" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1866" y="327" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">09</text>
+<text x="1866" y="345" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Grand Hotel</text>
+<text x="1866" y="364" font-size="16" fill="#243B39" font-weight="700" text-anchor="middle" letter-spacing="0" class="halo">Restaurant</text>
+<text x="1866" y="385" font-size="11" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0" class="halo">30 × 16.5 m bounds</text>
+<text x="1768" y="387.28" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
+<text x="1964" y="387.28" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
+<text x="1768" y="306.08" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
+<text x="1964" y="306.08" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">DINING</text>
+<text x="1866" y="278.08" font-size="9" fill="#567868" font-weight="700" text-anchor="middle" letter-spacing="0">SERVICE</text>
+<text x="1866" y="472.4" font-size="10" fill="#687872" font-weight="400" text-anchor="middle" letter-spacing="0">OVERLOOK TO LOBBY</text>
+<text x="1575" y="625" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">The restaurant sits above the rear lobby and concealed gallery.</text>
+<line x1="1575" y1="646" x2="2205" y2="646" stroke="#CDD5CF"/>
+<text x="1575" y="678" font-size="13" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.3">ROOM REGISTER</text>
+<circle cx="1585" cy="706" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="710" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">01</text>
+<text x="1604" y="710" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Grand Casino</text>
+<text x="1604" y="728" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">60 × 32 m</text>
+<circle cx="1910" cy="706" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1910" y="710" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">02</text>
+<text x="1929" y="710" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Last Call Lounge</text>
+<text x="1929" y="728" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">12 × 24 m</text>
+<circle cx="1585" cy="754" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="758" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">03</text>
+<text x="1604" y="758" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">High Roller</text>
+<text x="1604" y="776" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">22 × 18 m</text>
+<circle cx="1910" cy="754" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1910" y="758" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">04</text>
+<text x="1929" y="758" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Cashier</text>
+<text x="1929" y="776" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">16 × 8 m</text>
+<circle cx="1585" cy="802" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="806" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">05</text>
+<text x="1604" y="806" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Secure cash area</text>
+<text x="1604" y="824" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">16 × 16 m</text>
+<circle cx="1910" cy="802" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1910" y="806" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">06</text>
+<text x="1929" y="806" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Supply Room</text>
+<text x="1929" y="824" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">14 × 14 m</text>
+<circle cx="1585" cy="850" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="854" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">07</text>
+<text x="1604" y="854" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Hotel Entrance</text>
+<text x="1604" y="872" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">5 × 3 m connector</text>
+<circle cx="1910" cy="850" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1910" y="854" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">08</text>
+<text x="1929" y="854" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Grand Hotel Lobby</text>
+<text x="1929" y="872" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">38 × 36 m bounds</text>
+<circle cx="1585" cy="898" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="902" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">09</text>
+<text x="1604" y="902" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">Grand Hotel Restaurant</text>
+<text x="1604" y="920" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">30 × 16.5 m bounds</text>
+<circle cx="1910" cy="898" r="10" fill="#243B39" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1910" y="902" font-size="11" fill="#FFFFFF" font-weight="700" text-anchor="middle" letter-spacing="0">10</text>
+<text x="1929" y="902" font-size="13" fill="#243B39" font-weight="700" text-anchor="start" letter-spacing="0">The Velvet Hour · Speakeasy</text>
+<text x="1929" y="920" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">10 × 24 m</text>
+<line x1="1575" y1="943" x2="2205" y2="943" stroke="#CDD5CF"/>
+<text x="1575" y="978" font-size="13" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.3">DOORS / INDIVIDUAL UNLOCK COST</text>
+<circle cx="1585" cy="1006" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1010" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">A</text>
+<text x="1607" y="1010" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Lounge · north entrance</text>
+<text x="2205" y="1010" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">900 chips</text>
+<circle cx="1585" cy="1034" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1038" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">B</text>
+<text x="1607" y="1038" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Lounge · south entrance</text>
+<text x="2205" y="1038" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">600 chips</text>
+<circle cx="1585" cy="1062" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1066" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">C</text>
+<text x="1607" y="1066" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">High Roller · west entrance</text>
+<text x="2205" y="1066" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">1,300 chips</text>
+<circle cx="1585" cy="1090" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1094" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">D</text>
+<text x="1607" y="1094" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">High Roller · east entrance</text>
+<text x="2205" y="1094" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">800 chips</text>
+<circle cx="1585" cy="1118" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1122" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">E</text>
+<text x="1607" y="1122" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Hotel · lobby + restaurant</text>
+<text x="2205" y="1122" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">2,000 chips</text>
+<circle cx="1585" cy="1146" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1150" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">F</text>
+<text x="1607" y="1150" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Supply · from hotel lobby</text>
+<text x="2205" y="1150" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">1,200 chips</text>
+<circle cx="1585" cy="1174" r="10" fill="#E3AE52" stroke="#F8F7F2" stroke-width="1.3"/>
+<text x="1585" y="1178" font-size="11" fill="#63481B" font-weight="700" text-anchor="middle" letter-spacing="0">G</text>
+<text x="1607" y="1178" font-size="14" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">Cashier · public room</text>
+<text x="2205" y="1178" font-size="14" fill="#243B39" font-weight="700" text-anchor="end" letter-spacing="0">600 chips</text>
+<text x="1575" y="1213" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Each door has its own purchase. Buying A does not open B;</text>
+<text x="1575" y="1233" font-size="13" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">buying C does not open D. Supply requires hotel access first.</text>
+<line x1="1575" y1="1254" x2="2205" y2="1254" stroke="#CDD5CF"/>
+<text x="1575" y="1287" font-size="13" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.1">GAME FLOOR / MATCHING YOUR COLOR KEY</text>
+<rect x="1575" y="1306" width="20" height="12" rx="2" fill="#B4D7F8" stroke="#3068A1"/>
+<text x="1607" y="1316" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">48 slot cabinets / 8 banks</text>
+<rect x="1575" y="1331" width="20" height="12" rx="2" fill="#F1BDB5" stroke="#B14B43"/>
+<text x="1607" y="1341" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">2 craps tables / separate wagers</text>
+<rect x="1575" y="1356" width="20" height="12" rx="2" fill="#D0C2EE" stroke="#756098"/>
+<text x="1607" y="1366" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">2 roulette tables</text>
+<rect x="1575" y="1381" width="20" height="12" rx="2" fill="#C6E6AC" stroke="#527C34"/>
+<text x="1607" y="1391" font-size="13" fill="#243B39" font-weight="400" text-anchor="start" letter-spacing="0">1 flush in the casino + 1 in High Roller</text>
+<text x="1575" y="1427" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">P  Pistol ammo     S  Shotgun     M  SMG     R  Pit Boss rifle</text>
+<text x="1575" y="1448" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">U  Upgrade workshop     ◆  Enemy entry     - -  Floor above</text>
+<text x="1575" y="1484" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Teal barrier: intact cashier glass; actors and shots stop here.</text>
+<text x="1575" y="1505" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Purple doors: hotel gallery key / Velvet Hour portrait puzzle.</text>
+<text x="1575" y="1526" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Hatching: inaccessible cashier staff area reserved for later.</text>
+<text x="1575" y="1555" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Furniture footprints are physical bounds, not mesh silhouettes.</text>
 <text x="80" y="1502" font-size="13" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.2">CENTRAL GAMES OPEN FROM THE START</text>
 <text x="80" y="1527" font-size="15" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Slots, craps, roulette and the first flush table fill the shared starting hall.</text>
 <text x="80" y="1550" font-size="15" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Every surrounding room opens through progression. The cashier back area stays closed.</text>
-<line x1="55" y1="1582" x2="2055" y2="1582" stroke="#243B39" stroke-width="1.2"/>
+<line x1="55" y1="1582" x2="2205" y2="1582" stroke="#243B39" stroke-width="1.2"/>
 <text x="55" y="1615" font-size="11" fill="#567868" font-weight="700" text-anchor="start" letter-spacing="1.3">DRAWN FROM THE GAME</text>
 <text x="275" y="1615" font-size="12" fill="#687872" font-weight="400" text-anchor="start" letter-spacing="0">Shared casino layout · live hotel geometry · actual fixtures, purchases and spawns</text>
-<text x="2055" y="1615" font-size="12" fill="#687872" font-weight="400" text-anchor="end" letter-spacing="0">Doors shown in their initial closed state.   /   01</text>
+<text x="2205" y="1615" font-size="12" fill="#687872" font-weight="400" text-anchor="end" letter-spacing="0">Doors shown in their initial closed state.   /   01</text>
 </svg>

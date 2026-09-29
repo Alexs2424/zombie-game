@@ -27,6 +27,7 @@ class AudioNode {
   frequency = new Param();
   pan = new Param();
   Q = new Param();
+  playbackRate = new Param();
   threshold = new Param();
   knee = new Param();
   ratio = new Param();
@@ -135,6 +136,51 @@ test("pause silences world audio immediately while preserving shop and death cue
     assert.equal(worldBus.gain.value, 0);
     audio.setActive(true);
     assert.equal(worldBus.gain.value, 1);
+  });
+});
+
+test("third Stickman hit plays its breaking sample, even for legacy untagged events", async () => {
+  await fixture(async audio => {
+    audio.setActive(true);await audio.weapons.preload('stick');
+    audio.play({type:'stickBreak'});
+    assert.equal(audio.weapons.lastPlayback,'stick/break');
+    assert.ok(audio.context.nodes.some(n=>n.buffer?.name?.endsWith('/stick/break.wav')));
+  },true);
+});
+
+test("weapon sounds stop on pause and reset, including delayed mechanics", async () => {
+  await fixture(async audio => {
+    audio.setActive(true);await audio.weapons.preload('lmg');
+    audio.weapons.play('lmg','reload-end',{delay:2});
+    const voice=audio.context.nodes.findLast(n=>n.buffer?.name?.endsWith('/lmg/reload-end.wav'));
+    assert.equal(voice.stopped,undefined);
+    audio.setActive(false);assert.equal(voice.stopped,true);
+    audio.setActive(true);audio.weapons.play('lmg','fire-1');
+    const shot=audio.context.nodes.findLast(n=>n.buffer?.name?.endsWith('/lmg/fire-1.wav'));
+    audio.resetSlots();assert.equal(shot.stopped,true);
+  },true);
+});
+
+test("a missing report uses the synthesized fallback rather than a silent shot", async () => {
+  await fixture(audio => {
+    audio.setActive(true);
+    const before=audio.context.nodes.length;
+    audio.play({type:'shot',weapon:'magnum'});
+    assert.ok(audio.context.nodes.slice(before).some(n=>n.kind==='oscillator'));
+  });
+});
+
+test("failed weapon sample downloads can retry and disposal cannot repopulate the cache", async () => {
+  await fixture(async audio => {
+    await audio.weapons.preload('magnum');
+    assert.equal(audio.weapons.loading.has('magnum'),false);
+    audio.weapons.retryAfter.clear();
+    globalThis.fetch=async url=>({ok:true,arrayBuffer:async()=>new TextEncoder().encode(url).buffer});
+    await audio.weapons.preload('magnum');
+    assert.ok(audio.weapons.buffers.has('magnum/fire'));
+    audio.weapons.dispose();
+    assert.equal(audio.weapons.buffers.size,0);
+    assert.equal(audio.weapons.play('magnum','fire'),false);
   });
 });
 

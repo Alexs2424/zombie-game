@@ -1,0 +1,429 @@
+{
+ "magnum": {
+  "muzzle": [
+   0,
+   0.052,
+   0.206
+  ],
+  "hands": "pistol",
+  "class": "revolver",
+  "animated": [
+   "Hammer",
+   "Trigger",
+   "Crane",
+   "Cylinder",
+   "Cartridges",
+   "Ejector rod"
+  ],
+  "pivots": {
+   "Crane": [
+    -0.0115,
+    0.0175,
+    0.0
+   ],
+   "Cylinder": [
+    0,
+    0.0385,
+    0.0185
+   ],
+   "Hammer": [
+    0,
+    0.036,
+    -0.026
+   ],
+   "Trigger": [
+    0,
+    -0.008,
+    0.022
+   ]
+  },
+  "chambers": 6,
+  "triangles": 19808,
+  "nodes": [
+   "Barrel",
+   "Cartridges",
+   "Crane",
+   "Cylinder",
+   "Ejector rod",
+   "Frame",
+   "Grip",
+   "Hammer",
+   "Trigger",
+   "Trigger guard"
+  ],
+  "glb": "public/models/magnum.glb",
+  "source": "assets/source/weapons-1970s/magnum.blend",
+  "bytes": 923768
+ },
+ "dual": {
+  "muzzle": [
+   0,
+   0.02,
+   0.078
+  ],
+  "hands": "pistol (right hand, mirrored for the left pistol)",
+  "class": "twin pocket pistols",
+  "animated": [
+   "Right pistol",
+   "Right Slide",
+   "Right Trigger",
+   "Right Hammer",
+   "Right Magazine",
+   "Left pistol",
+   "Left Slide",
+   "Left Trigger",
+   "Left Magazine"
+  ],
+  "note": "Both pistols share the origin. The runtime mirrors a second right hand and offsets the Left pistol to the shooter's left.",
+  "triangles": 13432,
+  "nodes": [
+   "Left Magazine",
+   "Left Slide",
+   "Left Trigger",
+   "Left pistol",
+   "Right Hammer",
+   "Right Magazine",
+   "Right Slide",
+   "Right Trigger",
+   "Right pistol"
+  ],
+  "glb": "public/models/dual.glb",
+  "source": "assets/source/weapons-1970s/dual.blend",
+  "bytes": 705820
+ },
+ "machinepistol": {
+  "muzzle": [
+   0,
+   0.028,
+   0.164
+  ],
+  "hands": "pistol",
+  "class": "machine pistol",
+  "animated": [
+   "Bolt",
+   "Trigger",
+   "Magazine",
+   "Stock"
+  ],
+  "triangles": 12012,
+  "nodes": [
+   "Bolt",
+   "Grip",
+   "Magazine",
+   "Receiver",
+   "Stock",
+   "Trigger"
+  ],
+  "glb": "public/models/machinepistol.glb",
+  "source": "assets/source/weapons-1970s/machinepistol.blend",
+  "bytes": 619004
+ },
+ "doublebarrel": {
+  "muzzle": [
+   0,
+   0.013,
+   0.504
+  ],
+  "muzzles": [
+   [
+    0.0128,
+    0.013,
+    0.5
+   ],
+   [
+    -0.0128,
+    0.013,
+    0.5
+   ]
+  ],
+  "hands": "shotgun",
+  "class": "side-by-side coach gun",
+  "animated": [
+   "Barrels",
+   "Shells",
+   "Right hammer",
+   "Left hammer",
+   "Front trigger",
+   "Rear trigger",
+   "Top lever"
+  ],
+  "pivots": {
+   "Barrels": [
+    0,
+    -0.02,
+    0.028
+   ],
+   "Top lever": [
+    0,
+    0.036,
+    -0.032
+   ]
+  },
+  "triangles": 13808,
+  "nodes": [
+   "Action",
+   "Barrels",
+   "Front trigger",
+   "Left hammer",
+   "Rear trigger",
+   "Right hammer",
+   "Shells",
+   "Stock",
+   "Top lever"
+  ],
+  "glb": "public/models/doublebarrel.glb",
+  "source": "assets/source/weapons-1970s/doublebarrel.blend",
+  "bytes": 817028
+ },
+ "autoshotgun": {
+  "muzzle": [
+   0,
+   0.033,
+   0.704
+  ],
+  "hands": "shotgun",
+  "class": "semi-automatic hunting shotgun",
+  "animated": [
+   "Bolt",
+   "Carrier",
+   "Trigger",
+   "Loading shell"
+  ],
+  "triangles": 13048,
+  "nodes": [
+   "Barrel",
+   "Bolt",
+   "Carrier",
+   "Fore-end",
+   "Loading shell",
+   "Receiver",
+   "Stock",
+   "Trigger"
+  ],
+  "glb": "public/models/autoshotgun.glb",
+  "source": "assets/source/weapons-1970s/autoshotgun.blend",
+  "bytes": 778632
+ },
+ "lever": {
+  "muzzle": [
+   0,
+   0.006,
+   0.583
+  ],
+  "hands": "shotgun",
+  "class": "lever-action rifle",
+  "animated": [
+   "Lever",
+   "Hammer",
+   "Trigger",
+   "Loading round"
+  ],
+  "pivots": {
+   "Lever": [
+    0,
+    -0.032,
+    0.036
+   ],
+   "Hammer": [
+    0,
+    0.004,
+    -0.07
+   ]
+  },
+  "triangles": 14295,
+  "nodes": [
+   "Barrel",
+   "Forearm",
+   "Hammer",
+   "Lever",
+   "Loading round",
+   "Receiver",
+   "Stock",
+   "Trigger"
+  ],
+  "glb": "public/models/lever.glb",
+  "source": "assets/source/weapons-1970s/lever.blend",
+  "bytes": 761444
+ },
+ "sniper": {
+  "muzzle": [
+   0,
+   0.016,
+   0.762
+  ],
+  "hands": "shotgun",
+  "class": "military-surplus bolt-action rifle with 4x scope",
+  "animated": [
+   "Bolt",
+   "Trigger",
+   "Stripper clip"
+  ],
+  "triangles": 14820,
+  "nodes": [
+   "Barrel",
+   "Bolt",
+   "Receiver",
+   "Scope",
+   "Sling",
+   "Stock",
+   "Stripper clip",
+   "Trigger"
+  ],
+  "glb": "public/models/sniper.glb",
+  "source": "assets/source/weapons-1970s/sniper.blend",
+  "bytes": 826864
+ },
+ "launcher": {
+  "muzzle": [
+   0,
+   0.028,
+   0.332
+  ],
+  "hands": "shotgun",
+  "class": "single-shot break-open 40 mm launcher",
+  "animated": [
+   "Barrel",
+   "Shell",
+   "Latch",
+   "Trigger"
+  ],
+  "pivots": {
+   "Barrel": [
+    0,
+    -0.018,
+    0.035
+   ]
+  },
+  "triangles": 12564,
+  "nodes": [
+   "Barrel",
+   "Latch",
+   "Receiver",
+   "Shell",
+   "Stock",
+   "Trigger"
+  ],
+  "glb": "public/models/launcher.glb",
+  "source": "assets/source/weapons-1970s/launcher.blend",
+  "bytes": 745776
+ },
+ "tommy": {
+  "muzzle": [
+   0,
+   0.02,
+   0.473
+  ],
+  "hands": "rifle",
+  "class": "drum-fed submachine gun",
+  "animated": [
+   "Drum",
+   "Drum key",
+   "Bolt",
+   "Trigger"
+  ],
+  "pivots": {
+   "Drum": [
+    0,
+    -0.098,
+    0.1
+   ]
+  },
+  "triangles": 22118,
+  "nodes": [
+   "Barrel",
+   "Bolt",
+   "Drum",
+   "Drum key",
+   "Receiver",
+   "Stock",
+   "Trigger"
+  ],
+  "glb": "public/models/tommy.glb",
+  "source": "assets/source/weapons-1970s/tommy.blend",
+  "bytes": 1039028
+ },
+ "lmg": {
+  "muzzle": [
+   0,
+   0.022,
+   0.642
+  ],
+  "hands": "rifle",
+  "class": "belt-fed light machine gun",
+  "animated": [
+   "Feed cover",
+   "Ammo box",
+   "Belt",
+   "Charging handle",
+   "Trigger"
+  ],
+  "triangles": 24044,
+  "nodes": [
+   "Ammo box",
+   "Barrel",
+   "Belt",
+   "Charging handle",
+   "Feed cover",
+   "Receiver",
+   "Stock",
+   "Trigger"
+  ],
+  "glb": "public/models/lmg.glb",
+  "source": "assets/source/weapons-1970s/lmg.blend",
+  "bytes": 1145060
+ },
+ "stick": {
+  "muzzle": [
+   -0.085,
+   -0.018,
+   0.9249999999999999
+  ],
+  "hands": "shotgun",
+  "class": "bent-cane craps stick (melee)",
+  "animated": [
+   "Stick",
+   "Rake head"
+  ],
+  "triangles": 2736,
+  "nodes": [
+   "Rake head",
+   "Stick"
+  ],
+  "glb": "public/models/stick.glb",
+  "source": "assets/source/weapons-1970s/stick.blend",
+  "bytes": 244808
+ },
+ "axe": {
+  "muzzle": [
+   0,
+   -0.16859090909090907,
+   0.58
+  ],
+  "hands": "shotgun",
+  "class": "fire axe (melee)",
+  "animated": [
+   "Axe",
+   "Axe head"
+  ],
+  "triangles": 5300,
+  "nodes": [
+   "Axe",
+   "Axe head"
+  ],
+  "glb": "public/models/axe.glb",
+  "source": "assets/source/weapons-1970s/axe.blend",
+  "bytes": 453316
+ },
+ "fire-cabinet": {
+  "hands": null,
+  "class": "world display",
+  "animated": [],
+  "triangles": 3304,
+  "nodes": [
+   "Fire cabinet"
+  ],
+  "glb": "public/models/fire-cabinet.glb",
+  "source": "assets/source/weapons-1970s/fire-cabinet.blend",
+  "bytes": 292664
+ }
+}

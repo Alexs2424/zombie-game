@@ -37,17 +37,37 @@ targets or proposals, the shared geometry and generated map show the final local
 implementation. The 48 cabinets reuse the original assets through instancing;
 the shifted bar and truck/storage retain their original furniture assets.
 
+## Integration with the current main branch
+
+The PR also preserves the main branch's newer 1970s arsenal, weapon sights,
+place-number chip betting and Velvet Hour secret room. The portrait/keypad now
+connects the cashier's public room to a 10 × 24 m speakeasy east of it; the glass
+cash area remains inaccessible. The clue cards follow the High Roller flush table.
+
+Both craps tables retain one roll per table per round. A roll with no placed
+chips uses the approved 250-chip quick wager and 500-chip win. Optional placed
+bets use the imported place-number odds, lock while rolling and remain on the
+table until collected or cleared by seven; rolling those bets costs no extra fee.
+Each table keeps its own chips, results and aiming targets.
+
+The generated map includes the speakeasy and its concealed door. Overall ground
+bounds are now 98 × 89 m, while the casino and hotel footprints stay unchanged.
+
 ## Implementation validation
 
-- All 199 automated tests pass, including 10 new reconfiguration regressions and
-  the existing hotel mystery, curved-stair navigation and restaurant challenge.
+- The merged suite contains 231 automated tests. All pass after a focused
+  re-run correcting the layout test to use the actual combined collision geometry.
+  Coverage includes both betting modes, the arsenal, secret-room puzzle, hotel
+  mystery, curved-stair navigation and restaurant challenge.
 - Full TypeScript checking, ESLint, production build and whitespace checks pass.
   The build retains existing Vinext advisory messages about configuration and
   dynamic imports; they do not prevent the build.
 - Local Chrome checks exercised all individual door prices, the hotel-to-supply
   purchase route, the moved rifle, four simultaneous table-game result cards,
   independent roulette results and the starting flush-table revolver reward.
-  No browser console errors or uncaught page errors were reported.
+  A fresh-page check also exercised independent placed-chip bets, the portrait
+  shot sequence, Mystery Box and weapon aiming. No browser console errors or
+  uncaught page errors were reported.
 - Visually inspected the casino, bar, High Roller, cashier, supply room, rifle
   rack, hotel and table models. Moved the rifle rack to the supply room's west
   wall so shelving does not obscure its purchase approach.
