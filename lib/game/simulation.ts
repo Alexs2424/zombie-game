@@ -1,3 +1,4 @@
+import { RANGE_RECTS } from './test-range-layout.ts';
 /** Pure gameplay state. Rendering, audio, input, and wall-clock time live outside this module. */
 import {
   POKER_TABLES,
@@ -278,6 +279,7 @@ export type RouletteSpin = {
 };
 export const BOUNDS = { ...CASINO_BOUNDS, maxX: SECRET_ROOM.maxX };
 export function roomName(p: WorldPosition) {
+  if (p.x >= 90 && p.x <= 118) return "Mechanics test range";
   if (p.x >= SECRET_ROOM.minX && p.x <= SECRET_ROOM.maxX && p.z >= SECRET_ROOM.minZ && p.z <= SECRET_ROOM.maxZ) return SECRET_ROOM.name;
   return casinoRoomName(p) ?? hotelRoomName(p) ?? "Casino Floor";
 }
@@ -509,6 +511,7 @@ export class Simulation {
     owned: id === "pistol", mag: id === "pistol" ? 12 : 0, reserve: id === "pistol" ? 84 : 0,
   }])) as Record<WeaponId, {owned:boolean; mag:number; reserve:number}>;
   enemies: Enemy[] = [];
+  corpses: { enemy: Enemy; age: number }[] = [];
   grenades = 2;
   projectiles: Grenade[] = [];
   explosions: (V3 & { id: number; remaining: number })[] = [];
@@ -532,7 +535,9 @@ export class Simulation {
   messageRemaining = 0;
   private seed = 527;
   private priorPhase: Phase = "playing";
-  constructor() {
+  readonly testRange: boolean;
+  constructor(testRange = false) {
+    this.testRange = testRange;
     this.refreshMap();
   }
   random() {
@@ -545,7 +550,7 @@ export class Simulation {
     this.vip = this.doorsOpen.vip || this.doorsOpen.vipExit;
     this.supply = this.doorsOpen.supply;
     this.cashier = this.doorsOpen.cashier;
-    this.rects = [
+    this.rects = this.testRange ? RANGE_RECTS : [
       ...STATIC_RECTS,
       ...(!this.hotel ? [DOORS.hotel] : []),
       ...(!this.hotelMystery.passageOpen ? HOTEL_MYSTERY_GATES : []),
@@ -1206,6 +1211,9 @@ export class Simulation {
     this.events.push({ type: "hit", headshot, position: { x: e.x, y: e.y, z: e.z } });
     if (e.health <= 0) {
       this.kills++;
+      this.corpses.push({ enemy: { ...e, flash: 0 }, age: 0 });
+      // Heavy firefights retire older bodies sooner, always through the fade.
+      for (const corpse of this.corpses.slice(0, -24)) corpse.age = Math.max(4.5, corpse.age);
       this.events.push({
         type: "kill",
         headshot,
@@ -1543,6 +1551,8 @@ export class Simulation {
     if (this.phase !== "playing") return;
     dt = Math.min(0.05, Math.max(0, dt));
     this.time += dt;
+    for (const corpse of this.corpses) corpse.age += dt;
+    this.corpses = this.corpses.filter(corpse => corpse.age < 6);
     this.codeFlash = this.codeFlash > 0 ? Math.max(0,this.codeFlash-dt) : Math.min(0,this.codeFlash+dt);
     if (this.mystery && !this.mystery.resolved) {
       this.mystery.remaining = Math.max(0,this.mystery.remaining-dt);

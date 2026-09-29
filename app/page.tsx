@@ -5,6 +5,7 @@ import type { GameRuntime, GameView } from "../lib/game/runtime";
 import { PRICES, ROULETTE_RULES, WEAPONS } from "../lib/game/simulation";
 import { cardName, cardRank, suitSymbol } from "../lib/game/poker";
 import { HOTEL_RULES } from "../lib/game/hotel-gameplay";
+import { DevPanel } from "./dev-panel";
 const initial: GameView = {
   owned: [{ id: "pistol", label: "Pistol", key: "1" }],
   pickup: null,
@@ -384,13 +385,36 @@ export default function Home() {
     [sensitivity, setSensitivity] = useState(1),
     [volume, setVolume] = useState(0.45),
     [debug, setDebug] = useState(false),
-    [toolsCollapsed, setToolsCollapsed] = useState(false),
-    [playtesting, setPlaytesting] = useState(false);
+    [playtesting, setPlaytesting] = useState(false),
+    [devOpen, setDevOpen] = useState(false);
+  const [rangeMode, setRangeMode] = useState(false);
+  const [scenario, setScenario] = useState("targets");
+  const [god, setGod] = useState(false);
+  useEffect(() => {
+    if (!playtesting || rangeMode) return;
+    const key = (event: KeyboardEvent) => {
+      if (event.code !== "F2" || event.repeat) return;
+      event.preventDefault();
+      runtime.current?.pause();
+      setDevOpen(open => !open);
+    };
+    const lock = () => { if (document.pointerLockElement) setDevOpen(false); };
+    document.addEventListener("keydown", key);
+    document.addEventListener("pointerlockchange", lock);
+    return () => { document.removeEventListener("keydown", key); document.removeEventListener("pointerlockchange", lock); };
+  }, [playtesting, rangeMode]);
+  useEffect(() => {
+    if (!canvas.current) return;
+    const observer = new ResizeObserver(() => runtime.current?.renderer.resize());
+    observer.observe(canvas.current);
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     let disposed = false;
     import("../lib/game/runtime")
       .then(({ GameRuntime }) => {
         if (disposed || !canvas.current) return;
+        setRangeMode(process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("range"));
         setPlaytesting(
           process.env.NODE_ENV !== "production" &&
             new URLSearchParams(window.location.search).has("playtest"),
@@ -459,8 +483,14 @@ export default function Home() {
         : roulette.reward === "jackpot"
           ? { title: "ZERO. JACKPOT.", detail: `All owned weapons refilled. Double damage for ${ROULETTE_RULES.damageDuration} seconds.` }
           : { title: "THE HOUSE HOLDS", detail: "No reward this spin. Try your luck again." };
+
+  useEffect(() => {
+    if (ready && rangeMode) runtime.current?.rangeAction("targets");
+  }, [ready, rangeMode]);
+  const rangeAction = (action: string) => { runtime.current?.rangeAction(action); if (["targets","pursuit","blast","empty"].includes(action)) {setScenario(action);setGod(false);} if(action === "reset") setGod(false); };
   return (
-    <main className={`game-shell ${active ? "in-game" : ""}`}>
+    <main className={`game-shell ${active ? "in-game" : ""} ${rangeMode ? "range-workspace" : playtesting ? "development-shell" : ""}`}>
+      <div className="game-viewport">
       <div className="casino-backdrop" />
       <canvas
         ref={canvas}
@@ -468,7 +498,7 @@ export default function Home() {
         aria-label="Last Jackpot first-person casino survival game"
       />
       {menu && <div className="menu-shade" />}
-      {!active && !view.shopOpen && !view.pokerOpen && (
+      {!active && (!playtesting || menu || dead) && !view.shopOpen && !view.pokerOpen && (
         <header className="masthead">
           <div className="wordmark">
             LJ<span>LAST JACKPOT</span>
@@ -476,7 +506,7 @@ export default function Home() {
           <span className="build-tag">SOLO SURVIVAL · V0</span>
         </header>
       )}
-      {menu && (
+      {menu && !rangeMode && (
         <>
           <section className="title-screen">
             <p className="eyebrow">LAS VEGAS, AFTER HOURS</p>
@@ -844,7 +874,7 @@ export default function Home() {
               )}
             </>
           )}
-          {view.pickup && (
+          {view.pickup && !(playtesting && paused) && (
             <section
               className="pickup-card"
               key={`${view.pickup.id}-${view.pickup.at}`}
@@ -1042,7 +1072,7 @@ export default function Home() {
           onPause={() => runtime.current?.closeHotelDocument()}
         />
       )}
-      {(paused || dead) && (
+      {((paused && !playtesting) || dead) && !rangeMode && (
         <div className="pause-shade">
           <section className="pause-card">
             <p className="eyebrow">
@@ -1181,152 +1211,52 @@ export default function Home() {
           {view.enemies} ACTIVE / {view.remaining} QUEUED
         </div>
       )}
-      {playtesting && !view.hotelDocument && (
-        <nav
-          className={`playtest-tools ${toolsCollapsed ? "collapsed" : ""}`}
-          aria-label="Development playtest controls"
-        >
-          <strong>DEVELOPMENT PLAYTEST</strong>
-          <button onClick={() => setToolsCollapsed(!toolsCollapsed)} aria-expanded={!toolsCollapsed}>
-            {toolsCollapsed ? "Show controls" : "Hide controls"}
-          </button>
-          <span>{Math.round(view.fps)} FPS · {view.p95.toFixed(1)} ms p95</span>
-          {!toolsCollapsed && <><span>{view.zombieAudioStatus}</span>
-          <span>{view.hotelPlaytestStatus}</span>
-          <span>{view.slotAudioStatus}</span></>}
-          {[
-            ["new", "Seed run"],
-            ["unlock-all", "Open all doors"],
-            ["add-chips", "+10,000 chips"],
-            ["toggle-invulnerability", "Toggle invulnerability"],
-            ["hotel-entrance", "Hotel entrance"],
-            ["hotel-lobby", "Hotel lobby"],
-            ["hotel-reception", "Reception ledger"],
-            ["hotel-suitcase", "Guest suitcase"],
-            ["hotel-panel", "Concealed panel"],
-            ["hotel-register", "Collection register"],
-            ["hotel-cache", "Gallery supplies"],
-            ["mystery-unlock", "Unlock gallery (QA)"],
-            ["hotel-upper", "Restaurant"],
-            ["hotel-jukebox", "Lobby jukebox"],
-            ["hotel-bell", "Restaurant bell"],
-            ["bell-clear-wave", "Clear ambushers (QA)"],
-            ["hotel-tour", "Walk hotel loop"],
-            ["hotel-chase", "Test upstairs pursuit"],
-            ["floor", "Casino floor"],
-            ["casinoWide", "Grand casino overview"],
-            ["slotsWest", "Slots west"],
-            ["slotsEast", "Slots east"],
-            ["slotsBank", "Slots second bank"],
-            ["sound-slots-west", "Walk slots west"],
-            ["sound-slots-east", "Walk slots east"],
-            ["sound-slots-bank", "Walk second bank"],
-            ["gate", "Bar entrance"],
-            ["barExit", "Bar second door"],
-            ["bar", "Bartender"],
-            ["loungeWide", "Lounge overview"],
-            ["loungeEntrance", "Lounge entry view"],
-            ["loungeSeating", "Lounge seating"],
-            ["shotgun", "Shotgun rack"],
-            ["smg", "SMG rack"],
-            ["rifle", "Rifle rack"],
-            ["vipGate", "High Roller entrance"],
-            ["vipExit", "High Roller second door"],
-            ["vip", "VIP room"],
-            ["couch", "VIP couch"],
-            ["casinoCouchNorth", "Casino north couch"],
-            ["casinoCouchSouth", "Casino south couch"],
-            ["loungeCouch", "Lounge couch"],
-            ["poker-a", "Card table I"],
-            ["poker-b", "Card table II"],
-            ["poker-near-flush", "Prepare flush"],
-            ["poker-swap", "Swap test card"],
-            ["staff", "Supply door"],
-            ["serviceOverview", "Service overview"],
-            ["serviceTruck", "Service truck"],
-            ["serviceStorage", "Service storage"],
-            ["workshop", "Workshop"],
-            ["ammo", "Ammo rack"],
-            ["cashierGate", "Cashier entrance"],
-            ["cashier", "Cashier room"],
-            ["tables", "Gaming floor"],
-            ["craps", "Craps table I"],
-            ["crapsB", "Craps table II"],
-            ["craps-roll-b", "Roll craps II"],
-            ["roulette", "Roulette table I"],
-            ["rouletteB", "Roulette table II"],
-            ["roulette-spin-b", "Spin roulette II"],
-            ["hold-chips", "Hold chips"],
-            ["bet-4", "Place 4"],
-            ["bet-6", "Place 6"],
-            ["take-bets", "Take bets"],
-            ["clue", "Clue table"],
-            ["portrait", "Secret portrait"],
-            ["key-spade", "Shoot spade"],
-            ["key-7", "Shoot 7"],
-            ["key-heart", "Shoot heart"],
-            ["key-4", "Shoot 4"],
-            ["key-club", "Shoot club"],
-            ["key-9", "Shoot 9"],
-            ["key-diamond", "Shoot diamond"],
-            ["key-2", "Shoot 2"],
-            ["mystery-view", "Mystery machine"],
-            ["rouletteClose", "Wheel close-up"],
-            ["roulette-spin", "Spin roulette"],
-            ["roulette-4", "Test 4 ammo"],
-            ["roulette-24", "Test 24 ammo"],
-            ["roulette-7", "Test 7 ammo"],
-            ["roulette-0", "Test 0 jackpot"],
-            ["roulette-miss", "Test miss"],
-            ["roulette-expire", "Expire jackpot"],
-            ["roulette-pause", "Pause wager"],
-            ["roulette-resume", "Resume wager"],
-            ["dice-seven", "Test seven"],
-            ["dice-win", "Test payout"],
-            ["use", "Interact E"],
-            ["left", "Turn left"],
-            ["right", "Turn right"],
-            ["forward", "Walk forward"],
-            ["back", "Walk back"],
-            ["shoot", "Fire"],
-            ["grenade", "Throw grenade"],
-            ["knife", "Knife slash"],
-            ["melee-target", "Knife target"],
-            ["reload", "Reload"],
-            ["weapon-pistol", "Equip pistol"],
-            ["weapon-shotgun", "Equip shotgun"],
-            ["weapon-smg", "Equip SMG"],
-            ["weapon-rifle", "Equip rifle"],
-            ["weapon-revolver", "Equip revolver"],
-            ["weapon-tommy", "Equip Tommy"],
-            ["clear", "Finish round"],
-            ["round", "Start round"],
-            ["crowd", "Spawn 14"],
-            ["sound-chase", "Hear chase"],
-            ["sound-last", "Hear last zombie"],
-            ["sound-horde", "Hear horde"],
-            ["zombies", "Zombie lineup"],
-            ["zombie-wounds", "Show wounds"],
-            ["zombie-limbs", "Sever limbs"],
-            ["zombie-attacks", "Three attacks"],
-          ].map(([id, label]) => (
-            <button
-              key={id}
-              hidden={toolsCollapsed}
-              disabled={!ready}
-              onClick={() => runPlaytestAction(id)}
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
-      )}
       {error && (
         <div className="error-message" role="alert">
           {error}
           <button onClick={() => window.location.reload()}>Reload</button>
         </div>
       )}
+      {playtesting && !rangeMode && <div className="dev-launcher">
+        <button onClick={()=>{window.location.assign(new URL("/?playtest=1&range=1", window.location.origin));}}>Mechanics lab →</button>
+        {view.previewControls && active && <span className="dev-preview-hint">PREVIEW · Right-drag to look · WASD move · Left-click fire</span>}
+        <button onClick={() => { runtime.current?.pause(); setDevOpen(open=>!open); }} aria-expanded={devOpen}>F2 · {devOpen ? "Hide tools" : "Developer tools"}</button>
+        {paused && <button disabled={!ready} onClick={()=>{setDevOpen(false);void runtime.current?.enter();}}>Ⅱ Paused · Resume</button>}
+      </div>}
+      </div>
+      {playtesting && !rangeMode && devOpen && <DevPanel view={view} ready={ready}
+        onAction={runPlaytestAction}
+        onPlay={()=>{setDevOpen(false);setSettings(false);void runtime.current?.enter();}}
+        onPause={()=>runtime.current?.pause()} onClose={()=>setDevOpen(false)} />}
+      {rangeMode && <aside className="range-panel" aria-label="Mechanics test range">
+        <p className="range-kicker">DEVELOPMENT / SANDBOX</p>
+        <h1>Mechanics lab</h1>
+        <p>Move freely. Test one variable. Reset and repeat.</p>
+        <button className="range-play" disabled={!ready} onClick={() => {if(view.phase === "dead") setGod(false); enter(view.phase === "dead");}}>{active ? "Recapture mouse" : view.phase === "dead" ? "Restart scenario" : "Play scenario"}</button>
+        <button onClick={() => runtime.current?.pause()}>Pause / release mouse · Esc</button>
+        <h2>Scenario</h2>
+        <select aria-label="Test scenario" value={scenario} disabled={!ready} onChange={e => rangeAction(e.target.value)}>
+          <option value="targets">Weapon range · 5 / 10 / 20 m</option>
+          <option value="pursuit">Combat · three pursuing zombies</option>
+          <option value="blast">Explosions · cover and self damage</option>
+          <option value="empty">Movement · empty greybox</option>
+        </select>
+        <p>{scenario === "targets" ? "Three stationary 100 HP zombies. Compare sights, spread, reloads and hit reactions. They can still attack at close range." : scenario === "pursuit" ? "Three active zombies, no automatic waves. Test movement and close combat." : scenario === "blast" ? "G throws a grenade. Compare exposed distance with the tall cover wall. Damage is enabled; nearby blasts can kill." : "Clear floor, low obstacles and full-height cover for movement checks."}</p>
+        <button disabled={!ready} onClick={() => rangeAction("reset")}>Reset this scenario</button>
+        <h2>Loadout</h2>
+        <select aria-label="Range weapon" value={view.weapon} disabled={!ready} onChange={e => rangeAction(`equip:${e.target.value}`)}>
+          {Object.entries(WEAPONS).map(([id,w]) => <option key={id} value={id}>{w.label}</option>)}
+        </select>
+        <button disabled={!ready} onClick={() => rangeAction("refill")}>Restore health, ammo & grenades</button>
+        <button disabled={!ready} onClick={() => rangeAction("clear")}>Clear enemies & live grenades</button>
+        <label><input type="checkbox" checked={god} disabled={!ready} onChange={e => {setGod(e.target.checked);rangeAction("god");}} /> Invulnerable (damage off)</label>
+        <h2>Live readout</h2>
+        <output>{view.phase.toUpperCase()} · {Math.ceil(view.health)} HP<br />{view.enemies} enemies · {view.grenades} grenades<br />{Math.round(view.fps)} FPS · {view.p95.toFixed(1)} ms p95</output>
+        <h2>Controls</h2>
+        <p>WASD move · Shift sprint · Mouse aim<br />LMB fire · RMB sights · R reload<br />G grenade · V melee · Q next weapon</p>
+        <p>Embedded preview: if mouse capture is unavailable, hold RMB and drag to look. Click the scene before moving.</p>
+        <button onClick={()=>window.location.assign(new URL("/?playtest=1", window.location.origin))}>Casino integration tests →</button>
+      </aside>}
     </main>
   );
 }
