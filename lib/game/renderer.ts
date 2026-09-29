@@ -80,7 +80,11 @@ export class GameRenderer {
   ready: Promise<void>;
   private weaponAssets: AssetContainer[] = [];
   private hotel: ReturnType<typeof buildHotel>;
-  private couchFallback?: TransformNode;
+  private couchFallbacks = new Map<string, {
+    root: TransformNode;
+    footprint: Rect;
+    yaw: number;
+  }>();
   private slotPlacements: {
     root: TransformNode;
     variant: "emerald" | "burgundy";
@@ -536,7 +540,7 @@ export class GameRenderer {
       }
       if (r.id === "vip-sofa") {
         const fallback = new TransformNode("VIP couch loading fallback", this.scene);
-        this.couchFallback = fallback;
+        this.couchFallbacks.set(r.id, { root: fallback, footprint: r, yaw: -Math.PI / 2 });
         this.box("sofa base", r.x, 0.26, r.z, r.w, 0.4, r.d, wood, fallback);
         this.box("tufted sofa back", r.x + 0.4, 0.8, r.z, 0.3, 0.8, r.d, burgundy, fallback);
         for (let z = r.z - r.d / 2 + 0.5; z < r.z + r.d / 2; z += 1) {
@@ -565,12 +569,20 @@ export class GameRenderer {
       }
       if (r.id.includes("bench") || r.id.includes("banquette")) {
         const back = r.id.includes("south") ? -1 : 1;
-        this.box("casino seating plinth", r.x, 0.15, r.z, r.w, 0.28, r.d, trim);
-        this.box("casino upholstered seat", r.x, 0.47, r.z, r.w, 0.36, r.d, burgundy);
+        // Keep loading placeholders out of the permanent scenery batches so
+        // each can be removed once the original Blender couch is ready.
+        const fallback = new TransformNode(`${r.id} couch loading fallback`, this.scene);
+        this.couchFallbacks.set(r.id, { root: fallback, footprint: r, yaw: back > 0 ? Math.PI : 0 });
+        this.box("casino seating plinth", r.x, 0.15, r.z, r.w, 0.28, r.d, trim, fallback);
+        this.box("casino upholstered seat", r.x, 0.47, r.z, r.w, 0.36, r.d, burgundy, fallback);
         this.box("casino upholstered back", r.x, 0.92, r.z + back * r.d * 0.36,
-          r.w, 0.7, Math.min(0.26, r.d / 3), burgundy);
+          r.w, 0.7, Math.min(0.26, r.d / 3), burgundy, fallback);
         for (let x = r.x - r.w / 2 + 0.45; x < r.x + r.w / 2; x += 0.7)
-          this.box("casino tufted button", x, 0.92, r.z + back * (r.d * 0.36 - 0.15), 0.04, 0.04, 0.025, trim);
+          this.box("casino tufted button", x, 0.92, r.z + back * (r.d * 0.36 - 0.15), 0.04, 0.04, 0.025, trim, fallback);
+        for (const mesh of fallback.getChildMeshes()) {
+          mesh.isPickable = false;
+          this.shadowAt(r.x, r.z).addShadowCaster(mesh, false);
+        }
         continue;
       }
       this.box(r.id, r.x, (r.baseY ?? 0) + r.h / 2, r.z, r.w, r.h, r.d, wall);
@@ -1107,6 +1119,10 @@ export class GameRenderer {
       ...asset.meshes,
       ...this.scene.meshes.filter((mesh) => mesh.name.startsWith("scenery: Last Call")),
       ...(this.bartender?.root.getChildMeshes() ?? []),
+      // The couch and lounge imports run concurrently; include whichever
+      // seating is ready so either completion order keeps the room lighting.
+      ...(this.scene.getTransformNodeByName("lounge-bench-north couch placement")?.getChildMeshes()
+        ?? this.couchFallbacks.get("lounge-bench-north")?.root.getChildMeshes() ?? []),
     ];
     for (const light of this.loungeAccentLights) light.includedOnlyMeshes = [...litMeshes];
     // The export is baked to world placement, including glTF's handedness conversion.
@@ -1123,54 +1139,71 @@ export class GameRenderer {
     }
   }
   private async loadCouchAsset() {
-    const footprint = STATIC_RECTS.find((rect) => rect.id === "vip-sofa")!;
     let asset: AssetContainer | undefined;
-    let placement: TransformNode | undefined;
+    const placements: TransformNode[] = [];
     try {
+      // Reuse the original six-batch leather couch for all casino seating.
+      // Clones share geometry/textures but keep per-mesh room lighting.
       asset = await LoadAssetContainerAsync("/models/vip-couch.glb", this.scene);
       if (this.scene.isDisposed) {
         asset.dispose();
         return;
       }
-      placement = new TransformNode("VIP couch placement", this.scene);
-      placement.position.set(footprint.x, 0, footprint.z);
-      // The glTF conversion root preserves +Z forward in this left-handed
-      // scene. Turn the couch toward the card tables to the west (-X).
-      placement.rotation.y = -Math.PI / 2;
-      const imported = asset.instantiateModelsToScene(
-        (name) => `VIP couch:${name}`,
-        false,
-        { doNotInstantiate: true },
-      );
-      for (const node of imported.rootNodes) node.parent = placement;
-      for (const mesh of placement.getChildMeshes()) {
-        mesh.isPickable = false;
-        mesh.receiveShadows = true;
-        const material = mesh.material as unknown as {
-          maxSimultaneousLights?: number;
-        };
-        if (material && "maxSimultaneousLights" in material)
-          material.maxSimultaneousLights = 8;
-        for (const shadow of this.shadows) shadow.addShadowCaster(mesh, false);
-        mesh.freezeWorldMatrix();
+      for (const [id, { footprint, yaw }] of this.couchFallbacks) {
+        const placement = new TransformNode(`${id} couch placement`, this.scene);
+        placements.push(placement);
+        placement.setEnabled(false);
+        placement.position.set(footprint.x, footprint.baseY ?? 0, footprint.z);
+        placement.rotation.y = yaw;
+        // The original is authored for a 5 m seat. Shorten only its width for
+        // the south bench, preserving seat height, depth and floor contact.
+        placement.scaling.x = (id === "vip-sofa" ? footprint.d : footprint.w) / 5;
+        const imported = asset.instantiateModelsToScene(
+          (name) => `${id}:${name}`,
+          false,
+          { doNotInstantiate: true },
+        );
+        // Retain the glTF conversion root, including its handedness transform.
+        for (const node of imported.rootNodes) node.parent = placement;
+        for (const mesh of placement.getChildMeshes()) {
+          mesh.isPickable = false;
+          mesh.receiveShadows = true;
+          const material = mesh.material as unknown as { maxSimultaneousLights?: number };
+          if (material && "maxSimultaneousLights" in material)
+            material.maxSimultaneousLights = 8;
+          for (const texture of mesh.material?.getActiveTextures() ?? [])
+            texture.anisotropicFilteringLevel = 8;
+          if (mesh.getTotalVertices() > 0)
+            this.shadowAt(footprint.x, footprint.z).addShadowCaster(mesh, false);
+          mesh.freezeWorldMatrix();
+        }
       }
+      const loungeMeshes = this.scene.getTransformNodeByName("lounge-bench-north couch placement")?.getChildMeshes() ?? [];
+      for (const light of this.loungeAccentLights) light.includedOnlyMeshes.push(...loungeMeshes);
+      for (const { root } of this.couchFallbacks.values()) {
+        const fallbackMeshes = root.getChildMeshes();
+        for (const mesh of fallbackMeshes)
+          for (const shadow of this.shadows) shadow.removeShadowCaster(mesh, false);
+        for (const light of this.loungeAccentLights)
+          light.includedOnlyMeshes = light.includedOnlyMeshes.filter((mesh) => !fallbackMeshes.includes(mesh));
+        root.dispose();
+      }
+      this.couchFallbacks.clear();
+      placements.forEach((placement) => placement.setEnabled(true));
       this.weaponAssets.push(asset);
-      if (this.couchFallback) {
-        for (const mesh of this.couchFallback.getChildMeshes())
-          for (const shadow of this.shadows)
-            shadow.removeShadowCaster(mesh, false);
-        this.couchFallback.dispose();
-        this.couchFallback = undefined;
-      }
     } catch (error) {
-      placement?.dispose();
+      for (const placement of placements) {
+        const meshes = placement.getChildMeshes();
+        for (const mesh of meshes)
+          for (const shadow of this.shadows) shadow.removeShadowCaster(mesh, false);
+        for (const light of this.loungeAccentLights)
+          light.includedOnlyMeshes = light.includedOnlyMeshes.filter((mesh) => !meshes.includes(mesh));
+        placement.dispose();
+      }
       asset?.dispose();
       // A missing optional furnishing must not prevent the game from starting.
       if (!this.scene.isDisposed)
-        console.warn(
-          "Detailed VIP couch unavailable; keeping the fallback.",
-          error,
-        );
+        console.warn("Detailed couches unavailable; keeping the fallbacks.", error);
     }
   }
   private async loadPokerAssets() {

@@ -15,7 +15,8 @@ its rear lobby.
 
 The main casino shows all **8 slot banks / 48 cabinets**, **2 craps tables**,
 **2 roulette tables**, and **1 existing flush table**. The second existing flush
-table is in High Roller. Colors follow the approved sketch: blue slots, red
+table is in High Roller. Six leather couches line the casino perimeter, keeping
+the hotel entrance and slot aisles clear. Colors follow the approved sketch: blue slots, red
 craps, purple roulette, green flush poker.
 
 Geometry, furniture, purchases, prices and spawns come directly from
