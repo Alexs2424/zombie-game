@@ -10,6 +10,7 @@ import {
   BAR_ANCHOR,
   hasSight,
 } from "../lib/game/simulation.ts";
+import { isMelee } from "../lib/game/weapon-expansion.ts";
 
 const idle = { forward: 0, strafe: 0, sprint: false, fire: false };
 const anchor = PURCHASES.find((p) => p.id === "roulette");
@@ -30,7 +31,7 @@ function table() {
   s.start();
   s.round = 3;
   s.intermission = 1e6; // Keep enemy spawns and round changes out of wagers.
-  s.lounge = s.vip = s.tables = true;
+  s.doorsOpen.lounge = s.doorsOpen.vip = true;
   s.refreshMap();
   s.player = { x: anchor.x, z: anchor.z };
   s.points = 10000;
@@ -70,7 +71,7 @@ function frozenState(s) {
 
 test("roulette exposes the agreed price, table anchor, and gameplay durations", () => {
   assert.equal(PRICES.roulette, 200);
-  assert.deepEqual({ x: anchor.x, z: anchor.z }, { x: 35, z: 3.1 });
+  assert.deepEqual({ x: anchor.x, z: anchor.z }, { x: -26.3, z: 2.25 });
   assert.deepEqual(ROULETTE_RULES, {
     spinDuration: 6,
     resultDuration: 6,
@@ -79,12 +80,11 @@ test("roulette exposes the agreed price, table anchor, and gameplay durations", 
   });
 });
 
-test("locked, distant, obstructed, inactive and 199-chip attempts cannot start or charge", () => {
+test("distant, obstructed, inactive and 199-chip attempts cannot start or charge", () => {
   const blocked = {
-    locked: (s) => { s.tables = false; },
     distant: (s) => { s.player.x += 2.21; },
     obstructed: (s) => {
-      s.player.z = 5;
+      s.player.z = 4.25;
       assert.equal(hasSight(s.player, anchor, s.rects), false);
     },
     ready: (s) => { s.phase = "ready"; },
@@ -200,7 +200,7 @@ test("every pocket awards exactly its stated reward once, without chip payouts",
 
 test("4 and 24 refill each weapon at its upgraded capacity and leave other guns alone", () => {
   for (const number of [4, 24]) {
-    for (const weapon of WEAPON_ORDER) {
+    for (const weapon of WEAPON_ORDER.filter((id) => !isMelee(id))) {
       for (const upgraded of [false, true]) {
         const s = table();
         drain(s);
@@ -236,7 +236,9 @@ test("4 and 24 choose the weapon equipped when the ball lands", () => {
 
 test("7 and 0 refill only owned weapons across every legal ownership combination", () => {
   for (const number of [0, 7]) {
-    for (let mask = 1; mask < (1 << WEAPON_ORDER.length); mask += 2) {
+    // Every combination of the five base guns, plus the full expanded arsenal.
+    const masks = [...Array(16).keys()].map((m) => m * 2 + 1).concat((1 << WEAPON_ORDER.length) - 1);
+    for (const mask of masks) {
       const s = table();
       const owned = WEAPON_ORDER.filter((_, i) => mask & (1 << i));
       drain(s, owned);
@@ -245,6 +247,7 @@ test("7 and 0 refill only owned weapons across every legal ownership combination
       resolve(s);
       for (const id of WEAPON_ORDER) {
         assert.equal(s.inventory[id].owned, owned.includes(id));
+        if (isMelee(id)) continue; // Melee durability is never refilled by the wheel.
         assert.equal(s.inventory[id].mag, owned.includes(id) ? s.capacity(id) : 0);
         assert.equal(s.inventory[id].reserve, owned.includes(id) ? WEAPONS[id].reserve : 0);
       }

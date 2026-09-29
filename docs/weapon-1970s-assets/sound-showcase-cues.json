@@ -1,0 +1,207 @@
+[
+  {
+    "weapon": "magnum",
+    "cue": "fire",
+    "seconds": 0.3
+  },
+  {
+    "weapon": "magnum",
+    "cue": "eject",
+    "seconds": 1.25
+  },
+  {
+    "weapon": "tommy",
+    "cue": "fire-1",
+    "seconds": 3.0
+  },
+  {
+    "weapon": "tommy",
+    "cue": "fire-2",
+    "seconds": 3.085
+  },
+  {
+    "weapon": "tommy",
+    "cue": "fire-3",
+    "seconds": 3.17
+  },
+  {
+    "weapon": "tommy",
+    "cue": "fire-1",
+    "seconds": 3.255
+  },
+  {
+    "weapon": "tommy",
+    "cue": "fire-2",
+    "seconds": 3.34
+  },
+  {
+    "weapon": "tommy",
+    "cue": "fire-3",
+    "seconds": 3.425
+  },
+  {
+    "weapon": "doublebarrel",
+    "cue": "fire-alt",
+    "seconds": 5
+  },
+  {
+    "weapon": "dual",
+    "cue": "fire-right-1",
+    "seconds": 7
+  },
+  {
+    "weapon": "dual",
+    "cue": "fire-left-1",
+    "seconds": 7.22
+  },
+  {
+    "weapon": "machinepistol",
+    "cue": "fire-1",
+    "seconds": 9.0
+  },
+  {
+    "weapon": "machinepistol",
+    "cue": "fire-2",
+    "seconds": 9.055
+  },
+  {
+    "weapon": "machinepistol",
+    "cue": "fire-3",
+    "seconds": 9.11
+  },
+  {
+    "weapon": "machinepistol",
+    "cue": "fire-1",
+    "seconds": 9.165
+  },
+  {
+    "weapon": "machinepistol",
+    "cue": "fire-2",
+    "seconds": 9.22
+  },
+  {
+    "weapon": "lever",
+    "cue": "fire",
+    "seconds": 11
+  },
+  {
+    "weapon": "lever",
+    "cue": "cycle",
+    "seconds": 11.16
+  },
+  {
+    "weapon": "lever",
+    "cue": "cycle-close",
+    "seconds": 11.32
+  },
+  {
+    "weapon": "autoshotgun",
+    "cue": "fire",
+    "seconds": 13
+  },
+  {
+    "weapon": "autoshotgun",
+    "cue": "fire",
+    "seconds": 13.3
+  },
+  {
+    "weapon": "sniper",
+    "cue": "fire",
+    "seconds": 15
+  },
+  {
+    "weapon": "sniper",
+    "cue": "bolt-open",
+    "seconds": 15.3
+  },
+  {
+    "weapon": "sniper",
+    "cue": "bolt-close",
+    "seconds": 15.66
+  },
+  {
+    "weapon": "lmg",
+    "cue": "fire-1",
+    "seconds": 18.0
+  },
+  {
+    "weapon": "lmg",
+    "cue": "fire-2",
+    "seconds": 18.11
+  },
+  {
+    "weapon": "lmg",
+    "cue": "fire-3",
+    "seconds": 18.22
+  },
+  {
+    "weapon": "lmg",
+    "cue": "fire-1",
+    "seconds": 18.33
+  },
+  {
+    "weapon": "lmg",
+    "cue": "fire-2",
+    "seconds": 18.44
+  },
+  {
+    "weapon": "lmg",
+    "cue": "fire-3",
+    "seconds": 18.55
+  },
+  {
+    "weapon": "lmg",
+    "cue": "fire-1",
+    "seconds": 18.66
+  },
+  {
+    "weapon": "lmg",
+    "cue": "fire-2",
+    "seconds": 18.77
+  },
+  {
+    "weapon": "lmg",
+    "cue": "belt-end",
+    "seconds": 19
+  },
+  {
+    "weapon": "launcher",
+    "cue": "fire",
+    "seconds": 21
+  },
+  {
+    "weapon": "launcher",
+    "cue": "flight",
+    "seconds": 21.1
+  },
+  {
+    "weapon": "launcher",
+    "cue": "explode",
+    "seconds": 21.9
+  },
+  {
+    "weapon": "stick",
+    "cue": "swing",
+    "seconds": 25
+  },
+  {
+    "weapon": "stick",
+    "cue": "impact-1",
+    "seconds": 25.28
+  },
+  {
+    "weapon": "stick",
+    "cue": "break",
+    "seconds": 25.34
+  },
+  {
+    "weapon": "axe",
+    "cue": "swing",
+    "seconds": 28
+  },
+  {
+    "weapon": "axe",
+    "cue": "impact-1",
+    "seconds": 28.48
+  }
+]

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { STATIC_RECTS } from "../lib/game/simulation.ts";
 import { SlotAudioDirector, slotSourceAudible } from "../lib/game/slot-audio-director.ts";
 import { SLOT_MACHINE_SOURCES } from "../lib/game/slot-machines.ts";
+import { SLOT_ISLANDS } from "../lib/game/casino-layout.ts";
 
 const source = (id) => SLOT_MACHINE_SOURCES.find((cabinet) => cabinet.id === id);
 const a = source("slots-a:west:1");
@@ -16,9 +17,9 @@ const state = (overrides = {}) => ({
   ...overrides,
 });
 
-test("all twelve speakers share the unchanged cabinet layout and face out of both islands", () => {
-  assert.equal(SLOT_MACHINE_SOURCES.length, 12);
-  assert.equal(new Set(SLOT_MACHINE_SOURCES.map((cabinet) => cabinet.id)).size, 12);
+test("all 48 speakers share the eight-bank layout and face out of every island", () => {
+  assert.equal(SLOT_MACHINE_SOURCES.length, 48);
+  assert.equal(new Set(SLOT_MACHINE_SOURCES.map((cabinet) => cabinet.id)).size, 48);
   for (const island of STATIC_RECTS.filter((rect) => rect.id.startsWith("slots-"))) {
     const cabinets = SLOT_MACHINE_SOURCES.filter((cabinet) => cabinet.islandId === island.id);
     assert.equal(cabinets.length, 6);
@@ -38,7 +39,7 @@ test("all twelve speakers share the unchanged cabinet layout and face out of bot
   }
 });
 
-test("walking past either bank of either island chooses the closest actual cabinet", () => {
+test("walking past either face of all eight islands chooses the closest actual cabinet", () => {
   for (const cabinet of SLOT_MACHINE_SOURCES) {
     const cue = new SlotAudioDirector().update(0.1, state({ player: inFront(cabinet) }));
     assert.equal(cue?.source.id, cabinet.id);
@@ -51,31 +52,29 @@ test("walking past either bank of either island chooses the closest actual cabin
 test("the audible radius is 3.5m and cabinet backs and island ends stay silent", () => {
   const director = new SlotAudioDirector();
   assert.equal(director.update(1, state({ player: inFront(a, 3.51) })), null);
-  assert.equal(director.update(1, state({ player: { x: -7, z: 0 } })), null);
-  assert.equal(director.update(1, state({ player: { x: -7, z: -3.1 } })), null);
+  const island = SLOT_ISLANDS[0];
+  assert.equal(director.update(1, state({ player: { x: island.x, z: island.z } })), null);
+  assert.equal(director.update(1, state({ player: { x: island.x, z: island.z - island.d / 2 - 0.6 } })), null);
   assert.equal(director.update(1, state({ player: inFront(a, 3.49) }))?.source.id, a.id);
 });
 
-test("lounge and staff partitions occlude nearby cabinet speakers", () => {
-  for (const player of [{ x: 4.3, z: 3.5 }, { x: 4.3, z: 5 }, { x: 4.3, z: 6.5 }]) {
-    const closest = SLOT_MACHINE_SOURCES.filter((cabinet) => cabinet.islandId === "slots-b" && cabinet.side === 1)
-      .sort((left, right) => Math.hypot(left.x - player.x, left.z - player.z) - Math.hypot(right.x - player.x, right.z - player.z))[0];
-    assert.ok(Math.hypot(closest.x - player.x, closest.z - player.z) < 3.5);
-    assert.equal(new SlotAudioDirector().update(1, state({ player })), null);
-  }
-  assert.equal(new SlotAudioDirector().update(1, state({ player: { x: 3.3, z: 5 } }))?.source.id, "slots-b:east:1");
+test("the relocated lounge wall occludes nearby speakers", () => {
+  const wallSource = { ...a, x: -32, z: -7, side: -1 };
+  assert.equal(slotSourceAudible(wallSource, { x: -34, z: -7 }), false);
+  assert.equal(slotSourceAudible(wallSource, { x: -32.5, z: -7 }), true);
 });
 
-test("a clear sightline through the partition opening is audible", () => {
-  assert.equal(new SlotAudioDirector().update(1, state({ player: { x: 4.2, z: 7.6 } }))?.source.id, "slots-b:east:2");
+test("a clear sightline through a new door stays audible beneath the lintel", () => {
+  const doorwaySource = { ...a, x: -32, z: -2, side: -1 };
+  assert.equal(slotSourceAudible(doorwaySource, { x: -34, z: -2 }), true);
 });
 
 test("active sound tails can use a wider radius while still respecting walls and cabinet fronts", () => {
   assert.equal(slotSourceAudible(a, inFront(a, 4)), false);
   assert.equal(slotSourceAudible(a, inFront(a, 4), 5), true);
   assert.equal(slotSourceAudible(a, inFront(a, 5.1), 5), false);
-  assert.equal(slotSourceAudible(a, { x: -7, z: 0 }, 5), false);
-  assert.equal(slotSourceAudible(source("slots-b:east:1"), { x: 4.3, z: 5 }, 5), false);
+  assert.equal(slotSourceAudible(a, { x: SLOT_ISLANDS[0].x, z: SLOT_ISLANDS[0].z }, 5), false);
+  assert.equal(slotSourceAudible({ ...a, x: -32, z: -7, side: -1 }, { x: -34, z: -7 }, 5), false);
 });
 
 test("all cabinets share four seconds of quiet between greetings", () => {

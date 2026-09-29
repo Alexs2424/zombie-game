@@ -20,18 +20,28 @@ const CABINET_COOLDOWN = 20;
 
 /** Whether a horizontal source-to-listener segment crosses a solid rectangle. */
 function blockedByRect(source: V2, listener: V2, rect: Rect): boolean {
+  // Cabinet speakers are above the low tables. Over-door lintels must not
+  // become invisible acoustic partitions when the floor plan is projected.
+  const speakerHeight = 1.2, baseY = rect.baseY ?? 0;
+  if (baseY > speakerHeight || baseY + rect.h < speakerHeight) return false;
+  const c = Math.cos(rect.yaw ?? 0), s = Math.sin(rect.yaw ?? 0);
+  const local = (p: V2) => ({
+    x: c * (p.x - rect.x) + s * (p.z - rect.z),
+    z: -s * (p.x - rect.x) + c * (p.z - rect.z),
+  });
+  const start = local(source), end = local(listener);
   let entry = 0;
   let exit = 1;
   for (const [axis, halfSize] of [["x", rect.w / 2], ["z", rect.d / 2]] as const) {
-    const delta = listener[axis] - source[axis];
-    const min = rect[axis] - halfSize;
-    const max = rect[axis] + halfSize;
+    const delta = end[axis] - start[axis];
+    const min = -halfSize;
+    const max = halfSize;
     if (Math.abs(delta) < 1e-9) {
-      if (source[axis] < min || source[axis] > max) return false;
+      if (start[axis] < min || start[axis] > max) return false;
       continue;
     }
-    const a = (min - source[axis]) / delta;
-    const b = (max - source[axis]) / delta;
+    const a = (min - start[axis]) / delta;
+    const b = (max - start[axis]) / delta;
     entry = Math.max(entry, Math.min(a, b));
     exit = Math.min(exit, Math.max(a, b));
     if (entry > exit) return false;

@@ -1,4 +1,5 @@
 /** World-space collision footprints for the Blender-built lounge furniture. */
+import { LOUNGE_OFFSET } from './casino-layout.ts';
 export type LoungeRect = {
   id: string;
   x: number;
@@ -8,7 +9,7 @@ export type LoungeRect = {
   h: number;
 };
 
-// Keep the center aisle, bartender approach, and opening to the staff passage clear.
+// Relocate the baked assembly together. Keep both independently purchased doors clear.
 // These solid footprints also feed zombie navigation and projectile obstruction.
 export const LOUNGE_RECTS: LoungeRect[] = [
   { id: "bar", x: 12, z: -8.7, w: 5.7, d: 1.1, h: 1.38 },
@@ -18,4 +19,4 @@ export const LOUNGE_RECTS: LoungeRect[] = [
   { id: "lounge-cocktail-table", x: 13.8, z: -1.1, w: 1.1, d: 1.1, h: 1.08 },
   { id: "lounge-stool-a", x: 10, z: -7.35, w: 0.65, d: 0.65, h: 0.88 },
   { id: "lounge-stool-b", x: 14.1, z: -7.35, w: 0.65, d: 0.65, h: 0.88 },
-];
+].map(rect => ({ ...rect, x: rect.x + LOUNGE_OFFSET.x, z: rect.z + LOUNGE_OFFSET.z }));

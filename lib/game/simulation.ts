@@ -12,17 +12,34 @@ import { ATTACK_WINDUP, zombieHitVolumes, type HitRegion, type Limb } from "./zo
 import { HOTEL_RULES, HOTEL_GATE, HOTEL_ANCHORS, HOTEL_SPAWNS, freshHotelChallenge } from "./hotel-gameplay.ts";
 export { HOTEL_RULES, HOTEL_ANCHORS, HOTEL_SPAWNS } from "./hotel-gameplay.ts";
 import {
+  HOTEL_MYSTERY_ANCHORS, HOTEL_MYSTERY_GATES, freshHotelMystery,
+  isHotelMysteryInteraction, type HotelDocumentId, type HotelMysteryInteractionId,
+} from "./hotel-mystery.ts";
+import {
   HOTEL_RECTS, hotelRoomName, collides, moveActor, wallDistance,
   hasSight, canWalkDirect, Navigation, raycastWorld,
   type WorldPosition, type WorldRect,
 } from "./world.ts";
 export { collides, moveActor, wallDistance, hasSight, Navigation } from "./world.ts";
 import { LOUNGE_RECTS } from "./lounge-layout.ts";
+import { BET_TARGETS, KEYPAD_TARGETS, PLACE_NUMBERS, SECRET_CODE, SECRET_DOOR, SECRET_ROOM, SECRET_RECTS, CASINO_SECRET_ANCHORS, RELIC_NAMES, placeAmount, placeProfit, type PlaceNumber } from "./casino.ts";
+import { AXE_CABINET, EXTRA_WEAPONS, MYSTERY_POOL, bloomPerShot, meleeContactTime, meleeDuration, isMelee, isShellLoading, maxBloom, penetration, recoilPitch, weaponSpeed, type ExtraWeaponId } from "./weapon-expansion.ts";
 import { SERVICE_RECTS } from "./service-layout.ts";
+import {
+  CASINO_BOUNDS, CASINO_WALLS, CASINO_FIXTURES, CASINO_DOORS, CASINO_ANCHORS,
+  CASINO_SPAWNS, CRAPS_TABLES, ROULETTE_TABLES, casinoRoomName,
+} from "./casino-layout.ts";
+export type CrapsTableId = "craps" | "craps-b";
+export type RouletteTableId = "roulette" | "roulette-b";
+export type CasinoDoorId = keyof typeof CASINO_DOORS;
+export type DiceRoll = {
+  values: [number, number]; round: number; remaining: number;
+  resultRemaining: number; resolved: boolean; quickWager?: boolean;
+};
 export type V2 = { x: number; z: number };
 export type V3 = V2 & { y: number };
 export type Rect = WorldRect;
-export type WeaponId = "pistol" | "shotgun" | "smg" | "rifle" | "revolver" | "tommy";
+export type WeaponId = "pistol" | "shotgun" | "smg" | "rifle" | "revolver" | ExtraWeaponId;
 export const WEAPON_ORDER: WeaponId[] = [
   "pistol",
   "shotgun",
@@ -30,7 +47,10 @@ export const WEAPON_ORDER: WeaponId[] = [
   "rifle",
   "revolver",
   "tommy",
+  ...(Object.keys(EXTRA_WEAPONS) as ExtraWeaponId[]).filter(id => id !== "tommy"),
 ];
+// The Velvet Fortune cabinet awards the ten 1970s firearms from docs/weapon-spec-1970s.md.
+export const MYSTERY_WEAPONS: WeaponId[] = [...MYSTERY_POOL];
 export type PerkId = "reserve" | "quickPour" | "nightShift";
 export type BarItemId = PerkId | "weaponUpgrade";
 export const PERKS: Record<
@@ -41,7 +61,7 @@ export const PERKS: Record<
   quickPour: { name: "Quick Pour", price: 1000, detail: "Reload 30% faster" },
   nightShift: { name: "Night Shift", price: 900, detail: "Sprint 15% faster" },
 };
-export const BAR_ANCHOR = { x: 12, z: -7.3 };
+export const BAR_ANCHOR = CASINO_ANCHORS.bartender;
 export type Phase = "ready" | "playing" | "paused" | "dead";
 export type PurchaseId =
   | "pistolAmmo"
@@ -54,16 +74,24 @@ export type PurchaseId =
   | "vip"
   | "upgrade"
   | "tables"
-  | "craps"
-  | "roulette"
+  | CasinoDoorId
+  | CrapsTableId
+  | RouletteTableId
+  | "painting"
+  | "mystery"
+  | "stick"
+  | "axe"
   | "hotel"
   | "hotelBell"
   | "tommyAmmo"
   | "jukebox"
+  | HotelMysteryInteractionId
   | PokerTableId;
 export type GameEvent = {
   type:
     | "shot"
+    | "melee"
+    | "stickBreak"
     | "knife"
     | "grenadeThrow"
     | "explosion"
@@ -73,6 +101,10 @@ export type GameEvent = {
     | "purchase"
     | "deny"
     | "reload"
+    | "reloadDone"
+    | "dry"
+    | "pickup"
+    | "meleeHit"
     | "round"
     | "roundClear"
     | "diceRoll"
@@ -91,6 +123,11 @@ export type GameEvent = {
     | "jukebox"
     | "death";
   weapon?: WeaponId;
+  /** Double or Nothing's both-barrel blast. */
+  alternate?: boolean;
+  /** Snake Eyes: 0 = right pistol, 1 = left pistol. Melee: zombies struck. */
+  side?: number;
+  count?: number;
   headshot?: boolean;
   position?: V2;
   text?: string;
@@ -112,7 +149,7 @@ export type Enemy = WorldPosition & {
   wounds?: Partial<Record<HitRegion, number>>;
   hotelAmbush?: boolean;
 };
-export type Grenade = V3 & { id: number; vx: number; vy: number; vz: number; fuse: number };
+export type Grenade = V3 & { id: number; vx: number; vy: number; vz: number; fuse: number; kind?: "grenade" | "flare"; damage?: number };
 export const RULES = {
   playerRadius: 0.32,
   enemyRadius: 0.3,
@@ -132,6 +169,7 @@ export const RULES = {
   intermission: 8,
 };
 export const WEAPONS = {
+  ...EXTRA_WEAPONS,
   pistol: {
     name: "HOUSE SPECIAL",
     upgradedName: "LOADED DICE",
@@ -148,7 +186,7 @@ export const WEAPONS = {
   },
   shotgun: {
     name: "ROOM SERVICE",
-    upgradedName: "HIGH ROLLER",
+    upgradedName: "HOUSE SWEEPER",
     price: 800,
     label: "Shotgun",
     magazine: 6,
@@ -202,32 +240,23 @@ export const WEAPONS = {
     spread: 0.003,
     refill: 400,
   },
-  tommy: {
-    name: "THE CHICAGO TYPEWRITER",
-    upgradedName: "THE HOUSE COLLECTOR",
-    label: "Tommy gun",
-    price: 0,
-    magazine: 50,
-    reserve: 250,
-    damage: 30,
-    pellets: 1,
-    interval: 0.105,
-    reload: 3,
-    spread: 0.017,
-    refill: HOTEL_RULES.ammoPrice,
-  },
 };
 export const PRICES = {
   shotgun: 800,
   smg: 1100,
   rifle: 1600,
   lounge: 900,
-  shortcut: 1200,
+  shortcut: 600,
   vip: 1300,
+  vipExit: 800,
+  supply: 1200,
+  cashier: 600,
   upgrade: 2000,
   tables: 1500,
   craps: 250,
   roulette: 200,
+  painting: 0,
+  mystery: 400,
   hotel: HOTEL_RULES.price,
 };
 export const ROULETTE_RULES = {
@@ -245,61 +274,24 @@ export type RouletteSpin = {
   reward: "ammo" | "maxAmmo" | "jackpot" | "miss" | null;
   weapon: WeaponId | null;
 };
-export const BOUNDS = { minX: -16, maxX: 42, minZ: -12, maxZ: 12 };
+export const BOUNDS = { ...CASINO_BOUNDS, maxX: SECRET_ROOM.maxX };
 export function roomName(p: WorldPosition) {
-  const hotel = hotelRoomName(p);
-  if (hotel) return hotel;
-  return p.x > 28
-    ? "The Devil’s Tables"
-    : p.x > 16
-      ? "High Roller Club"
-      : p.x > 4
-        ? p.z > 3
-          ? "Staff Passage"
-          : "The Last Call Lounge"
-        : "Casino Floor";
+  if (p.x >= SECRET_ROOM.minX && p.x <= SECRET_ROOM.maxX && p.z >= SECRET_ROOM.minZ && p.z <= SECRET_ROOM.maxZ) return SECRET_ROOM.name;
+  return casinoRoomName(p) ?? hotelRoomName(p) ?? "Casino Floor";
 }
 export const STATIC_RECTS: Rect[] = [
-  { id: "west", x: -16.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
-  { id: "east", x: 42.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
-  { id: "south", x: 13, z: -12.25, w: 58.5, d: 0.5, h: 4.8 },
-  // The five-metre hotel entrance is level with the casino floor.
-  { id: "north-west", x: -11, z: 12.25, w: 11, d: 0.5, h: 4.8 },
-  { id: "north-east", x: 21, z: 12.25, w: 43, d: 0.5, h: 4.8 },
-  ...HOTEL_RECTS,
-  { id: "tables-wall-s", x: 28, z: -9, w: 0.45, d: 6, h: 4.8 },
-  { id: "tables-wall-m", x: 28, z: 2.4, w: 0.45, d: 9.2, h: 4.8 },
-  { id: "tables-wall-n", x: 28, z: 11.1, w: 0.45, d: 1.8, h: 4.8 },
-  { id: "craps-table", x: 35, z: -3, w: 4.8, d: 2.5, h: 1.05 },
-  { id: "roulette-table", x: 35, z: 5, w: 3.4, d: 2.5, h: 1.05 },
-  { id: "tables-sideboard", x: 41.35, z: 1, w: 1.1, d: 3, h: 1.15 },
-  { id: "vip-wall-s", x: 16, z: -9, w: 0.45, d: 6, h: 4.8 },
-  { id: "vip-wall-m", x: 16, z: 2.4, w: 0.45, d: 9.2, h: 4.8 },
-  { id: "vip-wall-n", x: 16, z: 11.1, w: 0.45, d: 1.8, h: 4.8 },
-  { id: "partition-s", x: 4, z: -9, w: 0.45, d: 6, h: 4.8 },
-  { id: "partition-m", x: 4, z: 2.4, w: 0.45, d: 9.2, h: 4.8 },
-  { id: "partition-n", x: 4, z: 11.1, w: 0.45, d: 1.8, h: 4.8 },
-  { id: "staff-wall-a", x: 7, z: 3, w: 6, d: 0.4, h: 4.8 },
-  { id: "staff-wall-b", x: 14.7, z: 3, w: 2.6, d: 0.4, h: 4.8 },
-  { id: "slots-a", x: -7, z: 0, w: 3.4, d: 5, h: 2.1 },
-  { id: "slots-b", x: -0.7, z: 5, w: 3.4, d: 4.4, h: 2.1 },
-  { id: "cashier", x: -11, z: 10.5, w: 6, d: 2.7, h: 3.4 },
-  ...LOUNGE_RECTS,
-  ...SERVICE_RECTS,
-  { id: "upgrade-machine", x: 24.7, z: 10.9, w: 1.6, d: 1.1, h: 1.8 },
-  { id: "poker-a", x: 22, z: -3, w: 3.8, d: 2.4, h: 0.95 },
-  { id: "poker-b", x: 22, z: 5, w: 3.8, d: 2.4, h: 0.95 },
-  { id: "vip-sofa", x: 27.35, z: 1, w: 1.1, d: 5, h: 1.2 },
+  ...HOTEL_RECTS, ...CASINO_WALLS.filter(r => r.id !== "cashier-wall-east"), ...SECRET_RECTS, ...CASINO_FIXTURES,
+  ...LOUNGE_RECTS, ...SERVICE_RECTS,
 ];
-export const DOORS = {
-  hotel: HOTEL_GATE,
-  lounge: { id: "lounge", x: 4, z: -4.1, w: 0.45, d: 3.8, h: 4.8 },
-  shortcut: { id: "shortcut", x: 4, z: 8.6, w: 0.45, d: 3.2, h: 4.8 },
-  vip: { id: "vip", x: 16, z: -4.1, w: 0.45, d: 3.8, h: 4.8 },
-  vipExit: { id: "vipExit", x: 16, z: 8.6, w: 0.45, d: 3.2, h: 4.8 },
-  tables: { id: "tables", x: 28, z: -4.1, w: 0.45, d: 3.8, h: 4.8 },
-  tablesExit: { id: "tablesExit", x: 28, z: 8.6, w: 0.45, d: 3.2, h: 4.8 },
-} satisfies Record<string, Rect>;
+export const DOORS = { hotel: HOTEL_GATE, ...CASINO_DOORS } satisfies Record<string, Rect>;
+const DOOR_DETAILS: Record<CasinoDoorId, {name: string; detail: string}> = {
+  lounge: { name: "Last Call Lounge", detail: "Open the north bar entrance" },
+  shortcut: { name: "Lounge south entrance", detail: "Purchase this entrance to complete the bar loop" },
+  vip: { name: "High Roller Club", detail: "Open the west High Roller entrance" },
+  vipExit: { name: "High Roller east entrance", detail: "Purchase this entrance to complete the High Roller loop" },
+  supply: { name: "Supply room", detail: "Truck, storage and the Pit Boss rifle" },
+  cashier: { name: "Cashier", detail: "Open the cashier hall · secure back area remains closed" },
+};
 export const PURCHASES: {
   id: PurchaseId;
   x: number;
@@ -312,6 +304,11 @@ export const PURCHASES: {
   { id: "hotelBell", ...HOTEL_ANCHORS.hotelBell, name: "Last service · ring the bell", detail: "Stay in the restaurant for 35s and clear the ambush · unlock Tommy gun" },
   { id: "tommyAmmo", ...HOTEL_ANCHORS.tommyAmmo, name: "Chicago Typewriter ammunition", detail: "Refill Tommy gun reserve" },
   { id: "jukebox", ...HOTEL_ANCHORS.jukebox, name: "Grand Hotel jukebox", detail: "Toggle the music · free" },
+  { id: "hotelLedger", ...HOTEL_MYSTERY_ANCHORS.hotelLedger, name: "Guest ledger", detail: "Inspect the unfinished departure entry" },
+  { id: "hotelSuitcase", ...HOTEL_MYSTERY_ANCHORS.hotelSuitcase, name: "Varga’s suitcase", detail: "Inspect the luggage left at reception" },
+  { id: "hotelPanel", ...HOTEL_MYSTERY_ANCHORS.hotelPanel, name: "Concealed service panel", detail: "A small brass keyhole in the woodwork" },
+  { id: "hotelRegister", ...HOTEL_MYSTERY_ANCHORS.hotelRegister, name: "Collection register", detail: "Read the book beside the abandoned luggage" },
+  { id: "hotelCache", ...HOTEL_MYSTERY_ANCHORS.hotelCache, name: "Service supplies", detail: "Two magazines per owned weapon · two grenades" },
   ...POKER_TABLES.map((table) => ({
     id: table.id,
     x: table.x,
@@ -320,101 +317,41 @@ export const PURCHASES: {
     detail:
       "Make a flush · five cards of one suit · one free swap per table each round",
   })),
-  {
-    id: "pistolAmmo",
-    x: -12.6,
-    z: -10.6,
-    name: "Pistol ammunition",
-    detail: "Refill reserve",
-  },
-  {
-    id: "shotgun",
-    x: -14.6,
-    z: 1.8,
-    name: "Room Service",
-    detail: "Pump shotgun",
-  },
-  {
-    id: "smg",
-    x: 5.3,
-    z: -0.2,
-    name: "Dealer’s Choice",
-    detail: "Fast-firing SMG",
-  },
-  {
-    id: "rifle",
-    x: 26.8,
-    z: -8.2,
-    name: "Pit Boss",
-    detail: "Heavy automatic rifle",
-  },
-  {
-    id: "bartender",
-    ...BAR_ANCHOR,
-    name: "Marlowe · bartender",
-    detail: "Cocktail perks & weapon upgrades",
-  },
-  {
-    id: "lounge",
-    x: 3.2,
-    z: -4.1,
-    name: "Cocktail lounge",
-    detail: "Open a new area",
-  },
-  {
-    id: "shortcut",
-    x: 5.3,
-    z: 8.6,
-    name: "Staff shortcut",
-    detail: "Complete the escape loop",
-  },
-  {
-    id: "vip",
-    x: 15.2,
-    z: -4.1,
-    name: "High Roller Club",
-    detail: "Unlock poker room, upgrade station + staff exit",
-  },
-  {
-    id: "tables",
-    x: 27.2,
-    z: -4.1,
-    name: "The Devil’s Tables",
-    detail: "Craps, roulette & a new escape loop",
-  },
-  {
-    id: "craps",
-    x: 35,
-    z: -5,
-    name: "Seven’s Curse · roll the dice",
-    detail:
-      "250 chips · 7 slows you 20% this round · other rolls pay 500 chips · once per round",
-  },
-  {
-    id: "roulette",
-    x: 35,
-    z: 3.1,
-    name: "Lucky Four roulette",
-    detail:
-      "4 / 24: equipped ammo · 7: all ammo · 0: all ammo + 30s double damage · 200 chips every spin",
-  },
-  {
-    id: "upgrade",
-    x: 24.7,
-    z: 9.5,
-    name: "Double Down workshop",
-    detail: "Upgrade your equipped weapon",
-  },
+  { id: "pistolAmmo", ...CASINO_ANCHORS.pistolAmmo, name: "Pistol ammunition", detail: "Refill reserve" },
+  { id: "shotgun", ...CASINO_ANCHORS.shotgun, name: "Room Service", detail: "Pump shotgun" },
+  { id: "smg", ...CASINO_ANCHORS.smg, name: "Dealer’s Choice", detail: "Fast-firing SMG" },
+  { id: "rifle", ...CASINO_ANCHORS.rifle, name: "Pit Boss", detail: "Heavy automatic rifle" },
+  { id: "bartender", ...BAR_ANCHOR, name: "Marlowe · bartender", detail: "Cocktail perks & weapon upgrades" },
+  ...(Object.entries(CASINO_DOORS) as [CasinoDoorId, Rect][]).map(([id, door]) => ({
+    id,
+    // Accessible from the casino (or hotel for supply), just in front of the gate.
+    x: door.x + (id === "lounge" || id === "shortcut" || id === "supply" ? 0.9 : id === "cashier" ? -0.9 : 0),
+    z: door.z + (id === "vip" || id === "vipExit" ? 0.9 : 0),
+    ...DOOR_DETAILS[id],
+  })),
+  ...CRAPS_TABLES.map(table => ({
+    id: table.id, x: table.x, z: table.approachZ,
+    name: `Seven’s Curse · ${table.id === "craps" ? "Table I" : "Table II"}`,
+    detail: "250 chips · 7 slows you 20% this round · other rolls pay 500 chips · once per table per round",
+  })),
+  ...ROULETTE_TABLES.map(table => ({
+    id: table.id, x: table.x, z: table.approachZ,
+    name: `Lucky Four roulette · ${table.id === "roulette" ? "Table I" : "Table II"}`,
+    detail: "4 / 24: equipped ammo · 7: all ammo · 0: all ammo + 30s double damage · 200 chips every spin",
+  })),
+  { id: "upgrade", ...CASINO_ANCHORS.upgrade, name: "Double Down workshop", detail: "Upgrade your equipped weapon" },
+  { id:"stick", ...CASINO_SECRET_ANCHORS.stick, name:"Stickman · craps rake · 3 SWEEPS", detail:"E: take · sweeping melee · breaks after 3 successful hits" },
+  { id:"axe", x:AXE_CABINET.x, z:AXE_CABINET.z-.9, name:"Fire Exit · fire axe", detail:"E: take · heavy melee · never breaks" },
+  { id:"painting", ...CASINO_SECRET_ANCHORS.painting, name:"The crooked portrait", detail:"A draft slips through the frame. E: slide painting" },
+  { id:"mystery", ...CASINO_SECRET_ANCHORS.mystery, name:"The Velvet Fortune", detail:"400 chips · 50% special weapon · 50% nothing" },
 ];
-export const SPAWNS: V2[] = [
-  { x: -5, z: -10.8 },
-  { x: -14.7, z: 6 },
-  { x: 1.5, z: 10.6 },
-  { x: 14.4, z: -10.6 },
-  { x: 26.2, z: -10.6 },
-  { x: 39.7, z: -10.6 },
+export type SpawnRoom = keyof typeof CASINO_SPAWNS | "hotel";
+export const SPAWN_RECORDS: {room: SpawnRoom; position: WorldPosition}[] = [
+  ...Object.entries(CASINO_SPAWNS).flatMap(([room, positions]) => positions.map(position => ({ room: room as SpawnRoom, position }))),
+  ...HOTEL_SPAWNS.map(position => ({ room: "hotel" as const, position })),
 ];
-export const ALL_SPAWNS: WorldPosition[] = [...SPAWNS, ...HOTEL_SPAWNS];
+export const SPAWNS: WorldPosition[] = SPAWN_RECORDS.filter(s => s.room !== "hotel").map(s => s.position);
+export const ALL_SPAWNS: WorldPosition[] = SPAWN_RECORDS.map(s => s.position);
 export const dist = (a: WorldPosition, b: WorldPosition) =>
   Math.hypot(a.x - b.x, (a.y ?? 0) - (b.y ?? 0), a.z - b.z);
 export function rayBox(o: V3, d: V3, min: V3, max: V3): number {
@@ -458,7 +395,7 @@ export function waveStats(round: number) {
 
 export class Simulation {
   phase: Phase = "ready";
-  player: WorldPosition = { x: -9, y: 0, z: -8, surfaceId: "casino" };
+  player: WorldPosition = { ...CASINO_ANCHORS.spawn, y: 0, surfaceId: "ground" };
   yaw = 0.16;
   pitch = 0;
   health = 100;
@@ -474,25 +411,58 @@ export class Simulation {
   lounge = false;
   shortcut = false;
   vip = false;
-  tables = false;
+  // Legacy table-room state is retained for integrations; casino games are always open.
+  tables = true;
+  speakeasy = false;
+  speakeasyAge = 0;
+  paintingOpen = false;
+  codeProgress = 0;
+  codeFlash = 0;
+  holdingChips = false;
+  aimHeld = false;
+  get aiming() {
+    return this.aimHeld && this.phase === "playing" && !this.holdingChips &&
+      !isMelee(this.weapon) && this.reloadRemaining <= 0 && this.knifeRemaining <= 0 && this.grenadeCooldown <= 0;
+  }
+  betBanksByTable: Record<CrapsTableId, Partial<Record<PlaceNumber, number>>> = { craps: {}, "craps-b": {} };
+  betsByTable: Record<CrapsTableId, Partial<Record<PlaceNumber, number>>> = { craps: {}, "craps-b": {} };
+  crapsResults: Record<CrapsTableId, string> = { craps: "", "craps-b": "" };
+  get betBanks() { return this.betBanksByTable.craps; }
+  set betBanks(value: Partial<Record<PlaceNumber, number>>) { this.betBanksByTable.craps = value; }
+  get bets() { return this.betsByTable.craps; }
+  set bets(value: Partial<Record<PlaceNumber, number>>) { this.betsByTable.craps = value; }
+  get crapsResult() { return this.crapsResults.craps; }
+  set crapsResult(value: string) { this.crapsResults.craps = value; }
+  chipValue = 25;
+  relics: Partial<Record<WeaponId, boolean>> = {};
+  mystery: { remaining: number; reward: WeaponId | null; resolved: boolean; message: string } | null = null;
   tablesAge = 0;
+  supply = false;
+  cashier = false;
+  supplyAge = 0;
+  cashierAge = 0;
+  doorsOpen: Record<CasinoDoorId, boolean> = {
+    lounge: false, shortcut: false, vip: false, vipExit: false, supply: false, cashier: false,
+  };
   hotel = false;
   hotelAge = 0;
   hotelChallenge = freshHotelChallenge();
+  hotelMystery = freshHotelMystery();
+  hotelDocument: HotelDocumentId | null = null;
   jukeboxOn = false;
   get hotelChallengeAlive() {
     return this.enemies.filter(e => e.hotelAmbush && e.health > 0).length;
   }
-  lastWagerRound = -1;
+  lastWagerRounds: Record<CrapsTableId, number> = { craps: -1, "craps-b": -1 };
   slowRound = 0;
-  dice: {
-    values: [number, number];
-    round: number;
-    remaining: number;
-    resultRemaining: number;
-    resolved: boolean;
-  } | null = null;
-  roulette: RouletteSpin | null = null;
+  diceTables: Record<CrapsTableId, DiceRoll | null> = { craps: null, "craps-b": null };
+  rouletteTables: Record<RouletteTableId, RouletteSpin | null> = { roulette: null, "roulette-b": null };
+  get dice() { return this.diceTables.craps; }
+  set dice(value: DiceRoll | null) { this.diceTables.craps = value; }
+  get roulette() { return this.rouletteTables.roulette; }
+  set roulette(value: RouletteSpin | null) { this.rouletteTables.roulette = value; }
+  get lastWagerRound() { return this.lastWagerRounds.craps; }
+  set lastWagerRound(value: number) { this.lastWagerRounds.craps = value; }
   damageBoostRemaining = 0;
   pokerTables = { "poker-a": freshPokerState(), "poker-b": freshPokerState() };
   pokerOpen: PokerTableId | null = null;
@@ -506,14 +476,16 @@ export class Simulation {
   get wagerRound() {
     return Math.max(1, this.round + (this.intermission > 0 ? 1 : 0));
   }
-  upgrades: Record<WeaponId, boolean> = {
-    pistol: false,
-    shotgun: false,
-    smg: false,
-    rifle: false,
-    revolver: false,
-    tommy: false,
-  };
+  upgrades = Object.fromEntries(WEAPON_ORDER.map(id => [id, false])) as Record<WeaponId, boolean>;
+  stickTaken = false;
+  axeTaken = false;
+  /** Consecutive-fire spread growth in radians; decays when the trigger rests. */
+  bloom = 0;
+  /** The firearm to return to when the craps rake breaks. */
+  lastFirearm: WeaponId = "pistol";
+  meleeRemaining = 0;
+  private meleeWeapon: WeaponId | null = null;
+  fires: (V3 & {id:number; remaining:number; tick:number; damage:number})[] = [];
   perks: Record<PerkId, boolean> = {
     reserve: false,
     quickPour: false,
@@ -531,17 +503,9 @@ export class Simulation {
   loungeAge = 0;
   vipAge = 0;
   weapon: WeaponId = "pistol";
-  inventory: Record<
-    WeaponId,
-    { owned: boolean; mag: number; reserve: number }
-  > = {
-    pistol: { owned: true, mag: 12, reserve: 84 },
-    shotgun: { owned: false, mag: 0, reserve: 0 },
-    smg: { owned: false, mag: 0, reserve: 0 },
-    rifle: { owned: false, mag: 0, reserve: 0 },
-    revolver: { owned: false, mag: 0, reserve: 0 },
-    tommy: { owned: false, mag: 0, reserve: 0 },
-  };
+  inventory = Object.fromEntries(WEAPON_ORDER.map(id => [id, {
+    owned: id === "pistol", mag: id === "pistol" ? 12 : 0, reserve: id === "pistol" ? 84 : 0,
+  }])) as Record<WeaponId, {owned:boolean; mag:number; reserve:number}>;
   enemies: Enemy[] = [];
   grenades = 2;
   projectiles: Grenade[] = [];
@@ -574,13 +538,17 @@ export class Simulation {
     return this.seed / 4294967296;
   }
   refreshMap() {
+    this.lounge = this.doorsOpen.lounge || this.doorsOpen.shortcut;
+    this.shortcut = this.doorsOpen.shortcut;
+    this.vip = this.doorsOpen.vip || this.doorsOpen.vipExit;
+    this.supply = this.doorsOpen.supply;
+    this.cashier = this.doorsOpen.cashier;
     this.rects = [
       ...STATIC_RECTS,
       ...(!this.hotel ? [DOORS.hotel] : []),
-      ...(!this.lounge ? [DOORS.lounge] : []),
-      ...(!this.shortcut ? [DOORS.shortcut] : []),
-      ...(!this.vip ? [DOORS.vip, DOORS.vipExit] : []),
-      ...(!this.tables ? [DOORS.tables, DOORS.tablesExit] : []),
+      ...(!this.hotelMystery.passageOpen ? HOTEL_MYSTERY_GATES : []),
+      ...(Object.keys(CASINO_DOORS) as CasinoDoorId[]).filter(id => !this.doorsOpen[id]).map(id => DOORS[id]),
+      ...(!this.speakeasy ? [SECRET_DOOR] : []),
     ];
     this.walkRects = this.rects.map((r) => ({
       ...r,
@@ -602,14 +570,37 @@ export class Simulation {
     }
   }
   resume() {
-    if (this.phase === "paused" && !this.shopOpen && !this.pokerOpen)
+    if (this.phase === "paused" && !this.shopOpen && !this.pokerOpen && !this.hotelDocument)
       this.phase = this.priorPhase;
+  }
+  /** Journal entries can be revisited from pause, without repeating rewards. */
+  readHotelDocument(id: HotelDocumentId) {
+    if (this.phase !== "paused" || this.shopOpen || this.pokerOpen) return false;
+    const discovered = id === "ledger" ? this.hotelMystery.ledgerFound
+      : id === "suitcase" ? this.hotelMystery.suitcaseFound
+        : id === "register" && this.hotelMystery.registerFound;
+    if (!discovered) return false;
+    this.hotelDocument = id;
+    return true;
+  }
+  closeHotelDocument() {
+    if (!this.hotelDocument) return false;
+    this.hotelDocument = null;
+    this.resume();
+    return true;
+  }
+  private inspectHotelDocument(id: HotelDocumentId) {
+    this.pause();
+    this.hotelDocument = id;
+    return true;
   }
   capacity(w: WeaponId = this.weapon) {
     if (w === "revolver") return WEAPONS.revolver.magazine;
+    if (isMelee(w)) return WEAPONS[w].magazine;
     return Math.round(WEAPONS[w].magazine * (this.upgrades[w] ? 1.5 : 1));
   }
   weaponName(w = this.weapon) {
+    if (this.relics[w]) return w in RELIC_NAMES ? RELIC_NAMES[w as keyof typeof RELIC_NAMES] : WEAPONS[w].upgradedName;
     return this.upgrades[w] ? WEAPONS[w].upgradedName : WEAPONS[w].name;
   }
   reloadDuration(w = this.weapon) {
@@ -621,7 +612,7 @@ export class Simulation {
   }
   weaponDamage(w = this.weapon) {
     const damage = Math.round(
-      WEAPONS[w].damage * (this.upgrades[w] ? 1.35 : 1),
+      WEAPONS[w].damage * (this.relics[w] ? 2 : this.upgrades[w] ? 1.35 : 1),
     );
     return (
       damage *
@@ -637,7 +628,7 @@ export class Simulation {
   }
   canUsePoker(id: PokerTableId) {
     const table = POKER_TABLES.find((table) => table.id === id);
-    if (!table || !this.vip) return false;
+    if (!table || (id === "poker-b" && !this.vip)) return false;
     const anchor = { x: table.x, z: table.approachZ };
     return (
       dist(this.player, anchor) <= 2.2 &&
@@ -657,7 +648,7 @@ export class Simulation {
   }
   pokerInfo(id: PokerTableId) {
     const table = this.pokerTables[id];
-    const reason = !this.vip
+    const reason = id === "poker-b" && !this.vip
       ? "Open the High Roller Club first"
       : table.completed
         ? "Flush completed"
@@ -719,7 +710,7 @@ export class Simulation {
     const price = id === "weaponUpgrade" ? PRICES.upgrade : PERKS[id].price;
     let reason =
       id === "weaponUpgrade"
-        ? this.upgrades[this.weapon]
+        ? isMelee(this.weapon) ? "Melee weapons cannot be upgraded" : this.upgrades[this.weapon]
           ? "Already upgraded"
           : ""
         : this.perks[id]
@@ -763,17 +754,28 @@ export class Simulation {
     this.messageRemaining = 2.6;
   }
   switchWeapon(w: WeaponId) {
+    if (this.phase === "playing") this.stowChips();
     if (
       this.phase !== "playing" ||
-      !this.inventory[w].owned ||
+      this.meleeRemaining > 0 ||
+      !this.inventory[w]?.owned ||
       w === this.weapon
     )
       return;
+    if (!isMelee(this.weapon)) this.lastFirearm = this.weapon;
     this.weapon = w;
+    this.aimHeld = false;
+    this.bloom = 0;
+    this.holdingChips = false;
     this.reloadRemaining = 0;
     this.fireCooldown = Math.max(this.fireCooldown, 0.2);
   }
+  cycleWeapon(direction: number) {
+    const owned = WEAPON_ORDER.filter(id => this.inventory[id].owned);
+    this.switchWeapon(owned[(owned.indexOf(this.weapon) + direction + owned.length) % owned.length]);
+  }
   reload() {
+    if (isMelee(this.weapon)) return false;
     const w = this.inventory[this.weapon];
     if (
       this.phase !== "playing" ||
@@ -792,18 +794,24 @@ export class Simulation {
     let min = 2.15;
     for (const p of PURCHASES) {
       if (
-        (p.id === "lounge" && this.lounge) ||
-        (p.id === "vip" && this.vip) ||
-        (p.id === "tables" && this.tables) ||
+        (p.id in this.doorsOpen && this.doorsOpen[p.id as CasinoDoorId]) ||
+        (p.id === "stick" && this.stickTaken) ||
+        (p.id === "axe" && this.axeTaken) ||
         (p.id === "hotel" && this.hotel) ||
         (p.id === "hotelBell" && this.hotelChallenge.phase === "complete") ||
         (p.id === "tommyAmmo" && !this.inventory.tommy.owned) ||
-        (p.id === "shortcut" && this.shortcut)
+        (isHotelMysteryInteraction(p.id) && (!this.hotel || Math.abs(this.player.y ?? 0) > 0.35 || this.player.surfaceId?.startsWith("hotel-stair"))) ||
+        (p.id === "hotelPanel" && this.hotelMystery.passageOpen) ||
+        (p.id === "hotelCache" && this.hotelMystery.cacheClaimed)
       )
         continue;
       const d = dist(this.player, p);
       if (d < min && hasSight(this.player, p, this.rects)) {
-        best = p;
+        best = p.id === "hotelSuitcase" && this.hotelMystery.ledgerFound && !this.hotelMystery.keyFound
+          ? { ...p, detail: "Examine the loose suitcase lining" }
+          : p.id === "hotelPanel" && this.hotelMystery.keyFound
+            ? { ...p, name: "Unlock service gallery", detail: "Use the brass key · opens both ends of the passage" }
+            : p;
         min = d;
       }
     }
@@ -812,6 +820,25 @@ export class Simulation {
   purchaseInfo(id: PurchaseId) {
     let price = 0;
     let reason = "";
+    if (isHotelMysteryInteraction(id)) {
+      if (!this.hotel) reason = "Open the Grand Hotel first";
+      else if (Math.abs(this.player.y ?? 0) > 0.35 || this.player.surfaceId?.startsWith("hotel-stair")) reason = "Investigate from the lobby floor";
+      else if (id === "hotelPanel") {
+        if (this.hotelMystery.passageOpen) reason = "Service gallery already open";
+        else if (!this.hotelMystery.keyFound) reason = "Find the service key · start at reception";
+      } else if (id === "hotelRegister" && !this.hotelMystery.passageOpen) reason = "Unlock the service gallery first";
+      else if (id === "hotelCache") {
+        if (!this.hotelMystery.registerFound) reason = "Examine the collection register first";
+        else if (this.hotelMystery.cacheClaimed) reason = "Supplies already collected";
+        else if (this.grenades >= 4 && WEAPON_ORDER.every(w => !this.inventory[w].owned || this.inventory[w].reserve >= WEAPONS[w].reserve)) reason = "Supplies full · return when needed";
+      }
+      return { price, reason };
+    }
+    if (id === "stick" && this.stickTaken) reason = "Rake already taken";
+    if (id === "axe") {
+      if (!this.supply) reason = "Open the supply room first";
+      else if (this.axeTaken) reason = "Axe already taken";
+    }
     if (id === "hotel") {
       price = HOTEL_RULES.price;
       if (this.hotel) reason = "Already open";
@@ -840,8 +867,8 @@ export class Simulation {
         inv = this.inventory[id];
       price = inv.owned ? cfg.refill : cfg.price;
       if (id === "smg" && !this.lounge) reason = "Open the lounge first";
-      else if (id === "rifle" && !this.vip)
-        reason = "Open the High Roller Club first";
+      else if (id === "rifle" && !this.supply)
+        reason = "Open the supply room first";
       else if (inv.owned && inv.reserve >= cfg.reserve) reason = "Reserve full";
     }
     if (id === "bartender")
@@ -849,45 +876,38 @@ export class Simulation {
     if (id === "poker-a" || id === "poker-b")
       return {
         price: 0,
-        reason: this.vip ? "" : "Open the High Roller Club first",
+        reason: id === "poker-a" || this.vip ? "" : "Open the High Roller Club first",
       };
-    if (id === "lounge") {
-      price = PRICES.lounge;
-      if (this.lounge) reason = "Already open";
-    }
-    if (id === "shortcut") {
-      price = PRICES.shortcut;
-      if (!this.lounge) reason = "Open the lounge first";
-      else if (this.player.x < 4.5) reason = "Open from staff side";
-      else if (this.shortcut) reason = "Already open";
+    if (id in this.doorsOpen) {
+      const doorId = id as CasinoDoorId;
+      price = PRICES[doorId];
+      if (this.doorsOpen[doorId]) reason = "Already open";
+      else if (doorId === "supply" && !this.hotel) reason = "Open the Grand Hotel first";
     }
     if (id === "upgrade") {
       price = PRICES.upgrade;
       if (!this.vip) reason = "Open the High Roller Club first";
+      else if (isMelee(this.weapon)) reason = "Melee weapons cannot be upgraded";
       else if (this.upgrades[this.weapon]) reason = "Already upgraded";
     }
-    if (id === "vip") {
-      price = PRICES.vip;
-      if (!this.lounge) reason = "Open the lounge first";
-      else if (this.vip) reason = "Already open";
+    if (id === "tables") reason = "Casino games are available from the start";
+    if (id === "craps" || id === "craps-b") {
+      price = Object.values(this.betsByTable[id]).some(stake => stake > 0) ? 0 : PRICES.craps;
+      const dice = this.diceTables[id];
+      if (dice && !dice.resolved) reason = "Dice are rolling";
+      else if (this.lastWagerRounds[id] >= this.wagerRound)
+        reason = "One wager per table per round · come back next round";
     }
-    if (id === "tables") {
-      price = PRICES.tables;
-      if (!this.vip) reason = "Open the High Roller Club first";
-      else if (this.tables) reason = "Already open";
+    if (id === "painting" && (!this.cashier || this.paintingOpen)) reason = this.paintingOpen ? "Follow the four cards. Shoot suit, then number." : "Open the cashier first";
+    if (id === "mystery") {
+      price = PRICES.mystery;
+      if (!this.speakeasy) reason = "Find the hidden room";
+      else if (this.mystery && !this.mystery.resolved) reason = "Reels are spinning";
     }
-    if (id === "craps") {
-      price = PRICES.craps;
-      if (!this.tables) reason = "Open The Devil’s Tables first";
-      else if (this.dice && !this.dice.resolved) reason = "Dice are rolling";
-      else if (this.lastWagerRound >= this.wagerRound)
-        reason = "One wager per round · come back next round";
-    }
-    if (id === "roulette") {
+    if (id === "roulette" || id === "roulette-b") {
       price = PRICES.roulette;
-      if (!this.tables) reason = "Open The Devil’s Tables first";
-      else if (this.roulette && !this.roulette.resolved)
-        reason = "Wheel is spinning";
+      const spin = this.rouletteTables[id];
+      if (spin && !spin.resolved) reason = "Wheel is spinning";
     }
     if (!reason && this.points < price) reason = "Not enough chips";
     return { price, reason };
@@ -906,6 +926,39 @@ export class Simulation {
       return false;
     }
     this.points -= price;
+    if (id === "hotelLedger") {
+      this.hotelMystery.ledgerFound = true;
+      return this.inspectHotelDocument("ledger");
+    }
+    if (id === "hotelSuitcase") {
+      this.hotelMystery.suitcaseFound = true;
+      if (this.hotelMystery.ledgerFound && !this.hotelMystery.keyFound) {
+        this.hotelMystery.keyFound = true;
+        this.notify("Service key found · west panel beneath the restaurant");
+        this.events.push({ type: "purchase", position: HOTEL_MYSTERY_ANCHORS.hotelSuitcase });
+      }
+      return this.inspectHotelDocument("suitcase");
+    }
+    if (id === "hotelPanel") {
+      this.hotelMystery.passageOpen = true;
+      this.refreshMap();
+      this.notify("Service gallery unlocked · both ends are now open");
+      this.events.push({ type: "purchase", position: HOTEL_MYSTERY_ANCHORS.hotelPanel });
+      return true;
+    }
+    if (id === "hotelRegister") {
+      this.hotelMystery.registerFound = true;
+      return this.inspectHotelDocument("register");
+    }
+    if (id === "hotelCache") {
+      for (const w of WEAPON_ORDER) if (this.inventory[w].owned)
+        this.inventory[w].reserve = Math.min(WEAPONS[w].reserve, this.inventory[w].reserve + WEAPONS[w].magazine * 2);
+      this.grenades = Math.min(4, this.grenades + 2);
+      this.hotelMystery.cacheClaimed = true;
+      this.notify("Service supplies collected · ammunition and grenades secured");
+      this.events.push({ type: "purchase", position: HOTEL_MYSTERY_ANCHORS.hotelCache });
+      return true;
+    }
     if (id === "hotelBell") {
       this.hotelChallenge = {
         phase: "active", remaining: HOTEL_RULES.ambushDuration,
@@ -936,8 +989,8 @@ export class Simulation {
       this.events.push({ type: "purchase", weapon: "tommy" });
       return true;
     }
-    if (id === "roulette") {
-      this.roulette = {
+    if (id === "roulette" || id === "roulette-b") {
+      this.rouletteTables[id] = {
         id: ++this.rouletteSpinId,
         number: Math.floor(this.random() * 37),
         remaining: ROULETTE_RULES.spinDuration,
@@ -946,13 +999,38 @@ export class Simulation {
         reward: null,
         weapon: null,
       };
-      this.events.push({ type: "rouletteSpin", position: { x: 35, z: 5 } });
+      this.events.push({ type: "rouletteSpin", position: ROULETTE_TABLES.find(t => t.id === id) });
       this.notify("200 chips on the wheel. Keep moving.");
       return true;
     }
-    if (id === "craps") {
-      this.lastWagerRound = this.wagerRound;
-      this.dice = {
+    if (id === "stick") {
+      this.stickTaken = true; this.inventory.stick = {owned:true,mag:3,reserve:0};
+      this.meleeRemaining=0; this.meleeWeapon=null; this.switchWeapon("stick");
+      this.notify("STICKMAN · 3 SWEEPS · misses are free");
+      this.events.push({type:"pickup",weapon:"stick"});return true;
+    }
+    if (id === "axe") {
+      this.axeTaken = true; this.inventory.axe = {owned:true,mag:1,reserve:0};
+      this.meleeRemaining=0; this.meleeWeapon=null; this.switchWeapon("axe");
+      this.notify("FIRE EXIT · heavy chop · never breaks");
+      this.events.push({type:"pickup",weapon:"axe"});return true;
+    }
+    if (id === "painting") {
+      this.paintingOpen = true;
+      this.notify("Four fixed cards. Left to right: suit, then number. Shoot the buttons.");
+      return true;
+    }
+    if (id === "mystery") {
+      const wins = this.random() < .5;
+      this.mystery = {remaining:2.8,reward:wins ? MYSTERY_WEAPONS[Math.min(MYSTERY_WEAPONS.length-1,Math.floor(this.random()*MYSTERY_WEAPONS.length))] : null,resolved:false,message:"The Velvet Fortune is spinning…"};
+      this.events.push({type:"diceRoll",position:CASINO_SECRET_ANCHORS.mysteryCabinet});
+      return true;
+    }
+    if (id === "craps" || id === "craps-b") {
+      this.lastWagerRounds[id] = this.wagerRound;
+      this.crapsResults[id] = "Rolling… bets are locked";
+      this.diceTables[id] = {
+        quickWager: !Object.values(this.betsByTable[id]).some(stake => stake > 0),
         values: [
           1 + Math.floor(this.random() * 6),
           1 + Math.floor(this.random() * 6),
@@ -962,14 +1040,26 @@ export class Simulation {
         resultRemaining: 0,
         resolved: false,
       };
-      this.events.push({ type: "diceRoll", position: { x: 35, z: -3 } });
+      this.events.push({ type: "diceRoll", position: CRAPS_TABLES.find(t => t.id === id) });
       this.notify("The dice are rolling… keep moving.");
       return true;
     }
-    if (id === "tables") {
-      this.tables = true;
-      this.tablesAge = 0;
+    if (id in this.doorsOpen) {
+      const doorId = id as CasinoDoorId;
+      this.doorsOpen[doorId] = true;
+      if (doorId === "lounge" || doorId === "shortcut") {
+        if (!this.lounge) this.loungeAge = 0;
+        this.lounge = true;
+        this.shortcut = this.doorsOpen.shortcut;
+      } else if (doorId === "vip" || doorId === "vipExit") {
+        if (!this.vip) this.vipAge = 0;
+        this.vip = true;
+      } else if (doorId === "supply") { this.supply = true; this.supplyAge = 0; }
+      else if (doorId === "cashier") { this.cashier = true; this.cashierAge = 0; }
       this.refreshMap();
+      this.notify(`${DOOR_DETAILS[doorId].name} opened`);
+      this.events.push({ type: "purchase", position: p });
+      return true;
     }
     if (id === "pistolAmmo")
       this.inventory.pistol.reserve = WEAPONS.pistol.reserve;
@@ -985,21 +1075,7 @@ export class Simulation {
         this.reloadRemaining = 0;
       } else this.inventory[id].reserve = cfg.reserve;
     }
-    if (id === "lounge") {
-      this.lounge = true;
-      this.loungeAge = 0;
-      this.refreshMap();
-    }
-    if (id === "shortcut") {
-      this.shortcut = true;
-      this.refreshMap();
-    }
     if (id === "upgrade") this.applyUpgrade();
-    if (id === "vip") {
-      this.vip = true;
-      this.vipAge = 0;
-      this.refreshMap();
-    }
     this.notify(
       id === "shotgun" || id === "smg" || id === "rifle"
         ? `${WEAPONS[id].label} ready`
@@ -1007,19 +1083,14 @@ export class Simulation {
           ? `${this.weaponName()} · upgraded`
           : id === "pistolAmmo"
             ? "Pistol reserve refilled"
-            : id === "lounge"
-              ? "Cocktail lounge opened"
-              : id === "vip"
-                ? "High Roller Club · both entrances unlocked"
-                : id === "tables"
-                  ? "The Devil’s Tables · both entrances unlocked"
-                  : "Staff shortcut opened",
+            : "Purchase complete",
     );
     this.events.push({ type: "purchase" });
     return true;
   }
-  private resolveRoulette() {
-    const spin = this.roulette;
+  private resolveRoulette(id: RouletteTableId) {
+    const spin = this.rouletteTables[id];
+    const position = ROULETTE_TABLES.find(t => t.id === id);
     if (!spin || spin.resolved) return;
     spin.resolved = true;
     spin.resultRemaining = ROULETTE_RULES.resultDuration;
@@ -1033,13 +1104,13 @@ export class Simulation {
             : "miss";
     if (spin.reward === "miss") {
       // The entire wager was charged at spin start. Never charge again here.
-      this.events.push({ type: "rouletteMiss", position: { x: 35, z: 5 } });
+      this.events.push({ type: "rouletteMiss", position });
       return;
     }
     const weapons = spin.reward === "ammo" ? [this.weapon] : WEAPON_ORDER;
     for (const weapon of weapons) {
       const inventory = this.inventory[weapon];
-      if (!inventory.owned) continue;
+      if (!inventory.owned || isMelee(weapon)) continue;
       inventory.mag = this.capacity(weapon);
       inventory.reserve = WEAPONS[weapon].reserve;
     }
@@ -1049,8 +1120,67 @@ export class Simulation {
       this.damageBoostRemaining = ROULETTE_RULES.damageDuration;
     this.events.push({
       type: spin.reward === "jackpot" ? "rouletteJackpot" : "rouletteWin",
-      position: { x: 35, z: 5 },
+      position,
     });
+  }
+  nearCrapsTable(): CrapsTableId | null {
+    return CRAPS_TABLES.find(table => dist(this.player, { x: table.x, z: table.approachZ }) < 3 &&
+      hasSight(this.player, { x: table.x, z: table.approachZ }, this.rects))?.id ?? null;
+  }
+  canBet(id = this.nearCrapsTable()) {
+    return this.phase === "playing" && !!id && this.nearCrapsTable() === id &&
+      (!this.diceTables[id] || this.diceTables[id]!.resolved);
+  }
+  toggleChips() {
+    if (this.phase !== "playing") return;
+    this.holdingChips = !this.holdingChips;
+    this.reloadRemaining = 0;
+    this.aimHeld = false;
+  }
+  stowChips() {
+    this.holdingChips = false;
+  }
+  placeBet(number: PlaceNumber, id = this.nearCrapsTable()) {
+    if (!id || !this.holdingChips || !this.canBet(id) || !PLACE_NUMBERS.includes(number)) return false;
+    if (this.lastWagerRounds[id] >= this.wagerRound) { this.notify("One wager per table per round · come back next round"); return false; }
+    const amount = placeAmount(number,this.chipValue);
+    if (this.points < amount) {this.notify(`Need ${amount} chips for this bet`); return false;}
+    this.points -= amount;
+    this.betsByTable[id][number] = (this.betsByTable[id][number] ?? 0)+amount;
+    this.notify(`${amount} on ${number} · bet stays after wins · E to roll`);
+    return true;
+  }
+  placeAimedBet() {
+    const target = this.aimedBetTarget();
+    if (!target || !this.placeBet(target.number, target.tableId)) return false;
+    this.betBanksByTable[target.tableId][target.number] = target.bank;
+    return true;
+  }
+  aimedBetTarget() {
+    if (!this.holdingChips || !this.canBet()) return undefined;
+    const dy = -Math.sin(this.pitch);
+    if (dy >= -.01) return undefined;
+    const t = (BET_TARGETS[0].y-1.65)/dy;
+    const x=this.player.x+Math.sin(this.yaw)*Math.cos(this.pitch)*t;
+    const z=this.player.z+Math.cos(this.yaw)*Math.cos(this.pitch)*t;
+    return BET_TARGETS.find(b=>b.tableId === this.nearCrapsTable() && Math.abs(b.x-x)<b.halfWidth && Math.abs(b.z-z)<b.halfDepth);
+  }
+  takeBets(id = this.nearCrapsTable()) {
+    if (!id || !this.canBet(id)) return false;
+    const amount=Object.values(this.betsByTable[id]).reduce((a,b)=>a+b,0);
+    this.points+=amount;this.betsByTable[id]={};this.betBanksByTable[id]={};this.notify(`${amount} chips returned`);return true;
+  }
+  enterSecretKey(key: string) {
+    if (this.phase !== "playing" || !this.paintingOpen || this.speakeasy || dist(this.player,CASINO_SECRET_ANCHORS.keypad)>5) return false;
+    if (key === SECRET_CODE[this.codeProgress]) {
+      this.codeProgress++;
+      this.codeFlash=.2;
+      if (this.codeProgress === SECRET_CODE.length) {
+        this.speakeasy=true;this.speakeasyAge=0;this.refreshMap();this.notify("THE VELVET HOUR · the house has a secret");this.events.push({type:"purchase"});
+      } else this.notify(`Lock ${this.codeProgress} / 8 · accepted`);
+      return true;
+    }
+    this.codeProgress=0;this.codeFlash=-.4;this.notify(key === "reset" ? "Lock reset" : "Wrong sequence · start again from the leftmost card");this.events.push({type:"deny"});return false;
   }
   damageEnemy(e: Enemy, damage: number, headshot: boolean, region: HitRegion = headshot ? "head" : "body") {
     if (e.health <= 0 || !Number.isFinite(damage) || damage <= 0) return;
@@ -1082,8 +1212,9 @@ export class Simulation {
     }
   }
   knife() {
-    if (this.phase !== "playing" || this.knifeCooldown > 0 || this.grenadeCooldown > 0) return false;
+    if (this.phase !== "playing" || this.meleeRemaining > 0 || this.knifeCooldown > 0 || this.grenadeCooldown > 0) return false;
     this.reloadRemaining = 0;
+    this.holdingChips = false;
     this.knifeRemaining = 0.55;
     this.knifeCooldown = 0.75;
     this.events.push({ type: "knife" });
@@ -1107,8 +1238,9 @@ export class Simulation {
     if (target) this.damageEnemy(target, 100, false);
   }
   throwGrenade() {
-    if (this.phase !== "playing" || this.grenades <= 0 || this.grenadeCooldown > 0 || this.knifeCooldown > 0) return false;
+    if (this.phase !== "playing" || this.meleeRemaining > 0 || this.grenades <= 0 || this.grenadeCooldown > 0 || this.knifeCooldown > 0) return false;
     this.grenades--; this.grenadeCooldown=.65;
+    this.holdingChips = false;
     this.reloadRemaining=0;
     this.projectiles.push({ id:this.nextGrenadeId++, ...this.player, y:(this.player.y ?? 0)+1.5,
       vx:Math.sin(this.yaw)*Math.cos(this.pitch)*8, vz:Math.cos(this.yaw)*Math.cos(this.pitch)*8,
@@ -1136,6 +1268,7 @@ export class Simulation {
         g.x += direction.x * travel;
         g.y += direction.y * travel;
         g.z += direction.z * travel;
+        if (g.kind && (contact || this.enemies.some(e => e.health > 0 && Math.hypot(e.x-g.x,e.z-g.z) < .45 && Math.abs(g.y-(e.y ?? 0)-1) < 1))) { g.fuse=0; break; }
         if (contact) {
           const n = hit.normal;
           const impact = g.vx * n.x + g.vy * n.y + g.vz * n.z;
@@ -1152,8 +1285,12 @@ export class Simulation {
         }
       }
       if (g.fuse > 0) continue;
+      if (g.kind === "flare") {
+        this.fires.push({id:g.id,x:g.x,y:g.y,z:g.z,remaining:4,tick:0,damage:g.damage ?? 100});
+        this.events.push({type:"explosion",weapon:"flare",position:g});continue;
+      }
       this.explosions.push({ id: g.id, x: g.x, y: g.y, z: g.z, remaining: 0.5 });
-      this.events.push({ type: "explosion", position: { x: g.x, z: g.z } });
+      this.events.push({ type: "explosion", position: { x: g.x, z: g.z }, weapon:g.kind === "grenade" ? "launcher" : undefined });
       const exposed = (p: WorldPosition) => {
         const origin = { x: g.x, y: g.y + 0.02, z: g.z };
         const delta = { x: p.x - origin.x, y: (p.y ?? 0) + 0.8 - origin.y, z: p.z - origin.z };
@@ -1165,18 +1302,50 @@ export class Simulation {
       for (const e of this.enemies) {
         const distance = dist(g, e);
         if (e.health > 0 && distance < 4.5 && exposed(e))
-          this.damageEnemy(e, 220 * (1 - distance / 5.5), false);
+          this.damageEnemy(e, (g.damage ?? 220) * (1 - distance / 5.5), false);
       }
       const distance = dist(g, this.player);
       if (distance < 4.5 && exposed(this.player)) this.hurt(70 * (1 - distance / 4.5));
     }
-    this.projectiles = this.projectiles.filter(g => g.fuse > 0);
+    this.projectiles=this.projectiles.filter(g=>g.fuse>0);
+    for (const fire of this.fires) {
+      fire.remaining-=dt;fire.tick-=dt;
+      if (fire.tick>0) continue;
+      fire.tick=.5;
+      for (const e of this.enemies) if(e.health>0 && dist(fire,e)<2.5 && hasSight(fire,e,this.rects,.5)) this.damageEnemy(e,fire.damage*.25,false);
+      if(dist(fire,this.player)<2.5 && hasSight(fire,this.player,this.rects,.5)) this.hurt(12);
+    }
+    this.fires=this.fires.filter(f=>f.remaining>0);
   }
-
-  fire() {
+  private meleeContact() {
+    const id = this.meleeWeapon;
+    if (!id) return;
+    let hits = 0;
+    // Stickman sweeps a 2.8 m, 100-degree fan; Fire Exit chops a narrow 1.9 m wedge at the nearest zombie.
+    const reach = id === "stick" ? 2.8 : 1.9, cone = id === "stick" ? Math.cos(50 * Math.PI / 180) : Math.cos(22 * Math.PI / 180);
+    const inReach = this.enemies.filter(e => {
+      const dx=e.x-this.player.x, dz=e.z-this.player.z, distance=Math.hypot(dx,dz);
+      return e.health>0 && distance<=reach &&
+        (dx*Math.sin(this.yaw)+dz*Math.cos(this.yaw))/Math.max(.001,distance)>=cone &&
+        hasSight(this.player,e,this.rects,1);
+    }).sort((a,b)=>dist(a,this.player)-dist(b,this.player));
+    for (const e of id === "axe" ? inReach.slice(0,1) : inReach) {
+      this.damageEnemy(e,this.weaponDamage(id),false); hits++;
+    }
+    if (hits) this.events.push({type:"meleeHit",weapon:id,count:hits});
+    if (hits && id === "stick") {
+      this.inventory.stick.mag--;
+      if (!this.inventory.stick.mag) {
+        this.events.push({type:"stickBreak",weapon:"stick"});this.notify("The craps rake splinters after its third hit!");
+      }
+    }
+  }
+  fire(alternate = false) {
     if (
+      this.meleeRemaining > 0 ||
+      this.holdingChips ||
       this.phase !== "playing" ||
-      this.reloadRemaining > 0 ||
+      (this.reloadRemaining > 0 && !isShellLoading(this.weapon)) ||
       this.knifeRemaining > 0 || this.grenadeCooldown > 0 ||
       this.fireCooldown > 0
     )
@@ -1184,15 +1353,34 @@ export class Simulation {
     const w = this.inventory[this.weapon],
       cfg = WEAPONS[this.weapon];
     if (w.mag <= 0) {
-      this.reload();
+      if (!this.reload() && w.reserve <= 0 && !isMelee(this.weapon)) {
+        this.fireCooldown = 0.3;
+        this.events.push({ type: "dry", weapon: this.weapon });
+      }
       return false;
     }
-    w.mag--;
+    this.reloadRemaining = 0;
+    if (isMelee(this.weapon)) {
+      this.meleeRemaining=meleeDuration(this.weapon);this.meleeWeapon=this.weapon;this.fireCooldown=cfg.interval;
+      this.events.push({type:"melee",weapon:this.weapon});return true;
+    }
+    const shells = alternate && this.weapon === "doublebarrel" ? Math.min(2,w.mag) : 1;
+    const side = this.weapon === "dual" ? w.mag % 2 : undefined;
+    w.mag -= shells;
     this.fireCooldown = cfg.interval;
-    this.events.push({ type: "shot", weapon: this.weapon });
-    for (let i = 0; i < cfg.pellets; i++) {
-      const yaw = this.yaw + (this.random() - 0.5) * cfg.spread * 2,
-        pitch = this.pitch + (this.random() - 0.5) * cfg.spread * 2;
+    this.events.push({ type: "shot", weapon: this.weapon, alternate: shells > 1, side });
+    const spread = cfg.spread * (this.aiming && cfg.pellets === 1 ? .35 : 1) + this.bloom;
+    this.bloom = Math.min(maxBloom(this.weapon), this.bloom + bloomPerShot(this.weapon));
+    if (this.weapon === "launcher" || this.weapon === "flare") {
+      this.projectiles.push({id:this.nextGrenadeId++,...this.player,y:(this.player.y ?? 0)+1.5,
+        vx:Math.sin(this.yaw)*Math.cos(this.pitch)*17,vz:Math.cos(this.yaw)*Math.cos(this.pitch)*17,
+        vy:1-Math.sin(this.pitch)*17,fuse:this.weapon === "flare" ? 1.2 : 1.6,
+        kind:this.weapon === "flare" ? "flare" : "grenade",damage:this.weaponDamage()});
+      return true;
+    }
+    for (let i = 0; i < cfg.pellets * shells; i++) {
+      const yaw = this.yaw + (this.random() - 0.5) * spread * 2,
+        pitch = this.pitch + (this.random() - 0.5) * spread * 2;
       const d: V3 = {
         x: Math.sin(yaw) * Math.cos(pitch),
         y: -Math.sin(pitch),
@@ -1200,41 +1388,43 @@ export class Simulation {
       };
       const o = { ...this.player, y: (this.player.y ?? 0) + 1.65 };
       let nearest = wallDistance(o, d, this.rects),
-        target: Enemy | undefined,
-        region: HitRegion = "body";
+        target: Enemy | undefined;
+      const contacts: {enemy:Enemy; distance:number; region:HitRegion}[] = [];
       for (const e of this.enemies) {
         if (e.health <= 0) continue;
+        let contact: typeof contacts[number] | undefined;
         for (const volume of zombieHitVolumes(e)) {
           const [x, y, z] = volume.center;
           const n = raySphere(o, d, { x: e.x + x * Math.cos(e.yaw) + z * Math.sin(e.yaw), y: (e.y ?? 0) + y,
             z: e.z - x * Math.sin(e.yaw) + z * Math.cos(e.yaw) }, volume.radius);
+          if (n < wallDistance(o,d,this.rects) && (!contact || n < contact.distance)) contact={enemy:e,distance:n,region:volume.region};
           if (n < nearest) {
             nearest = n;
             target = e;
-            region = volume.region;
           }
         }
+        if (contact) contacts.push(contact);
+      }
+      if (i === 0 && this.paintingOpen && !this.speakeasy) {
+        let key: string | undefined;
+        for (const button of KEYPAD_TARGETS) {
+          const n=rayBox(o,d,{x:button.x-.07,y:button.y-.12,z:button.z-.12},{x:button.x+.07,y:button.y+.12,z:button.z+.12});
+          if(n<nearest) {nearest=n;key=button.key;}
+        }
+        if(key) {this.enterSecretKey(key);return true;}
       }
       if (target) {
-        const falloff =
-          this.weapon === "shotgun"
-            ? Math.max(0.4, 1 - Math.max(0, nearest - 8) * 0.06)
-            : 1;
-        const damage = this.weaponDamage();
-        this.damageEnemy(target, damage * falloff * (region === "head" ? 2 : 1), region === "head", region);
+        const maxTargets=penetration(this.weapon);
+        const hits=contacts.sort((a,b)=>a.distance-b.distance).slice(0,maxTargets);
+        for (const [index, hit] of hits.entries()) {
+          const falloff=cfg.pellets>1 ? Math.max(.4,1-Math.max(0,hit.distance-8)*.06) : 1;
+          this.damageEnemy(hit.enemy,this.weaponDamage()*falloff*Math.pow(.75,index)*(hit.region === "head" ? 2 : 1),hit.region === "head",hit.region);
+          if (this.weapon === "lmg") hit.enemy.cooldown=Math.max(hit.enemy.cooldown,.4);
+        }
       }
     }
-    this.pitch = Math.max(
-      -1.3,
-      this.pitch -
-        (this.weapon === "shotgun"
-          ? 0.016
-          : this.weapon === "rifle"
-            ? 0.011
-            : this.weapon === "smg"
-              ? 0.0035
-              : 0.006),
-    );
+    this.pitch = Math.max(-1.3, this.pitch - recoilPitch(this.weapon) * shells);
+    this.yaw += this.weapon === "machinepistol" || this.weapon === "tommy" ? (this.random() - 0.5) * 0.006 : 0;
     return true;
   }
   hurt(amount: number) {
@@ -1293,7 +1483,7 @@ export class Simulation {
     const options = ALL_SPAWNS.filter(
       (p, i) =>
         this.spawnEnabled(i) &&
-        (!ambush || (i >= SPAWNS.length && (p.y ?? 0) === 4)) &&
+        (!ambush || (SPAWN_RECORDS[i].room === "hotel" && (p.y ?? 0) === 4)) &&
         dist(p, this.player) >= 8 &&
         !collides(p, 0.35, this.rects) &&
         this.enemies.every((e) => dist(e, p) > 0.8),
@@ -1301,7 +1491,7 @@ export class Simulation {
     if (!options.length) return false;
     const p = options[Math.floor(this.random() * options.length)],
       stats = waveStats(Math.max(1, this.round));
-    const inHotel = p.z > 12;
+    const inHotel = SPAWN_RECORDS[ALL_SPAWNS.indexOf(p)].room === "hotel";
     const health = ambush ? Math.min(180, stats.health + 20) : Math.round(stats.health * (inHotel ? 1.08 : 1));
     this.enemies.push({
       ...p,
@@ -1322,13 +1512,17 @@ export class Simulation {
     return true;
   }
   spawnEnabled(index: number) {
-    return (
-      index < 3 ||
-      (index === 3 && this.lounge && this.loungeAge > 3) ||
-      (index === 4 && this.vip && this.vipAge > 3) ||
-      (index === 5 && this.tables && this.tablesAge > 3)
-      || (index >= SPAWNS.length && index < ALL_SPAWNS.length && this.hotel && this.hotelAge > HOTEL_RULES.spawnGrace)
-    );
+    const room = SPAWN_RECORDS[index]?.room;
+    switch (room) {
+      case "casino": return true;
+      case "lounge": return this.lounge && this.loungeAge > 3;
+      case "vip": return this.vip && this.vipAge > 3;
+      case "supply": return this.supply && this.supplyAge > 3;
+      case "cashier": return this.cashier && this.cashierAge > 3;
+      case "speakeasy": return this.speakeasy && this.speakeasyAge > 3;
+      case "hotel": return this.hotel && this.hotelAge > HOTEL_RULES.spawnGrace;
+      default: return false;
+    }
   }
   beginRound() {
     this.round++;
@@ -1347,15 +1541,45 @@ export class Simulation {
     if (this.phase !== "playing") return;
     dt = Math.min(0.05, Math.max(0, dt));
     this.time += dt;
+    this.codeFlash = this.codeFlash > 0 ? Math.max(0,this.codeFlash-dt) : Math.min(0,this.codeFlash+dt);
+    if (this.mystery && !this.mystery.resolved) {
+      this.mystery.remaining = Math.max(0,this.mystery.remaining-dt);
+      if (!this.mystery.remaining) {
+        this.mystery.resolved = true;
+        const reward=this.mystery.reward;
+        if (reward) {
+          const repeat=this.inventory[reward].owned;
+          this.inventory[reward]={owned:true,mag:this.capacity(reward),reserve:WEAPONS[reward].reserve};
+          this.weapon=reward;this.holdingChips=false;this.reloadRemaining=0;this.meleeRemaining=0;this.meleeWeapon=null;
+          this.fireCooldown=Math.max(this.fireCooldown,.45);
+          this.mystery.message=`${this.weaponName(reward)} · ${WEAPONS[reward].label.toLowerCase()} · ${repeat ? "ammunition restocked" : "equipped"}`;
+          this.events.push({type:"pickup",weapon:reward});
+        } else {this.mystery.message="The house keeps the chips. No weapon this time.";this.events.push({type:"deny"});}
+        this.notify(this.mystery.message);
+      }
+    }
     this.roundCueRemaining = Math.max(0, this.roundCueRemaining - dt);
     if (!this.roundCueRemaining) this.roundCue = null;
     this.damageAgo += dt;
     this.invulnerable = Math.max(0, this.invulnerable - dt);
     this.fireCooldown = Math.max(0, this.fireCooldown - dt);
+    if (this.fireCooldown <= 0) this.bloom = Math.max(0, this.bloom - dt * 0.09);
     this.knifeCooldown = Math.max(0, this.knifeCooldown - dt);
     this.grenadeCooldown = Math.max(0, this.grenadeCooldown - dt);
     const knifeBefore = this.knifeRemaining;
     this.knifeRemaining = Math.max(0, this.knifeRemaining - dt);
+    const meleeBefore=this.meleeRemaining;
+    this.meleeRemaining=Math.max(0,this.meleeRemaining-dt);
+    const contactAt = meleeContactTime(this.meleeWeapon);
+    if (meleeBefore>contactAt && this.meleeRemaining<=contactAt) this.meleeContact();
+    if (meleeBefore>0 && !this.meleeRemaining) {
+      if (this.meleeWeapon === "stick" && this.inventory.stick.mag===0) {
+        this.inventory.stick.owned=false;
+        this.weapon=this.inventory[this.lastFirearm]?.owned ? this.lastFirearm : WEAPON_ORDER.find(id=>this.inventory[id].owned && !isMelee(id)) ?? "pistol";
+        this.fireCooldown=Math.max(this.fireCooldown,.35);
+      }
+      this.meleeWeapon=null;
+    }
     if (knifeBefore > .37 && this.knifeRemaining <= .37) this.knifeContact();
     this.stepGrenades(dt);
     if (this.phase !== "playing") return;
@@ -1365,36 +1589,47 @@ export class Simulation {
     if (this.vip) this.vipAge += dt;
     if (this.tables) this.tablesAge += dt;
     if (this.hotel) this.hotelAge += dt;
-    if (this.roulette) {
-      if (!this.roulette.resolved) {
-        this.roulette.remaining = Math.max(0, this.roulette.remaining - dt);
-        if (!this.roulette.remaining) this.resolveRoulette();
-      } else
-        this.roulette.resultRemaining = Math.max(
-          0,
-          this.roulette.resultRemaining - dt,
-        );
+    if (this.supply) this.supplyAge += dt;
+    if (this.cashier) this.cashierAge += dt;
+    if (this.speakeasy) this.speakeasyAge += dt;
+    for (const { id } of ROULETTE_TABLES) {
+      const spin = this.rouletteTables[id];
+      if (!spin) continue;
+      if (!spin.resolved) {
+        spin.remaining = Math.max(0, spin.remaining - dt);
+        if (!spin.remaining) this.resolveRoulette(id);
+      } else spin.resultRemaining = Math.max(0, spin.resultRemaining - dt);
     }
-    if (this.dice) {
-      if (!this.dice.resolved) {
-        this.dice.remaining = Math.max(0, this.dice.remaining - dt);
-        if (!this.dice.remaining) {
-          this.dice.resolved = true;
-          this.dice.resultRemaining = 6;
-          this.dice.round = Math.max(this.dice.round, this.wagerRound);
-          this.lastWagerRound = this.dice.round;
-          const seven = this.dice.values[0] + this.dice.values[1] === 7;
-          if (seven) {
-            this.slowRound = this.dice.round;
-            this.events.push({ type: "diceCurse" });
+    for (const { id, x, z } of CRAPS_TABLES) {
+      const dice = this.diceTables[id];
+      if (!dice) continue;
+      if (!dice.resolved) {
+        dice.remaining = Math.max(0, dice.remaining - dt);
+        if (!dice.remaining) {
+          dice.resolved = true;
+          dice.resultRemaining = 6;
+          dice.round = Math.max(dice.round, this.wagerRound);
+          this.lastWagerRounds[id] = dice.round;
+          const total = dice.values[0] + dice.values[1];
+          if (total === 7) {
+            this.slowRound = Math.max(this.slowRound, dice.round);
+            if (dice.quickWager === false) {
+              const lost = Object.values(this.betsByTable[id]).reduce((a,b) => a+b, 0);
+              this.betsByTable[id] = {}; this.betBanksByTable[id] = {};
+              this.crapsResults[id] = `SEVEN · ${lost} chips lost · 20% slower this round`;
+            } else this.crapsResults[id] = "SEVEN’S CURSE · 20% slower this round";
+            this.events.push({ type: "diceCurse", position: { x, z } });
           } else {
-            this.points += 500;
-            this.earned += 500;
-            this.events.push({ type: "diceWin" });
+            const stake = this.betsByTable[id][total as PlaceNumber] ?? 0;
+            const profit = dice.quickWager === false ? (stake ? placeProfit(total as PlaceNumber, stake) : 0) : 500;
+            this.points += profit; this.earned += profit;
+            this.crapsResults[id] = dice.quickWager === false
+              ? profit ? `${total} · +${profit} chips · bets stay on the table` : `${total} · no winner · bets stay on the table`
+              : `${total} · +500 chips`;
+            if (profit) this.events.push({ type: "diceWin", position: { x, z } });
           }
         }
-      } else
-        this.dice.resultRemaining = Math.max(0, this.dice.resultRemaining - dt);
+      } else dice.resultRemaining = Math.max(0, dice.resultRemaining - dt);
     }
     if (this.damageAgo > RULES.regenDelay)
       this.health = Math.min(
@@ -1406,14 +1641,16 @@ export class Simulation {
       if (this.reloadRemaining <= 0) {
         this.reloadRemaining = 0;
         const w = this.inventory[this.weapon],
-          amount = Math.min(this.capacity() - w.mag, w.reserve);
+          amount = Math.min(isShellLoading(this.weapon) ? 1 : this.capacity() - w.mag, w.reserve);
         w.mag += amount;
         w.reserve -= amount;
+        this.events.push({ type: "reloadDone", weapon: this.weapon });
+        if (isShellLoading(this.weapon) && w.mag<this.capacity() && w.reserve>0) this.reload();
       }
     }
     const length = Math.hypot(input.forward, input.strafe);
     this.moving = length > 0;
-    this.sprinting = input.sprint && length > 0;
+    this.sprinting = input.sprint && length > 0 && !this.aiming;
     if (length) {
       const f = input.forward / length,
         s = input.strafe / length,
@@ -1421,7 +1658,7 @@ export class Simulation {
           (this.sprinting
             ? RULES.sprint * (this.perks.nightShift ? 1.15 : 1)
             : RULES.walk) *
-          (this.slowed ? 0.8 : 1) *
+          (this.slowed ? 0.8 : 1) * weaponSpeed(this.weapon) *
           dt;
       moveActor(
         this.player,
@@ -1543,7 +1780,7 @@ export class Simulation {
         const replacement = ALL_SPAWNS.find(
           (p, i) =>
             this.spawnEnabled(i) &&
-            (!e.hotelAmbush || (i >= SPAWNS.length && (p.y ?? 0) === 4)) &&
+            (!e.hotelAmbush || (SPAWN_RECORDS[i].room === "hotel" && (p.y ?? 0) === 4)) &&
             !collides(p, RULES.enemyRadius, this.rects) &&
             dist(p, this.player) > 10 &&
             this.enemies.every((o) => o === e || dist(o, p) > 1),

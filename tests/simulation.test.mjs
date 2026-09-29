@@ -7,6 +7,9 @@ import {
   PRICES,
   PURCHASES,
   SPAWNS,
+  SPAWN_RECORDS,
+  ALL_SPAWNS,
+  DOORS,
   collides,
   moveActor,
   dist,
@@ -16,6 +19,8 @@ import {
   PERKS,
   BAR_ANCHOR,
 } from "../lib/game/simulation.ts";
+import { CRAPS_TABLES, ROULETTE_TABLES, CASINO_ANCHORS } from "../lib/game/casino-layout.ts";
+import { POKER_TABLES } from "../lib/game/poker.ts";
 const idle = { forward: 0, strafe: 0, sprint: false, fire: false };
 const tick = (s, seconds) => {
   for (let t = 0; t < seconds; t += 0.05) s.step(0.05, idle);
@@ -60,7 +65,7 @@ test("knife misses distant, behind-player, and covered enemies; pause freezes wi
   for(const [player,target,yaw] of [
     [{x:-12,z:-7},{x:-12,z:-4},0],
     [{x:-12,z:-7},{x:-12,z:-8},0],
-    [{x:3.5,z:-4},{x:4.5,z:-4},Math.PI/2],
+    [{x:-32.5,z:-2},{x:-33.5,z:-2},-Math.PI/2],
   ]) {
     const s=quiet();s.player=player;s.yaw=yaw;s.enemies=[enemy(target.x,target.z)];
     s.knife();s.pause();tick(s,1);assert.equal(s.knifeRemaining,.55);
@@ -91,12 +96,12 @@ test("grenade blast kills groups once, applies falloff, and can hurt the player"
   tick(s,.7);assert.equal(s.kills,1);assert.equal(s.explosions.length,0);
 });
 test("closed doors block blast damage and bounce thrown grenades", () => {
-  const s=quiet();s.player={x:3,z:-4};s.yaw=Math.PI/2;
-  s.enemies=[enemy(4.6,-4)];
-  s.projectiles=[{id:1,x:3.4,y:.2,z:-4,vx:0,vy:0,vz:0,fuse:.01}];
+  const s=quiet();s.player={x:-32,z:-2};s.yaw=-Math.PI/2;
+  s.enemies=[enemy(-33.6,-2)];
+  s.projectiles=[{id:1,x:-32.4,y:.2,z:-2,vx:0,vy:0,vz:0,fuse:.01}];
   s.step(.05,idle);assert.equal(s.enemies[0].health,80);
   s.throwGrenade();tick(s,.25);
-  assert.ok(s.projectiles[0].x<4);assert.ok(s.projectiles[0].vx<0);
+  assert.ok(s.projectiles[0].x>-33);assert.ok(s.projectiles[0].vx>0);
 });
 test("a thrown grenade follows its full flight and kills a nearby group", () => {
   const s=quiet();s.player={x:-12,z:-7};s.yaw=0;s.pitch=0;
@@ -186,17 +191,18 @@ test("unaffordable purchases preserve all inventory and currency", () => {
   assert.equal(s.points, 10);
   assert.equal(JSON.stringify(s.inventory), before);
 });
-test("doors charge exactly once and shortcut requires lounge access", () => {
-  const s = quiet();
-  s.points = 10000;
-  assert.equal(buy(s, "shortcut"), false);
-  assert.equal(s.points, 10000);
-  assert.equal(buy(s, "lounge"), true);
-  assert.equal(buy(s, "lounge"), false);
-  assert.equal(s.points, 10000 - PRICES.lounge);
-  assert.equal(buy(s, "shortcut"), true);
-  assert.equal(buy(s, "shortcut"), false);
-  assert.equal(s.points, 10000 - PRICES.lounge - PRICES.shortcut);
+test("bar entrances charge independently, accept either first, and never charge twice", () => {
+  for (const order of [["lounge", "shortcut"], ["shortcut", "lounge"]]) {
+    const s = quiet(); s.points = 10000;
+    assert.equal(buy(s, order[0]), true);
+    assert.equal(s.lounge, true);
+    assert.equal(s.doorsOpen[order[1]], false);
+    assert.equal(buy(s, order[0]), false);
+    assert.equal(s.points, 10000 - PRICES[order[0]]);
+    assert.equal(buy(s, order[1]), true);
+    assert.equal(buy(s, order[1]), false);
+    assert.equal(s.points, 10000 - PRICES.lounge - PRICES.shortcut);
+  }
 });
 test("full reserve refuses payment; valid refill never grants extra magazine ammunition", () => {
   const s = quiet();
@@ -282,13 +288,13 @@ test("solid cover stops bullets and nearest living target receives the hit", () 
 });
 test("attack rechecks cover at contact and health has global grace between attackers", () => {
   const s = quiet();
-  s.player = { x: 3.5, z: -4 };
-  const e = enemy(4.5, -4);
+  s.player = { x: -32.5, z: -2 };
+  const e = enemy(-33.5, -2);
   e.attack = 0.01;
   s.enemies = [e];
   tick(s, 0.05);
   assert.equal(s.health, 100);
-  s.enemies = [enemy(3.2, -4), { ...enemy(3.1, -4), id: 2 }];
+  s.enemies = [enemy(-32.2, -2), { ...enemy(-32.1, -2), id: 2 }];
   s.enemies.forEach((e) => (e.attack = 0.01));
   tick(s, 0.05);
   assert.equal(s.health, 80);
@@ -305,59 +311,32 @@ test("healing begins only after the no-damage delay", () => {
 });
 test("closed doors and wall edges resist oversized movement deltas", () => {
   const s = quiet();
-  const p = { x: 2, z: -4 };
-  moveActor(p, 8, 0, 0.32, s.rects);
-  assert.ok(p.x < 4);
+  const p = { x: -31, z: -2 };
+  moveActor(p, -8, 0, 0.32, s.rects);
+  assert.ok(p.x > -33);
   const q = { x: -12, z: -8 };
   moveActor(q, -100, -100, 0.32, s.rects);
   assert.equal(collides(q, 0.32, s.rects), false);
-  s.lounge = true;
-  s.refreshMap();
-  const r = { x: 2, z: -4 };
-  moveActor(r, 8, 0, 0.32, s.rects);
-  assert.ok(r.x > 9);
+  s.points = 10000; buy(s, "lounge");
+  const r = { x: -31, z: -2 };
+  moveActor(r, -5, 0, 0.32, s.rects);
+  assert.ok(r.x < -35.9);
 });
 test("every enabled spawn has a navigation route in all legal gate states", () => {
-  for (const [lounge, shortcut, vip] of [
-    [false, false, false],
-    [true, false, false],
-    [true, true, false],
-    [true, false, true],
-    [true, true, true],
-  ]) {
-    const s = quiet();
-    s.lounge = lounge;
-    s.shortcut = shortcut;
-    s.vip = vip;
-    s.loungeAge = s.vipAge = 4;
-    s.refreshMap();
-    for (const target of [
-      { x: -12, z: -5 },
-      { x: -5, z: -4 },
-      { x: 0, z: 0 },
-      ...(vip
-        ? [
-            { x: 25, z: 9.5 },
-            { x: 19, z: -3 },
-            { x: 25, z: -3 },
-            { x: 22, z: 0 },
-            { x: 19, z: 5 },
-            { x: 25, z: 5 },
-          ]
-        : []),
-      ...(lounge
-        ? [
-            { x: 12, z: -5 },
-            { x: 11, z: 8 },
-          ]
-        : []),
+  for (const doors of [[], ["lounge"], ["shortcut"], ["vip"], ["vipExit"], ["lounge", "shortcut", "vip", "vipExit", "cashier", "hotel", "supply"]]) {
+    const s = quiet(); s.points = 100000;
+    for (const id of doors) assert.equal(buy(s, id), true, id);
+    s.loungeAge = s.vipAge = s.hotelAge = s.supplyAge = s.cashierAge = 5;
+    for (const target of [CASINO_ANCHORS.spawn,
+      ...CRAPS_TABLES.map(t => ({ x:t.x, z:t.approachZ })),
+      ...(s.vip ? [CASINO_ANCHORS.upgrade] : []),
+      ...(s.lounge ? [BAR_ANCHOR] : []),
+      ...(s.supply ? [CASINO_ANCHORS.rifle] : []),
     ]) {
+      assert.equal(collides(target, .32, s.rects), false, JSON.stringify(target));
       s.navigation.update(target);
-      for (const p of SPAWNS.filter((_, i) => s.spawnEnabled(i)))
-        assert.ok(
-          s.navigation.distance[s.navigation.index(p)] >= 0,
-          JSON.stringify({ target, p, lounge, shortcut, vip }),
-        );
+      for (const [i, p] of ALL_SPAWNS.entries()) if (s.spawnEnabled(i))
+        assert.ok(s.navigation.distance[s.navigation.index(p)] >= 0, JSON.stringify({target,p,doors}));
     }
   }
 });
@@ -377,16 +356,16 @@ test("behind-bar spawn stays inactive while lounge is shut and respects its open
   for (let i = 0; i < 20; i++) {
     s.enemies = [];
     s.spawn();
-    assert.ok(s.enemies.every((e) => e.x < 4));
+    assert.ok(s.enemies.every((e) => e.x > -33));
   }
-  s.lounge = true;
+  s.doorsOpen.lounge = true;
   s.loungeAge = 0;
   s.refreshMap();
   s.player = { x: -15, z: -10 };
   for (let i = 0; i < 20; i++) {
     s.enemies = [];
     s.spawn();
-    assert.ok(s.enemies.every((e) => e.x < 4));
+    assert.ok(s.enemies.every((e) => e.x > -33));
   }
 });
 test("round budgets resolve exactly, active cap holds, and five waves pay body kills plus hits", () => {
@@ -438,103 +417,66 @@ test("five-round headshot route leaves an ammunition allowance after the origina
         (sum, id) => sum + PRICES[id],
         0,
       ),
-    815,
+    1415,
   );
 });
 
-test("VIP purchase requires lounge and enough points, opens both gates, and charges once", () => {
-  const s = quiet();
-  s.points = 10000;
-  assert.equal(buy(s, "vip"), false);
-  buy(s, "lounge");
-  const before = s.points;
-  s.points = 1299;
-  assert.equal(buy(s, "vip"), false);
-  assert.equal(s.vip, false);
-  s.points = before;
-  for (const z of [-4.1, 8.6]) {
-    const p = { x: 14, z };
-    moveActor(p, 5, 0, 0.32, s.rects);
-    assert.ok(p.x < 16);
-    assert.equal(hasSight({ x: 14, z }, { x: 19, z }, s.rects), false);
-  }
-  assert.equal(buy(s, "vip"), true);
-  assert.equal(s.points, before - PRICES.vip);
-  assert.equal(buy(s, "vip"), false);
-  assert.equal(s.points, before - PRICES.vip);
-  for (const z of [-4.1, 8.6]) {
-    const p = { x: 14, z };
-    moveActor(p, 5, 0, 0.32, s.rects);
-    assert.ok(p.x > 18.9);
-    assert.equal(hasSight({ x: 14, z }, { x: 19, z }, s.rects), true);
+test("VIP entrances require their own price, open independently and charge once", () => {
+  for (const id of ["vip", "vipExit"]) {
+    const s = quiet(); s.points = PRICES[id] - 1;
+    assert.equal(buy(s, id), false);
+    assert.equal(s.vip, false);
+    const other = id === "vip" ? "vipExit" : "vip";
+    for (const door of [DOORS[id], DOORS[other]])
+      assert.equal(hasSight({x:door.x,z:-18}, {x:door.x,z:-22}, s.rects), false);
+    s.points = 10000;
+    assert.equal(buy(s, id), true);
+    assert.equal(s.points, 10000 - PRICES[id]);
+    assert.equal(buy(s, id), false);
+    assert.equal(s.doorsOpen[other], false);
+    assert.equal(hasSight({x:DOORS[id].x,z:-18}, {x:DOORS[id].x,z:-22}, s.rects), true);
+    assert.equal(hasSight({x:DOORS[other].x,z:-18}, {x:DOORS[other].x,z:-22}, s.rects), false);
   }
 });
 test("VIP spawn obeys its own unlock delay and expanded world has solid boundaries", () => {
-  const s = quiet();
-  s.lounge = true;
-  s.loungeAge = 10;
-  assert.equal(s.spawnEnabled(4), false);
-  s.vip = true;
-  s.vipAge = 0;
-  s.refreshMap();
-  assert.equal(s.spawnEnabled(4), false);
-  tick(s, 3.1);
-  assert.equal(s.spawnEnabled(4), true);
-  const p = { x: 25, z: -8 };
-  assert.equal(collides(p, 0.32, s.rects), false);
-  moveActor(p, 20, 0, 0.32, s.rects);
-  assert.ok(p.x < 28 && p.x > 27);
+  const s = quiet(); const index = SPAWN_RECORDS.findIndex(p => p.room === "vip");
+  assert.equal(s.spawnEnabled(index), false);
+  s.points = 10000; buy(s, "vip");
+  assert.equal(s.spawnEnabled(index), false);
+  tick(s, 3.1); assert.equal(s.spawnEnabled(index), true);
+  const p = { x:-25, z:-26 };
+  assert.equal(collides(p, .32, s.rects), false);
+  moveActor(p, -20, 0, .32, s.rects);
+  assert.ok(p.x > -28 && p.x < -27);
 });
-test("zombies navigate into VIP past both poker islands", () => {
-  const s = quiet();
-  s.lounge = s.vip = true;
-  s.player = { x: 25, z: 9.5 };
-  s.refreshMap();
-  s.enemies = [enemy(14, -4.1)];
-  s.health = 1e6;
+test("zombies navigate through a purchased VIP entrance around the poker island", () => {
+  const s = quiet(); s.points = 10000; buy(s, "vip");
+  s.player = {...CASINO_ANCHORS.upgrade}; s.refreshMap();
+  s.enemies = [enemy(-23, -18)]; s.health = 1e6;
   tick(s, 40);
   assert.ok(dist(s.enemies[0], s.player) < 1.3, JSON.stringify(s.enemies[0]));
 });
 
 test("low poker tables force pursuit around the table, rather than into it", () => {
-  for (const [from, to] of [
-    [-6, 0],
-    [2, 8],
-  ]) {
-    const s = quiet();
-    s.lounge = s.vip = true;
-    s.player = { x: 22, z: to };
-    s.refreshMap();
-    s.enemies = [enemy(22, from)];
-    tick(s, 18);
+  for (const table of POKER_TABLES) {
+    const s = quiet(); s.points = 10000; buy(s, "vip");
+    s.player = {x:table.x,z:table.z+3}; s.refreshMap();
+    s.enemies = [enemy(table.x,table.z-3)]; tick(s, 18);
     assert.ok(dist(s.enemies[0], s.player) < 1.3, JSON.stringify(s.enemies[0]));
   }
 });
 test("stuck-enemy recovery cannot relocate into a locked or just-opened VIP room", () => {
-  for (const vip of [false, true]) {
-    const s = quiet();
-    s.lounge = true;
-    s.loungeAge = 10;
-    s.vip = vip;
-    s.vipAge = 0;
-    s.player = { x: 10, z: -4 };
-    s.refreshMap();
-    const stuck = { ...enemy(-7, 0), stuck: 8 };
-    s.enemies = [
-      stuck,
-      ...SPAWNS.slice(0, 4).map((p, i) => ({
-        ...enemy(p.x, p.z),
-        id: i + 2,
-        speed: 0,
-      })),
-    ];
-    s.step(0.05, idle);
-    assert.ok(stuck.x < 16, JSON.stringify(stuck));
+  for (const vip of [false,true]) {
+    const s=quiet(); s.points=10000; if(vip) buy(s,"vip");
+    s.player={...CASINO_ANCHORS.spawn}; s.refreshMap();
+    const stuck={...enemy(-17.3,5.5),stuck:8};
+    s.enemies=[stuck,...SPAWN_RECORDS.filter(r=>r.room==='casino').map((r,i)=>({...enemy(r.position.x,r.position.z),id:i+2,speed:0}))];
+    s.step(.05,idle); assert.ok(stuck.z>-20,JSON.stringify(stuck));
   }
 });
 
 function bar(s) {
-  s.lounge = true;
+  s.doorsOpen.lounge = true;
   s.refreshMap();
   s.player = { ...BAR_ANCHOR };
   assert.equal(s.openBar(), true);
@@ -550,7 +492,8 @@ test("new weapons require their rooms, keep separate ammo, and refill reserve on
   assert.equal(buy(s, "smg"), true);
   assert.equal(s.weapon, "smg");
   assert.deepEqual(s.inventory.smg, { owned: true, mag: 30, reserve: 180 });
-  buy(s, "vip");
+  buy(s, "hotel");
+  buy(s, "supply");
   assert.equal(buy(s, "rifle"), true);
   for (const id of ["smg", "rifle"]) {
     s.switchWeapon(id);
@@ -571,11 +514,11 @@ test("bar requires an open lounge, range, sight, and an active shop session", ()
   s.points = 10000;
   s.player = { ...BAR_ANCHOR };
   assert.equal(s.openBar(), false);
-  s.lounge = true;
+  s.doorsOpen.lounge = true;
   s.refreshMap();
-  s.player = { x: 12, z: -9.4 };
+  s.player = { x: -38, z: -14.4 };
   assert.equal(s.canUseBar(), false); // Counter blocks the back approach.
-  s.player = { x: 8, z: -6 };
+  s.player = { x: -42, z: -11 };
   assert.equal(s.openBar(), false);
   s.player = { ...BAR_ANCHOR };
   assert.equal(s.purchaseBar("reserve"), false);
@@ -583,7 +526,7 @@ test("bar requires an open lounge, range, sight, and an active shop session", ()
   s.resume();
   assert.equal(s.phase, "paused");
   const before = s.points;
-  s.player = { x: 5, z: -4 };
+  s.player = { x: -44, z: -9 };
   assert.equal(s.purchaseBar("reserve"), false);
   assert.equal(s.points, before);
   s.closeBar();
@@ -668,7 +611,7 @@ test("Night Shift affects sprint only and an unaffordable perk does not charge",
 test("bar and workshop share per-weapon upgrades without replenishing reserve", () => {
   const s = quiet();
   s.points = 30000;
-  for (const id of ["lounge", "vip", "shotgun", "smg", "rifle"]) buy(s, id);
+  for (const id of ["lounge", "vip", "hotel", "supply", "shotgun", "smg", "rifle"]) buy(s, id);
   for (const id of ["pistol", "shotgun", "smg", "rifle"]) {
     s.switchWeapon(id);
     s.inventory[id].mag = 0;
@@ -739,56 +682,28 @@ test("round start and clear emit once, respect wave budget, and freeze when paus
   assert.equal(s.events.filter((e) => e.type === "round").length, 2);
 });
 
-test("table room requires VIP, opens both gates once, and adds a delayed spawn", () => {
-  const s = quiet();
-  s.points = 10000;
-  assert.equal(buy(s, "tables"), false);
-  buy(s, "lounge");
-  buy(s, "vip");
-  for (const z of [-4.1, 8.6])
-    assert.equal(hasSight({ x: 26, z }, { x: 31, z }, s.rects), false);
-  const before = s.points;
-  assert.equal(buy(s, "tables"), true);
-  assert.equal(s.points, before - PRICES.tables);
-  assert.equal(buy(s, "tables"), false);
-  assert.equal(s.spawnEnabled(5), false);
-  for (const z of [-4.1, 8.6]) {
-    const p = { x: 26, z };
-    moveActor(p, 5, 0, 0.32, s.rects);
-    assert.ok(p.x > 30.9);
-  }
-  tick(s, 3.1);
-  assert.equal(s.spawnEnabled(5), true);
-  const p = { x: 40, z: -8 };
-  moveActor(p, 10, 0, 0.32, s.rects);
-  assert.ok(p.x > 41 && p.x < 42);
+test("central casino games start open while cashier access is paid and spawn delayed", () => {
+  const s=quiet(); s.points=10000;
+  for (const id of ["craps","craps-b","roulette","roulette-b","poker-a"]) assert.equal(s.purchaseInfo(id).reason,"",id);
+  assert.equal(PURCHASES.some(p=>p.id==='tables'),false);
+  const i=SPAWN_RECORDS.findIndex(p=>p.room==='cashier');
+  assert.equal(s.spawnEnabled(i),false);
+  assert.equal(buy(s,"cashier"),true);assert.equal(buy(s,"cashier"),false);
+  assert.equal(s.points,10000-PRICES.cashier); assert.equal(s.spawnEnabled(i),false);
+  tick(s,3.1); assert.equal(s.spawnEnabled(i),true);
+  const p={x:40,z:-16};moveActor(p,10,0,.32,s.rects);assert.ok(p.x>42&&p.x<43);
 });
 
-test("new room navigation reaches all enabled entrances around both table islands", () => {
-  const s = quiet();
-  s.lounge = s.vip = s.tables = true;
-  s.loungeAge = s.vipAge = s.tablesAge = 4;
-  s.refreshMap();
-  for (const player of [
-    { x: 30, z: -8 },
-    { x: 40, z: 9 },
-    { x: 35, z: -5 },
-    { x: 35, z: 7 },
-    { x: 30, z: 2 },
-  ]) {
-    assert.equal(collides(player, 0.32, s.rects), false);
-    s.navigation.update(player);
-    for (const spawn of SPAWNS)
-      assert.ok(
-        s.navigation.distance[s.navigation.index(spawn)] >= 0,
-        JSON.stringify({ player, spawn }),
-      );
+test("central game islands retain navigation routes and zombie pursuit", () => {
+  const s=quiet();
+  for(const table of [...CRAPS_TABLES,...ROULETTE_TABLES]) {
+    const player={x:table.x,z:table.approachZ};
+    assert.equal(collides(player,.32,s.rects),false);s.navigation.update(player);
+    for(const [i,spawn] of SPAWNS.entries()) if(s.spawnEnabled(i))
+      assert.ok(s.navigation.distance[s.navigation.index(spawn)]>=0,JSON.stringify({player,spawn}));
   }
-  s.player = { x: 35, z: 0 };
-  s.enemies = [enemy(35, -6)];
-  s.health = 1e6;
-  tick(s, 20);
-  assert.ok(dist(s.enemies[0], s.player) < 1.3);
+  const table=CRAPS_TABLES[0];s.player={x:table.x,z:table.z+3};s.enemies=[enemy(table.x,table.z-3)];s.health=1e6;
+  tick(s,20);assert.ok(dist(s.enemies[0],s.player)<1.3);
 });
 
 function wagering() {
@@ -797,63 +712,67 @@ function wagering() {
   s.intermission = 0;
   s.waveRemaining = 2;
   s.spawnTimer = 100;
-  s.lounge = s.vip = s.tables = true;
+  s.doorsOpen.lounge = s.doorsOpen.vip = true;
   s.refreshMap();
-  s.player = { x: 35, z: -5 };
+  s.player = { x: CRAPS_TABLES[0].x, z: CRAPS_TABLES[0].approachZ };
   s.points = 1000;
   return s;
 }
 
-test("craps charges once, blocks locked/distant/paused/unaffordable attempts, and pays once", () => {
+test("craps place bets charge once, lock during rolls, and pay profit while keeping the stake", () => {
   const s = wagering();
-  s.tables = false;
-  assert.equal(s.purchase("craps"), false);
-  s.tables = true;
+  s.holdingChips = true;
   s.player = { x: 31, z: -5 };
   assert.equal(s.purchase("craps"), false);
-  s.player = { x: 35, z: -5 };
+  s.player = { x: CRAPS_TABLES[0].x, z: CRAPS_TABLES[0].approachZ };
   s.pause();
   assert.equal(s.purchase("craps"), false);
   s.resume();
-  s.points = 249;
-  assert.equal(s.purchase("craps"), false);
-  assert.equal(s.points, 249);
+  s.points = 24;
+  assert.equal(s.placeBet(10), false);
+  assert.equal(s.points, 24);
   s.points = 1000;
+  assert.equal(s.placeBet(10), true);
   s.random = () => 0.7; // two fives
   assert.equal(s.purchase("craps"), true);
-  assert.equal(s.points, 750);
+  assert.equal(s.points, 975);
   assert.equal(s.purchase("craps"), false);
+  assert.equal(s.placeBet(4), false);
+  assert.equal(s.takeBets(), false);
   s.pause();
   tick(s, 3);
   assert.equal(s.dice.remaining, 1.6);
   s.resume();
   tick(s, 1.7);
   assert.deepEqual(s.dice.values, [5, 5]);
-  assert.equal(s.points, 1250);
+  assert.equal(s.points, 1020);
+  assert.equal(s.bets[10],25);
   tick(s, 4);
-  assert.equal(s.points, 1250);
+  assert.equal(s.points, 1020);
   assert.equal(s.slowRound, 0);
   assert.equal(s.purchase("craps"), false);
   assert.equal(s.events.filter((e) => e.type === "diceWin").length, 1);
 });
 
-test("seven slows both movement modes for one round and preserves Night Shift multiplier", () => {
+test("seven clears place bets and applies the shared single-round movement curse", () => {
   const s = wagering();
+  s.holdingChips=true;s.placeBet(4);s.placeBet(6);
   let n = 0;
   s.random = () => (n++ % 2 ? 0.51 : 0.34); // three + four
   assert.equal(s.purchase("craps"), true);
   tick(s, 1.7);
   assert.equal(s.slowRound, 3);
   assert.equal(s.slowed, true);
-  assert.equal(s.points, 750);
+  assert.equal(s.points, 945);
+  assert.deepEqual(s.bets,{});
   for (const sprint of [false, true]) {
-    s.player = { x: 30, z: 0 };
+    s.player = { x: -3, z: 0 };
     s.yaw = 0;
     s.perks.nightShift = true;
     s.step(0.05, { ...idle, forward: 1, sprint });
     assert.ok(
       Math.abs(
-        s.player.z - (sprint ? RULES.sprint * 1.15 : RULES.walk) * 0.8 * 0.05,
+        s.player.z - (sprint ? RULES.sprint * 1.15 : RULES.walk) * .8 * 0.05,
       ) < 1e-8,
     );
   }
@@ -863,34 +782,35 @@ test("seven slows both movement modes for one round and preserves Night Shift mu
   assert.equal(s.purchaseInfo("craps").reason, "");
 });
 
-test("intermission and boundary-crossing wagers target the next round, then clear", () => {
+test("table stakes persist across round boundaries and fresh runs reset casino state", () => {
   for (const finishDuringRoll of [false, true]) {
     const s = wagering();
     s.intermission = finishDuringRoll ? 0 : 8;
     let n = 0;
-    s.random = () => (n++ % 2 ? 0.51 : 0.34);
+    s.random = () => (n++ % 2 ? 0.51 : 0.51); // eight: no winning bet
+    s.holdingChips=true;s.placeBet(4);
     s.purchase("craps");
     if (finishDuringRoll) {
       s.waveRemaining = 0;
       s.enemies = [];
     }
     tick(s, 1.7);
-    assert.equal(s.slowRound, 4);
-    assert.equal(s.dice.round, 4);
+    assert.equal(s.bets[4],25);
     assert.equal(s.slowed, false);
     s.intermission = 0;
     s.beginRound();
-    assert.equal(s.slowed, true);
-    assert.equal(s.purchase("craps"), false);
+    assert.equal(s.slowed, false);
+    assert.equal(s.bets[4],25);
     s.enemies = [];
     s.waveRemaining = 0;
     s.step(0.05, idle);
     assert.equal(s.slowRound, 0);
     assert.equal(s.slowed, false);
     const fresh = new Simulation();
-    assert.equal(fresh.tables, false);
+    assert.equal(fresh.tables, true);
     assert.equal(fresh.dice, null);
     assert.equal(fresh.slowRound, 0);
     assert.equal(fresh.lastWagerRound, -1);
+    assert.deepEqual(fresh.bets,{});assert.equal(fresh.speakeasy,false);assert.equal(fresh.mystery,null);
   }
 });
