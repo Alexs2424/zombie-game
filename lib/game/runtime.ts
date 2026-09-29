@@ -1090,6 +1090,7 @@ export class GameRuntime {
     this.sim.events.length = 0;
     const zombieCue = this.zombieAudio.update(dt, {
       playing: this.sim.phase === "playing",
+      suppressed: !this.audio.canPlayZombieCue(),
       round: this.sim.round,
       roundCueRemaining: this.sim.roundCueRemaining,
       waveRemaining: this.sim.waveRemaining,

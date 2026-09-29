@@ -70,6 +70,23 @@ test("a distant final survivor keeps its cue available until it is audible", () 
   assert.equal(director.update(0.25, snapshot)?.kind, "last");
 });
 
+test("busy playback preserves survivor eligibility and ambient cooldowns", () => {
+  for (const [kind, overrides] of [
+    ["last", { waveRemaining: 0, enemies: [enemy(1, 12)] }],
+    ["chase", {}],
+    ["horde", { enemies: Array.from({ length: 5 }, (_, i) => enemy(i, 9)) }],
+  ]) {
+    const director = new ZombieAudioDirector(() => 0);
+    const snapshot = state(overrides);
+    assert.equal(director.update(20, { ...snapshot, suppressed: true }), null);
+    assert.equal(director.update(0.01, snapshot)?.kind, kind,
+      `${kind} is ready when the audio channel becomes available`);
+    assert.equal(director.update(0.1, snapshot), null);
+    if (kind === "last") assert.equal(director.update(20, snapshot), null,
+      "the accepted survivor cue still plays only once this round");
+  }
+});
+
 test("horde means at least five living zombies within 10m, with a 12–18s cadence", () => {
   const director = new ZombieAudioDirector(() => 0.5);
   const snapshot = state({

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { GameAudio } from "../lib/game/audio.ts";
 import { slotSoundSamples } from "../lib/game/slot-sounds.ts";
 import { SLOT_MACHINE_SOURCES } from "../lib/game/slot-machines.ts";
+import { ZombieAudioDirector } from "../lib/game/zombie-audio-director.ts";
 
 // A graph-only Web Audio double: checks bus routing and immediate pause behavior,
 // without claiming to measure the sound of the synthesized effects.
@@ -651,6 +652,39 @@ test("chase performances rotate and all four selected survivor screams play befo
     audio.resetZombies();
     audio.zombieCue("last", player, { x: 2, z: 0 }, 0, 0);
     assert.equal(sampledSources(audio).at(-1).buffer.name, "/audio/zombies/scream-elevenlabs-high-01.wav");
+  }, true);
+});
+
+test("a penultimate zombie's death finishes before the survivor scream spends its eligibility", async () => {
+  await fixture(audio => {
+    audio.setActive(true);
+    audio.zombieBuffers.get("death-medium-01").duration = 2;
+    const director = new ZombieAudioDirector(() => 0);
+    const survivor = { id: 2, x: 12, z: 0, health: 100 };
+    const snapshot = {
+      playing: true, round: 1, roundCueRemaining: 0, waveRemaining: 0,
+      player, enemies: [survivor, { id: 1, x: 14, z: 0, health: 100 }],
+    };
+    assert.equal(director.update(3, snapshot), null);
+    snapshot.enemies.pop();
+    audio.zombieDeath(player, { x: 14, z: 0 }, 0);
+    const death = [...audio.zombieVoices.keys()][0];
+    assert.equal(death.buffer.duration, 2);
+    const frame = dt => {
+      audio.context.currentTime += dt;
+      const cue = director.update(dt, { ...snapshot, suppressed: !audio.canPlayZombieCue() });
+      if (cue) assert.equal(audio.zombieCue(cue.kind, player, survivor, 0, cue.enemyId), true);
+      return cue;
+    };
+    assert.equal(frame(1.3), null, "the survivor's 1.25s hold must not consume a blocked cue");
+    assert.equal(frame(0.6), null);
+    audio.context.currentTime += 0.1;
+    death.onended();
+    assert.equal(frame(0.01)?.kind, "last");
+    const scream = [...audio.zombieVoices.keys()][0];
+    assert.match(scream.buffer.name, /scream-elevenlabs-high-0[1-4]\.wav$/);
+    scream.onended();
+    assert.equal(frame(20), null, "the accepted survivor scream does not repeat this round");
   }, true);
 });
 

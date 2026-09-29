@@ -704,10 +704,14 @@ export class GameAudio {
         Math.max(0, 1 - distance / (kind === "last" ? 24 : 18)),
     };
   }
+  canPlayZombieCue() {
+    const c = this.context;
+    return !!(c && this.world && this.active && c.state === "running" &&
+      c.currentTime >= this.duckUntil && this.zombieVoices.size === 0);
+  }
   zombieCue(kind: ZombieCue, player: WorldPosition, enemy: ZombieSource, yaw: number, variant = 0) {
     const c = this.context;
-    if (!c || !this.world || !this.active || c.state !== "running" ||
-        c.currentTime < this.duckUntil || this.zombieVoices.size > 0 ||
+    if (!c || !this.world || !this.canPlayZombieCue() ||
         (kind !== "death" && (enemy.health ?? 1) <= 0)) return false;
     const spatial = this.zombieSpatial(kind, player, enemy, yaw);
     if (spatial.gain <= 0) return false;
