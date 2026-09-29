@@ -536,6 +536,10 @@ export default function Home() {
             >
               SETTINGS & CONTROLS
             </button>
+            {process.env.NODE_ENV !== "production" && <div className="development-navigation">
+              <button onClick={()=>window.location.assign(new URL("/?playtest=1&range=1", window.location.origin))}>Mechanics lab →</button>
+              {!playtesting && <button onClick={()=>window.location.assign(new URL("/?playtest=1", window.location.origin))}>Casino playtest →</button>}
+            </div>}
             <div className="run-details">
               <span>01 MAP</span>
               <span>∞ ROUNDS</span>
@@ -1186,10 +1190,10 @@ export default function Home() {
           {process.env.NODE_ENV !== "production" && (
             <fieldset className="debug-actions">
               <legend>Debug · current run</legend>
-              <button disabled={!ready || view.phase === "ready" || view.phase === "dead"} onClick={() => runtime.current?.debugAction("unlock-all")}>Open all doors</button>
-              <button disabled={!ready || view.phase === "ready" || view.phase === "dead"} onClick={() => runtime.current?.debugAction("add-chips")}>+10,000 chips</button>
-              <button disabled={!ready || view.phase === "ready" || view.phase === "dead"} onClick={() => runtime.current?.debugAction("toggle-invulnerability")}>Toggle invulnerability</button>
-              <small>Start a run first. Includes the hotel and speakeasy. New runs reset these changes.</small>
+              <button disabled={!ready} onClick={() => runtime.current?.debugAction("unlock-all")}>{Object.values(view.doorsOpen).every(Boolean) && view.hotel && view.casino.speakeasy && view.hotelMystery.passageOpen ? "✓ All doors open" : "Open all doors"}</button>
+              <button disabled={!ready} onClick={() => runtime.current?.debugAction("add-chips")}>+10,000 chips</button>
+              <button disabled={!ready} onClick={() => runtime.current?.debugAction("toggle-invulnerability")}>Toggle invulnerability</button>
+              <small>Prepares a paused run if needed. Includes hotel, gallery and speakeasy. New runs reset these changes.</small>
             </fieldset>
           )}
           <label className="debug-check">
@@ -1219,6 +1223,7 @@ export default function Home() {
         </div>
       )}
       {playtesting && !rangeMode && <div className="dev-launcher">
+        <button onClick={()=>window.location.assign(new URL("/", window.location.origin))}>Main menu</button>
         <button onClick={()=>{window.location.assign(new URL("/?playtest=1&range=1", window.location.origin));}}>Mechanics lab →</button>
         {view.previewControls && active && <span className="dev-preview-hint">PREVIEW · Right-drag to look · WASD move · Left-click fire</span>}
         <button onClick={() => { runtime.current?.pause(); setDevOpen(open=>!open); }} aria-expanded={devOpen}>F2 · {devOpen ? "Hide tools" : "Developer tools"}</button>
@@ -1233,6 +1238,10 @@ export default function Home() {
         <p className="range-kicker">DEVELOPMENT / SANDBOX</p>
         <h1>Mechanics lab</h1>
         <p>Move freely. Test one variable. Reset and repeat.</p>
+        <div className="development-navigation">
+          <button onClick={()=>window.location.assign(new URL("/", window.location.origin))}>Main menu</button>
+          <button onClick={()=>window.location.assign(new URL("/?playtest=1", window.location.origin))}>Casino playtest</button>
+        </div>
         <button className="range-play" disabled={!ready} onClick={() => {if(view.phase === "dead") setGod(false); enter(view.phase === "dead");}}>{active ? "Recapture mouse" : view.phase === "dead" ? "Restart scenario" : "Play scenario"}</button>
         <button onClick={() => runtime.current?.pause()}>Pause / release mouse · Esc</button>
         <h2>Scenario</h2>
