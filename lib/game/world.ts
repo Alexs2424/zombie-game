@@ -1,8 +1,10 @@
 /** Shared, deterministic hotel geometry, layered walking and navigation. Y is foot height. */
 import { HOTEL_FIXTURES } from './hotel-fixtures.ts';
-import { HOTEL_AMMO_CRATE, HOTEL_SERVICE_DOORS } from './hotel-gameplay.ts';
+import { HOTEL_AMMO_CRATE, HOTEL_GATE, HOTEL_SERVICE_DOORS } from './hotel-gameplay.ts';
+import { HOTEL_MYSTERY_GATES } from './hotel-mystery.ts';
 import { HOTEL_RENOVATION_SOLIDS } from './hotel-renovation-layout.ts';
-import { CASINO_GROUND_POLYGONS, CASINO_ROOMS } from './casino-layout.ts';
+import { CASINO_DOORS, CASINO_GROUND_POLYGONS, CASINO_ROOMS } from './casino-layout.ts';
+import { SECRET_DOOR } from './casino.ts';
 export type WorldPosition = { x: number; z: number; y?: number; surfaceId?: string };
 export type WorldVector = { x: number; y: number; z: number };
 export type WorldRect = { id: string; x: number; z: number; w: number; d: number; h: number; baseY?: number; yaw?: number; transparentSight?: boolean };
@@ -290,10 +292,20 @@ const NAV_MIN_Z = Math.floor(navigationBounds.minZ / NAV_STEP) * NAV_STEP;
 const NAV_NX = Math.ceil((navigationBounds.maxX - NAV_MIN_X) / NAV_STEP);
 const NAV_NZ = Math.ceil((navigationBounds.maxZ - NAV_MIN_Z) / NAV_STEP);
 type NavGeometry = { nodes: WorldPosition[]; cells: Map<string, number[]>; edges: number[][] };
+type NavBuild = {
+  blocked: Uint8Array;
+  edges: number[][];
+  staticKey: string;
+  doors: Map<string, WorldRect> | null;
+};
 let navGeometry: NavGeometry | null = null;
 // Gate states recur when runs restart and in independent simulations. Keep the
 // bounded cache separate from the mutable target-distance field of each run.
-const navRebuildCache = new Map<string, { blocked: Uint8Array; edges: number[][] }>();
+const navRebuildCache = new Map<string, NavBuild>();
+const navigationDoorIds = new Set([
+  ...Object.values(CASINO_DOORS), HOTEL_GATE, ...HOTEL_MYSTERY_GATES, SECRET_DOOR,
+].map(door => door.id));
+const navRectKey = (q: WorldRect) => [q.id, q.x, q.z, q.w, q.d, q.h, q.baseY ?? 0, q.yaw ?? 0].join(',');
 function gridKey(x: number, z: number) { return `${x},${z}`; }
 function gridPosition(p: Point) { return { x: Math.floor((p.x - NAV_MIN_X) / NAV_STEP), z: Math.floor((p.z - NAV_MIN_Z) / NAV_STEP) }; }
 function makeNavGeometry(): NavGeometry {
@@ -333,6 +345,7 @@ export class Navigation {
   private readonly queue: Int32Array;
   private rects: WorldRect[] = [];
   private edges: number[][];
+  private lastBuild?: NavBuild;
   constructor() {
     this.blocked = new Uint8Array(this.geometry.nodes.length);
     this.distance = new Int32Array(this.geometry.nodes.length); this.distance.fill(-1);
@@ -361,13 +374,61 @@ export class Navigation {
   }
   rebuild(rects: WorldRect[]) {
     this.rects = rects;
-    const key = rects.map(q => [q.id, q.x, q.z, q.w, q.d, q.h, q.baseY ?? 0, q.yaw ?? 0].join(',')).join(';');
+    // Rebuild also supports callers editing an existing collider array in place.
+    rectCache.delete(rects);
+    const key = rects.map(navRectKey).join(';');
     const cached = navRebuildCache.get(key);
-    if (cached) { this.blocked.set(cached.blocked); this.edges = cached.edges; return; }
-    for (let i = 0; i < this.blocked.length; i++) this.blocked[i] = +solidCollision(this.geometry.nodes[i], 0.34, rects);
-    this.edges = this.geometry.edges.map((neighbors, i) => this.blocked[i] ? [] : neighbors.filter(j => !this.blocked[j] && canWalkDirect(this.geometry.nodes[i], this.geometry.nodes[j], 0.34, rects)));
+    if (cached) {
+      this.blocked.set(cached.blocked); this.edges = cached.edges; this.lastBuild = cached; return;
+    }
+    const staticKey = rects.filter(q => !navigationDoorIds.has(q.id)).map(navRectKey).join(';');
+    const doorRects = rects.filter(q => navigationDoorIds.has(q.id));
+    // Copies retain old bounds even if a caller later moves the same door object.
+    const doors = new Map(doorRects.map(q => [q.id, { ...q }]));
+    const prior = this.lastBuild;
+    if (prior?.doors && prior.staticKey === staticKey && doors.size === doorRects.length) {
+      const changed: WorldRect[] = [];
+      for (const [id, door] of prior.doors) {
+        const next = doors.get(id);
+        if (!next || navRectKey(door) !== navRectKey(next)) changed.push(door);
+      }
+      for (const [id, door] of doors) {
+        const previous = prior.doors.get(id);
+        if (!previous || navRectKey(door) !== navRectKey(previous)) changed.push(door);
+      }
+      const affected = new Set<number>();
+      for (const door of changed) {
+        const c = Math.abs(Math.cos(door.yaw ?? 0)), s = Math.abs(Math.sin(door.yaw ?? 0));
+        // A collision can affect an edge only if its source is within one grid
+        // step of the door's radius-expanded bounds. Include every floor here:
+        // the unchanged collision test still decides vertical overlap/stairs.
+        const pad = 0.34 + NAV_STEP + 1e-7;
+        const hw = (door.w * c + door.d * s) / 2 + pad;
+        const hd = (door.w * s + door.d * c) / 2 + pad;
+        const lo = gridPosition({ x: door.x - hw, z: door.z - hd });
+        const hi = gridPosition({ x: door.x + hw, z: door.z + hd });
+        for (let x = lo.x; x <= hi.x; x++) for (let z = lo.z; z <= hi.z; z++)
+          for (const i of this.geometry.cells.get(gridKey(x, z)) ?? []) affected.add(i);
+      }
+      this.blocked.set(prior.blocked);
+      // Copy the outer array and replace only affected neighbor lists; other
+      // simulations and cached door states may still own the previous graph.
+      this.edges = prior.edges.slice();
+      for (const i of affected) this.blocked[i] = +solidCollision(this.geometry.nodes[i], 0.34, rects);
+      for (const i of affected) this.edges[i] = this.blocked[i] ? [] : this.geometry.edges[i].filter(j =>
+        !this.blocked[j] && canWalkDirect(this.geometry.nodes[i], this.geometry.nodes[j], 0.34, rects));
+    } else {
+      // Initial construction and changes to static scenery retain the complete
+      // rebuild, so this optimization cannot conceal a moved wall or fixture.
+      for (let i = 0; i < this.blocked.length; i++) this.blocked[i] = +solidCollision(this.geometry.nodes[i], 0.34, rects);
+      this.edges = this.geometry.edges.map((neighbors, i) => this.blocked[i] ? [] : neighbors.filter(j => !this.blocked[j] && canWalkDirect(this.geometry.nodes[i], this.geometry.nodes[j], 0.34, rects)));
+    }
+    this.lastBuild = {
+      blocked: this.blocked.slice(), edges: this.edges, staticKey,
+      doors: doors.size === doorRects.length ? doors : null,
+    };
     if (navRebuildCache.size >= 32) navRebuildCache.delete(navRebuildCache.keys().next().value!);
-    navRebuildCache.set(key, { blocked: this.blocked.slice(), edges: this.edges });
+    navRebuildCache.set(key, this.lastBuild);
   }
   update(target: WorldPosition) {
     this.distance.fill(-1);

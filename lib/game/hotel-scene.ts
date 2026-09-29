@@ -9,11 +9,11 @@ import { PBRMaterial } from "@babylonjs/core/Materials/PBR/pbrMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
 import { PointLight } from "@babylonjs/core/Lights/pointLight";
 import { SpotLight } from "@babylonjs/core/Lights/spotLight";
-import type { AbstractMesh } from "@babylonjs/core/Meshes/abstractMesh";
 import { HOTEL, HOTEL_RECTS, stairPoint } from "./world";
 import { buildHotelProps } from "./hotel-props";
 import { loadHotelFurniture } from "./hotel-assets";
 import { buildHotelRenovation } from "./hotel-renovation-scene";
+import { createHotelLightMembership } from "./hotel-light-membership";
 import { HOTEL_FIXTURES } from "./hotel-fixtures";
 import {
   HOTEL_AMMO_CRATE,
@@ -1245,7 +1245,7 @@ export function buildHotel(scene: Scene) {
   let propMeshes = buildHotelProps(scene);
   let furniture: Awaited<ReturnType<typeof loadHotelFurniture>> | undefined;
   let disposed = false;
-  let enemyMeshes: AbstractMesh[] = [];
+  const lightMembership = createHotelLightMembership(scene, lights);
   const disposeFallback = () => {
     const propMaterials = new Set(
       propMeshes.flatMap((mesh) => (mesh.material ? [mesh.material] : [])),
@@ -1254,14 +1254,12 @@ export function buildHotel(scene: Scene) {
     propMaterials.forEach((m) => m.dispose(false, true));
   };
   const refreshLights = () => {
-    const included = [
+    lightMembership.setStaticMeshes([
       ...ownedMeshes,
       ...renovation.meshes,
       ...propMeshes,
       ...(furniture?.lightMeshes ?? []),
-      ...enemyMeshes,
-    ];
-    for (const light of lights) light.includedOnlyMeshes = included;
+    ]);
   };
   refreshLights();
   const ready = loadHotelFurniture(scene).then((loaded) => {
@@ -1280,7 +1278,6 @@ export function buildHotel(scene: Scene) {
     loaded.activate();
     refreshLights();
   });
-  let lightSyncAt = -Infinity;
   let bellCaption = "";
   let jukeWasOn = false;
   let gateWasOpen = false;
@@ -1343,15 +1340,7 @@ export function buildHotel(scene: Scene) {
         sim.jukeboxOn ? 0.46 : 0.01,
       );
     }
-    if (sim.time - lightSyncAt > 0.4 || sim.time < lightSyncAt) {
-      lightSyncAt = sim.time;
-      enemyMeshes = scene.meshes.filter(
-        (mesh) =>
-          mesh.material?.name.startsWith("zombie-") &&
-          mesh.getAbsolutePosition().z > 11,
-      );
-      refreshLights();
-    }
+    lightMembership.update(sim.time);
   };
   return {
     ready,
@@ -1359,6 +1348,7 @@ export function buildHotel(scene: Scene) {
     dispose() {
       if (disposed) return;
       disposed = true;
+      lightMembership.dispose();
       furniture?.dispose();
       renovation.dispose();
       disposeFallback();

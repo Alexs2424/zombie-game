@@ -1,0 +1,53 @@
+{
+  "inventory": {
+    "meshes": 2651,
+    "vertices": 3039263,
+    "geometries": 1247
+  },
+  "hands": {
+    "sharedCopies": 144,
+    "sourceParts": 48
+  },
+  "chips": {
+    "initialMeshes": 2651,
+    "populatedMeshes": 2733,
+    "sourceVertices": 4092,
+    "allocationMs": 31.09999990463257
+  },
+  "errors": [],
+  "imageComparisons": {
+    "crop": [
+      320,
+      100,
+      1280,
+      560
+    ],
+    "checks": [
+      {
+        "view": "casinoWide",
+        "meanChannelDifference": 0.0516,
+        "percentPixelsOver10": 0.045
+      },
+      {
+        "view": "hotel-lobby",
+        "meanChannelDifference": 0.0579,
+        "percentPixelsOver10": 0.034
+      },
+      {
+        "view": "serviceOverview",
+        "meanChannelDifference": 0.0865,
+        "percentPixelsOver10": 0.024
+      },
+      {
+        "view": "craps",
+        "meanChannelDifference": 0.0909,
+        "percentPixelsOver10": 0.043
+      },
+      {
+        "view": "crapsB",
+        "meanChannelDifference": 0.0935,
+        "percentPixelsOver10": 0.049
+      }
+    ]
+  }
+}
