@@ -1,3 +1,4 @@
+import { CASINO_ROOMS } from "./casino-layout";
 import { Scene } from "@babylonjs/core/scene";
 import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
@@ -65,38 +66,48 @@ export function buildLoungeDecor(scene: Scene) {
   texture.update();
   texture.anisotropicFilteringLevel = 8;
   carpet.diffuseTexture = texture;
-  box("carpet", 10, -0.004, -4.5, 11.5, 0.036, 14.7, carpet);
+  const room = CASINO_ROOMS.lounge;
+  const cx = (room.minX + room.maxX) / 2, cz = (room.minZ + room.maxZ) / 2;
+  const width = room.maxX - room.minX, depth = room.maxZ - room.minZ;
+  box("carpet", cx, -0.004, cz, width - 0.5, 0.036, depth - 0.5, carpet);
 
-  // Thin overlays sit against existing collision walls; openings remain untouched.
-  for (const x of [4.285, 15.715]) {
-    const sign = x < 10 ? 1 : -1;
-    for (const [z, depth] of [[-9, 5.65], [0.3, 4.55]]) {
-      box("silk wall inset", x, 2.87, z, 0.035, 2.8, depth, oxblood);
-      for (const h of [1.47, 4.27]) box("panel border", x + sign * 0.025, h, z, 0.03, 0.028, depth, brass);
-      for (const zz of [z - depth / 2 + 0.08, z + depth / 2 - 0.08]) {
+  // Apply the room finishes to its new enclosure. The two east-side passages
+  // stay open; the detailed bar and booths keep their authored proportions.
+  for (const [x, sections] of [
+    [room.minX + 0.245, [[cz, depth - 0.5]]],
+    [room.maxX - 0.245, [[-18, 3.5], [-8, 7.5], [2, 3.5]]],
+  ] as [number, number[][]][]) {
+    const sign = x < cx ? 1 : -1;
+    for (const [z, length] of sections) {
+      box("silk wall inset", x, 2.87, z, 0.035, 2.8, length, oxblood);
+      for (const h of [1.47, 4.27])
+        box("panel border", x + sign * 0.025, h, z, 0.03, 0.028, length, brass);
+      for (let zz = z - length / 2 + 0.08; zz <= z + length / 2; zz += 2.3) {
         box("walnut pilaster", x + sign * 0.015, 2.83, zz, 0.045, 2.95, 0.12, walnut);
         box("pilaster inlay", x + sign * 0.045, 2.83, zz, 0.012, 2.78, 0.024, brass);
       }
-      const zz = z < -3 ? -7.1 : 1.45;
+    }
+    for (const zz of [-18.2, -8.8, 2.2]) {
       box("sconce backplate", x + sign * 0.055, 2.76, zz, 0.05, 0.83, 0.29, brass);
       box("sconce shadow recess", x + sign * 0.092, 2.76, zz, 0.045, 0.72, 0.21, walnut);
-      for (const dz of [-0.072, 0, 0.072]) {
-        box("reeded opal sconce", x + sign * 0.15, 2.76, zz + dz, 0.075, dz === 0 ? 0.61 : 0.47, 0.045, ivory);
-      }
+      for (const dz of [-0.072, 0, 0.072])
+        box("reeded opal sconce", x + sign * 0.15, 2.76, zz + dz,
+          0.075, dz === 0 ? 0.61 : 0.47, 0.045, ivory);
     }
-    for (const h of [4.36, 4.48]) box("continuous crown", x, h, -4.5, 0.09, 0.038, 14.65, brass);
+    for (const h of [4.36, 4.48])
+      box("continuous crown", x, h, cz, 0.09, 0.038, depth - 0.5, brass);
   }
-  for (const [x, width] of [[7, 5.8], [14.7, 2.4]]) {
-    box("north silk inset", x, 2.85, 2.755, width, 2.72, 0.04, oxblood);
-    for (const y of [1.47, 4.23]) box("north gold border", x, y, 2.72, width, 0.03, 0.025, brass);
+  for (const z of [room.minZ + 0.245, room.maxZ - 0.245]) {
+    box("end silk inset", cx, 2.85, z, width - 0.5, 2.72, 0.04, oxblood);
+    for (const y of [1.47, 4.23]) box("end gold border", cx, y, z, width - 0.5, 0.03, 0.06, brass);
   }
-  box("coffer", 10, 4.79, -4.5, 11.4, 0.08, 14.6, ceiling);
-  for (const z of [-10.7, -4.55, 1.65]) {
-    box("ceiling cross rail", 10, 4.7, z, 10.6, 0.11, 0.1, walnut);
-    box("ceiling gold fillet", 10, 4.635, z, 10.5, 0.018, 0.024, brass);
+  box("coffer", cx, 4.79, cz, width - 0.5, 0.08, depth - 0.5, ceiling);
+  for (let z = room.minZ + 2; z < room.maxZ; z += 5.2) {
+    box("ceiling cross rail", cx, 4.7, z, width - 0.9, 0.11, 0.1, walnut);
+    box("ceiling gold fillet", cx, 4.635, z, width - 1, 0.018, 0.024, brass);
   }
-  for (const x of [4.72, 15.28]) {
-    box("ceiling edge rail", x, 4.7, -4.5, 0.1, 0.11, 12.4, walnut);
-    box("ceiling edge inlay", x, 4.635, -4.5, 0.025, 0.018, 12.4, brass);
+  for (const x of [room.minX + 0.72, room.maxX - 0.72]) {
+    box("ceiling edge rail", x, 4.7, cz, 0.1, 0.11, depth - 1.5, walnut);
+    box("ceiling edge inlay", x, 4.635, cz, 0.025, 0.018, depth - 1.5, brass);
   }
 }

@@ -117,6 +117,29 @@
       "finiteVertices": true
     },
     {
+      "file": "hotel-guest-suitcase.glb",
+      "bytes": 679272,
+      "meshes": 11,
+      "materials": 11,
+      "triangles": 5928,
+      "boundsBabylon": [
+        [
+          -0.5571066737174988,
+          1.4901161193847656e-8,
+          -0.3798174560070038
+        ],
+        [
+          0.5571066737174988,
+          0.9000000357627869,
+          0.3630894720554352
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
       "file": "hotel-host-stand.glb",
       "bytes": 167516,
       "meshes": 5,
@@ -186,6 +209,29 @@
       "finiteVertices": true
     },
     {
+      "file": "hotel-luggage-shelf.glb",
+      "bytes": 1596856,
+      "meshes": 11,
+      "materials": 11,
+      "triangles": 32532,
+      "boundsBabylon": [
+        [
+          -1.8799999952316284,
+          0,
+          -0.3500000238418579
+        ],
+        [
+          1.8799999952316284,
+          2.5,
+          0.33469271659851074
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
       "file": "hotel-planter.glb",
       "bytes": 204508,
       "meshes": 5,
@@ -209,24 +255,70 @@
       "finiteVertices": true
     },
     {
-      "file": "hotel-reception.glb",
-      "bytes": 648080,
-      "meshes": 6,
-      "materials": 6,
-      "triangles": 15088,
+      "file": "hotel-porter-cabinet.glb",
+      "bytes": 690896,
+      "meshes": 9,
+      "materials": 9,
+      "triangles": 5560,
       "boundsBabylon": [
         [
-          -3.4000000953674316,
+          -0.853826105594635,
           0,
-          -1.0499999523162842
+          -0.32499998807907104
         ],
         [
-          3.4000000953674316,
-          1.6950000524520874,
-          1.0499999523162842
+          0.8999999761581421,
+          1.120486855506897,
+          0.28032344579696655
         ]
       ],
       "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-reception-backdrop.glb",
+      "bytes": 2793156,
+      "meshes": 10,
+      "materials": 10,
+      "triangles": 62200,
+      "boundsBabylon": [
+        [
+          -4.099999904632568,
+          0,
+          -0.32499998807907104
+        ],
+        [
+          4.099999904632568,
+          3.3999998569488525,
+          0.2992209792137146
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-reception.glb",
+      "bytes": 1695984,
+      "meshes": 13,
+      "materials": 13,
+      "triangles": 25622,
+      "boundsBabylon": [
+        [
+          -3.799999952316284,
+          0,
+          -0.8230634331703186
+        ],
+        [
+          3.799999952316284,
+          1.899999976158142,
+          0.8250000476837158
+        ]
+      ],
+      "embeddedImages": 3,
       "uvs": true,
       "validIndices": true,
       "finiteVertices": true
