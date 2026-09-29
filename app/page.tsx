@@ -387,8 +387,11 @@ export default function Home() {
     [debug, setDebug] = useState(false),
     [playtesting, setPlaytesting] = useState(false),
     [devOpen, setDevOpen] = useState(false);
+  const [rangeMode, setRangeMode] = useState(false);
+  const [scenario, setScenario] = useState("targets");
+  const [god, setGod] = useState(false);
   useEffect(() => {
-    if (!playtesting) return;
+    if (!playtesting || rangeMode) return;
     const key = (event: KeyboardEvent) => {
       if (event.code !== "F2" || event.repeat) return;
       event.preventDefault();
@@ -399,7 +402,7 @@ export default function Home() {
     document.addEventListener("keydown", key);
     document.addEventListener("pointerlockchange", lock);
     return () => { document.removeEventListener("keydown", key); document.removeEventListener("pointerlockchange", lock); };
-  }, [playtesting]);
+  }, [playtesting, rangeMode]);
   useEffect(() => {
     if (!canvas.current) return;
     const observer = new ResizeObserver(() => runtime.current?.renderer.resize());
@@ -411,6 +414,7 @@ export default function Home() {
     import("../lib/game/runtime")
       .then(({ GameRuntime }) => {
         if (disposed || !canvas.current) return;
+        setRangeMode(process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("range"));
         setPlaytesting(
           process.env.NODE_ENV !== "production" &&
             new URLSearchParams(window.location.search).has("playtest"),
@@ -479,8 +483,13 @@ export default function Home() {
         : roulette.reward === "jackpot"
           ? { title: "ZERO. JACKPOT.", detail: `All owned weapons refilled. Double damage for ${ROULETTE_RULES.damageDuration} seconds.` }
           : { title: "THE HOUSE HOLDS", detail: "No reward this spin. Try your luck again." };
+
+  useEffect(() => {
+    if (ready && rangeMode) runtime.current?.rangeAction("targets");
+  }, [ready, rangeMode]);
+  const rangeAction = (action: string) => { runtime.current?.rangeAction(action); if (["targets","pursuit","blast","empty"].includes(action)) {setScenario(action);setGod(false);} if(action === "reset") setGod(false); };
   return (
-    <main className={`game-shell ${active ? "in-game" : ""} ${playtesting ? "development-shell" : ""}`}>
+    <main className={`game-shell ${active ? "in-game" : ""} ${rangeMode ? "range-workspace" : playtesting ? "development-shell" : ""}`}>
       <div className="game-viewport">
       <div className="casino-backdrop" />
       <canvas
@@ -497,7 +506,7 @@ export default function Home() {
           <span className="build-tag">SOLO SURVIVAL · V0</span>
         </header>
       )}
-      {menu && (
+      {menu && !rangeMode && (
         <>
           <section className="title-screen">
             <p className="eyebrow">LAS VEGAS, AFTER HOURS</p>
@@ -1063,7 +1072,7 @@ export default function Home() {
           onPause={() => runtime.current?.closeHotelDocument()}
         />
       )}
-      {((paused && !playtesting) || dead) && (
+      {((paused && !playtesting) || dead) && !rangeMode && (
         <div className="pause-shade">
           <section className="pause-card">
             <p className="eyebrow">
@@ -1208,16 +1217,46 @@ export default function Home() {
           <button onClick={() => window.location.reload()}>Reload</button>
         </div>
       )}
-      {playtesting && <div className="dev-launcher">
+      {playtesting && !rangeMode && <div className="dev-launcher">
+        <button onClick={()=>{window.location.assign(new URL("/?playtest=1&range=1", window.location.origin));}}>Mechanics lab →</button>
         {view.previewControls && active && <span className="dev-preview-hint">PREVIEW · Right-drag to look · WASD move · Left-click fire</span>}
         <button onClick={() => { runtime.current?.pause(); setDevOpen(open=>!open); }} aria-expanded={devOpen}>F2 · {devOpen ? "Hide tools" : "Developer tools"}</button>
         {paused && <button disabled={!ready} onClick={()=>{setDevOpen(false);void runtime.current?.enter();}}>Ⅱ Paused · Resume</button>}
       </div>}
       </div>
-      {playtesting && devOpen && <DevPanel view={view} ready={ready}
+      {playtesting && !rangeMode && devOpen && <DevPanel view={view} ready={ready}
         onAction={runPlaytestAction}
         onPlay={()=>{setDevOpen(false);setSettings(false);void runtime.current?.enter();}}
         onPause={()=>runtime.current?.pause()} onClose={()=>setDevOpen(false)} />}
+      {rangeMode && <aside className="range-panel" aria-label="Mechanics test range">
+        <p className="range-kicker">DEVELOPMENT / SANDBOX</p>
+        <h1>Mechanics lab</h1>
+        <p>Move freely. Test one variable. Reset and repeat.</p>
+        <button className="range-play" disabled={!ready} onClick={() => {if(view.phase === "dead") setGod(false); enter(view.phase === "dead");}}>{active ? "Recapture mouse" : view.phase === "dead" ? "Restart scenario" : "Play scenario"}</button>
+        <button onClick={() => runtime.current?.pause()}>Pause / release mouse · Esc</button>
+        <h2>Scenario</h2>
+        <select aria-label="Test scenario" value={scenario} disabled={!ready} onChange={e => rangeAction(e.target.value)}>
+          <option value="targets">Weapon range · 5 / 10 / 20 m</option>
+          <option value="pursuit">Combat · three pursuing zombies</option>
+          <option value="blast">Explosions · cover and self damage</option>
+          <option value="empty">Movement · empty greybox</option>
+        </select>
+        <p>{scenario === "targets" ? "Three stationary 100 HP zombies. Compare sights, spread, reloads and hit reactions. They can still attack at close range." : scenario === "pursuit" ? "Three active zombies, no automatic waves. Test movement and close combat." : scenario === "blast" ? "G throws a grenade. Compare exposed distance with the tall cover wall. Damage is enabled; nearby blasts can kill." : "Clear floor, low obstacles and full-height cover for movement checks."}</p>
+        <button disabled={!ready} onClick={() => rangeAction("reset")}>Reset this scenario</button>
+        <h2>Loadout</h2>
+        <select aria-label="Range weapon" value={view.weapon} disabled={!ready} onChange={e => rangeAction(`equip:${e.target.value}`)}>
+          {Object.entries(WEAPONS).map(([id,w]) => <option key={id} value={id}>{w.label}</option>)}
+        </select>
+        <button disabled={!ready} onClick={() => rangeAction("refill")}>Restore health, ammo & grenades</button>
+        <button disabled={!ready} onClick={() => rangeAction("clear")}>Clear enemies & live grenades</button>
+        <label><input type="checkbox" checked={god} disabled={!ready} onChange={e => {setGod(e.target.checked);rangeAction("god");}} /> Invulnerable (damage off)</label>
+        <h2>Live readout</h2>
+        <output>{view.phase.toUpperCase()} · {Math.ceil(view.health)} HP<br />{view.enemies} enemies · {view.grenades} grenades<br />{Math.round(view.fps)} FPS · {view.p95.toFixed(1)} ms p95</output>
+        <h2>Controls</h2>
+        <p>WASD move · Shift sprint · Mouse aim<br />LMB fire · RMB sights · R reload<br />G grenade · V melee · Q next weapon</p>
+        <p>Embedded preview: if mouse capture is unavailable, hold RMB and drag to look. Click the scene before moving.</p>
+        <button onClick={()=>window.location.assign(new URL("/?playtest=1", window.location.origin))}>Casino integration tests →</button>
+      </aside>}
     </main>
   );
 }
