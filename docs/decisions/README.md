@@ -7,7 +7,8 @@ This folder is the current source of truth for the game's narrative direction. I
 | Document | Owns |
 | --- | --- |
 | [Story and plot](story-and-plot.md) | Premise, tone, chronology, reveals, supernatural rules, ending |
-| [Characters](characters.md) | Cast, relationships, personal motivations, appearance and performance direction |
+| [Characters](characters.md) | Concise cast, appearance and performance direction |
+| [Character backstory bible](character-backstories/README.md) | Detailed biographies, supporting people, human contradictions, relationships and reveal pacing |
 | [Voice and dialogue](voice-and-dialogue.md) | AI voice production, auditions, writing and playback rules |
 | [Quests and Easter eggs](quests-and-easter-eggs.md) | Map integration, quest progression, secrets and co-op interaction rules |
 | [Contextual dialogue](contextual-dialogue.md) | Current action-specific noir dialogue, trigger conditions, exchanges and playback design |
@@ -38,4 +39,5 @@ The user has delegated character preferences and creative development to the age
 - Character faces should aspire toward the grounded readability of Call of Duty Zombies, while remaining original and practical for a browser game and limited budget.
 - Blender is the preferred character asset workflow. Facial polish comes later.
 - Dialogue must be specific to player actions and each character’s perspective, with a harder, badass noir edge. Mob of the Dead and Sin City are tonal references; writing remains original.
+- Characters need extensive personal histories and human, badass personalities. Fallout is an additional broad reference for eccentricity, conviction and contradiction; no specific character is being copied.
 - All story, character, quest, Easter egg, and related mechanics decisions must be written down.

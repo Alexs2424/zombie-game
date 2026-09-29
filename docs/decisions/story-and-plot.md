@@ -32,6 +32,19 @@ Authored, prerecorded AI dialogue is the working production choice. Personality 
 8. **The Collector:** the House's enforcer tries to complete collection. Prepared mechanisms create opportunities to defeat it and resolve the wager.
 9. **Freedom with a loose end:** the exits reopen. Vivian discovers a deed to another property among the stolen documents. Deliver this through gameplay, a readable prop, and dialogue. Voss's fate remains open.
 
+## Character-history decisions
+
+The [character backstory bible](character-backstories/README.md) owns detailed biography. Newly selected working facts:
+
+- Frankie escorted Martin Keene into the cashier cage in 1973 and left Voss's employment in 1974. Keene is distinct from Elias Varga; his fate remains open.
+- Eve's friend and stage partner Arthur “Art” Bell disappeared three weeks before closing night. Her ambition had eroded his public credit. His fate remains open.
+- Leon has a living wife and daughter. An earlier industrial accident and his growing need to be indispensable inform his choice to install an off-book circuit.
+- Vivian Cross was born Vivian Cruz. She wants to repay damage she caused to her brother Tomas's livelihood. Her invitation bears Celia March's name; March's history remains open.
+- Voss sought to preserve the casino's prosperity and his control of it. He knowingly accepted collection of designated debtors. The precise supernatural wording and eligibility rules remain unresolved. His former wife Helena is alive and left him in 1969.
+- Edwin Marlowe worked for Voss by 1959. He helped conceal irregular departures and kept private discrepancy notes. No blanket magical ban prevents him from speaking truth. His actual debt, supernatural status and ability to leave remain open.
+
+These additions do not add playable relatives, guest rooms, hidden corridors, quests, or cinematics. All evidence placement is future work. The existing hotel documents stay unchanged until an explicit implementation pass.
+
 ## Rules currently adopted
 
 - Voss cannot simply order the House or its Collector to stop.
@@ -43,10 +56,10 @@ Authored, prerecorded AI dialogue is the working production choice. Personality 
 
 ## Open story work
 
-- What Voss requested, what he knowingly surrendered, and the original bargain's exact date.
+- The original bargain’s exact date, enforceable wording, and selection/collection terms. Voss’s human motive and knowing sacrifice of designated debtors are now working decisions above.
 - Why these four are eligible to sign, and how that fiction works when fewer than four humans are connected. No mandatory bots or character-specific locks have been chosen.
 - Varga's exact role and the identities/fates of the earlier four. Do not make him a relative of a protagonist by default.
-- Marlowe's precise obligation to the House and the limits on what he can say.
+- Marlowe’s precise obligation to the House and whether it restricts physical departure. His initial silence is not currently explained by a blanket supernatural prohibition on speech.
 - The contractual weakness, final wager, Collector identity, and Voss's final choice.
 - How story completion transitions into continued survival or a results screen.
 

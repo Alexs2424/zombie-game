@@ -6,12 +6,14 @@ Review stage: the user has requested a more exaggerated, outlandish, dramatic ca
 
 All four playable characters initially share gameplay capabilities. Identity comes through voice, relationships, silhouette, and matching first-person clothing. An occupation never grants exclusive access to a required quest interaction.
 
+Detailed personal histories, supporting people, emotional arcs and reveal pacing live in the [character backstory bible](character-backstories/README.md). Those dossiers own biographical specifics; this overview owns visual and voice direction. The latest brief calls for human, badass personalities with the eccentricity and contradictions suggested by Fallout, while retaining our original casino setting.
+
 ## Frankie “Chips” Caruso
 
 - **Identity:** 47, Italian-American, raised in Newark; former casino enforcer.
 - **Reason for coming:** collect unpaid money from Voss and settle what he calls his last piece of business here.
 - **Inner conflict:** thinks loyalty excuses what he once did. His arc is accepting responsibility rather than protecting Voss's reputation.
-- **Working personal connection:** he escorted a marked guest to the cashier cage and obeyed an instruction to leave. He has never asked what happened afterward. The guest's identity remains open.
+- **Working personal connection:** he escorted a marked guest to the cashier cage and obeyed an instruction to leave. He has never asked what happened afterward. The guest is Martin Keene; Frankie escorted him to the cage in 1973. Keene’s fate remains open. See the [Frankie dossier](character-backstories/frankie.md).
 - **Voice:** worn middle-low register; restrained North Jersey accent; clipped consonants and economical sentences. Irritation arrives quickly; tenderness arrives reluctantly. Avoid a cartoon mobster impression.
 - **Humor:** practical complaints, grudges, and recognition of former guests.
 - **Appearance:** broad, heavy silhouette; tobacco tailoring, loosened collar, worn formal shoes. Old staff identification remains in his wallet.
@@ -30,7 +32,7 @@ His weakness is confusing obedience with honor. He is dangerous, capable of kind
 - **Identity:** 34, Black British, raised in south London; touring illusionist and casino headliner.
 - **Reason for coming:** retrieve her missing stage partner's effects from Voss's custody.
 - **Inner conflict:** treating danger as a trick gives her control until she must admit there are stakes she cannot misdirect away.
-- **Working personal connection:** her partner noticed that an apparent stage passage did not match the building plan and disappeared after investigating. Their exact fate remains open.
+- **Working personal connection:** her stage partner and friend Arthur “Art” Bell noticed that an apparent stage passage did not match the building plan and disappeared after investigating. His exact fate remains open. Eve had allowed him to lose public credit before their final argument; see the [Eve dossier](character-backstories/eve.md).
 - **Voice:** clear middle register; educated London English with a softer south London edge in private speech. Precise setups, deliberate pauses, dry final words. Fear makes her unusually direct, not more theatrical.
 - **Humor:** exposing pretension and bad misdirection.
 - **Appearance:** tailored stage trousers; asymmetrical ivory-and-black jacket with oxblood lining; repaired cuffs and concealed practical tools. Avoid a costume consisting only of a top hat and cape.
@@ -49,7 +51,7 @@ She initially treats explanations as contests she must win. Her emotional change
 - **Identity:** 39, Black American, raised in southeast Texas; casino maintenance engineer.
 - **Reason for coming:** complete the shutdown and recover his maintenance records before management removes them.
 - **Inner conflict:** pride in having kept the building running collides with what that work enabled.
-- **Working personal connection:** installed a separately metered circuit for the secure cash area under an off-book work order. He did not know its purpose. This is infrastructure serving the bargain, not its scientific explanation.
+- **Working personal connection:** installed a separately metered circuit for the secure cash area under an off-book work order. He did not know its purpose. A prior industrial accident explains why accepting that assurance matters to him. His wife Della and daughter Ruthie are alive and waiting for him; see the [Leon dossier](character-backstories/leon.md). This is infrastructure serving the bargain, not its scientific explanation.
 - **Voice:** warm middle register, lightly textured; measured southeast Texas vowels without exaggerated drawl. Usually finishes a thought before speaking. Under pressure his sentences become short and exact.
 - **Humor:** patient understatement and literal assessments of absurd problems. He is technically capable, not the team's gullible skeptic.
 - **Appearance:** faded teal maintenance clothes, rolled sleeves, repaired watch, labeled keys. His clothing looks worked in rather than generically dirty.
@@ -65,10 +67,10 @@ He recognizes evidence of the supernatural quickly; what frustrates him is that 
 
 ## Vivian Cross
 
-- **Identity:** 29, Mexican-American, raised in Los Angeles; professional card cheat and confidence artist.
-- **Reason for coming:** rob the vault using an invitation obtained under a dead woman's name.
+- **Identity:** 29, Mexican-American, raised in Los Angeles; professional card cheat and confidence artist. Born Vivian Cruz, professionally Cross.
+- **Reason for coming:** rob the vault using an invitation issued to Celia March. Vivian does not yet know at entry that the historical March is dead.
 - **Inner conflict:** is excellent at planning her own exit and unpracticed at returning for someone else.
-- **Working personal connection:** believed she chose the stolen identity herself. Evidence suggests the invitation was deliberately put within her reach. The identity and mechanism are open.
+- **Working personal connection:** believed she chose the stolen identity herself. Evidence suggests the invitation was deliberately put within her reach. The invitation bears Celia March’s name; March’s history and the planting mechanism remain open. Vivian wants the score partly to repay her brother Tomas, whose print shop she helped ruin; see the [Vivian dossier](character-backstories/vivian.md).
 - **Voice:** bright, lightly husky middle register; Los Angeles American English, quick consonants, playful rising setups followed by abrupt flat conclusions. Negotiation is musical; sincerity loses that performance. Do not infer a Spanish accent from her heritage.
 - **Humor:** pricing danger, testing people, puncturing authority. Allow sincere lines without punchlines.
 - **Appearance:** narrow plum suit, patterned shirt, neat gloves; expensive-looking garments with altered labels and discreet pockets.
@@ -86,7 +88,7 @@ Eve performs for an audience; Vivian performs differently for each person. Make 
 
 **Established:** theatrical, intimidating, charming kingpin. An NPC, not a playable crew member, is the working implementation direction.
 
-- **Identity:** approximately 58; American casino owner who has cultivated an elegant public speaking voice. Precise birthplace is unimportant and remains unset.
+- **Identity:** approximately 58; American casino owner who has cultivated an elegant public speaking voice. Working origin: Atlantic City, born around 1918. His former wife Helena is alive; she helped design the casino and left him in 1969. See the [Voss dossier](character-backstories/voss.md).
 - **Behavior:** treats the casino as his stage and hospitality as a form of ownership. Remembers a favorite drink and the name of someone a guest owes money to. Both are ways of applying pressure.
 - **Voice:** resonant baritone; cultivated mid-Atlantic stage diction with an occasional harder American vowel when control slips. Broad, warm public announcements; intimate, quieter threats. Articulation and pauses do more work than pitch or shouting.
 - **Humor:** impeccable customer-service language applied to appalling events. He believes he is entitled to be amused; he is not constantly delivering jokes.
@@ -106,7 +108,7 @@ When challenged publicly, he enlarges the performance and makes the room laugh w
 
 ## Marlowe
 
-- **Identity:** appears about 63; long-serving bartender. True tenure and supernatural status remain open.
+- **Identity:** Edwin Marlowe, appears about 63; long-serving bartender originally from near Leeds, working for Voss by 1959. His exact age and supernatural status remain open. His sister Elsie is alive in England. See the [Marlowe dossier](character-backstories/marlowe.md).
 - **Voice:** dry, airy middle-low register, light northern English accent. Unhurried, courteous, and plain. Voss fills a room; Marlowe lets a silence do the work.
 - **Behavior:** remembers orders and notices absence. His clues sound like observations from a working bartender, not prophetic riddles.
 - **Humor:** small corrections delivered without inviting laughter.
@@ -119,7 +121,7 @@ Marlowe remains occupied while everyone else performs. He checks a glass, replac
 
 Narrow, slightly stooped silhouette; receding gray hair, prominent ears, and an attentive face. White sleeves, burgundy waistcoat, and a small old-fashioned badge connect him to the existing model. Keep gestures economical so a later decision to stop working and look directly at someone carries weight.
 
-He has witnessed enough to be specific, not omniscient. His comedy corrects a tiny factual detail while leaving the surrounding horror untouched. He should sometimes answer plainly and help practically; endless riddles would make him irritating. His exact debt and supernatural status remain unresolved.
+He has witnessed enough to be specific, not omniscient. His comedy corrects a tiny factual detail while leaving the surrounding horror untouched. He should sometimes answer plainly and help practically; endless riddles would make him irritating. His exact debt and supernatural status remain unresolved. There is no current blanket magical ban on telling the truth: fear, complicity, incomplete knowledge and distrust explain his evasions.
 
 ## Current dialogue application
 

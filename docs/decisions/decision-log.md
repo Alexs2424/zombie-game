@@ -57,3 +57,16 @@ Generated one Voss pilot using the existing Callum voice, model `eleven_v3`, sta
 **User correction:** dialogue should be more specific to player actions, more unique to the speaker, and badass; supplied a Mob of the Dead intro video and Sin City as inspiration. Identified the video through its page, but could not retrieve its transcript; no full audio-analysis claim made.
 
 **Working response:** wrote 36 contextual character lines plus three short exchanges in `contextual-dialogue.md`, each with event conditions and delivery notes. Shifted from broad occupational jokes toward physical consequences, personal history, ruthless confidence, and uncomfortable humor. Documented current simulation event limits and proposed context/anti-repetition rules. Deferred conditions are labeled rather than represented as implemented mechanics. Round 01 and its stock Voss pilot remain historical; use revised contextual material for the next delivery audition. No gameplay or new audio was generated during this writing pass.
+
+
+## 2026-09-28 — Extensive human character backstories
+
+**User direction:** develop extensive histories and personalities for all six, with human badass energy and Fallout as a broad reference. Keep the previously established outlandish noir cast and action-specific dialogue.
+
+**Working canon added:** six individual dossiers plus an ensemble bible. Defined lives before the casino, surviving family/friends with independent concerns, ordinary pleasures, damaging choices, competence limits, emotional arcs, speech examples and paced reveals. Named Martin Keene, Arthur “Art” Bell, the families of Frankie and Leon, Vivian's brother Tomas and the invitation identity Celia March, Voss's former wife Helena, and Marlowe's sister Elsie. These are supporting writing resources, not a new asset or quest scope.
+
+Selected Voss's human motive and knowing complicity: preserve the casino's prosperity and personal control by accepting collection of designated debtors. Kept contract mechanics and final fate open. Marlowe has no current blanket magical ban on speaking; his evasions have human causes. Updated the concise cast and plot documents to reflect the new specifics instead of leaving competing open questions.
+
+No family reconciliation or forgiveness is automatic upon escaping the map. No new character becomes secretly the Collector by default. Keene, Varga and the earlier four remain distinct unresolved story elements. Dialogue examples require matching context and are not new runtime lines.
+
+Documentation only; no gameplay, voice generation, or visual assets changed.

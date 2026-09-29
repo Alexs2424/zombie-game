@@ -32,6 +32,10 @@ Example future ID: `voss.gallery.first_warning`. These are proposed metadata req
 
 The user requested more action-specific, individual, badass noir dialogue after the first audible pilot. [Contextual dialogue](contextual-dialogue.md) is now the current writing pass. Round 01 remains a historical audition; do not generate its full script as the current production batch. Preserve cast identities while revising delivery text around exact gameplay triggers. No additional audio is generated until the revised material is selected for the next audition.
 
+## Human conversational range
+
+Consult the [character backstory bible](character-backstories/README.md) for personal speech and relationships. Auditions should eventually include ordinary speech, an interrupted thought, an unadorned admission, and a familiar disagreement as well as threats and jokes. A character who cannot sound tired, pleased, embarrassed or briefly boring will sound like a collection of catchphrases. Named relatives are writing resources, not automatic new voice-production requirements.
+
 ## Character comedy and performance
 
 The user requests heightened, occasionally over-the-top personalities. Audition both ordinary delivery and each character's extravagant register. Preserve contrast: a cast that shouts continuously loses its individuality.
