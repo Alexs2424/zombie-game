@@ -1,0 +1,20 @@
+[
+  {"action":"new"},
+  {"eval":"document.querySelector('.playtest-tools').style.display='none'"},
+  {"action":"give-magnum"},{"action":"aim"},{"wait":700},{"shot":"magnum-aim"},
+  {"action":"give-lmg"},{"action":"aim"},{"wait":700},{"shot":"lmg-aim"},
+  {"action":"give-tommy"},{"action":"aim"},{"wait":700},{"shot":"tommy-aim"},
+  {"action":"give-machinepistol"},{"action":"aim"},{"wait":700},{"shot":"machinepistol-aim"},
+  {"action":"give-lever"},{"action":"aim"},{"wait":700},{"shot":"lever-aim"},
+  {"action":"give-doublebarrel"},{"action":"aim"},{"wait":700},{"shot":"doublebarrel-aim"},
+  {"action":"give-dual"},{"action":"aim"},{"wait":700},{"shot":"dual-aim"},
+  {"action":"give-shotgun"},{"action":"aim"},{"wait":700},{"shot":"shotgun-aim"},
+  {"action":"give-sniper"},{"action":"aim"},{"wait":700},{"shot":"sniper-aim"},
+  {"action":"give-lmg"},{"action":"empty-mag"},{"action":"reload"},{"wait":2400},{"shot":"lmg-reload"},
+  {"wait":3100},{"action":"aim"},{"wait":600},{"shot":"lmg-reload-done"},
+  {"eval":"(()=>{const s=window.__lastJackpot.sim;if(s.inventory.lmg.mag!==60||s.reloadRemaining>0)throw Error('reload failed');s.aimHeld=false;s.lounge=s.vip=s.tables=true;s.refreshMap();s.player={x:35,z:-5};const x=35-((165+2.5*1115/6)/3072*4.11-2.055),z=-3+(336.5/1344*1.81-.905);s.yaw=Math.atan2(x-35,z+5);s.pitch=Math.atan2(1.65-.81,Math.hypot(x-35,z+5));s.holdingChips=true;return s.aimedBetTarget()})()"},
+  {"wait":600},{"shot":"craps-hover"},
+  {"eval":"(()=>{const s=window.__lastJackpot.sim;if(!s.placeAimedBet()||s.bets[6]!==30)throw Error('felt bet failed');return s.bets})()"},
+  {"wait":300},{"shot":"craps-bet"},
+  {"eval":"(()=>{const s=window.__lastJackpot.sim;document.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyE'}));if(s.holdingChips)throw Error('E did not stow chips');s.holdingChips=true;document.dispatchEvent(new KeyboardEvent('keydown',{code:'Digit1'}));if(s.holdingChips||s.weapon!=='pistol')throw Error('digit key did not equip pistol');s.holdingChips=true;document.dispatchEvent(new KeyboardEvent('keydown',{code:'Digit1'}));if(s.holdingChips)throw Error('same weapon leaves chips stuck');return 'E and number keys verified'})()"}
+]

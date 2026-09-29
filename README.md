@@ -48,12 +48,16 @@ Development playtests include **Service overview**, **Service truck**, and
 | Move                | W A S D                                    |
 | Look                | Mouse                                      |
 | Fire                | Left mouse button, hold for repeated shots |
+| Aim                 | Hold right mouse button                    |
+| Both barrels        | B (Double or Nothing)                      |
 | Knife slash         | V                                          |
 | Throw grenade       | G                                          |
 | Sprint              | Shift                                      |
 | Reload              | R; an empty trigger also starts a reload   |
-| Buy/interact        | E when close to a purchase                 |
-| Switch weapons      | 1 / 2 / 3 / 4 / 5 / 6                      |
+| Buy/interact        | E when close to a purchase; also puts chips away |
+| Switch weapons      | 1–5 house guns, 6–0 Mystery Box finds; wheel or Q cycles |
+| Hold casino chips   | C (then aim at a craps number and fire)    |
+| Cash out table bets | X near the craps table                     |
 | Pause/release mouse | Escape                                     |
 
 The start and pause screens provide mouse sensitivity, sound volume, and optional frame statistics. Losing focus pauses the run and clears held input. Controller support is deferred.
@@ -70,7 +74,11 @@ Zombies use three original Blender designs: Pit Boss, Crooked Dealer, and Last S
 - Staff passage: 1,200 chips, purchased from inside the staff area after opening the lounge. It completes the second movement loop.
 - High Roller Club: 1,300 chips from the lounge. Opens a 12 × 24 metre poker room and both its lounge and staff entrances. A private entrance starts spawning zombies only after the room opens.
 - The Devil’s Tables: 1,500 chips from the High Roller Club. Opens a 14 × 24 metre room, two connected entrances, and a delayed dealer spawn. Craps and roulette are broad training islands.
-- Seven’s Curse craps wager: 250 chips, once per round. Two fair six-sided dice roll while combat continues. A total of seven slows walking and sprinting by 20% for that round; other totals pay 500 chips (250 net). During intermission, the wager and any curse apply to the upcoming round.
+- Craps: hold physical 25-chip stacks with **C**, then aim/fire at 4, 5, 6, 8, 9, or 10. Standard place-bet minimums and payouts are used (6/8 in multiples of 6; 4/10 pay 9:5, 5/9 pay 7:5, and 6/8 pay 7:6). Bets stay on the felt between rolls; **X** returns the remaining principal. A seven clears the table, while a hit number pays profit automatically.
+- Speakeasy easter egg: the crooked poker table has fixed suit/value cards. Shoot the matching suit and number sequence into the keypad hidden behind the portrait to open the secret room. The room contains a Blender-built Velvet Fortune mystery slot: 400 chips per spin, 50% chance of one of the ten 1970s house guns below (an already-owned gun is restocked), otherwise no reward. The cabinet shuffles 3D models of the arsenal while it spins and the HUD reel shows the payout.
+- The 1970s Mystery Box arsenal ([spec](docs/weapon-spec-1970s.md), [assets](docs/weapon-1970s-assets/README.md)): High Roller magnum (the spec's `revolver`, shipped as `magnum` because the poker revolver owns that id), Chicago Typewriter drum SMG, Double or Nothing coach gun (B fires both barrels), Snake Eyes twin pocket pistols, The Enforcer machine pistol, Silver Dollar lever action (penetrates three), Last Call auto shotgun, The Eye in the Sky scoped bolt action (penetrates four), House Edge belt-fed LMG (−22% speed, staggers) and The Debt Collector 40 mm launcher (splash can hurt you). Lever and Last Call load one round at a time and can fire mid-reload; automatic guns lose accuracy under a held trigger.
+- Stickman craps rake: free, leaning on the craps table once The Devil’s Tables are open. A 2.8 m, 100° sweep that damages every zombie in the fan; it survives **3 successful sweeps** (misses are free), then splinters and returns you to your last firearm.
+- Fire Exit axe: free, in the break-glass cabinet on the staff passage's north wall. Slow, heavy single-target chop that never breaks; no firearm use mid-swing.
 - Lucky Four roulette: 200 chips on every spin, charged when the spin starts. A fair 0–36 wheel spins for six seconds while combat continues. **4 and 24** refill the equipped gun’s magazine and reserve; **7** refills every owned gun; **0** refills every owned gun and grants **double damage for 30 seconds**. Other numbers give no reward. There is no additional charge at the result and no refund on a win. Return to the table for another spin once the wheel stops.
 - Dealer’s Choice SMG: 1,100 chips in the lounge; 400-chip reserve refill.
 - Pit Boss rifle: 1,600 chips on the east wall of the High Roller Club; 500-chip reserve refill.
@@ -88,13 +96,16 @@ The five-round income model leaves 500 chips for ammunition after the shotgun, t
 - `lib/game/characters.ts`: articulated casino guests and Marlowe, with clothing and facial details.
 - `lib/game/runtime.ts`: fixed-step updates, input, pointer lock, pause/resume, restart, and HUD snapshots.
 - `lib/game/audio.ts`: synthesized weapons/interaction cues, round stingers, and local AI-generated positional zombie voices.
+- `lib/game/weapon-expansion.ts`: 1970s arsenal stats, Mystery Box pool, penetration, bloom, recoil and melee timing.
+- `lib/game/weapon-viewmodels.ts` / `weapon-rig.ts`: per-weapon first-person placement and hand-authored action/reload choreography applied to named Blender nodes and fitted hands.
+- `lib/game/weapon-audio.ts`: lazily loaded weapon foley, round-robin variants, and reload/action cues locked to the animation timeline.
 - `lib/game/zombie-audio-director.ts`: proximity, crowd, last-survivor timing, and shared voice cooldowns.
 - `app/page.tsx`: title, HUD, settings, pause, and results.
 - `tests/simulation.test.mjs`: economy, ammunition, line of sight, corner navigation, gate states, spawn access, wave completion, and reset tests.
 
 ## Validation and limitations
 
-125 automated checks pass (45 core simulation/combat, 20 card-table/revolver, 15 roulette rules, six roulette motion, 14 audio regressions, nine zombie cue scheduling checks, 14 slot proximity/layout checks, and two zombie-asset checks), including five-round progression and fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
+151 automated checks pass (45 core simulation/combat, 20 card-table/revolver, 15 roulette rules, six roulette motion, 14 audio regressions, nine zombie cue scheduling checks, 14 slot proximity/layout checks, 13 1970s-arsenal checks, six craps/speakeasy/Mystery Box checks, six lounge layout checks, one casino-asset alignment check, and two zombie-asset checks), including five-round progression and fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
 
 This is a rough playable: stylized geometry and humanoids, synthesized effects plus AI-generated zombie voices, no aim-down-sights, jump, crouch, random weapon station, persistent records, native app, controller support, or co-op. Mouse capture needs a focused browser and a genuine user gesture. The final feel and difficulty need a hands-on mouse playtest.
 
@@ -102,7 +113,7 @@ Press **V** for a knife slash: 100 damage to the nearest target in a forward 1.6
 
 ## Assets
 
-Casino geometry, characters, signs, and most sounds are generated by this source. Three zombie vocal clips were generated with Stable Audio 3 Small SFX; their prompts, processing, and provenance are in `docs/zombie-audio/`. Five original local GLB weapon assets use named components and PBR materials; see `docs/weapon-models.md`, `tools/generate_weapons.py`, and `docs/revolver-assets/`. The wallpaper is an ImageGen texture documented in `docs/wallpaper-asset.md`. The worn carpet albedo in `public/textures/casino-carpet.png` was generated with the built-in OpenAI ImageGen tool; its prompt and provenance are in `docs/carpet-asset.md`. The social-preview image was generated with OpenAI ImageGen specifically for Last Jackpot; it is promotional art, not an in-game screenshot. Babylon.js is Apache-2.0 licensed; package licenses remain in their respective dependencies. No Call of Duty assets are included.
+Casino geometry, characters, signs, and most sounds are generated by this source. Three zombie vocal clips were generated with Stable Audio 3 Small SFX; their prompts, processing, and provenance are in `docs/zombie-audio/`. Five original local GLB weapon assets use named components and PBR materials; see `docs/weapon-models.md`, `tools/generate_weapons.py`, and `docs/revolver-assets/`. The twelve 1970s Mystery Box weapons, their HUD renders and their synthesized foley are built in Blender and numpy by `tools/weapon-1970s/`; see `docs/weapon-1970s-assets/README.md`. The wallpaper is an ImageGen texture documented in `docs/wallpaper-asset.md`. The worn carpet albedo in `public/textures/casino-carpet.png` was generated with the built-in OpenAI ImageGen tool; its prompt and provenance are in `docs/carpet-asset.md`. The social-preview image was generated with OpenAI ImageGen specifically for Last Jackpot; it is promotional art, not an in-game screenshot. Babylon.js is Apache-2.0 licensed; package licenses remain in their respective dependencies. No Call of Duty assets are included.
 
 ## Environment pass — September 27, 2026
 

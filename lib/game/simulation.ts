@@ -18,11 +18,13 @@ import {
 } from "./world.ts";
 export { collides, moveActor, wallDistance, hasSight, Navigation } from "./world.ts";
 import { LOUNGE_RECTS } from "./lounge-layout.ts";
+import { BET_TARGETS, KEYPAD_TARGETS, PLACE_NUMBERS, SECRET_CODE, SECRET_DOOR, RELIC_NAMES, placeAmount, placeProfit, type PlaceNumber } from "./casino.ts";
+import { AXE_CABINET, EXTRA_WEAPONS, MYSTERY_POOL, bloomPerShot, meleeContactTime, meleeDuration, isMelee, isShellLoading, maxBloom, penetration, recoilPitch, weaponSpeed, type ExtraWeaponId } from "./weapon-expansion.ts";
 import { SERVICE_RECTS } from "./service-layout.ts";
 export type V2 = { x: number; z: number };
 export type V3 = V2 & { y: number };
 export type Rect = WorldRect;
-export type WeaponId = "pistol" | "shotgun" | "smg" | "rifle" | "revolver" | "tommy";
+export type WeaponId = "pistol" | "shotgun" | "smg" | "rifle" | "revolver" | ExtraWeaponId;
 export const WEAPON_ORDER: WeaponId[] = [
   "pistol",
   "shotgun",
@@ -30,7 +32,10 @@ export const WEAPON_ORDER: WeaponId[] = [
   "rifle",
   "revolver",
   "tommy",
+  ...(Object.keys(EXTRA_WEAPONS) as ExtraWeaponId[]).filter(id => id !== "tommy"),
 ];
+// The Velvet Fortune cabinet awards the ten 1970s firearms from docs/weapon-spec-1970s.md.
+export const MYSTERY_WEAPONS: WeaponId[] = [...MYSTERY_POOL];
 export type PerkId = "reserve" | "quickPour" | "nightShift";
 export type BarItemId = PerkId | "weaponUpgrade";
 export const PERKS: Record<
@@ -56,6 +61,10 @@ export type PurchaseId =
   | "tables"
   | "craps"
   | "roulette"
+  | "painting"
+  | "mystery"
+  | "stick"
+  | "axe"
   | "hotel"
   | "hotelBell"
   | "tommyAmmo"
@@ -64,6 +73,8 @@ export type PurchaseId =
 export type GameEvent = {
   type:
     | "shot"
+    | "melee"
+    | "stickBreak"
     | "knife"
     | "grenadeThrow"
     | "explosion"
@@ -73,6 +84,10 @@ export type GameEvent = {
     | "purchase"
     | "deny"
     | "reload"
+    | "reloadDone"
+    | "dry"
+    | "pickup"
+    | "meleeHit"
     | "round"
     | "roundClear"
     | "diceRoll"
@@ -91,6 +106,11 @@ export type GameEvent = {
     | "jukebox"
     | "death";
   weapon?: WeaponId;
+  /** Double or Nothing's both-barrel blast. */
+  alternate?: boolean;
+  /** Snake Eyes: 0 = right pistol, 1 = left pistol. Melee: zombies struck. */
+  side?: number;
+  count?: number;
   headshot?: boolean;
   position?: V2;
   text?: string;
@@ -112,7 +132,7 @@ export type Enemy = WorldPosition & {
   wounds?: Partial<Record<HitRegion, number>>;
   hotelAmbush?: boolean;
 };
-export type Grenade = V3 & { id: number; vx: number; vy: number; vz: number; fuse: number };
+export type Grenade = V3 & { id: number; vx: number; vy: number; vz: number; fuse: number; kind?: "grenade" | "flare"; damage?: number };
 export const RULES = {
   playerRadius: 0.32,
   enemyRadius: 0.3,
@@ -132,6 +152,7 @@ export const RULES = {
   intermission: 8,
 };
 export const WEAPONS = {
+  ...EXTRA_WEAPONS,
   pistol: {
     name: "HOUSE SPECIAL",
     upgradedName: "LOADED DICE",
@@ -148,7 +169,7 @@ export const WEAPONS = {
   },
   shotgun: {
     name: "ROOM SERVICE",
-    upgradedName: "HIGH ROLLER",
+    upgradedName: "HOUSE SWEEPER",
     price: 800,
     label: "Shotgun",
     magazine: 6,
@@ -202,20 +223,6 @@ export const WEAPONS = {
     spread: 0.003,
     refill: 400,
   },
-  tommy: {
-    name: "THE CHICAGO TYPEWRITER",
-    upgradedName: "THE HOUSE COLLECTOR",
-    label: "Tommy gun",
-    price: 0,
-    magazine: 50,
-    reserve: 250,
-    damage: 30,
-    pellets: 1,
-    interval: 0.105,
-    reload: 3,
-    spread: 0.017,
-    refill: HOTEL_RULES.ammoPrice,
-  },
 };
 export const PRICES = {
   shotgun: 800,
@@ -228,6 +235,8 @@ export const PRICES = {
   tables: 1500,
   craps: 250,
   roulette: 200,
+  painting: 0,
+  mystery: 400,
   hotel: HOTEL_RULES.price,
 };
 export const ROULETTE_RULES = {
@@ -245,10 +254,11 @@ export type RouletteSpin = {
   reward: "ammo" | "maxAmmo" | "jackpot" | "miss" | null;
   weapon: WeaponId | null;
 };
-export const BOUNDS = { minX: -16, maxX: 42, minZ: -12, maxZ: 12 };
+export const BOUNDS = { minX: -16, maxX: 52, minZ: -12, maxZ: 12 };
 export function roomName(p: WorldPosition) {
   const hotel = hotelRoomName(p);
   if (hotel) return hotel;
+  if (p.x > 42) return "The Velvet Hour · Speakeasy";
   return p.x > 28
     ? "The Devil’s Tables"
     : p.x > 16
@@ -261,12 +271,15 @@ export function roomName(p: WorldPosition) {
 }
 export const STATIC_RECTS: Rect[] = [
   { id: "west", x: -16.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
-  { id: "east", x: 42.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
-  { id: "south", x: 13, z: -12.25, w: 58.5, d: 0.5, h: 4.8 },
-  // The five-metre hotel entrance is level with the casino floor.
+  { id: "east", x: 52.25, z: 0, w: 0.5, d: 24.5, h: 4.8 },
+  { id: "south", x: 18, z: -12.25, w: 68.5, d: 0.5, h: 4.8 },
   { id: "north-west", x: -11, z: 12.25, w: 11, d: 0.5, h: 4.8 },
-  { id: "north-east", x: 21, z: 12.25, w: 43, d: 0.5, h: 4.8 },
+  { id: "north-east", x: 26, z: 12.25, w: 53, d: 0.5, h: 4.8 },
   ...HOTEL_RECTS,
+  { id: "secret-wall-s", x: 42, z: -9.1, w: .45, d: 5.8, h: 4.8 },
+  { id: "secret-wall-n", x: 42, z: 4.9, w: .45, d: 14.2, h: 4.8 },
+  { id: "mystery-cabinet", x: 48, z: -8.6, w: 1.6, d: 1.1, h: 2.6 },
+  { id: "secret-bar", x: 43.2, z: 3, w: 1.4, d: 8, h: 1.2 },
   { id: "tables-wall-s", x: 28, z: -9, w: 0.45, d: 6, h: 4.8 },
   { id: "tables-wall-m", x: 28, z: 2.4, w: 0.45, d: 9.2, h: 4.8 },
   { id: "tables-wall-n", x: 28, z: 11.1, w: 0.45, d: 1.8, h: 4.8 },
@@ -386,10 +399,14 @@ export const PURCHASES: {
     id: "craps",
     x: 35,
     z: -5,
-    name: "Seven’s Curse · roll the dice",
+    name: "Craps · roll the dice",
     detail:
-      "250 chips · 7 slows you 20% this round · other rolls pay 500 chips · once per round",
+      "C: hold chips · aim and click to bet · E: roll · X: take bets",
   },
+  { id:"stick", x:31.1,z:-3.1,name:"Stickman · craps rake · 3 SWEEPS",detail:"E: take · sweeping melee · breaks after 3 successful hits" },
+  { id:"axe", x:AXE_CABINET.x,z:AXE_CABINET.z-.75,name:"Fire Exit · emergency axe",detail:"E: take · slow heavy chop · never breaks" },
+  { id:"painting", x:40.8,z:-4.1,name:"The crooked portrait",detail:"A draft slips through the frame. E: slide painting" },
+  { id:"mystery",x:48,z:-7.3,name:"The Velvet Fortune",detail:"400 chips · 50% special weapon · 50% nothing" },
   {
     id: "roulette",
     x: 35,
@@ -475,6 +492,22 @@ export class Simulation {
   shortcut = false;
   vip = false;
   tables = false;
+  speakeasy = false;
+  paintingOpen = false;
+  codeProgress = 0;
+  codeFlash = 0;
+  holdingChips = false;
+  aimHeld = false;
+  get aiming() {
+    return this.aimHeld && this.phase === "playing" && !this.holdingChips &&
+      !isMelee(this.weapon) && this.reloadRemaining <= 0 && this.knifeRemaining <= 0 && this.grenadeCooldown <= 0;
+  }
+  betBanks: Partial<Record<PlaceNumber, number>> = {};
+  chipValue = 25;
+  bets: Partial<Record<PlaceNumber, number>> = {};
+  crapsResult = "";
+  relics: Partial<Record<WeaponId, boolean>> = {};
+  mystery: { remaining: number; reward: WeaponId | null; resolved: boolean; message: string } | null = null;
   tablesAge = 0;
   hotel = false;
   hotelAge = 0;
@@ -506,14 +539,16 @@ export class Simulation {
   get wagerRound() {
     return Math.max(1, this.round + (this.intermission > 0 ? 1 : 0));
   }
-  upgrades: Record<WeaponId, boolean> = {
-    pistol: false,
-    shotgun: false,
-    smg: false,
-    rifle: false,
-    revolver: false,
-    tommy: false,
-  };
+  upgrades = Object.fromEntries(WEAPON_ORDER.map(id => [id, false])) as Record<WeaponId, boolean>;
+  stickTaken = false;
+  axeTaken = false;
+  /** Consecutive-fire spread growth in radians; decays when the trigger rests. */
+  bloom = 0;
+  /** The firearm to return to when the craps rake breaks. */
+  lastFirearm: WeaponId = "pistol";
+  meleeRemaining = 0;
+  private meleeWeapon: WeaponId | null = null;
+  fires: (V3 & {id:number; remaining:number; tick:number; damage:number})[] = [];
   perks: Record<PerkId, boolean> = {
     reserve: false,
     quickPour: false,
@@ -531,17 +566,9 @@ export class Simulation {
   loungeAge = 0;
   vipAge = 0;
   weapon: WeaponId = "pistol";
-  inventory: Record<
-    WeaponId,
-    { owned: boolean; mag: number; reserve: number }
-  > = {
-    pistol: { owned: true, mag: 12, reserve: 84 },
-    shotgun: { owned: false, mag: 0, reserve: 0 },
-    smg: { owned: false, mag: 0, reserve: 0 },
-    rifle: { owned: false, mag: 0, reserve: 0 },
-    revolver: { owned: false, mag: 0, reserve: 0 },
-    tommy: { owned: false, mag: 0, reserve: 0 },
-  };
+  inventory = Object.fromEntries(WEAPON_ORDER.map(id => [id, {
+    owned: id === "pistol", mag: id === "pistol" ? 12 : 0, reserve: id === "pistol" ? 84 : 0,
+  }])) as Record<WeaponId, {owned:boolean; mag:number; reserve:number}>;
   enemies: Enemy[] = [];
   grenades = 2;
   projectiles: Grenade[] = [];
@@ -581,6 +608,7 @@ export class Simulation {
       ...(!this.shortcut ? [DOORS.shortcut] : []),
       ...(!this.vip ? [DOORS.vip, DOORS.vipExit] : []),
       ...(!this.tables ? [DOORS.tables, DOORS.tablesExit] : []),
+      ...(!this.speakeasy ? [SECRET_DOOR] : []),
     ];
     this.walkRects = this.rects.map((r) => ({
       ...r,
@@ -607,9 +635,11 @@ export class Simulation {
   }
   capacity(w: WeaponId = this.weapon) {
     if (w === "revolver") return WEAPONS.revolver.magazine;
+    if (isMelee(w)) return WEAPONS[w].magazine;
     return Math.round(WEAPONS[w].magazine * (this.upgrades[w] ? 1.5 : 1));
   }
   weaponName(w = this.weapon) {
+    if (this.relics[w]) return w in RELIC_NAMES ? RELIC_NAMES[w as keyof typeof RELIC_NAMES] : WEAPONS[w].upgradedName;
     return this.upgrades[w] ? WEAPONS[w].upgradedName : WEAPONS[w].name;
   }
   reloadDuration(w = this.weapon) {
@@ -621,7 +651,7 @@ export class Simulation {
   }
   weaponDamage(w = this.weapon) {
     const damage = Math.round(
-      WEAPONS[w].damage * (this.upgrades[w] ? 1.35 : 1),
+      WEAPONS[w].damage * (this.relics[w] ? 2 : this.upgrades[w] ? 1.35 : 1),
     );
     return (
       damage *
@@ -719,7 +749,7 @@ export class Simulation {
     const price = id === "weaponUpgrade" ? PRICES.upgrade : PERKS[id].price;
     let reason =
       id === "weaponUpgrade"
-        ? this.upgrades[this.weapon]
+        ? isMelee(this.weapon) ? "Melee weapons cannot be upgraded" : this.upgrades[this.weapon]
           ? "Already upgraded"
           : ""
         : this.perks[id]
@@ -763,17 +793,28 @@ export class Simulation {
     this.messageRemaining = 2.6;
   }
   switchWeapon(w: WeaponId) {
+    if (this.phase === "playing") this.stowChips();
     if (
       this.phase !== "playing" ||
-      !this.inventory[w].owned ||
+      this.meleeRemaining > 0 ||
+      !this.inventory[w]?.owned ||
       w === this.weapon
     )
       return;
+    if (!isMelee(this.weapon)) this.lastFirearm = this.weapon;
     this.weapon = w;
+    this.aimHeld = false;
+    this.bloom = 0;
+    this.holdingChips = false;
     this.reloadRemaining = 0;
     this.fireCooldown = Math.max(this.fireCooldown, 0.2);
   }
+  cycleWeapon(direction: number) {
+    const owned = WEAPON_ORDER.filter(id => this.inventory[id].owned);
+    this.switchWeapon(owned[(owned.indexOf(this.weapon) + direction + owned.length) % owned.length]);
+  }
   reload() {
+    if (isMelee(this.weapon)) return false;
     const w = this.inventory[this.weapon];
     if (
       this.phase !== "playing" ||
@@ -792,6 +833,8 @@ export class Simulation {
     let min = 2.15;
     for (const p of PURCHASES) {
       if (
+        (p.id === "stick" && this.stickTaken) ||
+        (p.id === "axe" && this.axeTaken) ||
         (p.id === "lounge" && this.lounge) ||
         (p.id === "vip" && this.vip) ||
         (p.id === "tables" && this.tables) ||
@@ -812,6 +855,12 @@ export class Simulation {
   purchaseInfo(id: PurchaseId) {
     let price = 0;
     let reason = "";
+
+    if (id === "stick") {
+      if (!this.tables) reason = "Open The Devil’s Tables first";
+      else if (this.stickTaken) reason = "Rake already taken";
+    }
+    if (id === "axe" && this.axeTaken) reason = "Axe already taken";
     if (id === "hotel") {
       price = HOTEL_RULES.price;
       if (this.hotel) reason = "Already open";
@@ -864,6 +913,7 @@ export class Simulation {
     if (id === "upgrade") {
       price = PRICES.upgrade;
       if (!this.vip) reason = "Open the High Roller Club first";
+      else if (isMelee(this.weapon)) reason = "Melee weapons cannot be upgraded";
       else if (this.upgrades[this.weapon]) reason = "Already upgraded";
     }
     if (id === "vip") {
@@ -877,11 +927,16 @@ export class Simulation {
       else if (this.tables) reason = "Already open";
     }
     if (id === "craps") {
-      price = PRICES.craps;
+      price = 0;
       if (!this.tables) reason = "Open The Devil’s Tables first";
       else if (this.dice && !this.dice.resolved) reason = "Dice are rolling";
-      else if (this.lastWagerRound >= this.wagerRound)
-        reason = "One wager per round · come back next round";
+      else if (!Object.values(this.bets).some(b=>b>0)) reason = "Hold chips with C, then aim at a number and click";
+    }
+    if (id === "painting" && (!this.tables || this.paintingOpen)) reason = this.paintingOpen ? "Follow the four cards. Shoot suit, then number." : "Open The Devil’s Tables first";
+    if (id === "mystery") {
+      price = 400;
+      if (!this.speakeasy) reason = "Find the hidden room";
+      else if (this.mystery && !this.mystery.resolved) reason = "Reels are spinning";
     }
     if (id === "roulette") {
       price = PRICES.roulette;
@@ -950,8 +1005,31 @@ export class Simulation {
       this.notify("200 chips on the wheel. Keep moving.");
       return true;
     }
+    if (id === "stick") {
+      this.stickTaken = true; this.inventory.stick = {owned:true,mag:3,reserve:0};
+      this.meleeRemaining=0; this.meleeWeapon=null; this.switchWeapon("stick");
+      this.notify("STICKMAN · 3 SWEEPS · misses are free");
+      this.events.push({type:"pickup",weapon:"stick"});return true;
+    }
+    if (id === "axe") {
+      this.axeTaken = true; this.inventory.axe = {owned:true,mag:1,reserve:0};
+      this.meleeRemaining=0; this.meleeWeapon=null; this.switchWeapon("axe");
+      this.notify("FIRE EXIT · heavy chop · never breaks");
+      this.events.push({type:"pickup",weapon:"axe"});return true;
+    }
+    if (id === "painting") {
+      this.paintingOpen = true;
+      this.notify("Four fixed cards. Left to right: suit, then number. Shoot the buttons.");
+      return true;
+    }
+    if (id === "mystery") {
+      const wins = this.random() < .5;
+      this.mystery = {remaining:2.8,reward:wins ? MYSTERY_WEAPONS[Math.min(MYSTERY_WEAPONS.length-1,Math.floor(this.random()*MYSTERY_WEAPONS.length))] : null,resolved:false,message:"The Velvet Fortune is spinning…"};
+      this.events.push({type:"diceRoll",position:{x:48,z:-8.6}});
+      return true;
+    }
     if (id === "craps") {
-      this.lastWagerRound = this.wagerRound;
+      this.crapsResult = "Rolling… bets are locked";
       this.dice = {
         values: [
           1 + Math.floor(this.random() * 6),
@@ -1039,7 +1117,7 @@ export class Simulation {
     const weapons = spin.reward === "ammo" ? [this.weapon] : WEAPON_ORDER;
     for (const weapon of weapons) {
       const inventory = this.inventory[weapon];
-      if (!inventory.owned) continue;
+      if (!inventory.owned || isMelee(weapon)) continue;
       inventory.mag = this.capacity(weapon);
       inventory.reserve = WEAPONS[weapon].reserve;
     }
@@ -1051,6 +1129,59 @@ export class Simulation {
       type: spin.reward === "jackpot" ? "rouletteJackpot" : "rouletteWin",
       position: { x: 35, z: 5 },
     });
+  }
+  canBet() {
+    return this.phase === "playing" && this.tables && dist(this.player,{x:35,z:-5})<3 && hasSight(this.player,{x:35,z:-5},this.rects) && (!this.dice || this.dice.resolved);
+  }
+  toggleChips() {
+    if (this.phase !== "playing") return;
+    this.holdingChips = !this.holdingChips;
+    this.reloadRemaining = 0;
+    this.aimHeld = false;
+  }
+  stowChips() {
+    this.holdingChips = false;
+  }
+  placeBet(number: PlaceNumber) {
+    if (!this.holdingChips || !this.canBet() || !PLACE_NUMBERS.includes(number)) return false;
+    const amount = placeAmount(number,this.chipValue);
+    if (this.points < amount) {this.notify(`Need ${amount} chips for this bet`); return false;}
+    this.points -= amount;
+    this.bets[number] = (this.bets[number] ?? 0)+amount;
+    this.notify(`${amount} on ${number} · bet stays after wins · E to roll`);
+    return true;
+  }
+  placeAimedBet() {
+    const target = this.aimedBetTarget();
+    if (!target || !this.placeBet(target.number)) return false;
+    this.betBanks[target.number] = target.bank;
+    return true;
+  }
+  aimedBetTarget() {
+    if (!this.holdingChips || !this.canBet()) return undefined;
+    const dy = -Math.sin(this.pitch);
+    if (dy >= -.01) return undefined;
+    const t = (BET_TARGETS[0].y-1.65)/dy;
+    const x=this.player.x+Math.sin(this.yaw)*Math.cos(this.pitch)*t;
+    const z=this.player.z+Math.cos(this.yaw)*Math.cos(this.pitch)*t;
+    return BET_TARGETS.find(b=>Math.abs(b.x-x)<b.halfWidth && Math.abs(b.z-z)<b.halfDepth);
+  }
+  takeBets() {
+    if (!this.canBet()) return false;
+    const amount=Object.values(this.bets).reduce((a,b)=>a+b,0);
+    this.points+=amount;this.bets={};this.notify(`${amount} chips returned`);return true;
+  }
+  enterSecretKey(key: string) {
+    if (this.phase !== "playing" || !this.paintingOpen || this.speakeasy || dist(this.player,{x:41.64,z:-4.1})>5) return false;
+    if (key === SECRET_CODE[this.codeProgress]) {
+      this.codeProgress++;
+      this.codeFlash=.2;
+      if (this.codeProgress === SECRET_CODE.length) {
+        this.speakeasy=true;this.refreshMap();this.notify("THE VELVET HOUR · the house has a secret");this.events.push({type:"purchase"});
+      } else this.notify(`Lock ${this.codeProgress} / 8 · accepted`);
+      return true;
+    }
+    this.codeProgress=0;this.codeFlash=-.4;this.notify(key === "reset" ? "Lock reset" : "Wrong sequence · start again from the leftmost card");this.events.push({type:"deny"});return false;
   }
   damageEnemy(e: Enemy, damage: number, headshot: boolean, region: HitRegion = headshot ? "head" : "body") {
     if (e.health <= 0 || !Number.isFinite(damage) || damage <= 0) return;
@@ -1082,8 +1213,9 @@ export class Simulation {
     }
   }
   knife() {
-    if (this.phase !== "playing" || this.knifeCooldown > 0 || this.grenadeCooldown > 0) return false;
+    if (this.phase !== "playing" || this.meleeRemaining > 0 || this.knifeCooldown > 0 || this.grenadeCooldown > 0) return false;
     this.reloadRemaining = 0;
+    this.holdingChips = false;
     this.knifeRemaining = 0.55;
     this.knifeCooldown = 0.75;
     this.events.push({ type: "knife" });
@@ -1107,8 +1239,9 @@ export class Simulation {
     if (target) this.damageEnemy(target, 100, false);
   }
   throwGrenade() {
-    if (this.phase !== "playing" || this.grenades <= 0 || this.grenadeCooldown > 0 || this.knifeCooldown > 0) return false;
+    if (this.phase !== "playing" || this.meleeRemaining > 0 || this.grenades <= 0 || this.grenadeCooldown > 0 || this.knifeCooldown > 0) return false;
     this.grenades--; this.grenadeCooldown=.65;
+    this.holdingChips = false;
     this.reloadRemaining=0;
     this.projectiles.push({ id:this.nextGrenadeId++, ...this.player, y:(this.player.y ?? 0)+1.5,
       vx:Math.sin(this.yaw)*Math.cos(this.pitch)*8, vz:Math.cos(this.yaw)*Math.cos(this.pitch)*8,
@@ -1136,6 +1269,7 @@ export class Simulation {
         g.x += direction.x * travel;
         g.y += direction.y * travel;
         g.z += direction.z * travel;
+        if (g.kind && (contact || this.enemies.some(e => e.health > 0 && Math.hypot(e.x-g.x,e.z-g.z) < .45 && Math.abs(g.y-(e.y ?? 0)-1) < 1))) { g.fuse=0; break; }
         if (contact) {
           const n = hit.normal;
           const impact = g.vx * n.x + g.vy * n.y + g.vz * n.z;
@@ -1152,8 +1286,12 @@ export class Simulation {
         }
       }
       if (g.fuse > 0) continue;
+      if (g.kind === "flare") {
+        this.fires.push({id:g.id,x:g.x,y:g.y,z:g.z,remaining:4,tick:0,damage:g.damage ?? 100});
+        this.events.push({type:"explosion",weapon:"flare",position:g});continue;
+      }
       this.explosions.push({ id: g.id, x: g.x, y: g.y, z: g.z, remaining: 0.5 });
-      this.events.push({ type: "explosion", position: { x: g.x, z: g.z } });
+      this.events.push({ type: "explosion", position: { x: g.x, z: g.z }, weapon:g.kind === "grenade" ? "launcher" : undefined });
       const exposed = (p: WorldPosition) => {
         const origin = { x: g.x, y: g.y + 0.02, z: g.z };
         const delta = { x: p.x - origin.x, y: (p.y ?? 0) + 0.8 - origin.y, z: p.z - origin.z };
@@ -1165,18 +1303,50 @@ export class Simulation {
       for (const e of this.enemies) {
         const distance = dist(g, e);
         if (e.health > 0 && distance < 4.5 && exposed(e))
-          this.damageEnemy(e, 220 * (1 - distance / 5.5), false);
+          this.damageEnemy(e, (g.damage ?? 220) * (1 - distance / 5.5), false);
       }
       const distance = dist(g, this.player);
       if (distance < 4.5 && exposed(this.player)) this.hurt(70 * (1 - distance / 4.5));
     }
-    this.projectiles = this.projectiles.filter(g => g.fuse > 0);
+    this.projectiles=this.projectiles.filter(g=>g.fuse>0);
+    for (const fire of this.fires) {
+      fire.remaining-=dt;fire.tick-=dt;
+      if (fire.tick>0) continue;
+      fire.tick=.5;
+      for (const e of this.enemies) if(e.health>0 && dist(fire,e)<2.5 && hasSight(fire,e,this.rects,.5)) this.damageEnemy(e,fire.damage*.25,false);
+      if(dist(fire,this.player)<2.5 && hasSight(fire,this.player,this.rects,.5)) this.hurt(12);
+    }
+    this.fires=this.fires.filter(f=>f.remaining>0);
   }
-
-  fire() {
+  private meleeContact() {
+    const id = this.meleeWeapon;
+    if (!id) return;
+    let hits = 0;
+    // Stickman sweeps a 2.8 m, 100-degree fan; Fire Exit chops a narrow 1.9 m wedge at the nearest zombie.
+    const reach = id === "stick" ? 2.8 : 1.9, cone = id === "stick" ? Math.cos(50 * Math.PI / 180) : Math.cos(22 * Math.PI / 180);
+    const inReach = this.enemies.filter(e => {
+      const dx=e.x-this.player.x, dz=e.z-this.player.z, distance=Math.hypot(dx,dz);
+      return e.health>0 && distance<=reach &&
+        (dx*Math.sin(this.yaw)+dz*Math.cos(this.yaw))/Math.max(.001,distance)>=cone &&
+        hasSight(this.player,e,this.rects,1);
+    }).sort((a,b)=>dist(a,this.player)-dist(b,this.player));
+    for (const e of id === "axe" ? inReach.slice(0,1) : inReach) {
+      this.damageEnemy(e,this.weaponDamage(id),false); hits++;
+    }
+    if (hits) this.events.push({type:"meleeHit",weapon:id,count:hits});
+    if (hits && id === "stick") {
+      this.inventory.stick.mag--;
+      if (!this.inventory.stick.mag) {
+        this.events.push({type:"stickBreak",weapon:"stick"});this.notify("The craps rake splinters after its third hit!");
+      }
+    }
+  }
+  fire(alternate = false) {
     if (
+      this.meleeRemaining > 0 ||
+      this.holdingChips ||
       this.phase !== "playing" ||
-      this.reloadRemaining > 0 ||
+      (this.reloadRemaining > 0 && !isShellLoading(this.weapon)) ||
       this.knifeRemaining > 0 || this.grenadeCooldown > 0 ||
       this.fireCooldown > 0
     )
@@ -1184,15 +1354,34 @@ export class Simulation {
     const w = this.inventory[this.weapon],
       cfg = WEAPONS[this.weapon];
     if (w.mag <= 0) {
-      this.reload();
+      if (!this.reload() && w.reserve <= 0 && !isMelee(this.weapon)) {
+        this.fireCooldown = 0.3;
+        this.events.push({ type: "dry", weapon: this.weapon });
+      }
       return false;
     }
-    w.mag--;
+    this.reloadRemaining = 0;
+    if (isMelee(this.weapon)) {
+      this.meleeRemaining=meleeDuration(this.weapon);this.meleeWeapon=this.weapon;this.fireCooldown=cfg.interval;
+      this.events.push({type:"melee",weapon:this.weapon});return true;
+    }
+    const shells = alternate && this.weapon === "doublebarrel" ? Math.min(2,w.mag) : 1;
+    const side = this.weapon === "dual" ? w.mag % 2 : undefined;
+    w.mag -= shells;
     this.fireCooldown = cfg.interval;
-    this.events.push({ type: "shot", weapon: this.weapon });
-    for (let i = 0; i < cfg.pellets; i++) {
-      const yaw = this.yaw + (this.random() - 0.5) * cfg.spread * 2,
-        pitch = this.pitch + (this.random() - 0.5) * cfg.spread * 2;
+    this.events.push({ type: "shot", weapon: this.weapon, alternate: shells > 1, side });
+    const spread = cfg.spread * (this.aiming && cfg.pellets === 1 ? .35 : 1) + this.bloom;
+    this.bloom = Math.min(maxBloom(this.weapon), this.bloom + bloomPerShot(this.weapon));
+    if (this.weapon === "launcher" || this.weapon === "flare") {
+      this.projectiles.push({id:this.nextGrenadeId++,...this.player,y:(this.player.y ?? 0)+1.5,
+        vx:Math.sin(this.yaw)*Math.cos(this.pitch)*17,vz:Math.cos(this.yaw)*Math.cos(this.pitch)*17,
+        vy:1-Math.sin(this.pitch)*17,fuse:this.weapon === "flare" ? 1.2 : 1.6,
+        kind:this.weapon === "flare" ? "flare" : "grenade",damage:this.weaponDamage()});
+      return true;
+    }
+    for (let i = 0; i < cfg.pellets * shells; i++) {
+      const yaw = this.yaw + (this.random() - 0.5) * spread * 2,
+        pitch = this.pitch + (this.random() - 0.5) * spread * 2;
       const d: V3 = {
         x: Math.sin(yaw) * Math.cos(pitch),
         y: -Math.sin(pitch),
@@ -1200,41 +1389,43 @@ export class Simulation {
       };
       const o = { ...this.player, y: (this.player.y ?? 0) + 1.65 };
       let nearest = wallDistance(o, d, this.rects),
-        target: Enemy | undefined,
-        region: HitRegion = "body";
+        target: Enemy | undefined;
+      const contacts: {enemy:Enemy; distance:number; region:HitRegion}[] = [];
       for (const e of this.enemies) {
         if (e.health <= 0) continue;
+        let contact: typeof contacts[number] | undefined;
         for (const volume of zombieHitVolumes(e)) {
           const [x, y, z] = volume.center;
           const n = raySphere(o, d, { x: e.x + x * Math.cos(e.yaw) + z * Math.sin(e.yaw), y: (e.y ?? 0) + y,
             z: e.z - x * Math.sin(e.yaw) + z * Math.cos(e.yaw) }, volume.radius);
+          if (n < wallDistance(o,d,this.rects) && (!contact || n < contact.distance)) contact={enemy:e,distance:n,region:volume.region};
           if (n < nearest) {
             nearest = n;
             target = e;
-            region = volume.region;
           }
         }
+        if (contact) contacts.push(contact);
+      }
+      if (i === 0 && this.paintingOpen && !this.speakeasy) {
+        let key: string | undefined;
+        for (const button of KEYPAD_TARGETS) {
+          const n=rayBox(o,d,{x:button.x-.07,y:button.y-.12,z:button.z-.12},{x:button.x+.07,y:button.y+.12,z:button.z+.12});
+          if(n<nearest) {nearest=n;key=button.key;}
+        }
+        if(key) {this.enterSecretKey(key);return true;}
       }
       if (target) {
-        const falloff =
-          this.weapon === "shotgun"
-            ? Math.max(0.4, 1 - Math.max(0, nearest - 8) * 0.06)
-            : 1;
-        const damage = this.weaponDamage();
-        this.damageEnemy(target, damage * falloff * (region === "head" ? 2 : 1), region === "head", region);
+        const maxTargets=penetration(this.weapon);
+        const hits=contacts.sort((a,b)=>a.distance-b.distance).slice(0,maxTargets);
+        for (const [index, hit] of hits.entries()) {
+          const falloff=cfg.pellets>1 ? Math.max(.4,1-Math.max(0,hit.distance-8)*.06) : 1;
+          this.damageEnemy(hit.enemy,this.weaponDamage()*falloff*Math.pow(.75,index)*(hit.region === "head" ? 2 : 1),hit.region === "head",hit.region);
+          if (this.weapon === "lmg") hit.enemy.cooldown=Math.max(hit.enemy.cooldown,.4);
+        }
       }
     }
-    this.pitch = Math.max(
-      -1.3,
-      this.pitch -
-        (this.weapon === "shotgun"
-          ? 0.016
-          : this.weapon === "rifle"
-            ? 0.011
-            : this.weapon === "smg"
-              ? 0.0035
-              : 0.006),
-    );
+    this.pitch = Math.max(-1.3, this.pitch - recoilPitch(this.weapon) * shells);
+    this.yaw += this.weapon === "machinepistol" || this.weapon === "tommy" ? (this.random() - 0.5) * 0.006 : 0;
     return true;
   }
   hurt(amount: number) {
@@ -1347,15 +1538,45 @@ export class Simulation {
     if (this.phase !== "playing") return;
     dt = Math.min(0.05, Math.max(0, dt));
     this.time += dt;
+    this.codeFlash = this.codeFlash > 0 ? Math.max(0,this.codeFlash-dt) : Math.min(0,this.codeFlash+dt);
+    if (this.mystery && !this.mystery.resolved) {
+      this.mystery.remaining = Math.max(0,this.mystery.remaining-dt);
+      if (!this.mystery.remaining) {
+        this.mystery.resolved = true;
+        const reward=this.mystery.reward;
+        if (reward) {
+          const repeat=this.inventory[reward].owned;
+          this.inventory[reward]={owned:true,mag:this.capacity(reward),reserve:WEAPONS[reward].reserve};
+          this.weapon=reward;this.holdingChips=false;this.reloadRemaining=0;this.meleeRemaining=0;this.meleeWeapon=null;
+          this.fireCooldown=Math.max(this.fireCooldown,.45);
+          this.mystery.message=`${this.weaponName(reward)} · ${WEAPONS[reward].label.toLowerCase()} · ${repeat ? "ammunition restocked" : "equipped"}`;
+          this.events.push({type:"pickup",weapon:reward});
+        } else {this.mystery.message="The house keeps the chips. No weapon this time.";this.events.push({type:"deny"});}
+        this.notify(this.mystery.message);
+      }
+    }
     this.roundCueRemaining = Math.max(0, this.roundCueRemaining - dt);
     if (!this.roundCueRemaining) this.roundCue = null;
     this.damageAgo += dt;
     this.invulnerable = Math.max(0, this.invulnerable - dt);
     this.fireCooldown = Math.max(0, this.fireCooldown - dt);
+    if (this.fireCooldown <= 0) this.bloom = Math.max(0, this.bloom - dt * 0.09);
     this.knifeCooldown = Math.max(0, this.knifeCooldown - dt);
     this.grenadeCooldown = Math.max(0, this.grenadeCooldown - dt);
     const knifeBefore = this.knifeRemaining;
     this.knifeRemaining = Math.max(0, this.knifeRemaining - dt);
+    const meleeBefore=this.meleeRemaining;
+    this.meleeRemaining=Math.max(0,this.meleeRemaining-dt);
+    const contactAt = meleeContactTime(this.meleeWeapon);
+    if (meleeBefore>contactAt && this.meleeRemaining<=contactAt) this.meleeContact();
+    if (meleeBefore>0 && !this.meleeRemaining) {
+      if (this.meleeWeapon === "stick" && this.inventory.stick.mag===0) {
+        this.inventory.stick.owned=false;
+        this.weapon=this.inventory[this.lastFirearm]?.owned ? this.lastFirearm : WEAPON_ORDER.find(id=>this.inventory[id].owned && !isMelee(id)) ?? "pistol";
+        this.fireCooldown=Math.max(this.fireCooldown,.35);
+      }
+      this.meleeWeapon=null;
+    }
     if (knifeBefore > .37 && this.knifeRemaining <= .37) this.knifeContact();
     this.stepGrenades(dt);
     if (this.phase !== "playing") return;
@@ -1381,16 +1602,17 @@ export class Simulation {
         if (!this.dice.remaining) {
           this.dice.resolved = true;
           this.dice.resultRemaining = 6;
-          this.dice.round = Math.max(this.dice.round, this.wagerRound);
-          this.lastWagerRound = this.dice.round;
-          const seven = this.dice.values[0] + this.dice.values[1] === 7;
-          if (seven) {
-            this.slowRound = this.dice.round;
-            this.events.push({ type: "diceCurse" });
+          const total = this.dice.values[0] + this.dice.values[1];
+          if (total === 7) {
+            const lost=Object.values(this.bets).reduce((a,b)=>a+b,0);
+            this.bets={};this.crapsResult=`SEVEN · ${lost} chips lost · table cleared`;
+            this.events.push({ type: "deny" });
           } else {
-            this.points += 500;
-            this.earned += 500;
-            this.events.push({ type: "diceWin" });
+            const stake=this.bets[total as PlaceNumber] ?? 0;
+            const profit=stake ? placeProfit(total as PlaceNumber,stake) : 0;
+            this.points += profit;this.earned += profit;
+            this.crapsResult = profit ? `${total} · +${profit} chips · bets stay on the table` : `${total} · no winner · bets stay on the table`;
+            if(profit) this.events.push({ type: "diceWin" });
           }
         }
       } else
@@ -1406,14 +1628,16 @@ export class Simulation {
       if (this.reloadRemaining <= 0) {
         this.reloadRemaining = 0;
         const w = this.inventory[this.weapon],
-          amount = Math.min(this.capacity() - w.mag, w.reserve);
+          amount = Math.min(isShellLoading(this.weapon) ? 1 : this.capacity() - w.mag, w.reserve);
         w.mag += amount;
         w.reserve -= amount;
+        this.events.push({ type: "reloadDone", weapon: this.weapon });
+        if (isShellLoading(this.weapon) && w.mag<this.capacity() && w.reserve>0) this.reload();
       }
     }
     const length = Math.hypot(input.forward, input.strafe);
     this.moving = length > 0;
-    this.sprinting = input.sprint && length > 0;
+    this.sprinting = input.sprint && length > 0 && !this.aiming;
     if (length) {
       const f = input.forward / length,
         s = input.strafe / length,
@@ -1421,7 +1645,7 @@ export class Simulation {
           (this.sprinting
             ? RULES.sprint * (this.perks.nightShift ? 1.15 : 1)
             : RULES.walk) *
-          (this.slowed ? 0.8 : 1) *
+          (this.slowed ? 0.8 : 1) * weaponSpeed(this.weapon) *
           dt;
       moveActor(
         this.player,

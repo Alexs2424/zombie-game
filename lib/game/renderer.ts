@@ -17,6 +17,7 @@ import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
+import { PBRMaterial } from "@babylonjs/core/Materials/PBR/pbrMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
 import { LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader";
 import type { AssetContainer } from "@babylonjs/core/assetContainer";
@@ -32,6 +33,11 @@ import { SERVICE_RECTS } from "./service-layout";
 import { buildLoungeDecor } from "./lounge-decor";
 import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
 import { slotCabinetsForIsland } from "./slot-machines";
+import { CasinoVisuals } from "./casino-visuals";
+import { aimPose } from "./weapon-aim";
+import { VIEWMODELS } from "./weapon-viewmodels";
+import { ViewmodelState, WeaponRig } from "./weapon-rig";
+import { AXE_CABINET, meleeDuration } from "./weapon-expansion";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import {
   Simulation,
@@ -44,14 +50,20 @@ import {
   ROULETTE_RULES,
   WEAPONS,
   WEAPON_ORDER,
+  MYSTERY_WEAPONS,
   type WeaponId,
   type Rect,
+  type GameEvent,
 } from "./simulation";
 import "@babylonjs/core/Culling/ray";
 import { buildHotel } from "./hotel-scene";
 
 type ZombieView = ReturnType<typeof createZombie>;
 export class GameRenderer {
+  aimBlend = 0;
+  private aimedWeapon = "";
+  private reloadRecover = 0;
+  private wasReloading = false;
   engine: Engine;
   scene: Scene;
   camera: FreeCamera;
@@ -72,6 +84,7 @@ export class GameRenderer {
   > = {};
   private bartender?: ReturnType<typeof createCharacter>;
   private zombieAsset?: Awaited<ReturnType<typeof loadZombieAsset>>;
+  private casino: CasinoVisuals;
   private handLight: PointLight;
   private muzzleLight: PointLight;
   private rouletteWheel?: TransformNode;
@@ -100,7 +113,16 @@ export class GameRenderer {
   private serviceShadow?: ShadowGenerator;
   private serviceFallbacks = new Map<"truck" | "props", TransformNode>();
   private gunKick = 0;
+  private relicFinishes = new Map<Mesh,{original: PBRMaterial; gilded: PBRMaterial; weapon: WeaponId}>();
   private knifeModel?: TransformNode;
+  private rigs: Partial<Record<WeaponId, WeaponRig>> = {};
+  private weaponContainers: Partial<Record<WeaponId, AssetContainer>> = {};
+  private stickProp?: TransformNode;
+  private axeProp?: TransformNode;
+  private cabinetPane?: TransformNode;
+  private mysteryDisplay: Partial<Record<WeaponId, TransformNode>> = {};
+  private viewmodel = new ViewmodelState();
+  private revealUntil = 0;
   private grenadeMeshes = new Map<number, Mesh>();
   private blastMeshes = new Map<number, Mesh>();
   private flashTime = 0;
@@ -305,14 +327,9 @@ export class GameRenderer {
     this.muzzleLight.renderPriority = 30;
     this.gun = new TransformNode("hands", this.scene);
     this.gun.parent = this.camera;
-    this.guns = {
-      pistol: this.weapon("pistol"),
-      shotgun: this.weapon("shotgun"),
-      smg: this.weapon("smg"),
-      rifle: this.weapon("rifle"),
-      revolver: this.weapon("revolver"),
-      tommy: this.weapon("tommy"),
-    };
+    this.guns = Object.fromEntries(
+      WEAPON_ORDER.map((id) => [id, this.weapon(id)]),
+    ) as Record<WeaponId, TransformNode>;
     this.flash = MeshBuilder.CreateSphere(
       "muzzle",
       { diameter: 0.17, segments: 4 },
@@ -329,7 +346,9 @@ export class GameRenderer {
     );
     this.impact.material = this.mat("impact", "#e3c580", 1);
     this.impact.isVisible = false;
+    this.casino = new CasinoVisuals(this.scene,this.camera);
     this.ready = Promise.all([
+      this.casino.ready,
       this.hotel.ready,
       this.loadWeaponAssets(),
       this.loadTableAssets(),
@@ -514,6 +533,8 @@ export class GameRenderer {
           "craps-table",
           "roulette-table",
           "tables-sideboard",
+          "mystery-cabinet",
+          "secret-bar",
         ].includes(r.id)
       )
         continue;
@@ -1184,7 +1205,7 @@ export class GameRenderer {
     );
     this.label(
       "craps rules",
-      "SEVEN’S CURSE",
+      "PLACE YOUR CHIPS",
       35,
       2.5,
       -11.9,
@@ -1195,7 +1216,7 @@ export class GameRenderer {
     );
     this.label(
       "craps cost",
-      "250 CHIPS • ONE ROLL PER ROUND",
+      "25 MINIMUM • 6 & 8 START AT 30",
       35,
       1.93,
       -11.9,
@@ -1206,7 +1227,7 @@ export class GameRenderer {
     );
     this.label(
       "craps risk",
-      "7: −20% SPEED • OTHER ROLLS: 500 CHIPS",
+      "WINNINGS PAID • BETS STAY • SEVEN CLEARS",
       35,
       1.48,
       -11.9,
@@ -1740,7 +1761,15 @@ export class GameRenderer {
   }
   private async loadWeaponAssets() {
     await Promise.all(
-      WEAPON_ORDER.map(async (id) => {
+      ([
+        "pistol",
+        "shotgun",
+        "smg",
+        "rifle",
+        "revolver",
+        ...Object.keys(VIEWMODELS),
+      ] as WeaponId[]).map(async (id) => {
+        const spec = VIEWMODELS[id];
         const asset = await LoadAssetContainerAsync(
           `/models/${id}.glb`,
           this.scene,
@@ -1750,28 +1779,48 @@ export class GameRenderer {
           return;
         }
         this.weaponAssets.push(asset);
+        this.weaponContainers[id] = asset;
         const firstPerson = asset.instantiateModelsToScene(
           (n) => `${id}-${n}`,
           false,
           { doNotInstantiate: true },
         );
         for (const root of firstPerson.rootNodes) root.parent = this.guns[id];
-        const hands = await LoadAssetContainerAsync(
-          `/models/hands-${id}.glb`,
-          this.scene,
-        );
+        const hands = spec?.hands === null
+          ? null
+          : await LoadAssetContainerAsync(
+              `/models/hands-${spec ? spec.hands : id}.glb`,
+              this.scene,
+            );
         if (this.scene.isDisposed) {
-          hands.dispose();
+          hands?.dispose();
           return;
         }
-        this.weaponAssets.push(hands);
-        const grip = hands.instantiateModelsToScene(
-          (n) => `${id}-grip-${n}`,
-          false,
-          { doNotInstantiate: true },
-        );
-        for (const root of grip.rootNodes) root.parent = this.guns[id];
-        this.handParts[id] = this.guns[id]
+        if (hands) {
+          this.weaponAssets.push(hands);
+          const grip = hands.instantiateModelsToScene(
+            (n) => `${id}-grip-${n}`,
+            false,
+            { doNotInstantiate: true },
+          );
+          for (const root of grip.rootNodes) root.parent = this.guns[id];
+        }
+        if (spec && hands && spec.extraHands) {
+          // Snake Eyes: a second fitted right hand under the left pistol. Parenting a glTF
+          // root inside another glTF root cancels the loader's X mirror, so it reads as a left hand.
+          const mount = this.guns[id]
+            .getDescendants(false)
+            .find((n) => n.name === `${id}-${spec.extraHands!.parent}`);
+          const extra = hands.instantiateModelsToScene((n) => `${id}-grip2-${n}`, false, { doNotInstantiate: true });
+          for (const root of extra.rootNodes) root.parent = mount ?? this.guns[id];
+          for (const n of this.guns[id].getDescendants(false))
+            if (n.name === `${id}-grip2-LeftHand`) (n as TransformNode).setEnabled(false);
+        }
+        if (spec) {
+          this.guns[id].scaling.setAll(spec.scale ?? 1);
+          this.rigs[id] = new WeaponRig(id, spec, this.guns[id]);
+        }
+        this.handParts[id] = spec ? [] : this.guns[id]
           .getDescendants()
           .filter((n) => n.name === `${id}-grip-LeftHand`)
           .map((n) => ({
@@ -1781,8 +1830,14 @@ export class GameRenderer {
         for (const mesh of this.guns[id].getChildMeshes()) {
           mesh.renderingGroupId = 1;
           mesh.isPickable = false;
+          if(mesh instanceof Mesh && !mesh.name.includes('-grip-') && mesh.material instanceof PBRMaterial) {
+            const gilded=mesh.material.clone(`relic-${id}-${mesh.name}`);
+            gilded.albedoColor=new Color3(.7,.45,.12);gilded.metallic=.85;gilded.roughness=.26;
+            gilded.emissiveColor=new Color3(.035,.019,.002);
+            this.relicFinishes.set(mesh,{original:mesh.material,gilded,weapon:id});
+          }
         }
-        this.movingParts[id] = this.guns[id]
+        this.movingParts[id] = spec ? [] : this.guns[id]
           .getDescendants()
           .filter((n) => {
             if (!(n instanceof TransformNode)) return false;
@@ -1823,6 +1878,7 @@ export class GameRenderer {
         }
       }),
     );
+    await this.loadWeaponProps();
     this.handLight.includedOnlyMeshes = WEAPON_ORDER.flatMap((id) =>
       this.guns[id].getChildMeshes(),
     );
@@ -1834,6 +1890,70 @@ export class GameRenderer {
         material.maxSimultaneousLights = 8;
     }
   }
+  /** World copies: Stickman on the craps table, Fire Exit in its cabinet, Mystery Box reveal models. */
+  private async loadWeaponProps() {
+    const world = (id: WeaponId, name: string, parent: TransformNode, hide: string[] = []) => {
+      const asset = this.weaponContainers[id];
+      if (!asset) return;
+      const copy = asset.instantiateModelsToScene((n) => `${name}-${n}`, false, { doNotInstantiate: true });
+      for (const root of copy.rootNodes) root.parent = parent;
+      for (const n of parent.getDescendants(false))
+        if (hide.some((h) => n.name === `${name}-${h}`)) (n as TransformNode).setEnabled(false);
+      for (const m of parent.getChildMeshes()) {
+        m.isPickable = false;
+        m.receiveShadows = true;
+        const material = m.material as unknown as { maxSimultaneousLights?: number };
+        if (material && "maxSimultaneousLights" in material) material.maxSimultaneousLights = 8;
+      }
+    };
+    // Stickman: stood against the west end of the craps table, brass teeth facing the felt.
+    const stick = new TransformNode("stickman rack", this.scene);
+    stick.position.set(32.18, 0.33, -3.1);
+    stick.rotationQuaternion = Quaternion.RotationAxis(Vector3.Forward(), -0.13)
+      .multiply(Quaternion.RotationAxis(Vector3.Right(), -Math.PI / 2))
+      .multiply(Quaternion.RotationAxis(Vector3.Forward(), Math.PI / 2));
+    world("stick", "world-stick", stick);
+    const brass = this.mat("stick hook brass", "#b0914f", 0.05);
+    const hook = MeshBuilder.CreateTorus("stick brass hook", { diameter: 0.05, thickness: 0.009, tessellation: 18 }, this.scene);
+    hook.position.set(32.3, 0.96, -3.1);
+    hook.rotation.x = Math.PI / 2;
+    hook.material = brass;
+    hook.isPickable = false;
+    this.stickProp = stick;
+    // Fire Exit: red break-glass cabinet on the staff passage's north wall.
+    const cabinet = new TransformNode("fire exit cabinet", this.scene);
+    // Mounted on the service corridor's 25 mm wall finish (face at z = 11.9175).
+    cabinet.position.set(AXE_CABINET.x, 1.45, 11.915);
+    cabinet.rotation.y = Math.PI;
+    const cabAsset = await LoadAssetContainerAsync("/models/fire-cabinet.glb", this.scene).catch(() => null);
+    if (cabAsset && !this.scene.isDisposed) {
+      this.weaponAssets.push(cabAsset);
+      const copy = cabAsset.instantiateModelsToScene((n) => `cabinet-${n}`, false, { doNotInstantiate: true });
+      for (const root of copy.rootNodes) root.parent = cabinet;
+      this.cabinetPane = cabinet
+        .getChildMeshes()
+        .find((m) => m.material?.name.includes("glass")) as TransformNode | undefined;
+    }
+    const emergency = new PointLight("fire cabinet emergency lamp", new Vector3(AXE_CABINET.x, 2.25, 11.55), this.scene);
+    emergency.diffuse = new Color3(1, 0.62, 0.5);
+    emergency.intensity = 0.9;
+    emergency.range = 3.2;
+    const axe = new TransformNode("fire exit axe", this.scene);
+    axe.parent = cabinet;
+    axe.position.set(0.16, 0.06, 0.06);
+    axe.rotation.set(0, -Math.PI / 2, 0);
+    world("axe", "world-axe", axe);
+    this.axeProp = axe;
+    // Velvet Fortune reveal: the reels shuffle through the ten firearms above the cabinet.
+    for (const id of MYSTERY_WEAPONS) {
+      const node = new TransformNode(`mystery reveal ${id}`, this.scene);
+      node.position.set(48, 1.72, -7.92);
+      node.scaling.setAll(1.35);
+      world(id, `mystery-${id}`, node, ["Loading shell", "Loading round", "Stripper clip"]);
+      node.setEnabled(false);
+      this.mysteryDisplay[id] = node;
+    }
+  }
   private weapon(id: WeaponId) {
     const root = new TransformNode(id, this.scene);
     root.parent = this.gun;
@@ -1843,7 +1963,20 @@ export class GameRenderer {
     this.zombieShadows.set(id, new Set());
     return createZombie(this.scene, id, this.zombieAsset!);
   }
-  shot(id: WeaponId) {
+  /** Feed every simulation event to the viewmodel animators. */
+  weaponEvent(event: GameEvent) {
+    this.viewmodel.event(event, this.time);
+  }
+  shot(id: WeaponId, side = 0) {
+    const spec = VIEWMODELS[id];
+    if (spec) {
+      this.flashTime = 0.05;
+      const [x, y, z] = spec.muzzle;
+      this.flash.position.set(side ? -x : x, y, z);
+      this.flash.scaling.setAll(spec.flash);
+      return;
+    }
+    this.flash.scaling.setAll(1);
     this.gunKick =
       id === "revolver"
         ? 0.115
@@ -1908,6 +2041,16 @@ export class GameRenderer {
     }
     for(const g of sim.projectiles) {
       let mesh=this.grenadeMeshes.get(g.id);
+      if(!mesh && g.kind === "grenade") {
+        // Debt Collector 40 mm round: olive ogive on a brass band, flying nose-first.
+        mesh=MeshBuilder.CreateCylinder("40mm round body",{diameterTop:.034,diameterBottom:.04,height:.07,tessellation:14},this.scene);
+        mesh.material=this.mat("40mm olive","#4f5a33");mesh.isPickable=false;
+        const nose=MeshBuilder.CreateCylinder("40mm nose",{diameterTop:.006,diameterBottom:.034,height:.035,tessellation:14},this.scene);
+        nose.parent=mesh;nose.position.y=.052;nose.material=this.mat("40mm olive","#4f5a33");nose.isPickable=false;
+        const band=MeshBuilder.CreateCylinder("40mm band",{diameter:.042,height:.008,tessellation:14},this.scene);
+        band.parent=mesh;band.position.y=-.02;band.material=this.mat("40mm brass","#b08d49",.05);band.isPickable=false;
+        this.grenadeMeshes.set(g.id,mesh);
+      }
       if(!mesh) {
         mesh=MeshBuilder.CreateSphere("thrown grenade",{diameter:.17,segments:12},this.scene);
         mesh.scaling.y=1.2;mesh.material=this.mat("grenade casing","#52613a");mesh.isPickable=false;
@@ -1915,7 +2058,14 @@ export class GameRenderer {
         cap.parent=mesh;cap.position.y=.095;cap.material=this.mat("grenade fuse","#eb9d43",.5);cap.isPickable=false;
         this.grenadeMeshes.set(g.id,mesh);
       }
-      mesh.position.set(g.x,g.y,g.z);mesh.rotation.set(sim.time*7,0,sim.time*4);
+      mesh.position.set(g.x,g.y,g.z);
+      if (g.kind === "grenade") {
+        // Point the round's +Y (nose) along its velocity.
+        const v=new Vector3(g.vx,g.vy,g.vz).normalize();
+        const axis=Vector3.Cross(Vector3.Up(),v);
+        const angle=Math.acos(Math.max(-1,Math.min(1,Vector3.Dot(Vector3.Up(),v))));
+        mesh.rotationQuaternion=axis.lengthSquared()>1e-8?Quaternion.RotationAxis(axis.normalize(),angle):Quaternion.Identity();
+      } else mesh.rotation.set(sim.time*7,0,sim.time*4);
     }
     for(const [id,mesh] of this.blastMeshes) if(!sim.explosions.some(g=>g.id===id)) {
       mesh.material?.dispose();mesh.dispose();this.blastMeshes.delete(id);
@@ -1935,6 +2085,36 @@ export class GameRenderer {
     }
   }
   update(sim: Simulation, dt: number) {
+    const priorGunPosition=this.gun.position.clone(),priorGunRotation=this.gun.rotation.clone();
+    if(this.wasReloading && !sim.reloadRemaining) this.reloadRecover=.18;
+    this.wasReloading=sim.reloadRemaining>0;
+    this.reloadRecover=Math.max(0,this.reloadRecover-dt);
+    const aim = aimPose(sim.weapon);
+    if (this.aimedWeapon !== sim.weapon) { this.aimBlend = 0; this.aimedWeapon = sim.weapon; }
+    this.aimBlend += ((sim.aiming && aim ? 1 : 0) - this.aimBlend) * (1-Math.exp(-dt*18));
+    this.camera.fov = 1.32 + ((aim?.fov ?? 1.32)-1.32)*this.aimBlend;
+    this.casino.update(sim);
+    this.stickProp?.setEnabled(!sim.stickTaken);
+    this.axeProp?.setEnabled(!sim.axeTaken);
+    this.cabinetPane?.setEnabled(!sim.axeTaken);
+    const reveal = sim.mystery;
+    const shown = !reveal
+      ? null
+      : !reveal.resolved
+        ? MYSTERY_WEAPONS[Math.floor(this.time * 11) % MYSTERY_WEAPONS.length]
+        : reveal.reward && reveal.remaining <= 0 && this.revealUntil > this.time
+          ? reveal.reward
+          : null;
+    if (reveal && !reveal.resolved) this.revealUntil = this.time + 2.2;
+    for (const id of MYSTERY_WEAPONS) {
+      const node = this.mysteryDisplay[id];
+      if (!node) continue;
+      node.setEnabled(id === shown);
+      if (id === shown) {
+        node.rotation.y = this.time * (reveal?.resolved ? 1.2 : 0.4) + Math.PI / 2;
+        node.position.y = 1.72 + Math.sin(this.time * 2.2) * 0.02 + (reveal?.resolved ? Math.min(0.25, (2.2 - (this.revealUntil - this.time)) * 0.4) : 0);
+      }
+    }
     this.hotel.update(sim);
     this.updateEquipment(sim);
     this.time += dt;
@@ -1942,7 +2122,7 @@ export class GameRenderer {
       sim.player.x,
       (sim.player.y ?? 0) + 1.65 +
         (sim.moving && sim.phase === "playing"
-          ? Math.sin(sim.time * 12) * 0.018
+          ? Math.sin(sim.time * 12) * 0.018 * (1-this.aimBlend)
           : 0),
       sim.player.z,
     );
@@ -1968,8 +2148,44 @@ export class GameRenderer {
         ? 0.5 + Math.sin(sim.reloadRemaining * 6) * 0.12
         : this.gunKick * 1.4;
     this.gun.rotation.z = sim.sprinting ? -0.2 : 0;
+    this.gun.rotation.y = 0;
+    const rig = this.rigs[sim.weapon];
+    if (rig) {
+      const inv = sim.inventory[sim.weapon];
+      const pose = rig.spec.animate(
+        this.viewmodel.input(sim.weapon, this.time, dt, {
+          reloadRemaining: sim.reloadRemaining,
+          reloadDuration: sim.reloadDuration(),
+          mag: inv.mag,
+          capacity: sim.capacity(),
+          interval: WEAPONS[sim.weapon].interval,
+          melee: sim.meleeRemaining > 0 ? 1 - sim.meleeRemaining / meleeDuration(sim.weapon) : -1,
+          moving: sim.moving && sim.phase === "playing",
+          sprinting: sim.sprinting,
+        }),
+      );
+      const [rx, ry, rz] = rig.spec.root;
+      this.gun.position.set(rx + pose.pos[0], ry + pose.pos[1], rz + pose.pos[2]);
+      this.gun.rotation.set(pose.rot[0], pose.rot[1], pose.rot[2]);
+      rig.apply(pose,dt,sim.reloadRemaining>0);
+    }
+    if(this.reloadRecover>0) {
+      const recover=1-Math.exp(-dt*32);
+      this.gun.position.copyFrom(Vector3.Lerp(priorGunPosition,this.gun.position,recover));
+      this.gun.rotation.copyFrom(Vector3.Lerp(priorGunRotation,this.gun.rotation,recover));
+    }
+    if (aim && this.aimBlend > .001) {
+      const a = this.aimBlend;
+      this.gun.position.x += (aim.x-this.gun.position.x)*a;
+      this.gun.position.y += (aim.y-this.gun.position.y)*a;
+      this.gun.position.z += (aim.z-this.gun.position.z)*a;
+      this.gun.rotation.x += (aim.pitch-this.gun.rotation.x)*a;
+      this.gun.rotation.y *= 1-a;
+      this.gun.rotation.z *= 1-a;
+    }
     this.gun.position.y -= sim.grenadeCooldown > 0 ? Math.sin(sim.grenadeCooldown/.65*Math.PI)*.25 : 0;
-    for (const id of WEAPON_ORDER) this.guns[id].setEnabled(sim.weapon === id && sim.knifeRemaining <= 0);
+    for (const id of WEAPON_ORDER) this.guns[id].setEnabled(sim.weapon === id && sim.knifeRemaining <= 0 && !sim.holdingChips && !(aim?.scope && this.aimBlend>.95));
+    for (const [mesh,finish] of this.relicFinishes) mesh.material=sim.relics[finish.weapon]?finish.gilded:finish.original;
     const reloadProgress =
       sim.reloadRemaining > 0
         ? 1 - sim.reloadRemaining / sim.reloadDuration()
@@ -2150,6 +2366,7 @@ export class GameRenderer {
     this.engine.resize();
   }
   dispose() {
+    this.casino.dispose();
     this.hotel.dispose();
     for (const asset of this.weaponAssets) asset.dispose();
     this.scene.dispose();

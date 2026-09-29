@@ -18,7 +18,7 @@ export const HOTEL = {
     { id: 'hotel-stair-right', cx: 7, cz: 30, side: 1, innerRadius: 2.5, outerRadius: 5.5, bottomY: 0, topY: 4 },
   ] as Stair[],
 };
-const CASINO = points([[-16, -12], [42, -12], [42, 12], [-16, 12]]);
+const CASINO = points([[-16, -12], [52, -12], [52, 12], [-16, 12]]);
 const FOYER = points([[-5.5, 11.5], [-0.5, 11.5], [-0.5, 17], [-5.5, 17]]);
 export const HOTEL_SURFACES = [
   { id: 'hotel-foyer', kind: 'flat' as const, y: 0, polygon: FOYER },
