@@ -2367,3 +2367,13 @@ h1 i {
 .range-workspace .hud-top { justify-content: center; }
 
 .range-spawn-buttons { display: flex; gap: 8px; }
+
+.development-navigation { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.development-navigation button, .debug-actions button { cursor: pointer; padding: 10px 14px; border: 1px solid #9e8958; border-radius: 4px; background: #263438; color: #eee0bd; font: 12px/1.4 system-ui; }
+.debug-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; padding: 12px; border: 1px solid #526264; }
+.debug-actions small { flex-basis: 100%; }
+.development-navigation button:hover, .debug-actions button:hover { background: #405258; }
+.development-navigation button:active, .debug-actions button:active, .dev-panel button:active { transform: translateY(1px); }
+.development-navigation button:focus-visible, .debug-actions button:focus-visible { outline: 2px solid #e0bf72; outline-offset: 3px; }
+.debug-actions button:disabled { opacity: .4; cursor: default; }
+.range-panel .development-navigation { flex-wrap: nowrap; }

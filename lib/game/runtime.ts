@@ -572,8 +572,12 @@ export class GameRuntime {
   /** Small cheats for the current run; preserve pause, position, weapons and input mode. */
   debugAction(action: "unlock-all" | "add-chips" | "toggle-invulnerability") {
     if (process.env.NODE_ENV === "production") return;
+    if (this.sim.phase === "ready" || this.sim.phase === "dead") {
+      this.sim = this.freshSimulation();
+      this.sim.start(); this.sim.pause();
+      this.zombieAudio.reset(); this.audio.resetZombies(); this.audio.resetSlots();
+    }
     const s = this.sim;
-    if (s.phase === "ready" || s.phase === "dead") return;
     if (action === "toggle-invulnerability") {
       s.invulnerable = s.invulnerable > 1 ? 0 : 99999;
       s.notify(s.invulnerable ? "DEBUG · Invulnerability on" : "DEBUG · Invulnerability off · damage enabled");
@@ -581,8 +585,9 @@ export class GameRuntime {
       s.doorsOpen = { lounge: true, shortcut: true, vip: true, vipExit: true, supply: true, cashier: true };
       s.hotel = s.speakeasy = true;
       s.paintingOpen = true;
+      s.hotelMystery.passageOpen = true;
       s.refreshMap();
-      s.notify("DEBUG · All doors open, including the hotel and speakeasy");
+      s.notify("DEBUG · All doors open, including the hotel, gallery and speakeasy");
     } else {
       s.points += 10000;
       s.notify("DEBUG · Added 10,000 chips");
