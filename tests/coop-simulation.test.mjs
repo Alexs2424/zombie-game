@@ -242,3 +242,31 @@ test("a final self-grenade wipes the team before an imminent respawn", () => {
   assert.equal(b.phase, "dead");
   assert.equal(a.round, 0);
 });
+
+
+test("every actor sees shared corpse collapse on its original floor, aged once per world tick", () => {
+  const { game, sims } = room(4);
+  const upper = { ...enemy(90, -12, -5, 50), y: 4, missing: { leftArm: true } };
+  const ground = enemy(91, -12, -4, 50);
+  sims[0].enemies = [upper, ground];
+  sims[0].damageEnemy(upper, 100, false);
+  sims[1].damageEnemy(ground, 100, false);
+  sims[2].damageEnemy(upper, 100, false);
+  assert.equal(sims[0].corpses.length, 2, "a dead enemy never creates a second body");
+  sims[0].shopOpen = true;
+  game.step(.05, new Map());
+  for (const sim of sims) {
+    assert.equal(sim.corpses, sims[0].corpses);
+    assert.deepEqual(sim.corpses.map(corpse => corpse.age), [.05, .05]);
+    assert.equal(sim.enemies.length, 0);
+  }
+  const visible = game.snapshot("3").self.corpses;
+  assert.equal(visible.length, 2);
+  assert.equal(visible[0].enemy.y, 4);
+  assert.equal(visible[0].enemy.missing.leftArm, true);
+  assert.equal(visible[1].enemy.y, 0);
+  step(game, 4.5);
+  assert.equal(sims[0].corpses.length, 2, "bodies survive into their fade");
+  step(game, 1.55);
+  assert.equal(game.snapshot("1").self.corpses.length, 0, "expired bodies disappear for everyone");
+});

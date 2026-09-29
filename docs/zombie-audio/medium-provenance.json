@@ -1,0 +1,433 @@
+{
+  "service": "https://huggingface.co/spaces/stabilityai/stable-audio-3",
+  "api_origin": "https://stabilityai-stable-audio-3.hf.space",
+  "model": "stabilityai/stable-audio-3-medium",
+  "variant_key": "medium",
+  "steps": 8,
+  "cfg_scale": 1.0,
+  "sampler_type": "pingpong",
+  "processed_at": "2026-09-29T04:43:45.575579+00:00",
+  "created_by": "Offline processing of downloaded generated audio; no runtime AI dependency",
+  "manifest_parameters": "Requested generation parameters; consult each asset's generation_metadata for captured service metadata.",
+  "processing": "Average channels to mono; scipy polyphase resample to 24000 Hz; second-order zero-phase Butterworth highpass 80 Hz and lowpass 6000 Hz; 25 ms sine-squared fades; target -21 dBFS full-clip RMS with -3 dBFS peak ceiling; signed PCM16 WAV.",
+  "auditory_qa": "Not performed by this processor; objective signal checks only.",
+  "original_provenance": "docs/zombie-audio/provenance.json (preserved unchanged)",
+  "assets": [
+    {
+      "file": "last-medium-01.wav",
+      "duration": 3,
+      "seed": 26092901,
+      "prompt": "TrackType: SFX. One isolated weary zombie makes a low puzzled throaty groan, then a short breathy sigh as if looking for someone in an empty hotel. Restrained natural creature vocal performance, mildly confused, subtle dry humor, no words, no laughter, no scream. Close microphone, dry recording, no echo, no music, no other sounds. Brief silence before and after.",
+      "raw_file": "outputs/zombie-audio-medium/last-medium-01.wav",
+      "raw_sha256": "0c6d10ae3516d7d0d5c40b263c3e29639ca4b5e87a6c82e2a649dec9b4d4e122",
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 44100,
+        "decoded_dtype": "int16"
+      },
+      "source_sample_rate": 44100,
+      "source_channels": 2,
+      "source_duration_seconds": 3.0,
+      "source_signal": {
+        "rms_dbfs": -14.001,
+        "peak_dbfs": -0.0,
+        "dc_offset": -7.772e-05
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 3.0,
+      "normalization_gain_db": -5.606,
+      "rms_dbfs": -21.0,
+      "peak_dbfs": -6.184,
+      "dc_offset": -4e-08,
+      "clipped_samples": 0,
+      "generation_metadata_file": "outputs/zombie-audio-medium/last-medium-01.wav.json",
+      "generation_metadata": {
+        "submission_completed_at": "2026-09-29T04:13:33.188770+00:00",
+        "model": "stabilityai/stable-audio-3-medium",
+        "authentication": "anonymous public demo API",
+        "request": {
+          "data": [
+            "medium",
+            "TrackType: SFX. One isolated weary zombie makes a low puzzled throaty groan, then a short breathy sigh as if looking for someone in an empty hotel. Restrained natural creature vocal performance, mildly confused, subtle dry humor, no words, no laughter, no scream. Close microphone, dry recording, no echo, no music, no other sounds. Brief silence before and after.",
+            3,
+            8,
+            1.0,
+            "pingpong",
+            26092901
+          ]
+        },
+        "event": {
+          "event_id": "aaf495cd79354e4a8bf13fabe718abc7"
+        },
+        "response": [
+          {
+            "path": "/tmp/gradio/bc28f637fddfd4b7d16a16760bd2a37af5b1016d1e8e34ff650da5233147279a/sa3.wav",
+            "url": "https://stabilityai-stable-audio-3.hf.space/gradio_api/file=/tmp/gradio/bc28f637fddfd4b7d16a16760bd2a37af5b1016d1e8e34ff650da5233147279a/sa3.wav",
+            "size": null,
+            "orig_name": "sa3.wav",
+            "mime_type": null,
+            "is_stream": false,
+            "meta": {
+              "_type": "gradio.FileData"
+            }
+          }
+        ]
+      },
+      "generation_metadata_status": "Recorded sidecar metadata",
+      "sha256": "1b184bcaaaade90fb06cd607ea53692de78a229d6882be1fd3d368d8160c67ad",
+      "bytes": 144044
+    },
+    {
+      "file": "chase-medium-01.wav",
+      "duration": 3,
+      "seed": 26092902,
+      "prompt": "TrackType: SFX. One husky adult zombie makes two low breathy exertion grunts followed by a tired raspy exhale while slowly pursuing someone. Restrained, quietly determined, slightly out of breath. Natural throaty monster voice, no words, no laughter, no scream. Dry close microphone recording, no footsteps, no music, no echo or background sound. Brief silence before and after.",
+      "raw_file": "outputs/zombie-audio-medium/chase-medium-01.wav",
+      "raw_sha256": "5de90f888dc42d98b4ea27c9433e2184000378e9a7e632e32cb7c110f618838d",
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 44100,
+        "decoded_dtype": "int16"
+      },
+      "source_sample_rate": 44100,
+      "source_channels": 2,
+      "source_duration_seconds": 3.0,
+      "source_signal": {
+        "rms_dbfs": -18.884,
+        "peak_dbfs": -0.0,
+        "dc_offset": -0.00063393
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 3.0,
+      "normalization_gain_db": -2.29,
+      "rms_dbfs": -22.346,
+      "peak_dbfs": -3.0,
+      "dc_offset": -5e-08,
+      "clipped_samples": 0,
+      "generation_metadata_file": "outputs/zombie-audio-medium/chase-medium-01.wav.json",
+      "generation_metadata": {
+        "generated_at": "2026-09-29T04:14:42.511906+00:00",
+        "request": {
+          "data": [
+            "medium",
+            "TrackType: SFX. One husky adult zombie makes two low breathy exertion grunts followed by a tired raspy exhale while slowly pursuing someone. Restrained, quietly determined, slightly out of breath. Natural throaty monster voice, no words, no laughter, no scream. Dry close microphone recording, no footsteps, no music, no echo or background sound. Brief silence before and after.",
+            3,
+            8,
+            1.0,
+            "pingpong",
+            26092902
+          ]
+        },
+        "event": {
+          "event_id": "3cb65569985844858769d7430dc8011a"
+        },
+        "response": [
+          {
+            "path": "/tmp/gradio/f539daa5e1d102f77fa4b4bbc0c95d2588965bd08aa0e5a1ceaae13d79df0bca/sa3.wav",
+            "url": "https://stabilityai-stable-audio-3.hf.space/gradio_api/file=/tmp/gradio/f539daa5e1d102f77fa4b4bbc0c95d2588965bd08aa0e5a1ceaae13d79df0bca/sa3.wav",
+            "size": null,
+            "orig_name": "sa3.wav",
+            "mime_type": null,
+            "is_stream": false,
+            "meta": {
+              "_type": "gradio.FileData"
+            }
+          }
+        ]
+      },
+      "generation_metadata_status": "Recorded sidecar metadata",
+      "sha256": "5515329005a9b2d8c3d61049e2cdd10d1cae1de04dd4aa1978ebdd9a6c6c9cda",
+      "bytes": 144044
+    },
+    {
+      "file": "chase-medium-02.wav",
+      "duration": 3,
+      "seed": 26092903,
+      "prompt": "TrackType: SFX. One weary zombie gives a gravelly nasal growl, a short pause, then a soft wheezing grunt. A different slightly higher raspy creature voice with restrained effort and subtle comic exhaustion. No words, no laughter, no scream. Isolated dry close microphone recording, no footsteps, no music, no echo or background sound. Brief silence before and after.",
+      "raw_file": "outputs/zombie-audio-medium/chase-medium-02.wav",
+      "raw_sha256": "e2bb0cab7bd86ab6586c8a2f708dace678c9d21ef4530630b219fc6050ca96f3",
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 44100,
+        "decoded_dtype": "int16"
+      },
+      "source_sample_rate": 44100,
+      "source_channels": 2,
+      "source_duration_seconds": 3.0,
+      "source_signal": {
+        "rms_dbfs": -15.046,
+        "peak_dbfs": -0.0,
+        "dc_offset": -0.00099645
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 3.0,
+      "normalization_gain_db": -5.821,
+      "rms_dbfs": -21.0,
+      "peak_dbfs": -6.272,
+      "dc_offset": -6e-08,
+      "clipped_samples": 0,
+      "generation_metadata_file": "outputs/zombie-audio-medium/chase-medium-02.wav.json",
+      "generation_metadata": {
+        "generated_at": "2026-09-29T04:14:44.425267+00:00",
+        "request": {
+          "data": [
+            "medium",
+            "TrackType: SFX. One weary zombie gives a gravelly nasal growl, a short pause, then a soft wheezing grunt. A different slightly higher raspy creature voice with restrained effort and subtle comic exhaustion. No words, no laughter, no scream. Isolated dry close microphone recording, no footsteps, no music, no echo or background sound. Brief silence before and after.",
+            3,
+            8,
+            1.0,
+            "pingpong",
+            26092903
+          ]
+        },
+        "event": {
+          "event_id": "a3c13609144f498f830d408e662a905d"
+        },
+        "response": [
+          {
+            "path": "/tmp/gradio/ff806441cca3bba6afb8e2e70ea1cb3936417707f2f1523a05a51e9ae7dfb815/sa3.wav",
+            "url": "https://stabilityai-stable-audio-3.hf.space/gradio_api/file=/tmp/gradio/ff806441cca3bba6afb8e2e70ea1cb3936417707f2f1523a05a51e9ae7dfb815/sa3.wav",
+            "size": null,
+            "orig_name": "sa3.wav",
+            "mime_type": null,
+            "is_stream": false,
+            "meta": {
+              "_type": "gradio.FileData"
+            }
+          }
+        ]
+      },
+      "generation_metadata_status": "Recorded sidecar metadata",
+      "sha256": "f1b38967c20d1b205a6da89a84e38901460b0c05b97e32a1c10cc474a2476835",
+      "bytes": 144044
+    },
+    {
+      "file": "attack-medium-01.wav",
+      "duration": 2,
+      "seed": 26092904,
+      "prompt": "TrackType: SFX. A single short sharp throaty zombie attack grunt, a raspy guttural huh with a breathy snarl, then silence. Immediate compact vocal effort for a monster lunging forward. Menacing but restrained, no prolonged growl, no words, no scream. Dry close microphone recording, no impacts, no music, no echo or background sound.",
+      "raw_file": "outputs/zombie-audio-medium/attack-medium-01.wav",
+      "raw_sha256": "9404a1e4f45e070734e7be32f1a80a0e41614b380389ca7417755f6573ffbde8",
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 44100,
+        "decoded_dtype": "int16"
+      },
+      "source_sample_rate": 44100,
+      "source_channels": 2,
+      "source_duration_seconds": 2.0,
+      "source_signal": {
+        "rms_dbfs": -18.898,
+        "peak_dbfs": -0.0,
+        "dc_offset": -0.00037182
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 2.0,
+      "normalization_gain_db": -2.21,
+      "rms_dbfs": -22.09,
+      "peak_dbfs": -3.0,
+      "dc_offset": -3e-08,
+      "clipped_samples": 0,
+      "generation_metadata_file": "outputs/zombie-audio-medium/attack-medium-01.wav.json",
+      "generation_metadata": {
+        "generated_at": "2026-09-29T04:20:55.125539+00:00",
+        "request": {
+          "data": [
+            "medium",
+            "TrackType: SFX. A single short sharp throaty zombie attack grunt, a raspy guttural huh with a breathy snarl, then silence. Immediate compact vocal effort for a monster lunging forward. Menacing but restrained, no prolonged growl, no words, no scream. Dry close microphone recording, no impacts, no music, no echo or background sound.",
+            2,
+            8,
+            1.0,
+            "pingpong",
+            26092904
+          ]
+        },
+        "event": {
+          "event_id": "e241b680844f4a7b9a873ef09e5f5735"
+        },
+        "response": [
+          {
+            "path": "/tmp/gradio/9a5998486c9be905f2e842228564823f0d697663a1781d8fb7dd6af4bc15e178/sa3.wav",
+            "url": "https://stabilityai-stable-audio-3.hf.space/gradio_api/file=/tmp/gradio/9a5998486c9be905f2e842228564823f0d697663a1781d8fb7dd6af4bc15e178/sa3.wav",
+            "size": null,
+            "orig_name": "sa3.wav",
+            "mime_type": null,
+            "is_stream": false,
+            "meta": {
+              "_type": "gradio.FileData"
+            }
+          }
+        ],
+        "model": "stabilityai/stable-audio-3-medium",
+        "authentication": "Hugging Face token (account quota)"
+      },
+      "generation_metadata_status": "Recorded sidecar metadata",
+      "sha256": "58a3a62a6f936ee2397f92e1bed5416f886866a2891457a27bb01505a3bd859a",
+      "bytes": 96044
+    },
+    {
+      "file": "death-medium-01.wav",
+      "duration": 2,
+      "seed": 26092905,
+      "prompt": "TrackType: SFX. A single zombie gives a short low defeated groan that quickly falls into a soft breathy exhale and stops. Compact weary creature death vocal, restrained and slightly pathetic, no dramatic scream, no words. Dry close microphone recording, no body impact, no music, no echo or background sound. Brief silence after.",
+      "raw_file": "outputs/zombie-audio-medium/death-medium-01.wav",
+      "raw_sha256": "9fe0b0ebf3b19d19883eef74d123ec6016541d25bcabfb3b4caa3a9c4fe05caa",
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 44100,
+        "decoded_dtype": "int16"
+      },
+      "source_sample_rate": 44100,
+      "source_channels": 2,
+      "source_duration_seconds": 2.0,
+      "source_signal": {
+        "rms_dbfs": -16.776,
+        "peak_dbfs": -0.0,
+        "dc_offset": -0.00130276
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 2.0,
+      "normalization_gain_db": -3.194,
+      "rms_dbfs": -21.0,
+      "peak_dbfs": -3.639,
+      "dc_offset": -1.5e-07,
+      "clipped_samples": 0,
+      "generation_metadata_file": "outputs/zombie-audio-medium/death-medium-01.wav.json",
+      "generation_metadata": {
+        "generated_at": "2026-09-29T04:23:47.882330+00:00",
+        "request": {
+          "data": [
+            "medium",
+            "TrackType: SFX. A single zombie gives a short low defeated groan that quickly falls into a soft breathy exhale and stops. Compact weary creature death vocal, restrained and slightly pathetic, no dramatic scream, no words. Dry close microphone recording, no body impact, no music, no echo or background sound. Brief silence after.",
+            2,
+            8,
+            1.0,
+            "pingpong",
+            26092905
+          ]
+        },
+        "event": {
+          "event_id": "5a197ac0adb04494a500329da497e472"
+        },
+        "response": [
+          {
+            "path": "/tmp/gradio/fe53485768473c783d5fed5448a360d6d5676b244b988b1850451d491e71f78d/sa3.wav",
+            "url": "https://stabilityai-stable-audio-3.hf.space/gradio_api/file=/tmp/gradio/fe53485768473c783d5fed5448a360d6d5676b244b988b1850451d491e71f78d/sa3.wav",
+            "size": null,
+            "orig_name": "sa3.wav",
+            "mime_type": null,
+            "is_stream": false,
+            "meta": {
+              "_type": "gradio.FileData"
+            }
+          }
+        ],
+        "model": "stabilityai/stable-audio-3-medium",
+        "authentication": "Hugging Face token (account quota)"
+      },
+      "generation_metadata_status": "Recorded sidecar metadata",
+      "sha256": "8889752cd7a9bafd925cc96350db7740a8ab0de80d4338b6faa69437273cf023",
+      "bytes": 96044
+    },
+    {
+      "file": "last-medium-02.wav",
+      "duration": 4,
+      "seed": 26092906,
+      "prompt": "TrackType: SFX. A single classic undead zombie vocal: a long open-mouthed AAAAHHHH-AAAH-ahhhh moan. A coarse low male creature voice, strongly voiced open AH vowel, gravelly vocal fry and ragged rasp. The first ahhhh swells and wavers upward, catches into a second emphatic AH, then sinks into a rough throaty ahhhh finish. One continuous drawn-out hungry undead moan, menacing and anguished, about three seconds of vocalization. Original survival-horror game monster performance, dry close microphone recording, isolated voice. No words, no singing, no laughter, no comedy, no sigh, no music, no footsteps, no impacts, no background noise, no reverberation. Brief silence at both ends.",
+      "raw_file": "outputs/zombie-audio-medium/last-medium-02.wav",
+      "raw_sha256": "56dd4769e3584e6430e633a8ec92b2c803a790bd9524c920ff11464a15a9cf8b",
+      "input_format": {
+        "container": "RIFF WAV",
+        "encoding": "PCM integer",
+        "format_code": 1,
+        "bits_per_sample": 16,
+        "channels": 2,
+        "sample_rate": 44100,
+        "decoded_dtype": "int16"
+      },
+      "source_sample_rate": 44100,
+      "source_channels": 2,
+      "source_duration_seconds": 4.0,
+      "source_signal": {
+        "rms_dbfs": -19.999,
+        "peak_dbfs": -0.0,
+        "dc_offset": -0.0007311
+      },
+      "sample_rate": 24000,
+      "channels": 1,
+      "format": "PCM16 WAV",
+      "duration_seconds": 4.0,
+      "normalization_gain_db": -2.806,
+      "rms_dbfs": -23.329,
+      "peak_dbfs": -3.0,
+      "dc_offset": 5e-08,
+      "clipped_samples": 0,
+      "generation_metadata_file": "outputs/zombie-audio-medium/last-medium-02.wav.json",
+      "generation_metadata": {
+        "generated_at": "2026-09-29T04:43:26.114385+00:00",
+        "request": {
+          "data": [
+            "medium",
+            "TrackType: SFX. A single classic undead zombie vocal: a long open-mouthed AAAAHHHH-AAAH-ahhhh moan. A coarse low male creature voice, strongly voiced open AH vowel, gravelly vocal fry and ragged rasp. The first ahhhh swells and wavers upward, catches into a second emphatic AH, then sinks into a rough throaty ahhhh finish. One continuous drawn-out hungry undead moan, menacing and anguished, about three seconds of vocalization. Original survival-horror game monster performance, dry close microphone recording, isolated voice. No words, no singing, no laughter, no comedy, no sigh, no music, no footsteps, no impacts, no background noise, no reverberation. Brief silence at both ends.",
+            4,
+            8,
+            1.0,
+            "pingpong",
+            26092906
+          ]
+        },
+        "event": {
+          "event_id": "32e9d6e6e8cf4ab8a16472f7db7c3427"
+        },
+        "response": [
+          {
+            "path": "/tmp/gradio/5d99bebe75c59cb53455ff0c3e5170a54123feb79a611e9de5660685d12b6229/sa3.wav",
+            "url": "https://stabilityai-stable-audio-3.hf.space/gradio_api/file=/tmp/gradio/5d99bebe75c59cb53455ff0c3e5170a54123feb79a611e9de5660685d12b6229/sa3.wav",
+            "size": null,
+            "orig_name": "sa3.wav",
+            "mime_type": null,
+            "is_stream": false,
+            "meta": {
+              "_type": "gradio.FileData"
+            }
+          }
+        ],
+        "model": "stabilityai/stable-audio-3-medium",
+        "authentication": "Hugging Face token (account quota)"
+      },
+      "generation_metadata_status": "Recorded sidecar metadata",
+      "sha256": "1cdcd6d280d62cdfb13ffe34d1f109d6399c03b1022a81714fa2421f0634e066",
+      "bytes": 192044
+    }
+  ]
+}

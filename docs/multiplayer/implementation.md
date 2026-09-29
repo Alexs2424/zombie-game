@@ -1,6 +1,6 @@
 # Private co-op: current implementation
 
-Status: **local first playable; Internet playtest pending**, recorded 2026-09-28. This file describes code on `codex/four-player-coop`, initially based on `d7b9c5a` from main. The other documents in this directory are the earlier, broader design proposal. They are not a list of completed features or passed release gates.
+Status: **local first playable; Internet playtest pending**, recorded 2026-09-28. This file describes code on `codex/four-player-coop`, initially based on `d7b9c5a` from main and subsequently integrated with main at `a78bbea`. The merge preserves the mechanics lab, developer workspace, zombie death animations, and updated audio. The other documents in this directory are the earlier, broader design proposal. They are not a list of completed features or passed release gates.
 
 The branch adds a separate `/coop` route and one authoritative, in-memory game server for up to four players. Solo remains at `/`; its menu links to **PRIVATE CO-OP · PLAYTEST**. This is a local implementation, not a completed hosted multiplayer release.
 
@@ -136,8 +136,8 @@ Public deployment still needs provider selection, correct secure endpoint config
 
 Recorded implementation-session evidence:
 
-- The full suite passed **273 tests** after the shared simulation changes. A subsequent **nine-test server run** passed after host transfer, reconnect timeout, stale-run input, and quick-trigger fixes; these counts overlap and are not additive. The five client tests passed after the final browser-control changes.
-- Full lint and type checking passed, with focused lint after the final server/metadata edits. The production build passed for `/` and `/coop` after the browser-control and route metadata changes.
+- The full suite passed **303 tests** after integration with main, including nine server integration tests, client transport tests, and shared corpse lifecycle coverage. A focused 53-test audio/director/client selection also passed after adapting co-op to the updated audio APIs; this overlaps the full suite.
+- Full lint, type checking, and the production build for `/` and `/coop` passed after integration.
 - Two browser tabs created/joined one room, started together, displayed the shared roster and run, and reached the same game-over state while menus remained open.
 - Focused Chrome successfully captured the mouse, rendered first-person gameplay, restarted a run, and confirmed a quick click reduced ammunition from 12 to 11. A grenade command also reduced the personal grenade count. Background/preview clicks correctly showed the mouse-capture error; testing pointer capture requires a focused browser and an actual click.
 

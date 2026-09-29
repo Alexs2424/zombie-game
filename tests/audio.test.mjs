@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { GameAudio } from "../lib/game/audio.ts";
 import { slotSoundSamples } from "../lib/game/slot-sounds.ts";
 import { SLOT_MACHINE_SOURCES } from "../lib/game/slot-machines.ts";
+import { ZombieAudioDirector } from "../lib/game/zombie-audio-director.ts";
 
 // A graph-only Web Audio double: checks bus routing and immediate pause behavior,
 // without claiming to measure the sound of the synthesized effects.
@@ -99,13 +100,13 @@ async function fixture(run, samples = false) {
   const previousFetch = globalThis.fetch;
   globalThis.AudioContext = AudioContextDouble;
   globalThis.fetch = async (url) => ({
-    ok: samples,
+    ok: typeof samples === "function" ? samples(url) : samples,
     arrayBuffer: async () => new TextEncoder().encode(url).buffer,
   });
   const audio = new GameAudio();
   try {
     await audio.unlock();
-    await audio.zombieLoading;
+    await Promise.all([audio.zombieLoading, audio.hotelBellLoading, audio.mysterySlotLoading]);
     await run(audio);
   } finally {
     audio.dispose();
@@ -137,6 +138,84 @@ test("pause silences world audio immediately while preserving shop and death cue
     audio.setActive(true);
     assert.equal(worldBus.gain.value, 1);
   });
+});
+
+test("Stickman draws A or D independently on every swing, including consecutive repeats", async () => {
+  const requests = [];
+  await fixture(async audio => {
+    audio.setActive(true);
+    await audio.weapons.preload("stick");
+    assert.deepEqual(requests.filter(url => url.includes("craps-stick-swipe")), [
+      "/audio/casino/craps-stick-swipe-elevenlabs-01.wav",
+      "/audio/casino/craps-stick-swipe-elevenlabs-04.wav",
+    ]);
+    const random = Math.random;
+    const draws = [0, 0.499999, 0.5, 0.999999, 0.25];
+    let index = 0;
+    Math.random = () => { assert.ok(index < draws.length); return draws[index++]; };
+    try {
+      const played = [];
+      for (let i = 0; i < draws.length; i++) {
+        audio.play({ type: "melee", weapon: "stick" });
+        const source = audio.context.nodes.findLast(node => node.buffer?.name);
+        played.push(source.buffer.name);
+        source.onended();
+      }
+      assert.deepEqual(played, ["01", "01", "04", "04", "01"].map(
+        variant => `/audio/casino/craps-stick-swipe-elevenlabs-${variant}.wav`,
+      ));
+      assert.equal(index, draws.length, "exactly one fresh equal-probability draw per swing");
+    } finally { Math.random = random; }
+  }, url => { requests.push(url); return true; });
+});
+
+test("a missing selected stick take retains the original swing and does not bias toward the other take", async () => {
+  await fixture(async audio => {
+    audio.setActive(true);
+    await audio.weapons.preload("stick");
+    const random = Math.random;
+    try {
+      Math.random = () => 0;
+      audio.play({ type: "melee", weapon: "stick" });
+      assert.equal(audio.context.nodes.findLast(node => node.buffer?.name).buffer.name,
+        "/audio/weapons/stick/swing.wav");
+      Math.random = () => 0.75;
+      audio.play({ type: "melee", weapon: "stick" });
+      assert.equal(audio.context.nodes.findLast(node => node.buffer?.name).buffer.name,
+        "/audio/casino/craps-stick-swipe-elevenlabs-04.wav");
+    } finally { Math.random = random; }
+  }, url => !url.endsWith("craps-stick-swipe-elevenlabs-01.wav"));
+  await fixture(audio => {
+    audio.setActive(true);
+    const before = audio.context.nodes.length;
+    audio.play({ type: "melee", weapon: "stick" });
+    const fallback = audio.context.nodes.slice(before).find(node => node.kind === "source");
+    assert.ok(fallback && !fallback.buffer.name, "a completely unavailable weapon still uses its noise fallback");
+  });
+});
+
+test("selected stick swipes and their synthesized fallback stop on pause, reset and disposal", async () => {
+  for (const samples of [true, false]) await fixture(async audio => {
+    audio.setActive(true);
+    await audio.weapons.preload("stick");
+    for (const action of ["pause", "reset", "dispose"]) {
+      audio.play({ type: "melee", weapon: "stick" });
+      const source = audio.context.nodes.findLast(node => node.kind === "source");
+      if (samples) assert.match(source.buffer.name, /craps-stick-swipe-elevenlabs-(01|04)\.wav$/);
+      else assert.equal(source.buffer.name, undefined);
+      if (action === "pause") audio.setActive(false);
+      else if (action === "reset") audio.resetSlots();
+      else audio.dispose();
+      assert.equal(source.stopped, true);
+      assert.equal(source.outputs.length, 0);
+      if (action === "dispose") return;
+      audio.setActive(false);
+      const count = audio.context.nodes.length;
+      audio.play({ type: "melee", weapon: "stick" });
+      assert.equal(audio.context.nodes.length, count, "paused swings schedule nothing");
+      audio.setActive(true);
+    }
+  }, samples);
 });
 
 test("third Stickman hit plays its breaking sample, even for legacy untagged events", async () => {
@@ -234,6 +313,85 @@ test("hotel bell and reward cues use the pausable world bus with finite notes", 
   });
 });
 
+test("hotelBell loads only selected Bell A and plays its dry sample on the world bus", async () => {
+  const requested = [];
+  await fixture(audio => {
+    assert.deepEqual(requested.filter(url => url.startsWith("/audio/restaurant/")),
+      ["/audio/restaurant/restaurant-bell-01.wav"]);
+    assert.equal(audio.hotelBellBuffer.name, "/audio/restaurant/restaurant-bell-01.wav");
+    audio.setActive(true);
+    const before = audio.context.nodes.length;
+    audio.play({ type: "hotelBell" });
+    const created = audio.context.nodes.slice(before);
+    const source = created.find(node => node.kind === "source");
+    assert.equal(source.buffer, audio.hotelBellBuffer);
+    assert.equal(created.filter(node => node.kind === "oscillator").length, 0,
+      "a loaded take replaces the synthesized bell and low flourish");
+    const gain = source.outputs[0];
+    assert.deepEqual(gain.outputs, [audio.world]);
+    assert.ok(gain.gain.value > 0 && gain.gain.value <= 1);
+    assert.equal(audio.duckUntil, audio.context.currentTime + 2);
+    source.onended();
+    assert.equal(audio.hotelBellVoice, null);
+    assert.ok(created.every(node => node.outputs.length === 0));
+  }, url => { requested.push(url); return true; });
+});
+
+test("selected bell and synthesized fallback stop on pause, reset, disposal and retrigger", async () => {
+  for (const samples of [true, false]) await fixture(audio => {
+    audio.setActive(true);
+    for (const action of ["retrigger", "pause", "reset", "dispose"]) {
+      const context = audio.context;
+      const before = context.nodes.length;
+      audio.play({ type: "hotelBell" });
+      const created = context.nodes.slice(before);
+      const sources = created.filter(node => node.kind === "source" || node.kind === "oscillator");
+      assert.equal(sources.length, samples ? 1 : 3);
+      if (action === "retrigger") audio.play({ type: "hotelBell" });
+      else if (action === "pause") audio.setActive(false);
+      else if (action === "reset") audio.resetHotel();
+      else audio.dispose();
+      assert.ok(sources.every(source => source.stopped && source.stopTime === undefined));
+      assert.ok(created.every(node => node.outputs.length === 0), `${action} releases the full bell graph`);
+      if (action === "retrigger") {
+        const replacement = audio.hotelBellVoice;
+        for (const source of sources) source.onended();
+        assert.equal(audio.hotelBellVoice, replacement, "old ended callbacks cannot clear a new bell");
+        audio.resetHotel();
+      } else {
+        assert.equal(audio.hotelBellVoice, null);
+      }
+      if (action === "dispose") {
+        assert.equal(audio.hotelBellBuffer, null);
+        return;
+      }
+      audio.setActive(false);
+      const pausedCount = context.nodes.length;
+      audio.play({ type: "hotelBell" });
+      assert.equal(context.nodes.length, pausedCount, "paused bell events cannot queue a later ring");
+      audio.setActive(true);
+      assert.equal(audio.hotelBellVoice, null);
+    }
+  }, samples);
+});
+
+test("unavailable Bell A retains the original finite synthesized cue and releases naturally", async () => {
+  await fixture(audio => {
+    assert.equal(audio.hotelBellBuffer, null);
+    audio.setActive(true);
+    const before = audio.context.nodes.length;
+    audio.play({ type: "hotelBell" });
+    const created = audio.context.nodes.slice(before);
+    const sources = created.filter(node => node.kind === "oscillator");
+    assert.equal(sources.length, 3);
+    assert.ok(sources.every(source => source.stopTime <= audio.context.currentTime + 1.85));
+    assert.ok(created.filter(node => node.kind === "panner").every(node => node.outputs.includes(audio.world)));
+    for (const source of sources) source.onended();
+    assert.equal(audio.hotelBellVoice, null);
+    assert.ok(created.every(node => node.outputs.length === 0));
+  });
+});
+
 const sampledSources = (audio) => audio.context.nodes.filter(
   (node) => node.kind === "source" && node.buffer?.name,
 );
@@ -242,6 +400,65 @@ const slotSources = (audio) => audio.context.nodes.filter(
 );
 const westCabinet = SLOT_MACHINE_SOURCES.find(source => source.id === 'slots-a:west:0');
 const westAisle = { x: westCabinet.x - 1.4, z: westCabinet.z };
+
+test("selected slot D plays only for mystery handle pulls, preserving dice rolls and cabinet pass-bys", async () => {
+  const requests = [];
+  await fixture(audio => {
+    assert.deepEqual(requests.filter(url => url.includes("slot-attract-elevenlabs")),
+      ["/audio/casino/slot-attract-elevenlabs-04.wav"]);
+    audio.update(0.1, true, westAisle, 0, true, false);
+    assert.equal(slotSources(audio).length, 1, "ordinary cabinets retain their original recipe");
+    assert.equal(sampledSources(audio).length, 0);
+    audio.play({ type: "diceRoll" });
+    assert.equal(sampledSources(audio).length, 0, "craps never plays the mystery cabinet sample");
+    const cabinet = slotSources(audio)[0];
+    audio.play({ type: "mysterySpin", position: { x: 38, z: 17 } });
+    const source = sampledSources(audio).at(-1);
+    assert.equal(source.buffer.name, "/audio/casino/slot-attract-elevenlabs-04.wav");
+    assert.deepEqual(source.outputs[0].outputs, [audio.world]);
+    assert.equal(cabinet.stopped, true);
+    audio.play({ type: "diceRoll" });
+    assert.equal(sampledSources(audio).length, 1);
+    source.onended();
+    assert.equal(audio.mysterySlotVoice, null);
+  }, url => { requests.push(url); return true; });
+});
+
+test("mystery handle sample and original fallback stop on pause, reset, disposal and retrigger", async () => {
+  for (const samples of [true, false]) await fixture(audio => {
+    audio.setActive(true);
+    for (const action of ["retrigger", "pause", "reset", "dispose"]) {
+      const context = audio.context;
+      const before = context.nodes.length;
+      audio.play({ type: "mysterySpin" });
+      const created = context.nodes.slice(before);
+      const sources = created.filter(node => node.kind === "source" || node.kind === "oscillator");
+      assert.equal(sources.length, samples ? 1 : 6);
+      if (action === "retrigger") audio.play({ type: "mysterySpin" });
+      else if (action === "pause") audio.setActive(false);
+      else if (action === "reset") audio.resetSlots();
+      else audio.dispose();
+      assert.ok(sources.every(source => source.stopped && source.stopTime === undefined));
+      assert.ok(created.every(node => node.outputs.length === 0));
+      if (action === "retrigger") {
+        const replacement = audio.mysterySlotVoice;
+        for (const source of sources) source.onended();
+        assert.equal(audio.mysterySlotVoice, replacement);
+        audio.resetSlots();
+      } else assert.equal(audio.mysterySlotVoice, null);
+      if (action === "dispose") {
+        assert.equal(audio.mysterySlotBuffer, null);
+        return;
+      }
+      audio.setActive(false);
+      const pausedCount = context.nodes.length;
+      audio.play({ type: "mysterySpin" });
+      assert.equal(context.nodes.length, pausedCount);
+      audio.setActive(true);
+      assert.equal(audio.mysterySlotVoice, null);
+    }
+  }, samples);
+});
 
 test("slot pass-bys follow the cabinet position and fade as the listener walks away", async () => {
   await fixture((audio) => {
@@ -332,12 +549,13 @@ test("all original slot recipes are short, audible, finite and softly bounded", 
 
 test("sampled zombie voices are local, spatial, restrained, and limited to one", async () => {
   await fixture((audio) => {
-    assert.equal(audio.zombieBuffers.size, 3);
+    assert.equal(audio.zombieBuffers.size, 10);
+    assert.match(audio.zombieStatus, /^10\/10 clips ready/);
     audio.setActive(true);
     const enemy = { x: 3, z: 0 };
     audio.zombieCue("chase", player, enemy, 0, 2);
     const [source] = sampledSources(audio);
-    assert.match(source.buffer.name, /^\/audio\/zombies\/chase-0[12]\.wav$/);
+    assert.match(source.buffer.name, /^\/audio\/zombies\/chase(?:-medium)?-0[12]\.wav$/);
     const gain = source.outputs[0];
     const panner = gain.outputs[0];
     const world = panner.outputs[0];
@@ -345,7 +563,6 @@ test("sampled zombie voices are local, spatial, restrained, and limited to one",
     assert.equal(panner.pan.value, 1);
     assert.equal(world.gain.value, 1);
     audio.zombieCue("horde", player, enemy, 0);
-    audio.zombieAttack(player, enemy, 0);
     assert.equal(sampledSources(audio).length, 1);
     const oscillatorCount = audio.context.nodes.filter((n) => n.kind === "oscillator").length;
     assert.equal(oscillatorCount, 2); // only the two room-hum oscillators
@@ -396,13 +613,232 @@ test("missing samples degrade safely and swarm attack events are rate limited", 
     const afterAttack = count();
     for (let i = 0; i < 14; i++) audio.zombieAttack(player, { x: 2, z: 0 }, 0);
     assert.equal(count(), afterAttack);
+    for (const source of [...audio.zombieVoices.keys()]) source.onended();
     audio.context.currentTime += 1.7;
     audio.zombieAttack(player, { x: 2, z: 0 }, 0);
     assert.equal(count(), afterAttack + 2);
   });
 });
 
-test("late downloads after disposal cannot repopulate decoded zombie buffers", async () => {
+test("chase performances rotate and all four selected survivor screams play before repeating", async () => {
+  await fixture((audio) => {
+    assert.deepEqual([...audio.zombieBuffers.keys()].sort(), [
+      "chase-01", "chase-medium-01", "chase-medium-02",
+      "scream-elevenlabs-high-01", "scream-elevenlabs-high-02",
+      "scream-elevenlabs-high-03", "scream-elevenlabs-high-04",
+      "horde-01", "attack-medium-01", "death-medium-01",
+    ].sort());
+    audio.setActive(true);
+    const names = [];
+    for (const variant of [0, 0, 1]) {
+      audio.zombieCue("chase", player, { x: 2, z: 0 }, 0, variant);
+      const source = sampledSources(audio).at(-1);
+      names.push(source.buffer.name);
+      source.onended();
+    }
+    assert.equal(new Set(names).size, 3);
+    const survivorNames = [];
+    for (const variant of [0, 0, 1, 2, 3, 0, 0, 1, 4, 4, 4, 4]) {
+      audio.zombieCue("last", player, { x: 2, z: 0 }, 0, variant);
+      const source = sampledSources(audio).at(-1);
+      survivorNames.push(source.buffer.name);
+      source.onended();
+    }
+    for (let i = 0; i < survivorNames.length; i += 4)
+      assert.equal(new Set(survivorNames.slice(i, i + 4)).size, 4);
+    for (let i = 1; i < survivorNames.length; i++)
+      assert.notEqual(survivorNames[i], survivorNames[i - 1], "cycle boundaries also avoid immediate repeats");
+    assert.ok(survivorNames.every((name) => /^\/audio\/zombies\/scream-elevenlabs-high-0[1-4]\.wav$/.test(name)));
+    audio.resetZombies();
+    audio.zombieCue("last", player, { x: 2, z: 0 }, 0, 0);
+    assert.equal(sampledSources(audio).at(-1).buffer.name, "/audio/zombies/scream-elevenlabs-high-01.wav");
+  }, true);
+});
+
+test("a penultimate zombie's death finishes before the survivor scream spends its eligibility", async () => {
+  await fixture(audio => {
+    audio.setActive(true);
+    audio.zombieBuffers.get("death-medium-01").duration = 2;
+    const director = new ZombieAudioDirector(() => 0);
+    const survivor = { id: 2, x: 12, z: 0, health: 100 };
+    const snapshot = {
+      playing: true, round: 1, roundCueRemaining: 0, waveRemaining: 0,
+      player, enemies: [survivor, { id: 1, x: 14, z: 0, health: 100 }],
+    };
+    assert.equal(director.update(3, snapshot), null);
+    snapshot.enemies.pop();
+    audio.zombieDeath(player, { x: 14, z: 0 }, 0);
+    const death = [...audio.zombieVoices.keys()][0];
+    assert.equal(death.buffer.duration, 2);
+    const frame = dt => {
+      audio.context.currentTime += dt;
+      const cue = director.update(dt, { ...snapshot, suppressed: !audio.canPlayZombieCue() });
+      if (cue) assert.equal(audio.zombieCue(cue.kind, player, survivor, 0, cue.enemyId), true);
+      return cue;
+    };
+    assert.equal(frame(1.3), null, "the survivor's 1.25s hold must not consume a blocked cue");
+    assert.equal(frame(0.6), null);
+    audio.context.currentTime += 0.1;
+    death.onended();
+    assert.equal(frame(0.01)?.kind, "last");
+    const scream = [...audio.zombieVoices.keys()][0];
+    assert.match(scream.buffer.name, /scream-elevenlabs-high-0[1-4]\.wav$/);
+    scream.onended();
+    assert.equal(frame(20), null, "the accepted survivor scream does not repeat this round");
+  }, true);
+});
+
+test("actual attacks interrupt ambient voices, never overlap, and rate-limit a swarm", async () => {
+  await fixture((audio) => {
+    audio.setActive(true);
+    audio.zombieCue("last", player, { x: 2, z: 0 }, 0);
+    const last = sampledSources(audio).at(-1);
+    audio.zombieAttack(player, { x: -2, z: 0 }, 0);
+    assert.equal(last.stopped, true);
+    const attack = sampledSources(audio).at(-1);
+    assert.equal(attack.buffer.name, "/audio/zombies/attack-medium-01.wav");
+    assert.equal(attack.outputs[0].outputs[0].pan.value, -1);
+    for (let i = 0; i < 12; i++) audio.zombieAttack(player, { x: 2, z: 0 }, 0);
+    audio.zombieCue("chase", player, { x: 2, z: 0 }, 0);
+    audio.zombieDeath(player, { x: 2, z: 0 }, 0);
+    assert.equal(sampledSources(audio).length, 2);
+    assert.equal(audio.zombieVoices.size, 1);
+    attack.onended();
+    audio.context.currentTime += 1;
+    audio.zombieAttack(player, { x: 2, z: 0 }, 0);
+    assert.equal(sampledSources(audio).length, 2, "short samples still observe the swarm cooldown");
+    audio.context.currentTime += 0.7;
+    audio.zombieAttack(player, { x: 2, z: 0 }, 0);
+    assert.equal(sampledSources(audio).length, 3);
+  }, true);
+});
+
+test("killing an attacking source cancels its snarl and permits its death cue", async () => {
+  for (const samples of [true, false]) await fixture(audio => {
+    audio.setActive(true);
+    const attacker = { x: 2, z: 0, health: 100 };
+    audio.zombieAttack(player, attacker, 0);
+    const attack = [...audio.zombieVoices.keys()][0];
+    assert.ok(attack);
+    attacker.health = 0;
+    audio.zombieDeath(player, { x: attacker.x, z: attacker.z }, 0);
+    assert.equal(attack.stopped, true);
+    assert.equal(attack.outputs.length, 0);
+    assert.equal([...audio.zombieVoices.values()][0].kind, "death");
+    const death = [...audio.zombieVoices.keys()][0];
+    const scheduledStop = death.stopTime;
+    audio.context.currentTime += 2;
+    audio.zombieAttack(player, attacker, 0);
+    assert.equal(death.stopTime, scheduledStop, "a stale attack cannot interrupt a death cue");
+    assert.ok(death.outputs.length > 0);
+    assert.equal([...audio.zombieVoices.keys()][0], death);
+  }, samples);
+});
+
+test("death voices use fixed kill positions and suppress multi-kill choruses", async () => {
+  await fixture((audio) => {
+    audio.setActive(true);
+    const survivor = { x: 3, z: 0, health: 100 };
+    audio.zombieCue("last", player, survivor, 0);
+    const last = sampledSources(audio).at(-1);
+    survivor.health = 0;
+    const position = { x: -3, z: 0 };
+    audio.zombieDeath(player, position, 0);
+    assert.equal(last.stopped, true, "a dead survivor cannot finish its living performance");
+    const death = sampledSources(audio).at(-1);
+    assert.equal(death.buffer.name, "/audio/zombies/death-medium-01.wav");
+    const gain = death.outputs[0], panner = gain.outputs[0];
+    assert.equal(panner.pan.value, -1);
+    assert.ok(gain.gain.value > 0 && gain.gain.value < 0.4);
+    position.x = 3;
+    audio.update(0.1, true, player, 0, false, false);
+    assert.equal(panner.pan.value, -1, "the kill position cannot drift with a reused event object");
+    for (let i = 0; i < 8; i++) audio.zombieDeath(player, { x: 2, z: 0 }, 0);
+    audio.context.currentTime += 2;
+    audio.zombieDeath(player, { x: 2, z: 0 }, 0);
+    assert.equal(sampledSources(audio).length, 2, "even long groans remain solo");
+    death.onended();
+    audio.zombieDeath(player, { x: 2, z: 0 }, 0);
+    const nextDeath = sampledSources(audio).at(-1);
+    nextDeath.onended();
+    audio.context.currentTime += 0.5;
+    audio.zombieDeath(player, { x: 2, z: 0 }, 0);
+    assert.equal(sampledSources(audio).length, 3, "short groans retain the multi-kill cooldown");
+    audio.context.currentTime += 0.8;
+    audio.zombieDeath(player, { x: 2, z: 0 }, 0);
+    assert.equal(sampledSources(audio).length, 4);
+  }, true);
+});
+
+test("inaudible kill positions cannot silence a nearby voice and death attenuation includes height", async () => {
+  await fixture(audio => {
+    audio.setActive(true);
+    const upstairs = { x: 0, y: 6, z: 0 };
+    audio.zombieCue("chase", upstairs, { x: 2, y: 6, z: 0 }, 0);
+    const chase = sampledSources(audio).at(-1);
+    audio.zombieDeath(upstairs, { x: 19, y: 6, z: 0 }, 0);
+    audio.zombieDeath(upstairs, { x: 2, y: 24, z: 0 }, 0);
+    assert.equal(chase.stopped, undefined);
+    assert.equal(sampledSources(audio).length, 1);
+    audio.zombieDeath(upstairs, { x: 2, y: 6, z: 0 }, 0);
+    assert.equal(chase.stopped, true);
+    const death = sampledSources(audio).at(-1);
+    assert.ok(Math.abs(death.outputs[0].gain.value - 0.4 * (1 - 2 / 18)) < 1e-10);
+  }, true);
+});
+
+test("dying sources stop on update and cannot restart a stale final-zombie cue", async () => {
+  await fixture((audio) => {
+    audio.setActive(true);
+    const survivor = { x: 2, z: 0, health: 100 };
+    audio.zombieCue("last", player, survivor, 0);
+    const last = sampledSources(audio).at(-1);
+    survivor.health = 0;
+    audio.update(0.1, true, player, 0, false, false);
+    assert.equal(last.stopped, true);
+    assert.equal(audio.zombieVoices.size, 0);
+    audio.zombieCue("last", player, survivor, 0);
+    assert.equal(sampledSources(audio).length, 1);
+  }, true);
+});
+
+test("partial downloads keep valid chase clips and fall back for missing new performances", async () => {
+  await fixture((audio) => {
+    audio.setActive(true);
+    assert.match(audio.zombieStatus, /^2\/10 clips ready/);
+    audio.zombieCue("chase", player, { x: 2, z: 0 }, 0, 2);
+    assert.equal(sampledSources(audio).at(-1).buffer.name, "/audio/zombies/chase-01.wav");
+    audio.zombieAttack(player, { x: 2, z: 0 }, 0);
+    assert.equal(sampledSources(audio)[0].stopped, true);
+    assert.match(audio.zombieStatus, /attack \(synth fallback\)/);
+    assert.equal(audio.zombieVoices.size, 1);
+  }, url => url.endsWith("/chase-01.wav") || url.endsWith("/horde-01.wav"));
+});
+
+test("sample and fallback zombie voices stop fully on pause, reset, and disposal", async () => {
+  for (const samples of [true, false]) for (const kind of ["chase", "last", "horde", "attack", "death"]) await fixture((audio) => {
+    audio.setActive(true);
+    for (const action of ["pause", "reset", "dispose"]) {
+      const context = audio.context;
+      const before = context.nodes.length;
+      audio.zombieCue(kind, player, { x: 2, z: 0 }, 0);
+      const created = context.nodes.slice(before);
+      const sources = created.filter(n => n.kind === "source" || n.kind === "oscillator");
+      assert.ok(sources.length > 0);
+      if (action === "pause") audio.setActive(false);
+      else if (action === "reset") audio.resetZombies();
+      else audio.dispose();
+      assert.equal(audio.zombieVoices.size, 0);
+      assert.ok(sources.every(source => source.stopped && source.outputs.length === 0),
+        `${kind} ${samples ? "sample" : "fallback"} fully stops on ${action}`);
+      if (action === "dispose") return;
+      audio.setActive(true);
+      assert.equal(audio.zombieVoices.size, 0, "resume never replays a stopped cue");
+    }
+  }, samples);
+});
+
+test("late downloads after disposal cannot repopulate decoded zombie, bell or mystery buffers", async () => {
   const previous = globalThis.AudioContext;
   const previousFetch = globalThis.fetch;
   globalThis.AudioContext = AudioContextDouble;
@@ -414,11 +850,13 @@ test("late downloads after disposal cannot repopulate decoded zombie buffers", a
   const audio = new GameAudio();
   try {
     await audio.unlock();
-    const loading = audio.zombieLoading;
+    const loading = Promise.all([audio.zombieLoading, audio.hotelBellLoading, audio.mysterySlotLoading]);
     audio.dispose();
     finish();
     await loading;
     assert.equal(audio.zombieBuffers.size, 0);
+    assert.equal(audio.hotelBellBuffer, null);
+    assert.equal(audio.mysterySlotBuffer, null);
     assert.equal(audio.context, null);
   } finally {
     globalThis.AudioContext = previous;

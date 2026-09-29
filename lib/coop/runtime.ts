@@ -71,6 +71,9 @@ export class CoopRuntime {
   private closingMenuUntil = 0;
   private zombiePrevious = new Map<number, Enemy>();
   private zombieTarget: Enemy[] = [];
+  // Audio voices retain their source object. Keep these references alive across
+  // snapshot/render-array replacement so movement and death reach active cues.
+  private zombieAudioSources = new Map<number, Enemy>();
   constructor(private canvas: HTMLCanvasElement, private onView: (view: CoopView) => void, private onError: (message: string) => void) {
     this.renderer = new GameRenderer(canvas);
     this.remotes = new RemotePlayers(this.renderer.scene);
@@ -101,6 +104,7 @@ export class CoopRuntime {
   }
   async connect(options: ConnectOptions) {
     this.pause(); this.remotes.reset(); this.room = null; this.playerId = null; this.alive = false;
+    this.resetWorldAudio(); this.sim.corpses = [];
     this.latestTick = -1; this.highestEvent = 0; this.snapshotAt = 0; this.reportError('');
     await this.client.connect(options);
   }
@@ -125,7 +129,7 @@ export class CoopRuntime {
   }
   leave() {
     this.pause(); this.client.disconnect(); this.room = null; this.playerId = null; this.alive = false;
-    this.remotes.reset(); this.zombieTarget = []; this.sim.enemies = []; this.sim.phase = 'ready'; this.publish();
+    this.remotes.reset(); this.resetWorldAudio(); this.zombieTarget = []; this.sim.enemies = []; this.sim.corpses = []; this.sim.phase = 'ready'; this.publish();
   }
   action(action: CoopAction) {
     if (this.client.status !== 'connected' || this.room?.phase !== 'playing' || !this.alive || this.awaitingRunSnapshot) return;
@@ -140,6 +144,7 @@ export class CoopRuntime {
   private receive(message: ServerMessage) {
     if (message.type === 'welcome') {
       this.playerId = message.playerId; this.room = message.room; this.latestTick = -1;
+      this.resetWorldAudio();
       this.awaitingRunSnapshot = true; this.closingMenuUntil = 0;
       this.highestEvent = Math.max(0, ...message.snapshot.events.map(event => event.eventId));
       this.clearInput(); this.localPaused = true; this.reportError(''); this.project(message.snapshot, true);
@@ -147,6 +152,7 @@ export class CoopRuntime {
       if (this.room?.epoch !== message.room.epoch) {
         this.latestTick = -1; this.highestEvent = 0; this.clearInput(); this.snapPrediction();
         this.hit = this.damage = 0; this.zombiePrevious.clear(); this.zombieTarget = [];
+        this.resetWorldAudio(); this.sim.corpses = [];
         this.awaitingRunSnapshot = true; this.closingMenuUntil = 0;
         this.localPaused = true; this.releasePointer(); this.reportError('');
       }
@@ -166,6 +172,7 @@ export class CoopRuntime {
     this.authoritativePlayer = { ...this.sim.player }; this.sim.player = { ...this.sim.player };
     this.zombieTarget = this.sim.enemies.map(enemy => ({ ...enemy }));
     this.sim.enemies = this.zombieTarget.map(enemy => ({ ...enemy }));
+    this.updateZombieAudioSources(this.zombieTarget);
     if (oldMap !== mapKey(this.sim)) this.sim.refreshMap();
     this.room = this.room ? { ...this.room, phase: snapshot.phase, players: snapshot.players } : null;
     this.alive = snapshot.players.find(player => player.id === this.playerId)?.alive ?? false;
@@ -187,16 +194,37 @@ export class CoopRuntime {
     this.publish();
   }
   private event(event: CoopEvent) {
+    if (event.type === 'zombieAttack') {
+      const source = event.enemyId === undefined ? undefined : this.zombieAudioSources.get(event.enemyId);
+      if (source && source.health > 0) this.audio.zombieAttack(this.sim.player, source, this.yaw);
+      return;
+    }
+    if (event.type === 'kill' && event.position) this.audio.zombieDeath(this.sim.player, event.position, this.yaw);
     if (event.actorId === this.playerId) {
       this.audio.play(event); this.renderer.weaponEvent(event);
       if (event.type === 'shot' && event.weapon) this.renderer.shot(event.weapon, event.side);
       if (event.type === 'hit') { this.hit = .16; this.headshot = !!event.headshot; }
       if (event.type === 'hurt') this.damage = .4;
       if (event.type === 'death') this.pause();
-    } else if (event.type === 'zombieAttack' && event.position) {
-      this.audio.zombieAttack(this.sim.player, event.position, this.yaw);
     } else if (event.type === 'shot' || event.type === 'explosion' || event.type === 'melee') this.remoteSound(event);
     else if (event.actorId === null && ['round', 'roundClear', 'hotelBell', 'hotelComplete', 'hotelFail'].includes(event.type)) this.audio.play(event);
+  }
+  private updateZombieAudioSources(enemies: readonly Enemy[]) {
+    const live = new Set(enemies.filter(enemy => enemy.health > 0).map(enemy => enemy.id));
+    for (const [id, source] of this.zombieAudioSources) if (!live.has(id)) {
+      source.health = 0;
+      this.zombieAudioSources.delete(id);
+    }
+    for (const enemy of enemies) if (enemy.health > 0) {
+      const source = this.zombieAudioSources.get(enemy.id);
+      if (source) Object.assign(source, enemy);
+      else this.zombieAudioSources.set(enemy.id, { ...enemy });
+    }
+  }
+  private resetWorldAudio() {
+    for (const source of this.zombieAudioSources.values()) source.health = 0;
+    this.zombieAudioSources.clear();
+    this.audio.resetZombies(); this.audio.resetSlots(); this.audio.resetHotel();
   }
   private remoteSound(event: CoopEvent) {
     const context = this.audio.context, output = this.audio.master;
@@ -308,6 +336,7 @@ export class CoopRuntime {
       if (!previous || Math.hypot(target.x - previous.x, target.z - previous.z) > 3) return { ...target };
       return { ...target, x: previous.x + (target.x - previous.x) * t, z: previous.z + (target.z - previous.z) * t, y: (previous.y ?? 0) + ((target.y ?? 0) - (previous.y ?? 0)) * t, yaw: previous.yaw + Math.atan2(Math.sin(target.yaw - previous.yaw), Math.cos(target.yaw - previous.yaw)) * t };
     });
+    this.updateZombieAudioSources(this.sim.enemies);
     this.renderOffset.x *= Math.exp(-dt * 18); this.renderOffset.z *= Math.exp(-dt * 18);
     const predicted = this.sim.player, phase = this.sim.phase, ownYaw = this.sim.yaw, ownPitch = this.sim.pitch;
     const spectator = !this.alive && this.room?.phase === 'playing' ? this.room.players.find(player => player.connected && player.alive && player.id !== this.playerId) : undefined;

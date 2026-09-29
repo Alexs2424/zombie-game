@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Sound auditions</title>
+  <style>
+    :root { color-scheme: dark; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #101411; color: #eef1e6; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: radial-gradient(ellipse at 85% 0%, #2b382035, transparent 55%); min-height: 100vh; }
+    main { max-width: 1040px; margin: auto; padding: 64px 28px 40px; }
+    .eyebrow { color: #b4c494; font-size: 12px; letter-spacing: .17em; text-transform: uppercase; margin: 0 0 18px; }
+    h1 { font-size: clamp(34px, 6vw, 58px); line-height: 1.05; letter-spacing: -.045em; margin: 0 0 20px; font-weight: 650; }
+    .intro { color: #aeb6a9; line-height: 1.65; max-width: 700px; margin: 0; }
+    .status { display: flex; gap: 10px; flex-wrap: wrap; margin: 28px 0 36px; }
+    .pill { border: 1px solid #3c4735; border-radius: 100px; color: #ccd5bf; font-size: 12px; padding: 7px 12px; }
+    .pill.primary { background: #becf9d; color: #1c2515; border-color: #becf9d; }
+    .section-heading { margin: 40px 0 8px; }
+    .section-intro { color: #aeb6a9; font-size: 14px; line-height: 1.6; margin: 0 0 20px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .card { background: #191e18; border: 1px solid #323a2f; border-radius: 16px; padding: 24px; min-width: 0; }
+    .card.featured { border-color: #8b9f64; background: linear-gradient(140deg, #293221, #1a2019); }
+    .reference { margin-top: 16px; }
+    .card.comparison { background: #171b17; border-style: dashed; }
+    .label { color: #b6c892; font-size: 11px; letter-spacing: .11em; text-transform: uppercase; margin: 0 0 16px; }
+    .comparison .label { color: #a4aa9d; }
+    h2, h3 { margin: 0 0 8px; font-size: 22px; font-weight: 600; letter-spacing: -.025em; }
+    .description { color: #b7beb1; font-size: 14px; line-height: 1.6; min-height: 45px; margin: 0 0 20px; }
+    audio { display: block; width: 100%; height: 42px; margin-top: 16px; }
+    .detail { display: flex; justify-content: space-between; gap: 12px; color: #969f8f; font-size: 11px; margin-top: 14px; flex-wrap: wrap; }
+    .filename { overflow-wrap: anywhere; }
+    .archive { margin-top: 40px; border-top: 1px solid #3c4735; padding-top: 22px; }
+    .archive summary { cursor: pointer; color: #d1d9c8; font-size: 18px; line-height: 1.5; }
+    .archive summary:focus-visible { outline: 2px solid #becf9d; outline-offset: 6px; }
+    footer { margin-top: 36px; color: #778370; font-size: 12px; line-height: 1.65; }
+    @media (max-width: 650px) { main { padding: 36px 18px; } .grid { grid-template-columns: 1fr; } .card { padding: 21px; } .description { min-height: 0; } }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Hotel prototype / Sound room</p>
+    <h1>Sound auditions</h1>
+    <p class="intro">Selected sounds: Swipe A and D are chosen randomly on each craps-stick swing; Slot D plays when you pull the speakeasy slot handle. Bell A calls the restaurant ambush.</p>
+    <div class="status" aria-label="Audition details">
+      <span class="pill primary">Swipes A + D · Slot D · Bell A</span>
+      <span class="pill">ElevenLabs Sound Effects</span>
+      <span class="pill">One clip plays at a time</span>
+    </div>
+    <section aria-labelledby="slot-attract-heading">
+      <h2 class="section-heading" id="slot-attract-heading">Slot machine</h2>
+      <p class="section-intro">Slot D is selected for the speakeasy handle pull. A short reel whir, dry mechanical clicks and a few worn bell chimes. The other takes remain for comparison.</p>
+      <div class="grid" aria-label="Slot machine auditions">
+        <article class="card comparison">
+          <p class="label">Comparison only</p>
+          <h3>Slot A</h3>
+          <audio controls preload="metadata" src="../casino/slot-attract-elevenlabs-01.wav" aria-label="Play slot take A">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 1</span><span>1.5 s</span></div>
+        </article>
+        <article class="card comparison">
+          <p class="label">Comparison only</p>
+          <h3>Slot B</h3>
+          <audio controls preload="metadata" src="../casino/slot-attract-elevenlabs-02.wav" aria-label="Play slot take B">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 2</span><span>1.5 s</span></div>
+        </article>
+        <article class="card comparison">
+          <p class="label">Comparison only</p>
+          <h3>Slot C</h3>
+          <audio controls preload="metadata" src="../casino/slot-attract-elevenlabs-03.wav" aria-label="Play slot take C">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 3</span><span>1.5 s</span></div>
+        </article>
+        <article class="card featured">
+          <p class="label">Selected / Speakeasy handle</p>
+          <h3>Slot D</h3>
+          <audio controls preload="metadata" src="../casino/slot-attract-elevenlabs-04.wav" aria-label="Play slot take D">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 4</span><span>1.5 s</span></div>
+        </article>
+      </div>
+    </section>
+    <section aria-labelledby="craps-stick-swipe-heading">
+      <h2 class="section-heading" id="craps-stick-swipe-heading">Craps-stick swipe</h2>
+      <p class="section-intro">Swipes A and D are selected with an equal random chance on each swing. A quick wooden cane swoosh with a faint flex. Impacts and break sounds stay separate.</p>
+      <div class="grid" aria-label="Craps-stick swipe auditions">
+        <article class="card featured">
+          <p class="label">Selected / Random stick swing</p>
+          <h3>Swipe A</h3>
+          <audio controls preload="metadata" src="../casino/craps-stick-swipe-elevenlabs-01.wav" aria-label="Play swipe take A">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 1</span><span>0.6 s</span></div>
+        </article>
+        <article class="card comparison">
+          <p class="label">Comparison only</p>
+          <h3>Swipe B</h3>
+          <audio controls preload="metadata" src="../casino/craps-stick-swipe-elevenlabs-02.wav" aria-label="Play swipe take B">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 2</span><span>0.6 s</span></div>
+        </article>
+        <article class="card comparison">
+          <p class="label">Comparison only</p>
+          <h3>Swipe C</h3>
+          <audio controls preload="metadata" src="../casino/craps-stick-swipe-elevenlabs-03.wav" aria-label="Play swipe take C">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 3</span><span>0.6 s</span></div>
+        </article>
+        <article class="card featured">
+          <p class="label">Selected / Random stick swing</p>
+          <h3>Swipe D</h3>
+          <audio controls preload="metadata" src="../casino/craps-stick-swipe-elevenlabs-04.wav" aria-label="Play swipe take D">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 4</span><span>0.6 s</span></div>
+        </article>
+      </div>
+    </section>
+    <details class="archive">
+      <summary>Restaurant bell · Bell A selected</summary>
+    <section aria-labelledby="bell-heading">
+      <h2 class="section-heading" id="bell-heading">Restaurant service bell</h2>
+      <p class="section-intro">Bell A is now used for Last Service. Earlier variations remain for comparison. Direction: one firm press of a vintage metal counter bell, a small click, then an immediate bright DING with rich metal overtones fading away. A single strike, on its own.</p>
+      <div class="grid" aria-label="Restaurant service-bell auditions">
+        <article class="card featured">
+          <p class="label">Selected / Restaurant ambush</p>
+          <h3>Bell A</h3>
+          <audio controls preload="metadata" src="../restaurant/restaurant-bell-01.wav" aria-label="Play restaurant service bell A">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 1</span><span>3 s</span></div>
+        </article>
+        <article class="card comparison">
+          <p class="label">Comparison only</p>
+          <h3>Bell B</h3>
+          <audio controls preload="metadata" src="../restaurant/restaurant-bell-02.wav" aria-label="Play restaurant service bell B">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 2</span><span>3 s</span></div>
+        </article>
+        <article class="card comparison">
+          <p class="label">Comparison only</p>
+          <h3>Bell C</h3>
+          <audio controls preload="metadata" src="../restaurant/restaurant-bell-03.wav" aria-label="Play restaurant service bell C">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 3</span><span>3 s</span></div>
+        </article>
+        <article class="card comparison">
+          <p class="label">Comparison only</p>
+          <h3>Bell D</h3>
+          <audio controls preload="metadata" src="../restaurant/restaurant-bell-04.wav" aria-label="Play restaurant service bell D">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 4</span><span>3 s</span></div>
+        </article>
+      </div>
+    </section>
+    </details>
+    <details class="archive">
+      <summary>Zombie voices · selected Takes A–D and earlier comparisons</summary>
+      <p class="section-intro">Takes A–D remain the selected last-zombie voices, rotating across rounds. The 13 zombie players include eight current cues and five comparisons.</p>
+    <section aria-labelledby="high-heading">
+      <h2 class="section-heading" id="high-heading">Selected last-zombie variations</h2>
+      <p class="section-intro">One ElevenLabs Sound Effects prompt, four variations: a piercing zombie shriek with strained high pitch, shredded rasp, sudden pitch breaks and a faint low growl. All four are active last-zombie variations.</p>
+      <div class="grid" aria-label="Selected last-zombie variations">
+        <article class="card featured">
+          <p class="label">Selected / Last-zombie variation</p>
+          <h3>Take A</h3>
+          <audio controls preload="metadata" src="scream-elevenlabs-high-01.wav" aria-label="Play selected last-zombie variation take A">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 1</span><span>3 s</span></div>
+        </article>
+        <article class="card featured">
+          <p class="label">Selected / Last-zombie variation</p>
+          <h3>Take B</h3>
+          <audio controls preload="metadata" src="scream-elevenlabs-high-02.wav" aria-label="Play selected last-zombie variation take B">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 2</span><span>3 s</span></div>
+        </article>
+        <article class="card featured">
+          <p class="label">Selected / Last-zombie variation</p>
+          <h3>Take C</h3>
+          <audio controls preload="metadata" src="scream-elevenlabs-high-03.wav" aria-label="Play selected last-zombie variation take C">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 3</span><span>3 s</span></div>
+        </article>
+        <article class="card featured">
+          <p class="label">Selected / Last-zombie variation</p>
+          <h3>Take D</h3>
+          <audio controls preload="metadata" src="scream-elevenlabs-high-04.wav" aria-label="Play selected last-zombie variation take D">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>Same prompt · Variation 4</span><span>3 s</span></div>
+        </article>
+      </div>
+        <article class="card comparison reference">
+          <p class="label">Previous direction 03 / Comparison only</p>
+          <h3>Scream with low growl</h3>
+          <p class="description">Direction: a piercing scream with wavering pitch over a quieter, guttural growl.</p>
+          <audio controls preload="metadata" src="scream-elevenlabs-03.wav" aria-label="Play previous ElevenLabs scream with low growl for comparison">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>ElevenLabs Sound Effects</span><span>3 s</span></div>
+        </article>
+    </section>
+    <section aria-labelledby="scream-heading">
+      <h2 class="section-heading" id="scream-heading">Earlier scream directions</h2>
+      <p class="section-intro">The other two original ElevenLabs directions, kept for comparison.</p>
+      <div class="grid">
+        <article class="card comparison">
+          <p class="label">Direction 01 / Comparison only</p>
+          <h3>Piercing shriek</h3>
+          <p class="description">Direction: a sharp, high scream with nasal rasp, cracking pitch and a ragged cutoff.</p>
+          <audio controls preload="metadata" src="scream-elevenlabs-01.wav" aria-label="Play ElevenLabs piercing shriek audition">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>ElevenLabs Sound Effects</span><span>3 s</span></div>
+        </article>
+        <article class="card comparison">
+          <p class="label">Direction 02 / Comparison only</p>
+          <h3>Raspy scream</h3>
+          <p class="description">Direction: a rising, throaty scream with coarse rasp, vocal cracks and a breathless snarl.</p>
+          <audio controls preload="metadata" src="scream-elevenlabs-02.wav" aria-label="Play ElevenLabs raspy scream audition">Your browser does not support audio playback.</audio>
+          <div class="detail"><span>ElevenLabs Sound Effects</span><span>3 s</span></div>
+        </article>
+
+      </div>
+    </section>
+    <section aria-labelledby="medium-heading">
+      <h2 class="section-heading" id="medium-heading">Stable Audio 3 Medium</h2>
+      <p class="section-intro">Four current chase, attack and death cues, plus two previous last-zombie takes for comparison.</p>
+      <div class="grid" aria-label="Medium audio takes">
+      <article class="card comparison">
+        <p class="label">Previous Medium take / Comparison only</p>
+        <h3>A drawn-out “aaahhh-AH-ah”</h3>
+        <p class="description">Direction: a long, raspy, open-vowel moan with wavering pitch and a ragged finish. A classic undead vocal shape.</p>
+        <audio controls preload="metadata" src="last-medium-02.wav" aria-label="Play previous drawn-out Medium last-zombie moan for comparison">Your browser does not support audio playback.</audio>
+        <div class="detail"><span class="filename">last-medium-02.wav</span><span>4 s</span></div>
+      </article>
+      <article class="card comparison">
+        <p class="label">Previous Medium take / Comparison only</p>
+        <h3>The weary groan and sigh</h3>
+        <p class="description">The earlier Medium direction: a puzzled groan and short breathy sigh. Retained for comparison with the selected Takes A–D.</p>
+        <audio controls preload="metadata" src="last-medium-01.wav" aria-label="Play previous Medium last-zombie performance for comparison">Your browser does not support audio playback.</audio>
+        <div class="detail"><span class="filename">last-medium-01.wav</span><span>3 s</span></div>
+      </article>
+      <article class="card">
+        <p class="label">Chase variation 01 / Medium</p>
+        <h3>Husky exertion</h3>
+        <p class="description">Direction: two low breathy grunts and a tired, raspy exhale. Quietly determined and out of breath.</p>
+        <audio controls preload="metadata" src="chase-medium-01.wav" aria-label="Play first Medium chase variation">Your browser does not support audio playback.</audio>
+        <div class="detail"><span class="filename">chase-medium-01.wav</span><span>3 s</span></div>
+      </article>
+      <article class="card">
+        <p class="label">Chase variation 02 / Medium</p>
+        <h3>Gravelly exhaustion</h3>
+        <p class="description">Direction: a slightly higher, nasal growl, a pause, and a soft wheezing grunt. A second voice for the chase.</p>
+        <audio controls preload="metadata" src="chase-medium-02.wav" aria-label="Play second Medium chase variation">Your browser does not support audio playback.</audio>
+        <div class="detail"><span class="filename">chase-medium-02.wav</span><span>3 s</span></div>
+      </article>
+      <article class="card">
+        <p class="label">Attack cue / Medium</p>
+        <h3>The lunge</h3>
+        <p class="description">Direction: one compact, guttural attack grunt with a breathy snarl, then silence.</p>
+        <audio controls preload="metadata" src="attack-medium-01.wav" aria-label="Play Medium attack cue">Your browser does not support audio playback.</audio>
+        <div class="detail"><span class="filename">attack-medium-01.wav</span><span>2 s</span></div>
+      </article>
+      <article class="card">
+        <p class="label">Death cue / Medium</p>
+        <h3>The final exhale</h3>
+        <p class="description">Direction: a short, defeated groan falling into a soft exhale. A restrained end to the performance.</p>
+        <audio controls preload="metadata" src="death-medium-01.wav" aria-label="Play Medium death cue">Your browser does not support audio playback.</audio>
+        <div class="detail"><span class="filename">death-medium-01.wav</span><span>2 s</span></div>
+      </article>
+      </div>
+    </section>
+    </details>
+    <footer>Descriptions show the requested direction for each take. Choose a player to listen and compare.</footer>
+  </main>
+  <script>
+    const players = [...document.querySelectorAll("audio")];
+    for (const player of players) {
+      player.addEventListener("play", () => {
+        for (const other of players) if (other !== player) other.pause();
+      });
+    }
+  </script>
+</body>
+</html>

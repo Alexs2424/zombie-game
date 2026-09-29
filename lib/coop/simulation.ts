@@ -7,7 +7,7 @@ import { MAX_PLAYERS, idleInput, type CoopAction, type CoopEvent, type CoopInput
 /** Every shared field is explicit. Actor health, inventory, rewards and timers are never copied back. */
 const SHARED_FIELDS = [
   "time", "round", "waveRemaining", "intermission", "spawnTimer", "nextId", "nextGrenadeId",
-  "enemies", "projectiles", "explosions", "fires", "doorsOpen", "rects", "walkRects",
+  "enemies", "corpses", "projectiles", "explosions", "fires", "doorsOpen", "rects", "walkRects",
   "lounge", "shortcut", "vip", "tables", "supply", "cashier", "hotel", "speakeasy",
   "loungeAge", "vipAge", "tablesAge", "supplyAge", "cashierAge", "hotelAge", "speakeasyAge",
   "roundCue", "roundCueRemaining", "stickTaken", "axeTaken", "jukeboxOn",

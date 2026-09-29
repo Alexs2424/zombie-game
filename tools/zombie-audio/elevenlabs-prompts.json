@@ -1,0 +1,93 @@
+{
+  "provider": "ElevenLabs",
+  "product": "Sound Effects",
+  "model": "eleven_text_to_sound_v2",
+  "modelEvidence": "Official Sound Effects API documentation lists v2 as the current default; the website did not show a model selector.",
+  "durationSeconds": 3,
+  "promptInfluence": 0.3,
+  "loop": false,
+  "promptEnhancer": false,
+  "publicSharing": false,
+  "assets": [
+    {
+      "file": "scream-elevenlabs-01.wav",
+      "rawFile": "piercing-01-raw.wav",
+      "direction": "Piercing shriek",
+      "historyId": "Bd179KZ76ZLvBntMzJe1",
+      "prompt": "A single high-pitched undead humanoid scream: AAAAAH-AH! Furious, feral, shrill and throaty, with a sharp nasal rasp, strained vocal cords and sudden cracking pitch. An aggressive male horror creature vocal performance, almost a shriek. One short attack followed by a ragged two-second sustain and abrupt breathy cutoff. Dry isolated close microphone sound for a survival horror game. No words, no laughter, no music, no ambience, no reverb.",
+      "creditsCharged": 120,
+      "balanceAfterGeneration": 9880,
+      "variation": 1,
+      "selection": "First variation exported for comparison; not ranked by listening."
+    },
+    {
+      "file": "scream-elevenlabs-02.wav",
+      "rawFile": "rasp-01-raw.wav",
+      "direction": "Raspy scream",
+      "prompt": "An enraged zombie gives a strained high-register scream: RRAAAAH-AAAH! Male humanoid creature with a dry saw-like rasp and shredded throaty texture. Forceful open AH vowels, rising pitch, two abrupt vocal cracks, then a breathless snarl. Frantic and hostile, like an angry horror character yelling at full force. One isolated three-second game sound. No speech, laughter, music, ambience or echo.",
+      "variation": 1,
+      "selection": "First variation exported for comparison; not ranked by listening."
+    },
+    {
+      "file": "scream-elevenlabs-03.wav",
+      "rawFile": "layered-01-raw.wav",
+      "direction": "Scream with low growl",
+      "prompt": "One demonic undead creature screams a wordless RAAAAH! A piercing high male shriek dominates, with coarse rasp, cracking pitch and wild aggression. A much quieter guttural growl follows the same vocal shape underneath, adding weight while keeping the high scream in front. Explosive onset, wavering vowel, ragged cutoff. One isolated three-second horror game vocal. Dry recording. No words, laughter, music, impacts, ambience or reverb.",
+      "usage": "Previous last-zombie cue; comparison only after Takes A-D were selected",
+      "selection": "Selected by the user: 3. is the best you should use this one",
+      "variation": 1
+    },
+    {
+      "file": "scream-elevenlabs-high-01.wav",
+      "rawFile": "high-scream-01-raw.wav",
+      "direction": "Higher-pitched video-game zombie scream, take A",
+      "prompt": "A terrifying high-pitched zombie noise for a survival-horror video game. One undead humanoid releases a piercing, feral RREEEAAAH! scream. Sharp strained upper register, shredded rasp, sudden upward pitch breaks, frantic predatory rage. A faint low growl adds weight, but the high shriek dominates. Explosive onset, ragged sustain, abrupt snarl at the end. Dry isolated 3-second vocal. No speech, music, ambience or reverb.",
+      "variation": 1,
+      "selection": "User approved all four top-list takes A-D and requested them throughout the rotation",
+      "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user"
+    },
+    {
+      "file": "scream-elevenlabs-high-02.wav",
+      "rawFile": "high-scream-02-raw.wav",
+      "direction": "Higher-pitched video-game zombie scream, take B",
+      "prompt": "A terrifying high-pitched zombie noise for a survival-horror video game. One undead humanoid releases a piercing, feral RREEEAAAH! scream. Sharp strained upper register, shredded rasp, sudden upward pitch breaks, frantic predatory rage. A faint low growl adds weight, but the high shriek dominates. Explosive onset, ragged sustain, abrupt snarl at the end. Dry isolated 3-second vocal. No speech, music, ambience or reverb.",
+      "variation": 2,
+      "selection": "User approved all four top-list takes A-D and requested them throughout the rotation",
+      "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user"
+    },
+    {
+      "file": "scream-elevenlabs-high-03.wav",
+      "rawFile": "high-scream-03-raw.wav",
+      "direction": "Higher-pitched video-game zombie scream, take C",
+      "prompt": "A terrifying high-pitched zombie noise for a survival-horror video game. One undead humanoid releases a piercing, feral RREEEAAAH! scream. Sharp strained upper register, shredded rasp, sudden upward pitch breaks, frantic predatory rage. A faint low growl adds weight, but the high shriek dominates. Explosive onset, ragged sustain, abrupt snarl at the end. Dry isolated 3-second vocal. No speech, music, ambience or reverb.",
+      "variation": 3,
+      "selection": "User approved all four top-list takes A-D and requested them throughout the rotation",
+      "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user"
+    },
+    {
+      "file": "scream-elevenlabs-high-04.wav",
+      "rawFile": "high-scream-04-raw.wav",
+      "direction": "Higher-pitched video-game zombie scream, take D",
+      "prompt": "A terrifying high-pitched zombie noise for a survival-horror video game. One undead humanoid releases a piercing, feral RREEEAAAH! scream. Sharp strained upper register, shredded rasp, sudden upward pitch breaks, frantic predatory rage. A faint low growl adds weight, but the high shriek dominates. Explosive onset, ragged sustain, abrupt snarl at the end. Dry isolated 3-second vocal. No speech, music, ambience or reverb.",
+      "variation": 4,
+      "selection": "User approved all four top-list takes A-D and requested them throughout the rotation",
+      "usage": "Active last-zombie scream rotation; Takes A-D all selected by the user"
+    }
+  ],
+  "variantsGenerated": 4,
+  "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+  "creditBatches": [
+    {
+      "description": "Initial three scream directions, four variants each",
+      "before": 10000,
+      "after": 9640,
+      "used": 360
+    },
+    {
+      "description": "Higher-pitched video-game zombie revision, four variants from one prompt",
+      "before": 9640,
+      "after": 9520,
+      "used": 120
+    }
+  ]
+}

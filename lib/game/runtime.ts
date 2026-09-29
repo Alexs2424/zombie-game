@@ -1,3 +1,4 @@
+import { createRange, refillRange, type RangeScenario } from './test-range';
 import {
   Simulation,
   RULES,
@@ -80,6 +81,7 @@ export type WeaponCard = {
   at: number;
 };
 export type GameView = {
+  previewControls?: boolean;
   aiming?: boolean;
   scoped?: boolean;
   casino: CasinoView;
@@ -254,7 +256,6 @@ export class GameRuntime {
   private pendingStart = false;
   private suppressUntil = 0;
   private disposed = false;
-  private playtesting = false;
   private hotelTour: { x: number; z: number }[] = [];
   private hotelTourCompleted = false;
   private slotWalkRemaining = 0;
@@ -298,6 +299,7 @@ export class GameRuntime {
     this.accumulated = 0;
   }
   private keyDown = (e: KeyboardEvent) => {
+    if (e.target instanceof HTMLElement && (e.target.closest(".dev-panel, .range-panel") || e.target.matches("input, textarea, select") || e.target.isContentEditable)) return;
     if (this.sim.hotelDocument) {
       if (e.code === "Escape") {
         e.preventDefault();
@@ -391,9 +393,13 @@ export class GameRuntime {
     }
   }
   private keyUp = (e: KeyboardEvent) => this.keys.delete(e.code);
+  private previewInput = false;
+  private rangeScenario: RangeScenario = "targets";
+  private get rangeMode() { return process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("range"); }
+  private freshSimulation() { return this.rangeMode ? createRange(this.rangeScenario) : new Simulation(); }
   private mouseMove = (e: MouseEvent) => {
     if (
-      document.pointerLockElement !== this.canvas ||
+      (document.pointerLockElement !== this.canvas && !(this.previewInput && e.target === this.canvas && (e.buttons & 2))) ||
       this.sim.phase !== "playing"
     )
       return;
@@ -405,10 +411,11 @@ export class GameRuntime {
     );
   };
   private mouseDown = (e: MouseEvent) => {
+    const controlsActive = document.pointerLockElement === this.canvas || (this.previewInput && e.target === this.canvas);
     // Hold right button for aligned sights; B retains the double-barrel alternate shot.
     if (
       e.button === 2 &&
-      document.pointerLockElement === this.canvas &&
+      controlsActive &&
       this.sim.phase === "playing" &&
       !this.sim.holdingChips
     ) {
@@ -417,7 +424,7 @@ export class GameRuntime {
     }
     if (
       e.button !== 0 ||
-      document.pointerLockElement !== this.canvas ||
+      !controlsActive ||
       this.sim.phase !== "playing" ||
       performance.now() < this.suppressUntil
     )
@@ -437,11 +444,13 @@ export class GameRuntime {
   private pointerChange = () => {
     this.clearInput();
     if (document.pointerLockElement === this.canvas) {
+      this.previewInput = false;
       if (this.pendingStart) {
-        this.sim = new Simulation();
+        this.sim = this.freshSimulation();
         this.zombieAudio.reset();
         this.audio.resetZombies();
         this.audio.resetSlots();
+        this.audio.resetHotel();
         this.sim.start();
         this.pendingStart = false;
       } else this.sim.resume();
@@ -454,6 +463,30 @@ export class GameRuntime {
     this.publish();
   };
   private pointerError = () => {
+    if (this.rangeMode) {
+      if (this.pendingStart) {
+        this.sim = this.freshSimulation();
+        this.zombieAudio.reset(); this.audio.resetZombies(); this.audio.resetSlots(); this.audio.resetHotel();
+      }
+      this.pendingStart = false; this.previewInput = true; this.clearInput();
+      this.sim.resume(); this.canvas.focus(); this.onError(""); this.publish(); return;
+    }
+    // Embedded preview browsers may not support pointer lock. Keep a normal
+    // drag interaction available in the development workspace only.
+    if (process.env.NODE_ENV !== "production" && new URLSearchParams(window.location.search).has("playtest")) {
+      if (this.pendingStart) {
+        this.sim = this.freshSimulation();
+        this.zombieAudio.reset(); this.audio.resetZombies(); this.audio.resetSlots(); this.audio.resetHotel();
+        this.sim.start();
+      } else this.sim.resume();
+      this.pendingStart = false;
+      this.previewInput = true;
+      this.clearInput();
+      this.canvas.focus();
+      this.onError("");
+      this.publish();
+      return;
+    }
     this.pendingStart = false;
     this.sim.pause();
     this.clearInput();
@@ -484,24 +517,12 @@ export class GameRuntime {
           "Audio is unavailable. You can still play; check your browser sound settings.",
         ),
       );
-    if (this.playtesting) {
-      if (this.pendingStart) {
-        this.sim = new Simulation();
-        this.zombieAudio.reset();
-        this.audio.resetZombies();
-        this.audio.resetSlots();
-        this.sim.start();
-        this.pendingStart = false;
-      } else this.sim.resume();
-      this.publish();
-      return;
-    }
     try {
       this.canvas.focus();
       await this.canvas.requestPointerLock();
     } catch (error) {
       this.pointerError();
-      if (error instanceof Error)
+      if (error instanceof Error && !this.previewInput)
         this.onError(
           `Mouse capture was blocked: ${error.message} Open the game in a focused Chrome tab and click Enter or Resume.`,
         );
@@ -528,6 +549,22 @@ export class GameRuntime {
     this.sim.pause();
     this.publish();
     if (resume) void this.enter();
+  }
+  rangeAction(action: string) {
+    if (!this.rangeMode) return;
+    this.pause();
+    if (["targets", "pursuit", "blast", "empty", "reset"].includes(action)) {
+      if (action !== "reset") this.rangeScenario = action as RangeScenario;
+      this.sim = createRange(this.rangeScenario);
+      this.zombieAudio.reset(); this.audio.resetZombies(); this.audio.resetSlots(); this.audio.resetHotel();
+      this.sim.pause();
+    } else if (action === "refill") refillRange(this.sim);
+    else if (action === "clear") { this.sim.enemies = []; this.sim.projectiles = []; }
+    else if (action === "god") this.sim.invulnerable = this.sim.invulnerable > 1 ? 0 : 99999;
+    else if (action.startsWith("equip:")) {
+      this.sim.resume(); this.sim.switchWeapon(action.slice(6) as WeaponId); this.sim.pause();
+    }
+    this.publish();
   }
   /** Small cheats for the current run; preserve pause, position, weapons and input mode. */
   debugAction(action: "unlock-all" | "add-chips" | "toggle-invulnerability") {
@@ -556,7 +593,6 @@ export class GameRuntime {
       this.debugAction(action);
       return;
     }
-    this.playtesting = true;
     const soundScenario = ["sound-chase", "sound-last", "sound-horde"].includes(action);
     const mysteryView = ["hotel-reception", "hotel-suitcase", "hotel-panel", "hotel-register", "hotel-cache"].includes(action);
     const hotelScenario = action.startsWith("hotel-") || action === "mystery-unlock";
@@ -566,10 +602,11 @@ export class GameRuntime {
       this.hotelTour = [];
       this.hotelTourCompleted = false;
       this.clearInput();
-      this.sim = new Simulation();
+      this.sim = this.freshSimulation();
       this.zombieAudio.reset();
       this.audio.resetZombies();
       this.audio.resetSlots();
+      this.audio.resetHotel();
       this.sim.start();
       this.sim.points = 12000;
       this.sim.intermission = 3600;
@@ -603,7 +640,8 @@ export class GameRuntime {
         x, z,
         health: 100,
         maxHealth: 100,
-        speed: 1.7,
+        // Keep the survivor audition clear of the higher-priority attack cue.
+        speed: action === "sound-last" ? 0 : 1.7,
         yaw: 0,
         attack: 0,
         cooldown: 0,
@@ -955,6 +993,9 @@ export class GameRuntime {
     if (action === "zombie-attacks") for (const e of s.enemies) {
       e.attackStyle = e.id % 3; e.attack = RULES.attackWindup;
     }
+    if (action === "zombie-deaths") for (const e of s.enemies) {
+      s.damageEnemy(e, e.health + 1, false);
+    }
     void this.audio.unlock();
     this.publish();
   }
@@ -1025,12 +1066,13 @@ export class GameRuntime {
     for (const event of this.sim.events) {
       this.audio.play(event);
       this.renderer.weaponEvent(event);
-      if (event.type === "zombieAttack" && event.position)
-        this.audio.zombieAttack(
-          this.sim.player,
-          event.position,
-          this.sim.yaw,
-        );
+      if (event.type === "zombieAttack") {
+        const source = this.sim.enemies.find(enemy => enemy.id === event.enemyId);
+        if (source && source.health > 0)
+          this.audio.zombieAttack(this.sim.player, source, this.sim.yaw);
+      }
+      if (event.type === "kill" && event.position)
+        this.audio.zombieDeath(this.sim.player, event.position, this.sim.yaw);
       if (event.type === "shot") this.renderer.shot(event.weapon!, event.side);
       if (event.type === "pickup" && event.weapon)
         this.pickupCard = weaponCard(event.weapon, this.sim, performance.now());
@@ -1048,6 +1090,7 @@ export class GameRuntime {
     this.sim.events.length = 0;
     const zombieCue = this.zombieAudio.update(dt, {
       playing: this.sim.phase === "playing",
+      suppressed: !this.audio.canPlayZombieCue(),
       round: this.sim.round,
       roundCueRemaining: this.sim.roundCueRemaining,
       waveRemaining: this.sim.waveRemaining,
@@ -1056,10 +1099,10 @@ export class GameRuntime {
     });
     if (zombieCue) {
       const source = this.sim.enemies.find((enemy) => enemy.id === zombieCue.enemyId);
-      this.audio.zombieCue(
+      if (source && source.health > 0) this.audio.zombieCue(
         zombieCue.kind,
         this.sim.player,
-        source ?? zombieCue.position,
+        source,
         this.sim.yaw,
         zombieCue.enemyId,
       );
@@ -1136,6 +1179,7 @@ export class GameRuntime {
       grenades: s.grenades,
       knifeReady: s.knifeCooldown <= 0 && s.grenadeCooldown <= 0,
       phase: s.phase,
+      previewControls: this.previewInput,
       health: s.health,
       maxHealth: s.maxHealth,
       inventory: WEAPON_ORDER.map((id) => ({

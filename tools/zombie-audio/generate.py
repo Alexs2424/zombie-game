@@ -34,14 +34,20 @@ DEST = ROOT / "public/audio/zombies"
 REPORT = ROOT / "docs/zombie-audio/provenance.json"
 
 
-def read_json(url, payload=None):
+def read_json(url, payload=None, headers=None):
     body = None if payload is None else json.dumps(payload).encode()
-    request = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(request, timeout=60, context=TLS_CONTEXT) as response:
-        return json.load(response)
+    request = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json", **(headers or {})})
+    try:
+        with urllib.request.urlopen(request, timeout=60, context=TLS_CONTEXT) as response:
+            return json.load(response)
+    except urllib.error.HTTPError as error:
+        detail = error.read(2048).decode("utf-8", errors="replace")
+        for value in (headers or {}).values():
+            detail = detail.replace(value, "[redacted]").replace(value.removeprefix("Bearer "), "[redacted]")
+        raise RuntimeError(f"Service HTTP {error.code}: {detail[:600]}") from None
 
 
-def generate(config, asset):
+def generate(config, asset, auth_headers=None):
     record_path = RAW / (asset["file"] + ".json")
     if record_path.exists():
         previous = json.loads(record_path.read_text())
@@ -50,13 +56,14 @@ def generate(config, asset):
     request_data = {"data": [config["variant_key"], asset["prompt"], asset["duration"],
                              config["steps"], config["cfg_scale"], config["sampler_type"], asset["seed"]]}
     endpoint = config["api_origin"] + "/gradio_api/call/infer"
-    event = read_json(endpoint, request_data)
+    event = read_json(endpoint, request_data, headers=auth_headers)
     record = {"generated_at": datetime.now(timezone.utc).isoformat(), "request": request_data, "event": event}
     record_path.write_text(json.dumps(record, indent=2) + "\n")
     print(f"{asset['file']}: generation submitted ({event['event_id']})", flush=True)
     event_kind = None
     response_data = None
-    with urllib.request.urlopen(endpoint + "/" + event["event_id"], timeout=60, context=TLS_CONTEXT) as stream:
+    result_request = urllib.request.Request(endpoint + "/" + event["event_id"], headers=auth_headers or {})
+    with urllib.request.urlopen(result_request, timeout=60, context=TLS_CONTEXT) as stream:
         for raw_line in stream:
             line = raw_line.decode().strip()
             if line.startswith("event:"):

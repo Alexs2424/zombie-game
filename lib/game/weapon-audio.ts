@@ -28,6 +28,7 @@ const GAIN: Partial<Record<WeaponId, number>> = {
   autoshotgun: 0.85, sniper: 0.9, lmg: 0.7, launcher: 0.95, stick: 0.8, axe: 0.9,
 };
 const MECH = 0.55;
+const STICK_SWINGS = ["craps-stick-swipe-elevenlabs-01", "craps-stick-swipe-elevenlabs-04"];
 
 export type Bus = { context: AudioContext; world: AudioNode; reverb: AudioNode | null };
 
@@ -69,13 +70,16 @@ export class WeaponSounds {
     this.buffers.clear();
   }
   preload(id: WeaponId) {
-    const names = WEAPON_SOUNDS[id];
+    const originalNames = WEAPON_SOUNDS[id];
+    const names = id === "stick" && originalNames ? [...originalNames, ...STICK_SWINGS] : originalNames;
     const bus = this.bus();
     if (this.disposed || !names || !bus || this.loading.has(id)) return this.loading.get(id);
     if (Date.now() < (this.retryAfter.get(id) ?? 0)) return;
     const job = Promise.all(names.filter(name => !this.buffers.has(`${id}/${name}`)).map(async (name) => {
       try {
-        const response = await fetch(`/audio/weapons/${id}/${name}.wav`, { signal: this.abort.signal });
+        const url = id === "stick" && STICK_SWINGS.includes(name)
+          ? `/audio/casino/${name}.wav` : `/audio/weapons/${id}/${name}.wav`;
+        const response = await fetch(url, { signal: this.abort.signal });
         if (!response.ok) return;
         const buffer = await bus.context.decodeAudioData(await response.arrayBuffer());
         if (!this.disposed) this.buffers.set(`${id}/${name}`, buffer);
@@ -163,7 +167,14 @@ export class WeaponSounds {
       this.play(id, "pickup", { gain: MECH, delay: 0.02, late: true });
       return true;
     }
-    if (e.type === "melee") return this.play(id, "swing", { gain: 0.7, rate: jitter() });
+    if (e.type === "melee") {
+      if (id === "stick") {
+        // Independent 50/50 draws: repeated A or D swings are intentional.
+        const choice = STICK_SWINGS[Math.random() < 0.5 ? 0 : 1];
+        if (this.play(id, choice, { gain: 0.7, rate: 1 })) return true;
+      }
+      return this.play(id, "swing", { gain: 0.7, rate: jitter() });
+    }
     if (e.type === "meleeHit") {
       for (let i = 0; i < Math.min(3, e.count ?? 1); i++)
         this.play(id, `impact-${1 + ((i + Math.floor(Math.random() * 3)) % (id === "axe" ? 2 : 3))}`, { delay: i * 0.028, gain: 1 - i * 0.2, rate: jitter() });
