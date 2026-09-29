@@ -41,7 +41,7 @@ import {
   LOUNGE_OFFSET,
   SERVICE_OFFSET,
 } from "./casino-layout";
-import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
+import { createZombie, loadZombieAsset, animateZombie, animateZombieDeath } from "./zombies";
 import { slotCabinetsForIsland } from "./slot-machines";
 import { CasinoVisuals } from "./casino-visuals";
 import { CASINO_SECRET_ANCHORS } from "./casino";
@@ -1956,7 +1956,7 @@ export class GameRenderer {
     }
     const characterShadows = this.serviceShadow ? [...this.shadows, this.serviceShadow] : this.shadows;
     const active = new Set(
-      sim.enemies.filter((e) => e.health > 0).map((e) => e.id),
+      [...sim.enemies.filter((e) => e.health > 0).map((e) => e.id), ...sim.corpses.map(c => c.enemy.id)],
     );
     for (const [id, v] of this.zombies)
       if (!active.has(id)) {
@@ -1972,8 +1972,8 @@ export class GameRenderer {
         this.zombies.delete(id);
         this.zombieShadows.delete(id);
       }
-    for (const e of sim.enemies) {
-      if (e.health <= 0) continue;
+    const corpseAges = new Map(sim.corpses.map(c => [c.enemy.id, c.age]));
+    for (const e of [...sim.enemies.filter(e => e.health > 0), ...sim.corpses.map(c => c.enemy)]) {
       if (!this.zombieAsset) continue;
       let v = this.zombies.get(e.id);
       if (!v) {
@@ -2010,7 +2010,9 @@ export class GameRenderer {
         if (nearby) membership.add(shadow);
         else membership.delete(shadow);
       }
-      animateZombie(v, e);
+      const deathAge = corpseAges.get(e.id);
+      if (deathAge === undefined) animateZombie(v, e);
+      else animateZombieDeath(v, e, deathAge);
     }
     this.scene.render();
     this.fps = this.engine.getFps();

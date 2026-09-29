@@ -507,6 +507,7 @@ export class Simulation {
     owned: id === "pistol", mag: id === "pistol" ? 12 : 0, reserve: id === "pistol" ? 84 : 0,
   }])) as Record<WeaponId, {owned:boolean; mag:number; reserve:number}>;
   enemies: Enemy[] = [];
+  corpses: { enemy: Enemy; age: number }[] = [];
   grenades = 2;
   projectiles: Grenade[] = [];
   explosions: (V3 & { id: number; remaining: number })[] = [];
@@ -1204,6 +1205,9 @@ export class Simulation {
     this.events.push({ type: "hit", headshot, position: { x: e.x, z: e.z } });
     if (e.health <= 0) {
       this.kills++;
+      this.corpses.push({ enemy: { ...e, flash: 0 }, age: 0 });
+      // Heavy firefights retire older bodies sooner, always through the fade.
+      for (const corpse of this.corpses.slice(0, -24)) corpse.age = Math.max(4.5, corpse.age);
       this.events.push({
         type: "kill",
         headshot,
@@ -1541,6 +1545,8 @@ export class Simulation {
     if (this.phase !== "playing") return;
     dt = Math.min(0.05, Math.max(0, dt));
     this.time += dt;
+    for (const corpse of this.corpses) corpse.age += dt;
+    this.corpses = this.corpses.filter(corpse => corpse.age < 6);
     this.codeFlash = this.codeFlash > 0 ? Math.max(0,this.codeFlash-dt) : Math.min(0,this.codeFlash+dt);
     if (this.mystery && !this.mystery.resolved) {
       this.mystery.remaining = Math.max(0,this.mystery.remaining-dt);
