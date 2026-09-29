@@ -1,0 +1,75 @@
+{
+  "status": "passed",
+  "file": "pistol-ammo-display.glb",
+  "sha256": "16351a7f77ff5bc52f75f647287ccce02938d1a0f8425a500260ef27137fbb71",
+  "bytes": 2971816,
+  "triangles": 53848,
+  "materials": 8,
+  "material_draw_calls": 8,
+  "bounds_min": [
+    -1.25,
+    -0.800000011920929,
+    0.0
+  ],
+  "bounds_max": [
+    1.25,
+    0.800000011920929,
+    0.33900001645088196
+  ],
+  "dimensions_XYZ": [
+    2.5,
+    1.600000023841858,
+    0.33900001645088196
+  ],
+  "origin": "Y-up, vertically centered with flat wall mounting face at Z=0",
+  "front": "glTF +Z",
+  "finite_arrays": true,
+  "unit_normals": true,
+  "indices_valid": true,
+  "degenerate_triangles": 0,
+  "winding_mismatches": 0,
+  "embedded_images": [
+    {
+      "name": "Original walnut grain \u2014 512 square",
+      "size": [
+        512,
+        512
+      ],
+      "embedded": true
+    }
+  ],
+  "material_geometry": [
+    {
+      "name": "01 Walnut cabinet \u2014 original packed grain",
+      "triangles": 1504
+    },
+    {
+      "name": "02 Racing green enamel",
+      "triangles": 12164
+    },
+    {
+      "name": "03 Oxblood felt liner",
+      "triangles": 564
+    },
+    {
+      "name": "04 Brushed antique brass",
+      "triangles": 17516
+    },
+    {
+      "name": "05 Ivory lettering and carton paper",
+      "triangles": 2756
+    },
+    {
+      "name": "06 Reserve ammunition carton",
+      "triangles": 1504
+    },
+    {
+      "name": "07 Copper cartridge jacket",
+      "triangles": 16128
+    },
+    {
+      "name": "08 Dark steel and shadowed seams",
+      "triangles": 1712
+    }
+  ]
+}

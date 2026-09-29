@@ -106,6 +106,14 @@ Tall, still, and meticulously upright, with swept-back silvering hair, a long fa
 
 When challenged publicly, he enlarges the performance and makes the room laugh with him. When truly threatened, he uses the person's name, lowers his voice, and gives one very specific instruction. His flaw is believing people can only be bought, owned, or intimidated. The crew's freely chosen loyalty is something his scheme fails to account for. His humor is extravagant courtesy used to conceal coercion. Do not use generic snarling, constant shouting, or a joke after every threat.
 
+## Cashier portrait asset
+
+**Established request:** replace the cashier's primitive portrait with better artwork during map polish.
+
+**Working visual decision:** use an original period oil painting of an unnamed proprietor in formal evening clothes, with an emerald backdrop and walnut/bronze frame. This asset does not establish the sitter as Voss or another named character; its narrative identity remains open. Voss's younger portrait and matching signet ring above remain a separate design intention, not verified details of this painting. The period styling does not change the working 1976 setting.
+
+**Implemented:** the painting and frame slide together to reveal the existing keypad. The portrait/keypad interaction was checked in the browser. See the [asset provenance and exact generation prompt](../portrait-art/README.md).
+
 ## Marlowe
 
 - **Identity:** Edwin Marlowe, appears about 63; long-serving bartender originally from near Leeds, working for Voss by 1959. His exact age and supernatural status remain open. His sister Elsie is alive in England. See the [Marlowe dossier](character-backstories/marlowe.md).

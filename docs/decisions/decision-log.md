@@ -1,5 +1,11 @@
 # Decision log
 
+## 2026-09-28 — Cashier portrait map polish
+
+**User direction:** improve the cashier portrait's artwork. **Working choice:** an original period proprietor painting with a walnut/bronze frame. The sitter remains unnamed; this visual replacement does not establish Voss's appearance, a new character identity, or a change to the 1976 setting. Recorded in `characters.md`, with the exact generation prompt in `docs/portrait-art/README.md`.
+
+**Implemented and checked:** the painting and frame slide together and expose the existing interactive keypad. No story or puzzle progression was added by this asset replacement.
+
 ## 2026-09-28 — Narrative source of truth and creative direction
 
 **Established by the user:** AI-led game and voice production; dialogue-led characterization; unique accents and intonation; dark noir with funny one-liners; charming, theatrical, intimidating Voss; browser/budget-conscious characters with Blender preferred and facial polish deferred. Character preferences delegated to the agent. Creative decisions must be recorded in Markdown.
