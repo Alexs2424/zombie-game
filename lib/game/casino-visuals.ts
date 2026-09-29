@@ -13,6 +13,7 @@ import { BET_TARGETS, SECRET_DOOR, SECRET_OFFSET, CASINO_SECRET_ANCHORS, CRAPS_F
 import { CRAPS_TABLES } from "./casino-layout";
 import { POKER_TABLES } from "./poker";
 import { createChipTemplate } from "./chip-template";
+import { createCashierPortrait } from "./cashier-portrait";
 type CrapsTableId = (typeof CRAPS_TABLES)[number]["id"];
 import type { Simulation } from "./simulation";
 
@@ -46,7 +47,7 @@ export class CasinoVisuals {
     this.ready=this.load();
   }
   private async load() {
-    const names=['casino-chip','crooked-cards','secret-portrait','secret-keypad','mystery-slot','speakeasy-decor'];
+    const names=['casino-chip','crooked-cards','secret-keypad','mystery-slot','speakeasy-decor'];
     const assets=await Promise.all(names.map(name=>LoadAssetContainerAsync(`/models/${name}.glb`,this.scene)));
     if(this.scene.isDisposed) {assets.forEach(a=>a.dispose());return;}
     this.assets=assets;
@@ -71,8 +72,10 @@ export class CasinoVisuals {
     };
     const evidenceTable=POKER_TABLES.find(table=>table.id==='poker-b')!;
     spawn(1,'pinned evidence cards',new Vector3(evidenceTable.x,.978,evidenceTable.z),Math.PI);
-    this.portrait=spawn(2,'sliding portrait',new Vector3(SECRET_DOOR.x-.55,2,SECRET_DOOR.z),-Math.PI/2);
-    this.keypad=spawn(3,'shootable keypad',new Vector3(CASINO_SECRET_ANCHORS.keypad.x,0,CASINO_SECRET_ANCHORS.keypad.z),-Math.PI/2);
+    this.portrait=createCashierPortrait(this.scene);
+    this.portrait.position.set(SECRET_DOOR.x-.55,2,SECRET_DOOR.z);
+    this.portrait.rotation.y=-Math.PI/2;
+    this.keypad=spawn(2,'shootable keypad',new Vector3(CASINO_SECRET_ANCHORS.keypad.x,0,CASINO_SECRET_ANCHORS.keypad.z),-Math.PI/2);
     // The real table already has its place boxes printed on the recessed felt.
     // No raised second board: only a translucent hover cue lies on that surface.
     const target = BET_TARGETS[0];
@@ -84,9 +87,9 @@ export class CasinoVisuals {
     this.ghostChip=spawn(0,'chip placement preview',new Vector3(0,0,0));
     for(const mesh of this.ghostChip.getChildMeshes()) mesh.visibility=.48;
     this.ghostChip.setEnabled(false);
-    const cabinet=spawn(4,'velvet fortune',new Vector3(CASINO_SECRET_ANCHORS.mysteryCabinet.x,0,CASINO_SECRET_ANCHORS.mysteryCabinet.z));
+    const cabinet=spawn(3,'velvet fortune',new Vector3(CASINO_SECRET_ANCHORS.mysteryCabinet.x,0,CASINO_SECRET_ANCHORS.mysteryCabinet.z));
     this.reels=cabinet.getChildTransformNodes().filter(n=>/Reel face/.test(n.name));
-    spawn(5,'speakeasy furniture',new Vector3(47+SECRET_OFFSET.x,0,SECRET_OFFSET.z));
+    spawn(4,'speakeasy furniture',new Vector3(47+SECRET_OFFSET.x,0,SECRET_OFFSET.z));
     this.held=new TransformNode('held casino chips',this.scene);this.held.parent=this.camera;
     this.held.position.set(.27,-.23,.53);this.held.rotation.set(.65,0,-.18);
     for(let i=0;i<4;i++) {

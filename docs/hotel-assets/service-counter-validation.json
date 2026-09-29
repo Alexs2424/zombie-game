@@ -1,0 +1,28 @@
+{
+  "file": "hotel-service-counter.glb",
+  "loader": "Babylon NullEngine with glTF AUTO conversion",
+  "triangles": 34856,
+  "meshes": 9,
+  "bytes": 1686056,
+  "boundsBabylon": [
+    [
+      -3.200000047683716,
+      0,
+      -0.6499999761581421
+    ],
+    [
+      3.200000047683716,
+      1.4500000476837158,
+      0.6499999761581421
+    ]
+  ],
+  "fixture": {
+    "width": 6.4,
+    "depth": 1.3,
+    "height": 1.45
+  },
+  "embeddedTextures": 2,
+  "finitePositions": true,
+  "validIndices": true,
+  "uvs": true
+}

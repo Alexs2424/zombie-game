@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "assets": [
+    {
+      "kind": "portal",
+      "bytes": 1363280,
+      "meshes": 6,
+      "triangles": 20296,
+      "bounds": {
+        "min": [
+          -6.069999933242798,
+          0,
+          11.504999876022339
+        ],
+        "max": [
+          0.06999993324279785,
+          4.87000036239624,
+          12.62499988079071
+        ]
+      }
+    },
+    {
+      "kind": "gate",
+      "bytes": 707920,
+      "meshes": 3,
+      "triangles": 22888,
+      "bounds": {
+        "min": [
+          -5.380000114440918,
+          0.04499995708465576,
+          12.092662304639816
+        ],
+        "max": [
+          -0.619999885559082,
+          3.05049991607666,
+          12.302499998360872
+        ]
+      }
+    }
+  ],
+  "checks": [
+    "clear foyer opening",
+    "jamb and lintel contact",
+    "gate visibility",
+    "embedded textures",
+    "finite geometry and normals",
+    "asset budgets"
+  ]
+}

@@ -23,7 +23,7 @@ export async function loadHotelFurniture(scene: Scene) {
         const pendingMeshes: AbstractMesh[] = [];
         try {
           container = await LoadAssetContainerAsync(
-            `/models/hotel-${kind}.glb`,
+            kind === "planter" ? "/models/casino-planter.glb" : `/models/hotel-${kind}.glb`,
             scene,
           );
           if (scene.isDisposed) {

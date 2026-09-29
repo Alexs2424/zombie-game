@@ -12,6 +12,7 @@ import { SpotLight } from "@babylonjs/core/Lights/spotLight";
 import { HOTEL, HOTEL_RECTS, stairPoint } from "./world";
 import { buildHotelProps } from "./hotel-props";
 import { loadHotelFurniture } from "./hotel-assets";
+import { loadHotelEntry } from "./hotel-entry-assets";
 import { buildHotelRenovation } from "./hotel-renovation-scene";
 import { createHotelLightMembership } from "./hotel-light-membership";
 import { HOTEL_FIXTURES } from "./hotel-fixtures";
@@ -390,7 +391,9 @@ export function buildHotel(scene: Scene) {
     HOTEL.ceilingY + 0.24,
     ceiling,
   );
-  slab("foyer ceiling", foyerPolygon, 4.77, 4.96, ceiling);
+  // The floor overlap joins walking surfaces; the ceiling starts at the wall
+  // so its raw front edge cannot protrude above the entrance cornice.
+  slab("foyer ceiling",foyerPolygon.map(point=>({...point,z:Math.max(point.z,HOTEL.entrance.z)})),4.77,4.96,ceiling);
 
   const upperMinZ = Math.min(...HOTEL.upperPolygon.map((p) => p.z));
   const upperMaxZ = Math.max(...HOTEL.upperPolygon.map((p) => p.z));
@@ -423,7 +426,7 @@ export function buildHotel(scene: Scene) {
     // These footprints are rendered by buildHotelProps, not as architecture.
     if (
       rect.id.startsWith("hotel-prop-") ||
-      rect.id.startsWith("hotel-service-door-") ||
+      rect.id === "hotel-entry-lintel" ||
       rect.id === HOTEL_AMMO_CRATE.id ||
       rect.id.startsWith("hotel-gallery-") || rect.id.startsWith("hotel-salon-column-")
     )
@@ -519,7 +522,7 @@ export function buildHotel(scene: Scene) {
       ivory,
       yaw,
     );
-    if (base > 1) continue;
+    if (base > 1 && !rect.id.startsWith("hotel-service-door-")) continue;
     box(
       `${rect.id} lower panel`,
       rect.x,
@@ -664,53 +667,35 @@ export function buildHotel(scene: Scene) {
     );
   }
 
-  // Entrance lintel and low wayfinding face south into the existing casino.
-  box(
-    "entry lintel teal panel",
-    HOTEL.entrance.x,
-    3.5,
-    11.95,
-    4.6,
-    0.64,
-    0.06,
-    teal,
-  );
-  sign(
-    "entry overhead",
-    ["THE GRAND HOTEL"],
-    HOTEL.entrance.x,
-    3.5,
-    11.91,
-    4.3,
-    0.47,
-  );
-  sign(
-    "entry eye level",
-    ["HOTEL LOBBY", "STAIRS / DINING ROOM"],
-    -6.85,
-    1.95,
-    11.93,
-    1.85,
-    0.72,
-  );
+  // A single coherent entrance replaces overlapping lintels and wall labels.
+  // Keep a simple matching surround only while the original GLB is loading.
+  const entryFallback: Mesh[] = [];
+  for (const [x,y,w,h] of [[HOTEL.entrance.x-2.67,1.535,.54,3.07],
+    [HOTEL.entrance.x+2.67,1.535,.54,3.07],[HOTEL.entrance.x,3.865,5.88,1.59]]) {
+    const mesh=box("entry marble loading surround",x,y,HOTEL_GATE.z-.13,w,h,.82,stone);
+    batches.get(stone)!.splice(batches.get(stone)!.indexOf(mesh),1);
+    ownedMeshes.push(mesh);entryFallback.push(mesh);
+  }
+  entryFallback.push(sign("entry loading title",["GRAND HOTEL"],HOTEL.entrance.x,3.9,
+    HOTEL_GATE.z-.56,4.3,.47));
   box(
     "restaurant sign mounting board",
     HOTEL.center.x,
-    HOTEL.floorY + 1.65,
-    lobbyMaxZ - 0.22,
-    6.55,
-    1.08,
-    0.28,
+    HOTEL.floorY + 2.65,
+    lobbyMaxZ - 0.2,
+    5.25,
+    0.74,
+    0.22,
     dark,
   );
   sign(
     "upper level",
-    ["THE GRAND DINING ROOM", "CASINO VIA EITHER STAIR"],
+    ["GRAND DINING ROOM"],
     HOTEL.center.x,
-    HOTEL.floorY + 1.65,
-    lobbyMaxZ - 0.4,
-    6.3,
-    0.85,
+    HOTEL.floorY + 2.65,
+    lobbyMaxZ - 0.32,
+    5.02,
+    0.53,
   );
   box(
     "foyer return sign panel",
@@ -814,39 +799,59 @@ export function buildHotel(scene: Scene) {
   chandelier(HOTEL.center.x, HOTEL.center.z - 2, 7, 1.8);
   for (const x of [HOTEL.center.x - 7, HOTEL.center.x + 7])
     chandelier(x, upperCenterZ + 0.8, 7.6, 0.82);
+  // Fit each coffer to the octagonal ceiling instead of leaving beam ends
+  // suspended short of the perimeter. The top embeds slightly in the slab.
+  const ceilingSpan = (coordinate: number, fixedAxis: "x" | "z") => {
+    const otherAxis = fixedAxis === "x" ? "z" : "x";
+    const intersections: number[] = [];
+    for (let i = 0; i < HOTEL.lobbyPolygon.length; i++) {
+      const a = HOTEL.lobbyPolygon[i];
+      const b = HOTEL.lobbyPolygon[(i + 1) % HOTEL.lobbyPolygon.length];
+      const delta = b[fixedAxis] - a[fixedAxis];
+      if (Math.abs(delta) < 1e-8) continue;
+      const t = (coordinate - a[fixedAxis]) / delta;
+      if (t >= 0 && t <= 1)
+        intersections.push(a[otherAxis] + t * (b[otherAxis] - a[otherAxis]));
+    }
+    const start = Math.min(...intersections), end = Math.max(...intersections);
+    return { center: (start + end) / 2, length: end - start };
+  };
   for (const x of [-15, -7, 1, 9]) {
+    const span = ceilingSpan(x, "x");
     box(
       "coffer long beam",
       x,
-      HOTEL.ceilingY - 0.16,
-      34,
+      HOTEL.ceilingY - 0.1,
+      span.center,
       0.22,
       0.22,
-      29,
+      span.length,
       walnut,
     );
     box(
       "coffer brass fillet",
       x,
-      HOTEL.ceilingY - 0.28,
-      34,
+      HOTEL.ceilingY - 0.2175,
+      span.center,
       0.05,
       0.015,
-      29,
+      span.length,
       brass,
     );
   }
-  for (const z of [22, 30, 38, 46])
+  for (const z of [22, 30, 38, 46]) {
+    const span = ceilingSpan(z, "z");
     box(
       "coffer cross beam",
-      HOTEL.center.x,
-      HOTEL.ceilingY - 0.16,
+      span.center,
+      HOTEL.ceilingY - 0.1,
       z,
-      28,
+      span.length,
       0.22,
       0.22,
       walnut,
     );
+  }
   for (const x of [-12, 4])
     for (const z of [38, 44]) {
       cylinder("lounge ceiling fixture frame", x, 3.53, z, 1.05, 0.16, brass);
@@ -960,14 +965,34 @@ export function buildHotel(scene: Scene) {
       yaw = door.yaw + Math.PI;
     const dx = Math.sin(door.yaw),
       dz = Math.cos(door.yaw);
+    // The perimeter wall face is 0.1 m inside its centerline. Give the
+    // three-sided frame real depth around the recessed leaf; the old solid
+    // backing shared that wall face and disappeared into it at oblique angles.
+    const casingWidth = 0.18;
+    const casingDepth = 0.12;
+    const casingOffset = 0.15;
+    for (const side of [-1, 1]) {
+      const offset = side * (door.w + casingWidth) / 2;
+      box(
+        `${spawn.id} service jamb`,
+        door.x + Math.cos(yaw) * offset + dx * casingOffset,
+        door.y + (door.h + casingWidth) / 2,
+        door.z - Math.sin(yaw) * offset + dz * casingOffset,
+        casingWidth,
+        door.h + casingWidth,
+        casingDepth,
+        walnut,
+        yaw,
+      );
+    }
     box(
-      `${spawn.id} service surround`,
-      door.x,
-      door.y + door.h / 2 + 0.08,
-      door.z,
-      door.w + 0.38,
-      door.h + 0.16,
-      0.2,
+      `${spawn.id} service header`,
+      door.x + dx * casingOffset,
+      door.y + door.h + casingWidth / 2,
+      door.z + dz * casingOffset,
+      door.w + casingWidth * 2,
+      casingWidth,
+      casingDepth,
       walnut,
       yaw,
     );
@@ -1000,7 +1025,7 @@ export function buildHotel(scene: Scene) {
       `${spawn.id} portal sign`,
       [door.y > 0 ? "SERVICE • STAFF ONLY" : "HOTEL STAFF"],
       door.x + dx * 0.16,
-      door.y + door.h + 0.3,
+      door.y + door.h + 0.42,
       door.z + dz * 0.16,
       2.15,
       0.32,
@@ -1067,18 +1092,19 @@ export function buildHotel(scene: Scene) {
       0.1,
       brass,
     );
+  gateBox("hotel purchase plaque backing",HOTEL_GATE.x,1.86,3.2,.46,.035,teal).position.z-=.105;
   const gate = Mesh.MergeMeshes(gateParts, true, true, undefined, false, true)!;
   gate.name = "hotel purchase gate";
   gate.isPickable = false;
   ownedMeshes.push(gate);
   const gatePrice = sign(
     "hotel price",
-    [`HOTEL ACCESS • ${HOTEL_RULES.price.toLocaleString()} CHIPS`],
+    [`E · OPEN ${HOTEL_RULES.price.toLocaleString()}`],
     HOTEL_GATE.x,
-    2.64,
-    HOTEL_GATE.z - 0.16,
-    4.1,
-    0.34,
+    1.86,
+    HOTEL_GATE.z - 0.126,
+    2.95,
+    0.32,
   );
 
   const bellMaterial = material("service bell status", "#d0a55b", 0.12);
@@ -1244,6 +1270,7 @@ export function buildHotel(scene: Scene) {
   const renovation = buildHotelRenovation(scene);
   let propMeshes = buildHotelProps(scene);
   let furniture: Awaited<ReturnType<typeof loadHotelFurniture>> | undefined;
+  let entry: Awaited<ReturnType<typeof loadHotelEntry>> | undefined;
   let disposed = false;
   const lightMembership = createHotelLightMembership(scene, lights);
   const disposeFallback = () => {
@@ -1259,10 +1286,11 @@ export function buildHotel(scene: Scene) {
       ...renovation.meshes,
       ...propMeshes,
       ...(furniture?.lightMeshes ?? []),
+      ...(entry?.meshes ?? []),
     ]);
   };
   refreshLights();
-  const ready = loadHotelFurniture(scene).then((loaded) => {
+  const furnitureReady = loadHotelFurniture(scene).then((loaded) => {
     if (disposed || scene.isDisposed) {
       loaded.dispose();
       return;
@@ -1278,6 +1306,12 @@ export function buildHotel(scene: Scene) {
     loaded.activate();
     refreshLights();
   });
+  const entryReady=loadHotelEntry(scene).then(loaded=>{
+    if(disposed || scene.isDisposed){loaded.dispose();return;}
+    entry=loaded;entryFallback.forEach(mesh=>mesh.setEnabled(false));gate.setEnabled(false);
+    loaded.setOpen(gateWasOpen);refreshLights();
+  }).catch(error=>{if(!disposed && !scene.isDisposed) console.warn("Hotel entrance model unavailable; keeping its surround.",error);});
+  const ready=Promise.all([furnitureReady,entryReady]).then(()=>undefined);
   let bellCaption = "";
   let jukeWasOn = false;
   let gateWasOpen = false;
@@ -1286,7 +1320,8 @@ export function buildHotel(scene: Scene) {
     renovation.update(sim);
     if (gateWasOpen !== sim.hotel) {
       gateWasOpen = sim.hotel;
-      gate.setEnabled(!sim.hotel);
+      gate.setEnabled(!sim.hotel && !entry);
+      entry?.setOpen(sim.hotel);
       gatePrice.setEnabled(!sim.hotel);
     }
     const phase = sim.hotelChallenge.phase;
@@ -1350,6 +1385,7 @@ export function buildHotel(scene: Scene) {
       disposed = true;
       lightMembership.dispose();
       furniture?.dispose();
+      entry?.dispose();
       renovation.dispose();
       disposeFallback();
       gate.material?.dispose();

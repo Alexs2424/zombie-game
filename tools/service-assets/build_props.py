@@ -7,11 +7,17 @@ root when loading. The source retains editable objects; export joins material
 batches. Preview shell, camera, and lights are excluded from the runtime GLB.
 """
 from pathlib import Path
-import bpy, bmesh, math, json, random
+import bpy, bmesh, math, json, random, os, subprocess
 import numpy as np
 from mathutils import Vector, Matrix
 
 ROOT = Path(__file__).resolve().parents[2]
+# Read the same wall faces used by the renderer, keeping fixtures attached when
+# the room dimensions change. NODE_BINARY may select a Node 22.13+ installation.
+MOUNTS = json.loads(subprocess.check_output([
+    os.environ.get('NODE_BINARY', 'node'), '--experimental-strip-types', '--input-type=module', '-e',
+    "import { SERVICE_ASSET_MOUNTS } from './lib/game/service-layout.ts'; console.log(JSON.stringify(SERVICE_ASSET_MOUNTS));",
+], cwd=ROOT, text=True))
 SOURCE = ROOT/'assets/source/service-props.blend'
 EXPORT = ROOT/'public/models/service-props.glb'
 DOCS = ROOT/'docs/service-assets'
@@ -242,23 +248,25 @@ for x,w,h,y in [(8.12,.57,.79,2.00),(7.36,.53,.61,2.09)]:
     cube('Switchgear engraved identifier',(x,y+h*.23,11.684),(w*.69,.08,.003),PAPER,.002)
     cube('Switchgear yellow warning plate',(x-.11,y-.11,11.684),(.12,.14,.003),YELLOW,.002)
     cube('Switchgear disconnect lever',(x+.15,y-.10,11.665),(.034,.19,.047),DARK,.005)
-    tube('Switchgear incoming conduit',[(x,y+h/2,11.78),(x,3.23,11.78),(x+.20,3.43,11.78),(8.93,3.43,11.78)],.026,STEEL)
-    for yy in [2.76,3.17]:cube('Conduit wall saddle',(x,yy,11.82),(.095,.044,.08),STEEL,.005)
+    tube('Switchgear incoming conduit',[(x,y+h/2,11.78),(x,3.23,11.78),(x+.20,3.43,11.78),(8.93,3.43,11.78),(8.93,3.43,11.90)],.026,STEEL)
+    for yy in [2.76,3.17]:cube('Conduit wall saddle',(x,yy,11.82),(.095,.044,.135),STEEL,.005)
 text('Electrical circuit identifier','POWER / 03',(8.12,2.185,11.680),.058,DARK,-1)
-cube('Service wayfinding sign',(10.10,2.92,11.84),(2.0,.49,.025),TEAL,.016)
-text('Receiving direction sign','RECEIVING  /  02',(10.10,2.94,11.823),.14,PAPER,-1)
-text('Receiving safety subline','KEEP ACCESS CLEAR',(10.10,2.78,11.822),.065,YELLOW,-1)
+cube('Service wayfinding sign',(10.10,2.92,11.874),(2.0,.49,.025),TEAL,.016)
+text('Receiving direction sign','RECEIVING  /  02',(10.10,2.94,11.857),.14,PAPER,-1)
+text('Receiving safety subline','KEEP ACCESS CLEAR',(10.10,2.78,11.856),.065,YELLOW,-1)
 
 # OVERHEAD PIPEWORK — unions, valve wheels, hangers, inspection bands.
 GROUP='overhead_services'
 for z,r in [(5.44,.071),(6.03,.051)]:
-    tube('Main suspended service pipe',[(4.53,4.12,z),(14.76,4.12,z),(15.26,4.12,z),(15.42,3.96,z),(15.42,3.36,z)],r,TEAL if r>.06 else STEEL)
+    # Both pipe runs enter a real wall instead of ending in open air.
+    east=MOUNTS['east']
+    tube('Main suspended service pipe',[(MOUNTS['west']-.025,4.12,z),(east-.30,4.12,z),(east-.14,3.96,z),(east-.14,3.36,z),(east+.025,3.36,z)],r,TEAL if r>.06 else STEEL)
     for x in [5.5,8.65,11.8,14.66]:
         rod('Pipe compression sleeve',(x-.065,4.12,z),(x+.065,4.12,z),r+.022,STEEL,16)
         for dx in [-.068,.068]:rod('Pipe union rim',(x+dx-.008,4.12,z),(x+dx+.008,4.12,z),r+.033,DARK,16)
     for x in [5.3,8.6,11.9,14.8]:
-        rod('Threaded pipe suspension',(x,4.15,z),(x,4.61,z),.011,STEEL,8)
-        cube('Suspension ceiling anchor',(x,4.62,z),(.12,.04,.10),STEEL,.005)
+        rod('Threaded pipe suspension',(x,4.15,z),(x,MOUNTS['ceiling']-.02,z),.011,STEEL,8)
+        cube('Suspension ceiling anchor',(x,MOUNTS['ceiling']-.02,z),(.12,.04,.10),STEEL,.005)
         rod('Suspended pipe clamp',(x-.035,4.12,z),(x+.035,4.12,z),r+.035,STEEL,16)
     for x in [7.0,12.5]:rod('Pipe identification collar',(x-.042,4.12,z),(x+.042,4.12,z),r+.002,YELLOW,16)
     rod('Pipe valve body',(10.0,4.12,z),(10.26,4.12,z),r+.033,STEEL,16)
@@ -272,7 +280,7 @@ for x,z in [(7.5,8.6),(12.9,8.6),(12.9,4.3)]:
     for zz in [z-.079,z+.079]:
         rod('Fluorescent opal tube',(x-.71,4.44,zz),(x+.71,4.44,zz),.027,LIT,12)
         for dx in [-.735,.735]:cube('Fluorescent tube ceramic socket',(x+dx,4.46,zz),(.06,.09,.083),PAPER,.009)
-    for dx in [-.54,.54]:rod('Fixture ceiling drop',(x+dx,4.6,z),(x+dx,4.70,z),.018,STEEL,8)
+    for dx in [-.54,.54]:rod('Fixture ceiling drop',(x+dx,4.6,z),(x+dx,MOUNTS['ceiling'],z),.018,STEEL,8)
 
 # FIRE POINT — wall-mounted, does not claim a walkable floor footprint.
 GROUP='fire_point'
@@ -289,6 +297,14 @@ rod('Extinguisher gauge face',(9.03,1.50,3.47),(9.03,1.50,3.477),.029,PAPER,16)
 cube('Fire extinguisher location sign',(9.03,2.05,3.26),(.48,.51,.032),RED,.012)
 text('Fire point sign label','FIRE',(9.03,2.09,3.28),.12,PAPER)
 text('Fire point sign arrow','V',(9.03,1.93,3.28),.12,PAPER)
+
+# The furnishings still use their original local coordinates; only equipment
+# attached to walls follows the enlarged supply room's actual interior faces.
+for o in ASSETS.objects:
+    if o.get('assembly') == 'wall_services':
+        o.location.y -= MOUNTS['north'] - 11.8865
+    elif o.get('assembly') == 'fire_point':
+        o.location.y -= MOUNTS['south'] - 3.225
 
 # LOW PROFILE FLOOR STENCILS — raised above the runtime floor and its joints.
 GROUP='floor_markings'
@@ -310,7 +326,7 @@ CONTRACT={
  'floor_markings':{'solid':False,'notes':'Paint is 3mm thick at world Y .020, above runtime floor/joints. Preview floor and shell are excluded.'},
 }
 def report(objects):
-    d={'coordinateSystem':'Intended game metres Y-up. Source Blender=(x,-z,y); export reflects X for default Babylon LH root.','assemblies':{}}
+    d={'coordinateSystem':'Intended game metres Y-up. Source Blender=(x,-z,y); export reflects X for default Babylon LH root.','wallMounts':MOUNTS,'assemblies':{}}
     deps=bpy.context.evaluated_depsgraph_get()
     for o in objects:
         ev=o.evaluated_get(deps);me=ev.to_mesh();me.calc_loop_triangles();key=o['assembly']
@@ -337,9 +353,11 @@ ASSET_OBJECTS=list(ASSETS.objects);LETTERS={o.name for o in ASSET_OBJECTS if o.t
 GROUP='preview'
 FLOOR=material('Preview sealed concrete',(.12,.145,.15),.08,.62)
 WALL=material('Preview service wall',(.28,.33,.33),0,.78)
-cube('Preview floor',(10,-.06,7.5),(12.3,.12,9.4),FLOOR,.01,True)
-cube('Preview north wall',(10,2.4,12.05),(12.3,4.8,.10),WALL,.01,True)
-cube('Preview east wall',(16.05,2.4,7.5),(.10,4.8,9.1),WALL,.01,True)
+centerX=(MOUNTS['west']+MOUNTS['east'])/2;centerZ=(MOUNTS['south']+MOUNTS['north'])/2
+roomW=MOUNTS['east']-MOUNTS['west'];roomD=MOUNTS['north']-MOUNTS['south']
+cube('Preview floor',(centerX,-.06,centerZ),(roomW,.12,roomD),FLOOR,.01,True)
+cube('Preview north wall',(centerX,2.4,MOUNTS['north']+.05),(roomW,4.8,.10),WALL,.01,True)
+cube('Preview east wall',(MOUNTS['east']+.05,2.4,centerZ),(.10,4.8,roomD),WALL,.01,True)
 for z in [5.1,7.4,9.7]:cube('Preview concrete floor joint',(10,.0002,z),(12,.0002,.011),DARK,0,True)
 def area(name,loc,power,col,size,target):
     d=bpy.data.lights.new(name,'AREA');d.energy=power;d.color=col;d.shape='DISK';d.size=size

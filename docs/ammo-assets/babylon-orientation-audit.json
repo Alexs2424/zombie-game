@@ -1,0 +1,33 @@
+{
+  "status": "passed",
+  "defaultImport": {
+    "min": [
+      -1.25,
+      -0.800000011920929,
+      0
+    ],
+    "max": [
+      1.25,
+      0.800000011920929,
+      0.33900001645088196
+    ]
+  },
+  "front": "Babylon +Z with retained loader root",
+  "southWallPlacementYaw": 0,
+  "loaderRoot": [
+    {
+      "name": "__root__",
+      "scale": [
+        1,
+        1,
+        -1
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}

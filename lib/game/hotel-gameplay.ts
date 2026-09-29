@@ -30,14 +30,14 @@ export const HOTEL_SPAWNS: HotelSpawn[] = [
     door: { x: 13, z: 45, y: 0, w: 1.8, h: 2.7, yaw: -3 * Math.PI / 4 } },
   { id: "hotel-restaurant-service", x: 3, z: 48.1, y: 4, surfaceId: "hotel-upper", yaw: Math.PI,
     door: { x: 3, z: 48.9, y: 4, w: 1.8, h: 2.7, yaw: Math.PI } },
-  { id: "hotel-restaurant-west", x: -17.6, z: 36, y: 4, surfaceId: "hotel-upper", yaw: Math.PI / 2,
-    door: { x: -18.9, z: 36, y: 4, w: 1.8, h: 2.7, yaw: Math.PI / 2 } },
+  { id: "hotel-restaurant-west", x: -17.6, z: 36.6, y: 4, surfaceId: "hotel-upper", yaw: Math.PI / 2,
+    door: { x: -18.9, z: 37, y: 4, w: 1.8, h: 2.7, yaw: Math.PI / 2 } },
 ];
-/** Ground portals already have perimeter walls; upper service panels need their own solids. */
+/** Upper portals sit in full-height wall bays on the mezzanine edge. */
 export const HOTEL_SERVICE_DOORS = HOTEL_SPAWNS.filter(spawn => spawn.y > 0).map(spawn => ({
   id: `hotel-service-door-${spawn.id}`,
-  x: spawn.door.x, z: spawn.door.z, w: spawn.door.w, d: 0.12,
-  h: spawn.door.h, baseY: spawn.door.y, yaw: spawn.door.yaw,
+  x: spawn.door.x, z: spawn.door.z, w: spawn.door.w + 1, d: 0.2,
+  h: 4.8, baseY: spawn.door.y, yaw: spawn.door.yaw,
 }));
 export type HotelChallenge = {
   phase: "idle" | "active" | "complete" | "failed";
