@@ -1035,6 +1035,27 @@ h1 i {
   font: 32px Georgia;
   margin-left: 12px;
 }
+
+.hotel-challenge {
+  position: absolute;
+  top: 19%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(360px, 44vw);
+  padding: 13px 22px 12px;
+  background: linear-gradient(110deg, #102b24ec, #151b17dc);
+  border: 1px solid #ad915a99;
+  border-top: 3px solid #c0a263;
+  text-align: center;
+  color: #efddb0;
+  box-shadow: 0 6px 25px #0005;
+}
+.hotel-challenge > span { font-size: 10px; letter-spacing: 0.15em; }
+.hotel-challenge > strong { display: block; font: 30px Georgia, serif; margin: 5px 0; }
+.hotel-challenge p { font-size: 12px; margin: 5px 0 10px; color: #e8e4d6; }
+.hotel-challenge small { font-size: 9px; letter-spacing: 0.05em; }
+.hotel-challenge-progress { height: 3px; background: #ffffff20; margin: 0 0 9px; }
+.hotel-challenge-progress i { display: block; height: 100%; background: #c6a565; transition: width .1s linear; }
 @keyframes round-reveal {
   0% {
     opacity: 0;

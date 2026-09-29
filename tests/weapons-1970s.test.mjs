@@ -221,6 +221,22 @@ test("Debt Collector lobs one 40 mm round that bursts on impact, falls off with 
   assert.ok(t.health < health);
 });
 
+test("launcher starts at the upstairs hand and its blast cannot cross the hotel floor", () => {
+  const s = quiet();
+  s.hotel = true;
+  s.refreshMap();
+  s.player = { x: -4, z: 40, y: 4, surfaceId: "hotel-upper" };
+  give(s, "launcher");
+  s.pitch = 1.2;
+  const downstairs = { ...enemy(99, -4, 40, 400), y: 0 };
+  s.enemies = [downstairs];
+  s.fire();
+  assert.equal(s.projectiles[0].y, 5.5);
+  tick(s, .5);
+  assert.ok(s.events.some(e => e.type === "explosion" && e.weapon === "launcher"));
+  assert.equal(downstairs.health, 400);
+});
+
 test("every Mystery Box weapon and special has a model, a viewmodel rig, foley and HUD art", () => {
   for (const id of [...SPEC_IDS, "stick", "axe"]) {
     assert.ok(existsSync(new URL(`../public/models/${id}.glb`, import.meta.url)), `${id}.glb`);

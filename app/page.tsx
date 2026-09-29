@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { GameRuntime, GameView } from "../lib/game/runtime";
 import { PRICES, ROULETTE_RULES, WEAPONS } from "../lib/game/simulation";
 import { cardName, cardRank, suitSymbol } from "../lib/game/poker";
+import { HOTEL_RULES } from "../lib/game/hotel-gameplay";
 const initial: GameView = {
   owned: [{ id: "pistol", label: "Pistol", key: "1" }],
   pickup: null,
@@ -20,6 +21,7 @@ const initial: GameView = {
     { id: "smg", label: "SMG", owned: false },
     { id: "rifle", label: "Rifle", owned: false },
     { id: "revolver", label: "Revolver", owned: false },
+    { id: "tommy", label: "Tommy gun", owned: false },
   ],
   perks: [],
   shopOpen: false,
@@ -49,6 +51,8 @@ const initial: GameView = {
   shortcut: false,
   vip: false,
   tables: false,
+  hotel: false,
+  hotelChallenge: { phase: "idle", remaining: 0, pending: 0, alive: 0 },
   slowRound: 0,
   dice: null,
   roulette: null,
@@ -466,7 +470,7 @@ export default function Home() {
                 {String(Math.max(1, view.round)).padStart(2, "0")}
               </strong>
               <span className="wave-detail">
-                {view.intermission > 0
+                {view.hotelChallenge.phase === "active" ? "RESTAURANT AMBUSH" : view.intermission > 0
                   ? `NEXT IN ${Math.ceil(view.intermission)}s`
                   : `${view.enemies + view.remaining} REMAINING`}
               </span>
@@ -492,6 +496,12 @@ export default function Home() {
             <span className={view.tables ? "complete" : ""}>
               {view.tables ? "◆" : "◇"} DEVIL’S TABLES
             </span>
+            <span className={view.hotel ? "complete" : ""}>
+              {view.hotel ? "◆" : "◇"} GRAND HOTEL
+            </span>
+            {view.hotel && <span className={view.hotelChallenge.phase === "complete" ? "complete" : ""}>
+              {view.hotelChallenge.phase === "complete" ? "◆ TOMMY GUN" : "◇ RESTAURANT BELL"}
+            </span>}
             <span className={view.upgraded ? "complete" : ""}>
               {view.upgraded ? "◆" : "◇"} WEAPON UPGRADE
             </span>
@@ -657,7 +667,16 @@ export default function Home() {
                   )}
                 </div>
               )}
-              {view.roundCue && (
+              {view.hotelChallenge.phase === "active" && (
+                <div className="hotel-challenge" role="status">
+                  <span>LAST SERVICE · RESTAURANT AMBUSH</span>
+                  <strong>{view.hotelChallenge.remaining > 0 ? `${Math.ceil(view.hotelChallenge.remaining)}s` : "CLEAR THE ROOM"}</strong>
+                  <p>Stay upstairs · {view.hotelChallenge.alive + view.hotelChallenge.pending} ambushers remaining</p>
+                  <div className="hotel-challenge-progress"><i style={{ width: `${Math.min(100, Math.max(0, 1 - view.hotelChallenge.remaining / HOTEL_RULES.ambushDuration) * 100)}%` }} /></div>
+                  <small>Reward: THE CHICAGO TYPEWRITER · Tommy gun</small>
+                </div>
+              )}
+              {view.roundCue && view.hotelChallenge.phase !== "active" && (
                 <div
                   className={`round-announcement ${view.roundCue}`}
                   key={`${view.round}-${view.roundCue}`}
@@ -680,7 +699,7 @@ export default function Home() {
                   </i>
                 </div>
               )}
-              {view.intermission > 0 && view.round > 0 && !view.roundCue && (
+              {view.intermission > 0 && view.round > 0 && !view.roundCue && view.hotelChallenge.phase !== "active" && (
                 <div className="intermission-cue">
                   NEXT ROUND IN <b>{Math.ceil(view.intermission)}</b>
                 </div>
@@ -1063,9 +1082,18 @@ export default function Home() {
         >
           <strong>DEVELOPMENT PLAYTEST</strong>
           <span>{view.zombieAudioStatus}</span>
+          <span>{view.hotelPlaytestStatus}</span>
           <span>{view.slotAudioStatus}</span>
           {[
             ["new", "Seed run"],
+            ["hotel-entrance", "Hotel entrance"],
+            ["hotel-lobby", "Hotel lobby"],
+            ["hotel-upper", "Restaurant"],
+            ["hotel-jukebox", "Lobby jukebox"],
+            ["hotel-bell", "Restaurant bell"],
+            ["bell-clear-wave", "Clear ambushers (QA)"],
+            ["hotel-tour", "Walk hotel loop"],
+            ["hotel-chase", "Test upstairs pursuit"],
             ["floor", "Casino floor"],
             ["slotsWest", "Slots west"],
             ["slotsEast", "Slots east"],
@@ -1139,6 +1167,7 @@ export default function Home() {
             ["weapon-smg", "Equip SMG"],
             ["weapon-rifle", "Equip rifle"],
             ["weapon-revolver", "Equip revolver"],
+            ["weapon-tommy", "Equip Tommy"],
             ["clear", "Finish round"],
             ["round", "Start round"],
             ["crowd", "Spawn 14"],

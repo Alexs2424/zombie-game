@@ -1,4 +1,6 @@
 import type { GameEvent, V2 } from "./simulation";
+import type { WorldPosition } from "./world";
+import { HOTEL_FIXTURES } from "./hotel-fixtures.ts";
 import { SlotAudioDirector, slotSourceAudible, type SlotCue } from "./slot-audio-director.ts";
 import { slotSoundSamples, SLOT_SOUND_NAMES } from "./slot-sounds.ts";
 import { WeaponCueDirector, WeaponSounds } from "./weapon-audio.ts";
@@ -51,6 +53,8 @@ export class GameAudio {
   private zombieFetch: AbortController | null = null;
   private lastZombieSample: Partial<Record<ZombieCue, string>> = {};
   private nextZombieAttack = 0;
+  private recordTimer = 0;
+  private recordStep = 0;
   private lastZombiePlayback = "none";
   get zombieStatus() {
     return `${this.zombieBuffers.size}/3 clips ready · last cue: ${this.lastZombiePlayback}`;
@@ -242,6 +246,18 @@ export class GameAudio {
   play(event: GameEvent) {
     if (event.type === "shot" && event.weapon) this.weaponCues.shot(event.weapon);
     if (this.weapons.event(event, this.listener.player, this.listener.yaw)) return;
+    if (event.type === "hotelBell") {
+      this.tone(1568, 1.1, 0.15, "sine");
+      this.tone(2352, 0.65, 0.065, "sine");
+      this.tone(98, 1.6, 0.16, "triangle", 49, 0.25);
+      this.duckUntil = (this.context?.currentTime ?? 0) + 2;
+    }
+    if (event.type === "hotelComplete") {
+      [196, 246.94, 293.66, 392].forEach((note, i) => this.tone(note, 0.65, 0.11, "triangle", undefined, i * 0.14));
+      this.tone(1174.66, 0.8, 0.055, "sine", undefined, 0.5);
+    }
+    if (event.type === "hotelFail") this.tone(185, 0.8, 0.09, "triangle", 92.5);
+    if (event.type === "jukebox") this.burst(0.18, 0.045, 1200);
     if (event.type === "cardSwap") {
       this.tone(860, 0.045, 0.045, "triangle", 480, 0, -0.12, true);
       this.tone(610, 0.06, 0.04, "triangle", 260, 0.065, 0.12, true);
@@ -267,7 +283,11 @@ export class GameAudio {
     if (event.type === "shot") {
       const heavy = event.weapon === "shotgun",
         rifle = event.weapon === "rifle" || event.weapon === "revolver",
-        smg = event.weapon === "smg";
+        smg = event.weapon === "smg" || event.weapon === "tommy";
+      if (event.weapon === "tommy") {
+        this.tone(125, 0.12, 0.22, "triangle", 48);
+        this.burst(0.045, 0.12, 1600);
+      }
       this.burst(
         heavy ? 0.25 : rifle ? 0.18 : smg ? 0.075 : 0.14,
         heavy ? 0.75 : rifle ? 0.6 : smg ? 0.32 : 0.45,
@@ -372,7 +392,7 @@ export class GameAudio {
   update(
     dt: number,
     playing: boolean,
-    player: V2,
+    player: WorldPosition,
     yaw: number,
     moving: boolean,
     sprinting: boolean,
@@ -382,16 +402,17 @@ export class GameAudio {
     const c = this.context;
     if (!c || !this.master || !this.ambience || !this.ambienceFilter) return;
     if (playing !== this.active) this.setActive(playing);
-    const tables = player.x > 28,
-      staff = player.x > 4 && player.x < 16 && player.z > 3;
+    const hotel = player.z > 12;
+    const tables = !hotel && player.x > 28,
+      staff = !hotel && player.x > 4 && player.x < 16 && player.z > 3;
     const duck = c.currentTime < this.duckUntil ? 0.3 : 1;
     this.ambience.gain.setTargetAtTime(
-      playing ? (staff ? 0.09 : 0.045) * duck : 0,
+      playing ? (hotel ? 0.024 : staff ? 0.09 : 0.045) * duck : 0,
       c.currentTime,
       0.3,
     );
     this.ambienceFilter.frequency.setTargetAtTime(
-      staff ? 680 : tables ? 240 : 380,
+      hotel ? 190 : staff ? 680 : tables ? 240 : 380,
       c.currentTime,
       0.5,
     );
@@ -407,14 +428,23 @@ export class GameAudio {
     if (moving && this.footTimer <= 0) {
       this.burst(
         0.085,
-        staff ? 0.035 : 0.018,
-        staff ? 1400 : 410,
+        hotel && (player.y ?? 0) < 3.9 ? 0.03 : staff ? 0.035 : 0.018,
+        hotel && (player.y ?? 0) < 3.9 ? 1100 : staff ? 1400 : 410,
         Math.sin(player.x + player.z) * 0.2,
       );
       this.footTimer = sprinting ? 0.29 : 0.43;
     }
     if (this.ambientTimer > 0) return;
     this.ambientTimer = 7 + Math.random() * 7;
+    if (hotel) {
+      // Distant service crockery and an old elevator chime, never a nearby
+      // false enemy cue. The music has its own attenuated source below.
+      const pan = Math.sin(Math.atan2(-4 - player.x, 49 - player.z) - yaw);
+      this.burst(0.12, 0.013 * duck, 2400, pan);
+      this.tone(587.33, 0.65, 0.01 * duck, "sine", undefined, 0.13, pan);
+      this.tone(440, 0.8, 0.008 * duck, "sine", undefined, 0.42, pan);
+      return;
+    }
     // Actual cabinet pass-bys replace the old room-wide slot melody.
     if (player.x < 4) return;
     const source = tables ? { x: 35, z: 5 } : { x: 12, z: -9 };
@@ -479,8 +509,44 @@ export class GameAudio {
     this.slotSequence = 0;
     this.lastSlotPlayback = "none";
   }
-  private zombieSpatial(kind: ZombieCue, player: V2, enemy: V2, yaw: number) {
-    const distance = Math.hypot(enemy.x - player.x, enemy.z - player.z);
+  /** Original swung lounge instrumental; driven by gameplay frames, no timers. */
+  updateHotel(dt: number, playing: boolean, jukeboxOn: boolean, player: WorldPosition, yaw: number) {
+    if (!jukeboxOn) { this.recordTimer = 0; this.recordStep = 0; return; }
+    if (!playing || !this.context || this.context.state !== "running") return;
+    this.recordTimer -= dt;
+    if (this.recordTimer > 0) return;
+    const step = this.recordStep++ % 64;
+    // Two swung eighth notes per beat at 96 BPM.
+    this.recordTimer += step % 2 ? 0.2083 : 0.4167;
+    const box = HOTEL_FIXTURES.find(f => f.kind === "jukebox")!;
+    const dx = box.x - player.x, dz = box.z - player.z;
+    const distance = Math.hypot(dx, dz, player.y ?? 0);
+    const level = 0.075 * Math.max(0, 1 - distance / 24) ** 1.6
+      * ((player.y ?? 0) > 3.8 ? 0.25 : 1)
+      * (player.z < 12 ? 0.18 : 1)
+      * (this.context.currentTime < this.duckUntil ? 0.25 : 1);
+    if (level < 0.002) return;
+    const pan = Math.sin(Math.atan2(dx, dz) - yaw) * 0.8;
+    const frequency = (midi: number) => 440 * 2 ** ((midi - 69) / 12);
+    const chords = [[48, 55, 58, 63], [53, 60, 63, 68], [50, 57, 60, 65], [43, 53, 59, 62]];
+    const chord = chords[Math.floor(step / 16)];
+    const melody = [75, 0, 72, 70, 67, 0, 70, 72, 75, 79, 77, 0, 75, 72, 70, 0,
+      77, 0, 75, 72, 68, 0, 72, 75, 77, 80, 79, 77, 75, 0, 72, 0,
+      77, 0, 74, 72, 69, 0, 72, 74, 77, 81, 79, 0, 77, 74, 72, 0,
+      74, 0, 71, 69, 67, 0, 65, 62, 71, 74, 77, 0, 74, 71, 67, 0];
+    if (melody[step]) {
+      const f = frequency(melody[step]);
+      this.tone(f, 0.27, level * 0.55, "triangle", f * 0.998, 0, pan);
+      this.tone(f * 2, 0.11, level * 0.1, "sine", undefined, 0, pan);
+    }
+    if (step % 4 === 0) {
+      this.tone(frequency(chord[0] - (step % 8 ? 5 : 12)), 0.4, level * 0.85, "sine", undefined, 0, pan);
+      for (const note of chord.slice(1)) this.tone(frequency(note), 0.28, level * 0.22, "triangle", undefined, 0.012, pan);
+    }
+    if (step % 4 === 2) this.burst(0.045, level * 0.13, 3300, pan);
+  }
+  private zombieSpatial(kind: ZombieCue, player: WorldPosition, enemy: WorldPosition, yaw: number) {
+    const distance = Math.hypot(enemy.x - player.x, enemy.z - player.z, (enemy.y ?? 0) - (player.y ?? 0));
     return {
       pan: Math.sin(Math.atan2(enemy.x - player.x, enemy.z - player.z) - yaw),
       gain: (kind === "horde" ? 0.34 : kind === "last" ? 0.52 : 0.48) *

@@ -4,7 +4,8 @@ const gun = (name: string, upgradedName: string, label: string, magazine: number
 // The spec's `revolver` id is taken by the poker table's Dead Man's Hand, so High Roller ships as `magnum`.
 export const EXTRA_WEAPONS = {
   magnum: gun("HIGH ROLLER", "DIAMOND SIX", "Magnum", 6, 48, 160, .52, 2.9, .003),
-  tommy: gun("CHICAGO TYPEWRITER", "MOB RULES", "Drum SMG", 50, 200, 29, .085, 3.8, .016),
+  // Shared by the hotel reward and Mystery Box; preserve the hotel's tuning.
+  tommy: gun("THE CHICAGO TYPEWRITER", "THE HOUSE COLLECTOR", "Drum SMG", 50, 250, 30, .105, 3, .017),
   doublebarrel: gun("DOUBLE OR NOTHING", "ALL IN", "Double barrel", 2, 40, 24, .2, 2.4, .085, 10),
   dual: gun("SNAKE EYES", "PAIR OF ACES", "Twin pistols", 16, 128, 34, .13, 3.1, .028),
   machinepistol: gun("THE ENFORCER", "COLLECTION NOTICE", "Machine pistol", 32, 192, 19, .055, 2.1, .03),

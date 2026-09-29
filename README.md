@@ -48,12 +48,13 @@ Development playtests include **Service overview**, **Service truck**, and
 | Move                | W A S D                                    |
 | Look                | Mouse                                      |
 | Fire                | Left mouse button, hold for repeated shots |
-| Both barrels        | Right mouse button (Double or Nothing)     |
+| Aim                 | Hold right mouse button                    |
+| Both barrels        | B (Double or Nothing)                      |
 | Knife slash         | V                                          |
 | Throw grenade       | G                                          |
 | Sprint              | Shift                                      |
 | Reload              | R; an empty trigger also starts a reload   |
-| Buy/interact        | E when close to a purchase                 |
+| Buy/interact        | E when close to a purchase; also puts chips away |
 | Switch weapons      | 1–5 house guns, 6–0 Mystery Box finds; wheel or Q cycles |
 | Hold casino chips   | C (then aim at a craps number and fire)    |
 | Cash out table bets | X near the craps table                     |
@@ -75,7 +76,7 @@ Zombies use three original Blender designs: Pit Boss, Crooked Dealer, and Last S
 - The Devil’s Tables: 1,500 chips from the High Roller Club. Opens a 14 × 24 metre room, two connected entrances, and a delayed dealer spawn. Craps and roulette are broad training islands.
 - Craps: hold physical 25-chip stacks with **C**, then aim/fire at 4, 5, 6, 8, 9, or 10. Standard place-bet minimums and payouts are used (6/8 in multiples of 6; 4/10 pay 9:5, 5/9 pay 7:5, and 6/8 pay 7:6). Bets stay on the felt between rolls; **X** returns the remaining principal. A seven clears the table, while a hit number pays profit automatically.
 - Speakeasy easter egg: the crooked poker table has fixed suit/value cards. Shoot the matching suit and number sequence into the keypad hidden behind the portrait to open the secret room. The room contains a Blender-built Velvet Fortune mystery slot: 400 chips per spin, 50% chance of one of the ten 1970s house guns below (an already-owned gun is restocked), otherwise no reward. The cabinet shuffles 3D models of the arsenal while it spins and the HUD reel shows the payout.
-- The 1970s Mystery Box arsenal ([spec](docs/weapon-spec-1970s.md), [assets](docs/weapon-1970s-assets/README.md)): High Roller magnum (the spec's `revolver`, shipped as `magnum` because the poker revolver owns that id), Chicago Typewriter drum SMG, Double or Nothing coach gun (right click fires both barrels), Snake Eyes twin pocket pistols, The Enforcer machine pistol, Silver Dollar lever action (penetrates three), Last Call auto shotgun, The Eye in the Sky scoped bolt action (penetrates four), House Edge belt-fed LMG (−22% speed, staggers) and The Debt Collector 40 mm launcher (splash can hurt you). Lever and Last Call load one round at a time and can fire mid-reload; automatic guns lose accuracy under a held trigger.
+- The 1970s Mystery Box arsenal ([spec](docs/weapon-spec-1970s.md), [assets](docs/weapon-1970s-assets/README.md)): High Roller magnum (the spec's `revolver`, shipped as `magnum` because the poker revolver owns that id), Chicago Typewriter drum SMG, Double or Nothing coach gun (B fires both barrels), Snake Eyes twin pocket pistols, The Enforcer machine pistol, Silver Dollar lever action (penetrates three), Last Call auto shotgun, The Eye in the Sky scoped bolt action (penetrates four), House Edge belt-fed LMG (−22% speed, staggers) and The Debt Collector 40 mm launcher (splash can hurt you). Lever and Last Call load one round at a time and can fire mid-reload; automatic guns lose accuracy under a held trigger.
 - Stickman craps rake: free, leaning on the craps table once The Devil’s Tables are open. A 2.8 m, 100° sweep that damages every zombie in the fan; it survives **3 successful sweeps** (misses are free), then splinters and returns you to your last firearm.
 - Fire Exit axe: free, in the break-glass cabinet on the staff passage's north wall. Slow, heavy single-target chop that never breaks; no firearm use mid-swing.
 - Lucky Four roulette: 200 chips on every spin, charged when the spin starts. A fair 0–36 wheel spins for six seconds while combat continues. **4 and 24** refill the equipped gun’s magazine and reserve; **7** refills every owned gun; **0** refills every owned gun and grants **double damage for 30 seconds**. Other numbers give no reward. There is no additional charge at the result and no refund on a win. Return to the table for another spin once the wheel stops.
@@ -187,6 +188,40 @@ Both poker islands now use a detailed shared GLB with stitched oxblood rails, in
 Approach the south/customer side and press **E**. The solo game pauses while you select a card and confirm a free swap. Keep matching suits: a flush means five of the same suit, regardless of rank or order. Each table has its own hand, 52-card deck, and one-swap-per-round limit. Leaving, reopening, or entering intermission does not refresh that limit. A new actual round does. Previously discarded cards are shuffled back only when the draw pile runs out; cards still in the hand cannot be drawn again.
 
 The first flush unlocks **THE DEAD MAN’S HAND** for this run: a six-shot, 110-damage revolver with 48 reserve rounds. It equips automatically and uses weapon key **5**. Completing the other table refills it once. Completed tables retain their flush without granting repeated rewards. Roulette’s ammo rewards include the revolver once owned; Marlowe and the workshop can upgrade it to **ACE OF SPADES**. New runs reset both hands and the reward. Flush completion is represented separately from weapon ownership, ready for a future map-unlock reward; this pass adds no new room.
+
+## Grand Hotel and Last Service
+
+Buy the north casino gate for **2,000 chips** to open the Grand Hotel lobby and
+upstairs restaurant for the run. Two curved staircases connect the floors;
+continuous guards prevent dropping between levels. Five hotel service entrances
+become active after a three-second opening grace period, with modestly tougher
+hotel enemies.
+
+At the upstairs host stand, press **E** to ring the **Last Service** bell. Stay in
+the restaurant for **35 seconds** and clear all **12 ambushers**. Up to six
+ambushers can be active within the normal 14-enemy cap. Existing round enemies
+keep pursuing, while the normal spawn budget and intermission timer pause.
+Leaving for either stair fails the challenge; clear the survivors and ring again
+to retry. Ambushers award no chips, preventing free retry farming.
+
+Success equips **THE CHICAGO TYPEWRITER**, a Blender-modeled Tommy gun with a
+50-round drum, 250 reserve rounds, and a three-second reload. Select it with **6**.
+The crate beside the host stand refills its reserve for **500 chips**. Existing
+roulette ammo rewards and weapon upgrades support it; its upgraded form is
+**THE HOUSE COLLECTOR**, with a 75-round drum and heavier hits. It unlocks once
+per run and resets with a new game.
+
+Eleven original Blender furniture assets replace the lobby and restaurant
+placeholders. Marble, woodwork, Art Deco rails, chandeliers, wall art, clocks,
+service doors, and contact shading complete this hotel pass. Press **E** beside
+the lobby jukebox to start or stop an original, distance-panned lounge instrumental.
+Music and hotel cues follow the volume control and pause with the game.
+
+Gameplay rendering is capped at 60 FPS; menus and paused scenes use 15 FPS, and
+background rendering is disabled. This preview stays local. The development
+`?playtest=1` controls include the locked entrance, service bell, guided hotel
+loop, and an explicit ambusher-clear button for reward QA. Detailed editable
+asset sources and validation live in `docs/hotel-assets/` and `tools/hotel-assets/`.
 
 ## Slot-machine pass-by sounds — September 28, 2026
 

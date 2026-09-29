@@ -56,6 +56,7 @@ import {
   type GameEvent,
 } from "./simulation";
 import "@babylonjs/core/Culling/ray";
+import { buildHotel } from "./hotel-scene";
 
 type ZombieView = ReturnType<typeof createZombie>;
 export class GameRenderer {
@@ -71,6 +72,7 @@ export class GameRenderer {
   flash: Mesh;
   ready: Promise<void>;
   private weaponAssets: AssetContainer[] = [];
+  private hotel: ReturnType<typeof buildHotel>;
   private couchFallback?: TransformNode;
   private slotPlacements: {
     root: TransformNode;
@@ -144,6 +146,8 @@ export class GameRenderer {
     this.engine.setHardwareScalingLevel(
       1 / Math.min(window.devicePixelRatio || 1, 1.5),
     );
+    this.engine.maxFPS = 15;
+    this.engine.renderEvenInBackground = false;
     this.scene = new Scene(this.engine);
     this.scene.clearColor = new Color4(0.035, 0.049, 0.045, 1);
     this.scene.fogMode = Scene.FOGMODE_EXP2;
@@ -300,6 +304,7 @@ export class GameRenderer {
     rouletteGlow.intensity = 0.5;
     rouletteGlow.range = 9;
     this.environment();
+    this.hotel = buildHotel(this.scene);
     this.serviceLighting();
     this.handLight = new PointLight(
       "weapon bounce",
@@ -344,6 +349,7 @@ export class GameRenderer {
     this.casino = new CasinoVisuals(this.scene,this.camera);
     this.ready = Promise.all([
       this.casino.ready,
+      this.hotel.ready,
       this.loadWeaponAssets(),
       this.loadTableAssets(),
       this.loadSlotAssets(),
@@ -518,6 +524,7 @@ export class GameRenderer {
     );
     // Decorative meshes stay inside these same solid footprints used by the simulation.
     for (const r of STATIC_RECTS) {
+      if (r.id.startsWith("hotel-")) continue;
       if (LOUNGE_RECTS.some((furniture) => furniture.id === r.id)) continue;
       if (SERVICE_RECTS.some((fixture) => fixture.id === r.id)) continue;
       if (
@@ -686,6 +693,7 @@ export class GameRenderer {
       }
     }
     for (const [id, r] of Object.entries(DOORS)) {
+      if (id === "hotel") continue; // Hotel builder owns this north-facing entrance.
       this.gates[id] = this.box(
         id + " shutter",
         r.x,
@@ -783,7 +791,7 @@ export class GameRenderer {
         Math.PI / 2,
       );
     }
-    this.label("main sign", "LAST JACKPOT", -2.5, 3.5, 11.9, 7, 1.1);
+    this.label("main sign", "LAST JACKPOT", -4, 3.5, -11.9, 7, 1.1, "#d9bd77", Math.PI);
     this.label("cashier sign", "CASHIER", -11, 2.8, 9.12, 4, 0.7);
     for (let x = -13.7; x < -8.2; x += 0.3)
       this.box("cage bar", x, 2.05, 9.04, 0.035, 1.05, 0.055, trim);
@@ -1976,17 +1984,21 @@ export class GameRenderer {
           ? 0.12
           : id === "rifle"
             ? 0.085
+            : id === "tommy"
+              ? 0.05
             : id === "smg"
               ? 0.035
               : 0.055;
     this.flashTime = 0.045;
     this.flash.position.set(
       0,
-      id === "revolver" ? 0.07 : 0.03,
+      id === "revolver" ? 0.07 : id === "tommy" ? 0.025 : 0.03,
       id === "shotgun" || id === "rifle"
         ? 0.65
         : id === "revolver"
           ? 0.307
+          : id === "tommy"
+            ? 0.48
           : id === "smg"
             ? 0.4
             : 0.24,
@@ -2103,11 +2115,12 @@ export class GameRenderer {
         node.position.y = 1.72 + Math.sin(this.time * 2.2) * 0.02 + (reveal?.resolved ? Math.min(0.25, (2.2 - (this.revealUntil - this.time)) * 0.4) : 0);
       }
     }
+    this.hotel.update(sim);
     this.updateEquipment(sim);
     this.time += dt;
     this.camera.position.set(
       sim.player.x,
-      1.65 +
+      (sim.player.y ?? 0) + 1.65 +
         (sim.moving && sim.phase === "playing"
           ? Math.sin(sim.time * 12) * 0.018 * (1-this.aimBlend)
           : 0),
@@ -2313,13 +2326,14 @@ export class GameRenderer {
         this.zombies.set(e.id, v);
       }
       const meshes = v.root.getChildMeshes();
-      const inLounge = e.x > 4 && e.x < 16 && e.z < 3;
+      const atCasinoLevel = Math.abs(e.y ?? 0) < 0.2;
+      const inLounge = atCasinoLevel && e.x > 4 && e.x < 16 && e.z > -12 && e.z < 3;
       for (const light of this.loungeAccentLights) {
         if (inLounge === light.includedOnlyMeshes.includes(meshes[0])) continue;
         if (inLounge) light.includedOnlyMeshes.push(...meshes);
         else light.includedOnlyMeshes = light.includedOnlyMeshes.filter((mesh) => !meshes.includes(mesh));
       }
-      const inService = e.x > 4 && e.x < 16 && e.z > 3;
+      const inService = atCasinoLevel && e.x > 4 && e.x < 16 && e.z > 3 && e.z < 12;
       for (const light of this.serviceAccentLights) {
         if (inService === light.includedOnlyMeshes.includes(meshes[0])) continue;
         if (inService) light.includedOnlyMeshes.push(...meshes);
@@ -2353,6 +2367,7 @@ export class GameRenderer {
   }
   dispose() {
     this.casino.dispose();
+    this.hotel.dispose();
     for (const asset of this.weaponAssets) asset.dispose();
     this.scene.dispose();
     this.engine.dispose();
