@@ -505,6 +505,10 @@ export default function Home() {
             >
               SETTINGS & CONTROLS
             </button>
+            {/* Full-document navigation disposes the solo WebGL session before entering co-op. */}
+            <a className="text-button" href="/coop" style={{ display: "block", textDecoration: "none", marginTop: 4 }}>
+              PRIVATE CO-OP · PLAYTEST
+            </a>
             <div className="run-details">
               <span>01 MAP</span>
               <span>∞ ROUNDS</span>
