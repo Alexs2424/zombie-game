@@ -79,11 +79,11 @@ Development playtests include **Service overview**, **Service truck**, and
 | Move                | W A S D                                    |
 | Look                | Mouse                                      |
 | Fire                | Left mouse button, hold for repeated shots |
-| Aim                 | Hold right mouse button                    |
+| Aim                 | Hold Shift or right mouse button           |
 | Both barrels        | B (Double or Nothing)                      |
 | Knife slash         | V                                          |
 | Throw grenade       | G                                          |
-| Sprint              | Shift                                      |
+| Sprint              | Space (hold; uses stamina)                 |
 | Reload              | R; an empty trigger also starts a reload   |
 | Buy/interact        | E when close to a purchase; also puts chips away |
 | Switch weapons      | 1–5 house guns, 6–0 Mystery Box finds; wheel or Q cycles |
@@ -291,3 +291,5 @@ The slot status names the emitting cabinet and sound. See
 ## Blender High Roller couch
 
 The couch beside the flush card games now uses an original Blender-built oxblood leather banquette with sculpted diamond tufting, five shaped cushions, stitched piping, rolled arms, walnut joinery, and brass feet. The existing footprint and cover height remain unchanged. The editable source is `assets/source/vip-couch.blend`; the game loads `public/models/vip-couch.glb`. See `docs/couch-assets/` for previews, regeneration instructions, and validation. Development playtest controls include a **VIP couch** viewpoint.
+
+Sprint stamina lasts five seconds, recovers after a one-second delay, and requires 30% recovery after exhaustion. Settings → Show tips & explanation cards controls optional help overlays and remembers your choice on this browser. Essential gameplay status remains visible.

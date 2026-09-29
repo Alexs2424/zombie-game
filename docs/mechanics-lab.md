@@ -42,3 +42,8 @@ which variables the scenario holds fixed.
 Validation: `tests/test-range.test.mjs` covers initial/reset state, loadout,
 walkable bounds, cover occlusion and scenario actors. Run those checks for scenario
 changes; shared navigation changes warrant broader game tests.
+
+Hold Space to sprint; hold Shift (or RMB) to aim down sights. Sprint stamina is
+shown under health. Restore supplies also restores stamina. The inspector’s
+Show tips & explanation cards checkbox hides optional explanations and saves
+your preference across reloads; the same setting is in the game Settings panel.
