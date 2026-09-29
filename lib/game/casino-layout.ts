@@ -128,6 +128,11 @@ export const CASINO_FIXTURES: CasinoRect[] = [
   { id: 'cashier-safe', x: 40, z: 1.5, w: 2.1, d: 1.6, h: 2.4 },
   { id: 'cashier-shelves', x: 29, z: 2.9, w: 2.8, d: 0.7, h: 2.6 },
   { id: 'casino-bench-nw', x: -12.8, z: 10.8, w: 5, d: 1.1, h: 1.25 },
+  // Wall seating keeps the hotel entrance, enemy entries, and slot aisles open.
+  { id: 'casino-bench-north-west', x: -23.5, z: 10.8, w: 5, d: 1.1, h: 1.25 },
+  { id: 'casino-bench-north-center', x: 3.5, z: 10.8, w: 5, d: 1.1, h: 1.25 },
+  { id: 'casino-bench-north-east', x: 18.5, z: 10.8, w: 5, d: 1.1, h: 1.25 },
+  { id: 'casino-bench-south-center', x: 5.5, z: -18.9, w: 5, d: 1.1, h: 1.25 },
   { id: 'casino-bench-south', x: 21, z: -18.9, w: 3.8, d: 1.1, h: 1.25 },
   { id: 'casino-planter-nw', x: -29.5, z: 10.3, w: 1, d: 1, h: 1.8 },
   { id: 'casino-planter-mid', x: 21, z: -1, w: 1, d: 1, h: 1.8 },

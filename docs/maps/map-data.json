@@ -1,6 +1,6 @@
 {
   "source": "hotel-lobby-prototype",
-  "generated": "2026-09-29T04:15:19.366Z",
+  "generated": "2026-09-29T04:59:05.105Z",
   "units": "metres",
   "north": "+Z",
   "upperElevation": 4,
@@ -1266,6 +1266,38 @@
       "h": 1.25
     },
     {
+      "id": "casino-bench-north-west",
+      "x": -23.5,
+      "z": 10.8,
+      "w": 5,
+      "d": 1.1,
+      "h": 1.25
+    },
+    {
+      "id": "casino-bench-north-center",
+      "x": 3.5,
+      "z": 10.8,
+      "w": 5,
+      "d": 1.1,
+      "h": 1.25
+    },
+    {
+      "id": "casino-bench-north-east",
+      "x": 18.5,
+      "z": 10.8,
+      "w": 5,
+      "d": 1.1,
+      "h": 1.25
+    },
+    {
+      "id": "casino-bench-south-center",
+      "x": 5.5,
+      "z": -18.9,
+      "w": 5,
+      "d": 1.1,
+      "h": 1.25
+    },
+    {
       "id": "casino-bench-south",
       "x": 21,
       "z": -18.9,
@@ -1914,94 +1946,108 @@
   ],
   "spawns": [
     {
+      "x": 51.5,
+      "z": -22.5,
+      "room": "speakeasy",
+      "id": "speakeasy-spawn-1",
+      "y": 0
+    },
+    {
+      "x": 51.5,
+      "z": -1.5,
+      "room": "speakeasy",
+      "id": "speakeasy-spawn-2",
+      "y": 0
+    },
+    {
       "x": -31.5,
       "z": 9.5,
-      "room": "casino",
-      "id": "casino-spawn-1",
-      "y": 0
-    },
-    {
-      "x": 25.5,
-      "z": 9.5,
-      "room": "casino",
-      "id": "casino-spawn-2",
-      "y": 0
-    },
-    {
-      "x": -30.5,
-      "z": -18.5,
       "room": "casino",
       "id": "casino-spawn-3",
       "y": 0
     },
     {
       "x": 25.5,
-      "z": -18.5,
+      "z": 9.5,
       "room": "casino",
       "id": "casino-spawn-4",
+      "y": 0
+    },
+    {
+      "x": -30.5,
+      "z": -18.5,
+      "room": "casino",
+      "id": "casino-spawn-5",
+      "y": 0
+    },
+    {
+      "x": 25.5,
+      "z": -18.5,
+      "room": "casino",
+      "id": "casino-spawn-6",
       "y": 0
     },
     {
       "x": 10,
       "z": 10.5,
       "room": "casino",
-      "id": "casino-spawn-5",
+      "id": "casino-spawn-7",
       "y": 0
     },
     {
       "x": -43.5,
       "z": 2.5,
       "room": "lounge",
-      "id": "lounge-spawn-6",
+      "id": "lounge-spawn-8",
       "y": 0
     },
     {
       "x": -43.5,
       "z": -18.5,
       "room": "lounge",
-      "id": "lounge-spawn-7",
+      "id": "lounge-spawn-9",
       "y": 0
     },
     {
       "x": -26.5,
       "z": -36.5,
       "room": "vip",
-      "id": "vip-spawn-8",
+      "id": "vip-spawn-10",
       "y": 0
     },
     {
       "x": -7.5,
       "z": -36.5,
       "room": "vip",
-      "id": "vip-spawn-9",
+      "id": "vip-spawn-11",
       "y": 0
     },
     {
       "x": -35.5,
       "z": 36.5,
       "room": "supply",
-      "id": "supply-spawn-10",
+      "id": "supply-spawn-12",
       "y": 0
     },
     {
       "x": -24.5,
       "z": 47.5,
       "room": "supply",
-      "id": "supply-spawn-11",
+      "id": "supply-spawn-13",
       "y": 0
     },
     {
       "x": 41.5,
       "z": -18.5,
       "room": "cashier",
-      "id": "cashier-spawn-12",
+      "id": "cashier-spawn-14",
       "y": 0
     },
     {
       "x": 41.5,
       "z": -13.5,
       "room": "cashier",
-      "id": "cashier-spawn-13",
+      "id": "cashier-spawn-15",
       "y": 0
     },
     {
