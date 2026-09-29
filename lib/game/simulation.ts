@@ -1305,7 +1305,7 @@ export class Simulation {
           this.damageEnemy(e, (g.damage ?? 220) * (1 - distance / 5.5), false);
       }
       const distance = dist(g, this.player);
-      if (distance < 4.5 && exposed(this.player)) this.hurt(70 * (1 - distance / 4.5));
+      if (distance < 4.5 && exposed(this.player)) this.hurt(90 * (1 - distance / 4.5));
     }
     this.projectiles=this.projectiles.filter(g=>g.fuse>0);
     for (const fire of this.fires) {
