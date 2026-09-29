@@ -1,0 +1,26 @@
+{
+  "source": "Blender original authored geometry",
+  "variants": [
+    {
+      "name": "Pit Boss",
+      "vertices": 12020,
+      "triangles": 17616,
+      "groups": 43,
+      "visibleGroups": 29
+    },
+    {
+      "name": "Crooked Dealer",
+      "vertices": 11767,
+      "triangles": 17322,
+      "groups": 43,
+      "visibleGroups": 29
+    },
+    {
+      "name": "Last Showman",
+      "vertices": 11879,
+      "triangles": 17474,
+      "groups": 40,
+      "visibleGroups": 26
+    }
+  ]
+}
