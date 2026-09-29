@@ -6,11 +6,17 @@ import { slotSoundSamples, SLOT_SOUND_NAMES } from "./slot-sounds.ts";
 import { WeaponCueDirector, WeaponSounds } from "./weapon-audio.ts";
 import type { WeaponId } from "./simulation";
 
-type ZombieCue = "chase" | "last" | "horde";
+type ZombieCue = "chase" | "last" | "horde" | "attack" | "death";
+type ZombieSource = WorldPosition & { health?: number };
 const ZOMBIE_SOUNDS: Record<ZombieCue, string[]> = {
-  chase: ["chase-01"],
-  last: ["last-01"],
+  chase: ["chase-01", "chase-medium-01", "chase-medium-02"],
+  last: [
+    "scream-elevenlabs-high-01", "scream-elevenlabs-high-02",
+    "scream-elevenlabs-high-03", "scream-elevenlabs-high-04",
+  ],
   horde: ["horde-01"],
+  attack: ["attack-medium-01"],
+  death: ["death-medium-01"],
 };
 
 export class GameAudio {
@@ -26,7 +32,6 @@ export class GameAudio {
   private ambientTimer = 2;
   private footTimer = 0;
   private active = false;
-  private voices = 0;
   private duckUntil = 0;
   private slotDirector = new SlotAudioDirector();
   private slotBuffers: AudioBuffer[] = [];
@@ -52,16 +57,27 @@ export class GameAudio {
   private zombieLoading: Promise<void> | null = null;
   private zombieFetch: AbortController | null = null;
   private lastZombieSample: Partial<Record<ZombieCue, string>> = {};
+  private playedLastZombieSamples = new Set<string>();
   private nextZombieAttack = 0;
+  private nextZombieDeath = 0;
+  private hotelBellBuffer: AudioBuffer | null = null;
+  private hotelBellLoading: Promise<void> | null = null;
+  private hotelBellFetch: AbortController | null = null;
+  private hotelBellVoice: { stop: () => void } | null = null;
+  private stickFallbackStop: (() => void) | null = null;
+  private mysterySlotBuffer: AudioBuffer | null = null;
+  private mysterySlotLoading: Promise<void> | null = null;
+  private mysterySlotFetch: AbortController | null = null;
+  private mysterySlotVoice: { stop: () => void } | null = null;
   private recordTimer = 0;
   private recordStep = 0;
   private lastZombiePlayback = "none";
   get zombieStatus() {
-    return `${this.zombieBuffers.size}/3 clips ready · last cue: ${this.lastZombiePlayback}`;
+    return `${this.zombieBuffers.size}/${Object.values(ZOMBIE_SOUNDS).flat().length} clips ready · last cue: ${this.lastZombiePlayback}`;
   }
-  private zombieVoices = new Map<AudioBufferSourceNode, {
+  private zombieVoices = new Map<AudioScheduledSourceNode, {
     stop: () => void;
-    enemy: V2;
+    enemy: ZombieSource;
     kind: ZombieCue;
     gain: GainNode;
     panner: StereoPannerNode;
@@ -140,6 +156,8 @@ export class GameAudio {
     // Loading never blocks mouse capture or entry. Failed files retain the
     // synthesized fallback, and all in-game playback remains local.
     if (!this.zombieLoading) this.zombieLoading = this.loadZombieSounds(this.context);
+    if (!this.hotelBellLoading) this.hotelBellLoading = this.loadHotelBell(this.context);
+    if (!this.mysterySlotLoading) this.mysterySlotLoading = this.loadMysterySlot(this.context);
   }
   private async loadZombieSounds(context: AudioContext) {
     this.zombieFetch = new AbortController();
@@ -156,6 +174,30 @@ export class GameAudio {
       }
     }));
   }
+  private async loadHotelBell(context: AudioContext) {
+    this.hotelBellFetch = new AbortController();
+    const signal = this.hotelBellFetch.signal;
+    try {
+      const response = await fetch("/audio/restaurant/restaurant-bell-01.wav", { signal });
+      if (!response.ok) return;
+      const buffer = await context.decodeAudioData(await response.arrayBuffer());
+      if (this.context === context && !signal.aborted) this.hotelBellBuffer = buffer;
+    } catch {
+      // Keep the original synthesized bell if loading or decoding fails.
+    }
+  }
+  private async loadMysterySlot(context: AudioContext) {
+    this.mysterySlotFetch = new AbortController();
+    const signal = this.mysterySlotFetch.signal;
+    try {
+      const response = await fetch("/audio/casino/slot-attract-elevenlabs-04.wav", { signal });
+      if (!response.ok) return;
+      const buffer = await context.decodeAudioData(await response.arrayBuffer());
+      if (this.context === context && !signal.aborted) this.mysterySlotBuffer = buffer;
+    } catch {
+      // The mystery handle retains its original synthesized cue on failure.
+    }
+  }
   setVolume(v: number) {
     this.volume = v;
     if (this.master && this.context)
@@ -167,6 +209,9 @@ export class GameAudio {
     if (!playing) {
       this.stopZombieVoices();
       this.slotVoice?.stop();
+      this.hotelBellVoice?.stop();
+      this.mysterySlotVoice?.stop();
+      this.stickFallbackStop?.();
     }
     if (this.world && this.context)
       this.world.gain.setTargetAtTime(
@@ -184,6 +229,7 @@ export class GameAudio {
     delay = 0,
     pan = 0,
     ui = false,
+    onEnded?: () => void,
   ) {
     const c = this.context;
     if (!c || !this.master || c.state !== "running") return;
@@ -205,13 +251,19 @@ export class GameAudio {
     if (this.reverb && !ui) panner.connect(this.reverb);
     oscillator.start(start);
     oscillator.stop(start + duration);
-    oscillator.onended = () => {
+    let cleaned = false;
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
       oscillator.disconnect();
       gain.disconnect();
       panner.disconnect();
+      onEnded?.();
     };
+    oscillator.onended = cleanup;
+    return () => { oscillator.stop(); cleanup(); };
   }
-  private burst(duration: number, volume: number, frequency: number, pan = 0) {
+  private burst(duration: number, volume: number, frequency: number, pan = 0, onEnded?: () => void) {
     const c = this.context;
     if (!c || !this.noise || !this.master || c.state !== "running") return;
     const source = c.createBufferSource(),
@@ -232,26 +284,32 @@ export class GameAudio {
     if (this.reverb) panner.connect(this.reverb);
     source.start();
     source.stop(c.currentTime + duration);
-    source.onended = () => {
+    let cleaned = false;
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
       source.disconnect();
       filter.disconnect();
       gain.disconnect();
       panner.disconnect();
+      onEnded?.();
     };
+    source.onended = cleanup;
+    return () => { source.stop(); cleanup(); };
   }
   /** Per-frame weapon cue timing (reload beats, lever/bolt cycles, LMG belt run-out). */
   weaponFrame(dt: number, s: { weapon: WeaponId; reloadRemaining: number; reloadDuration: number; mag: number; playing: boolean }) {
     this.weaponCues.update(dt, s);
   }
   play(event: GameEvent) {
+    if (event.type === "melee" && event.weapon === "stick") {
+      if (!this.active) return;
+      this.stickFallbackStop?.();
+    }
     if (event.type === "shot" && event.weapon) this.weaponCues.shot(event.weapon);
     if (this.weapons.event(event, this.listener.player, this.listener.yaw)) return;
-    if (event.type === "hotelBell") {
-      this.tone(1568, 1.1, 0.15, "sine");
-      this.tone(2352, 0.65, 0.065, "sine");
-      this.tone(98, 1.6, 0.16, "triangle", 49, 0.25);
-      this.duckUntil = (this.context?.currentTime ?? 0) + 2;
-    }
+    if (event.type === "hotelBell") this.playHotelBell();
+    if (event.type === "mysterySpin") this.playMysterySlot();
     if (event.type === "hotelComplete") {
       [196, 246.94, 293.66, 392].forEach((note, i) => this.tone(note, 0.65, 0.11, "triangle", undefined, i * 0.14));
       this.tone(1174.66, 0.8, 0.055, "sine", undefined, 0.5);
@@ -269,7 +327,14 @@ export class GameAudio {
       this.tone(1567.98, 0.5, 0.045, "triangle", undefined, 0.38, 0, true);
     }
     if (event.type === "knife") this.burst(0.18, 0.13, 1800);
-    if (event.type === "melee") this.burst(0.25, 0.13, event.weapon === "axe" ? 700 : 1300);
+    if (event.type === "melee") {
+      if (event.weapon === "stick") {
+        const stop = this.burst(0.25, 0.13, 1300, 0, () => {
+          if (this.stickFallbackStop === stop) this.stickFallbackStop = null;
+        });
+        this.stickFallbackStop = stop ?? null;
+      } else this.burst(0.25, 0.13, event.weapon === "axe" ? 700 : 1300);
+    }
     if (event.type === "stickBreak") {
       this.burst(0.22, 0.4, 2600);
       this.tone(340, 0.16, 0.1, "triangle", 90);
@@ -375,6 +440,85 @@ export class GameAudio {
     if (event.type === "death")
       this.tone(180, 1, 0.2, "sawtooth", 40, 0, 0, true);
   }
+  private playMysterySlot() {
+    const c = this.context;
+    if (!c || !this.world || !this.active || c.state !== "running") return;
+    this.mysterySlotVoice?.stop();
+    this.slotVoice?.stop();
+    if (this.mysterySlotBuffer) {
+      const source = c.createBufferSource(), gain = c.createGain();
+      source.buffer = this.mysterySlotBuffer;
+      gain.gain.value = 0.65;
+      source.connect(gain);
+      gain.connect(this.world);
+      const voice = { stop: () => { source.stop(); cleanup(); } };
+      const cleanup = () => {
+        if (this.mysterySlotVoice === voice) this.mysterySlotVoice = null;
+        source.disconnect();
+        gain.disconnect();
+      };
+      source.onended = cleanup;
+      this.mysterySlotVoice = voice;
+      source.start();
+      return;
+    }
+    // This handle previously emitted diceRoll; preserve its short cue as fallback.
+    let remaining = 6;
+    const ended = () => {
+      if (--remaining === 0 && this.mysterySlotVoice === voice) this.mysterySlotVoice = null;
+    };
+    const stops = [0, 0.13, 0.3, 0.52, 0.8].map((delay, i) =>
+      this.tone(850 - i * 60, 0.07, 0.08, "triangle", 350, delay, 0, false, ended),
+    );
+    stops.push(this.burst(0.6, 0.055, 1900, 0, ended));
+    const voice = { stop: () => {
+      for (const stop of stops) stop?.();
+      if (this.mysterySlotVoice === voice) this.mysterySlotVoice = null;
+    } };
+    this.mysterySlotVoice = voice;
+  }
+  private playHotelBell() {
+    const c = this.context;
+    if (!c || !this.world || !this.active || c.state !== "running") return;
+    this.hotelBellVoice?.stop();
+    this.duckUntil = c.currentTime + 2;
+    if (this.hotelBellBuffer) {
+      const source = c.createBufferSource(), gain = c.createGain();
+      source.buffer = this.hotelBellBuffer;
+      gain.gain.value = 0.65;
+      source.connect(gain);
+      gain.connect(this.world);
+      const voice = { stop: () => { source.stop(); cleanup(); } };
+      const cleanup = () => {
+        if (this.hotelBellVoice === voice) this.hotelBellVoice = null;
+        source.disconnect();
+        gain.disconnect();
+      };
+      source.onended = cleanup;
+      this.hotelBellVoice = voice;
+      source.start();
+      return;
+    }
+    let remaining = 3;
+    const ended = () => {
+      if (--remaining === 0 && this.hotelBellVoice === voice) this.hotelBellVoice = null;
+    };
+    const stops = [
+      this.tone(1568, 1.1, 0.15, "sine", undefined, 0, 0, false, ended),
+      this.tone(2352, 0.65, 0.065, "sine", undefined, 0, 0, false, ended),
+      this.tone(98, 1.6, 0.16, "triangle", 49, 0.25, 0, false, ended),
+    ];
+    const voice = { stop: () => {
+      for (const stop of stops) stop?.();
+      if (this.hotelBellVoice === voice) this.hotelBellVoice = null;
+    } };
+    this.hotelBellVoice = voice;
+  }
+  resetHotel() {
+    this.hotelBellVoice?.stop();
+    this.recordTimer = 0;
+    this.recordStep = 0;
+  }
   private roundStinger(start: boolean) {
     this.stopZombieVoices();
     this.slotVoice?.stop();
@@ -420,6 +564,10 @@ export class GameAudio {
     if (!playing) return;
     this.updateSlots(dt, player, yaw, moving);
     for (const voice of this.zombieVoices.values()) {
+      if (voice.kind !== "death" && (voice.enemy.health ?? 1) <= 0) {
+        voice.stop();
+        continue;
+      }
       const spatial = this.zombieSpatial(voice.kind, player, voice.enemy, yaw);
       voice.panner.pan.setTargetAtTime(spatial.pan, c.currentTime, 0.08);
       voice.gain.gain.setTargetAtTime(spatial.gain * duck, c.currentTime, 0.12);
@@ -460,7 +608,7 @@ export class GameAudio {
   private updateSlots(dt: number, player: V2, yaw: number, moving: boolean) {
     const c = this.context!;
     const suppressed = c.state !== "running" || c.currentTime < this.duckUntil ||
-      this.zombieVoices.size > 0 || this.voices > 0;
+      this.zombieVoices.size > 0 || !!this.mysterySlotVoice;
     const cue = this.slotDirector.update(dt, {
       playing: this.active, player, moving, suppressed: suppressed || !!this.slotVoice,
     });
@@ -503,6 +651,8 @@ export class GameAudio {
     }
   }
   resetSlots() {
+    this.stickFallbackStop?.();
+    this.mysterySlotVoice?.stop();
     this.weapons.stop();
     this.weaponCues.reset();
     this.slotVoice?.stop();
@@ -550,26 +700,38 @@ export class GameAudio {
     const distance = Math.hypot(enemy.x - player.x, enemy.z - player.z, (enemy.y ?? 0) - (player.y ?? 0));
     return {
       pan: Math.sin(Math.atan2(enemy.x - player.x, enemy.z - player.z) - yaw),
-      gain: (kind === "horde" ? 0.34 : kind === "last" ? 0.52 : 0.48) *
+      gain: (kind === "horde" ? 0.34 : kind === "last" ? 0.52 : kind === "death" ? 0.4 : 0.48) *
         Math.max(0, 1 - distance / (kind === "last" ? 24 : 18)),
     };
   }
-  zombieCue(kind: ZombieCue, player: V2, enemy: V2, yaw: number, variant = 0) {
+  canPlayZombieCue() {
     const c = this.context;
-    if (!c || !this.world || !this.active || c.state !== "running" ||
-        c.currentTime < this.duckUntil || this.zombieVoices.size > 0) return;
+    return !!(c && this.world && this.active && c.state === "running" &&
+      c.currentTime >= this.duckUntil && this.zombieVoices.size === 0);
+  }
+  zombieCue(kind: ZombieCue, player: WorldPosition, enemy: ZombieSource, yaw: number, variant = 0) {
+    const c = this.context;
+    if (!c || !this.world || !this.canPlayZombieCue() ||
+        (kind !== "death" && (enemy.health ?? 1) <= 0)) return false;
+    const spatial = this.zombieSpatial(kind, player, enemy, yaw);
+    if (spatial.gain <= 0) return false;
     this.slotVoice?.stop();
     const choices = ZOMBIE_SOUNDS[kind].filter((name) => this.zombieBuffers.has(name));
-    const alternatives = choices.filter((name) => name !== this.lastZombieSample[kind]);
-    const pool = alternatives.length ? alternatives : choices;
+    let candidates = choices;
+    if (kind === "last") {
+      // Give every survivor scream a turn before starting another cycle.
+      const unused = choices.filter((name) => !this.playedLastZombieSamples.has(name));
+      if (unused.length) candidates = unused;
+      else this.playedLastZombieSamples.clear();
+    }
+    const alternatives = candidates.filter((name) => name !== this.lastZombieSample[kind]);
+    const pool = alternatives.length ? alternatives : candidates;
     const name = pool[Math.abs(Math.floor(variant)) % pool.length];
     if (!name) {
       this.lastZombiePlayback = `${kind} (synth fallback)`;
-      this.synthesizedThreat(player, enemy, yaw, variant);
-      return;
+      this.synthesizedThreat(kind, player, enemy, yaw, variant);
+      return true;
     }
-    const spatial = this.zombieSpatial(kind, player, enemy, yaw);
-    if (spatial.gain <= 0) return;
     const source = c.createBufferSource(), gain = c.createGain(),
       panner = c.createStereoPanner();
     source.buffer = this.zombieBuffers.get(name)!;
@@ -592,17 +754,35 @@ export class GameAudio {
       stop: () => { source.stop(); cleanup(); }, enemy, kind, gain, panner,
     });
     this.lastZombieSample[kind] = name;
-    this.nextZombieAttack = c.currentTime + source.buffer.duration / source.playbackRate.value + 0.6;
+    if (kind === "last") this.playedLastZombieSamples.add(name);
     source.start();
     this.lastZombiePlayback = `${kind} (AI clip)`;
+    return true;
   }
-  zombieAttack(player: V2, enemy: V2, yaw: number) {
+  zombieAttack(player: WorldPosition, enemy: ZombieSource, yaw: number) {
     const c = this.context;
-    if (!c || !this.active || c.state !== "running" || this.zombieVoices.size > 0 ||
-        c.currentTime < Math.max(this.nextZombieAttack, this.duckUntil)) return;
-    this.nextZombieAttack = c.currentTime + 1.6;
-    this.slotVoice?.stop();
-    this.synthesizedThreat(player, enemy, yaw, 0, true);
+    if (!c || !this.active || c.state !== "running" || (enemy.health ?? 1) <= 0 ||
+        this.zombieSpatial("attack", player, enemy, yaw).gain <= 0 ||
+        c.currentTime < Math.max(this.nextZombieAttack, this.duckUntil) ||
+        [...this.zombieVoices.values()].some(voice => voice.kind === "attack")) return;
+    // An actual attack must not wait behind a long chase or survivor performance.
+    this.stopZombieVoices();
+    if (this.zombieCue("attack", player, enemy, yaw))
+      this.nextZombieAttack = c.currentTime + 1.6;
+  }
+  zombieDeath(player: WorldPosition, position: WorldPosition, yaw: number) {
+    // Kill events retain a position even after the enemy leaves the simulation.
+    // Cancel a dying source's unfinished performance before applying throttles.
+    for (const voice of this.zombieVoices.values())
+      if (voice.kind !== "death" && (voice.enemy.health ?? 1) <= 0) voice.stop();
+    const c = this.context;
+    if (!c || !this.active || c.state !== "running" ||
+        this.zombieSpatial("death", player, position, yaw).gain <= 0 ||
+        c.currentTime < Math.max(this.nextZombieDeath, this.duckUntil) ||
+        [...this.zombieVoices.values()].some(voice => voice.kind === "attack" || voice.kind === "death")) return;
+    this.stopZombieVoices();
+    if (this.zombieCue("death", player, { ...position }, yaw))
+      this.nextZombieDeath = c.currentTime + 1.2;
   }
   private stopZombieVoices() {
     for (const voice of [...this.zombieVoices.values()]) voice.stop();
@@ -610,24 +790,24 @@ export class GameAudio {
   resetZombies() {
     this.stopZombieVoices();
     this.nextZombieAttack = 0;
+    this.nextZombieDeath = 0;
     this.lastZombieSample = {};
+    this.playedLastZombieSamples.clear();
     this.lastZombiePlayback = "none";
     this.duckUntil = 0;
   }
-  private synthesizedThreat(player: V2, enemy: V2, yaw: number, variant = 0, attack = false) {
+  private synthesizedThreat(kind: ZombieCue, player: WorldPosition, enemy: ZombieSource, yaw: number, variant = 0) {
     const c = this.context;
-    if (!c || !this.master || c.state !== "running" || this.voices >= 4) return;
-    const distance = Math.hypot(enemy.x - player.x, enemy.z - player.z);
-    if (distance > 18) return;
-    const pan = Math.sin(
-      Math.atan2(enemy.x - player.x, enemy.z - player.z) - yaw,
-    );
-    const volume = (attack ? 0.18 : 0.12) * Math.max(0.08, 1 - distance / 19);
+    if (!c || !this.master || c.state !== "running") return;
+    const attack = kind === "attack";
+    const spatial = this.zombieSpatial(kind, player, enemy, yaw);
+    const volume = attack ? 0.375 : 0.25;
     const duration = attack ? 0.42 : 0.8 + (variant % 3) * 0.16;
-    this.burst(duration, volume * 0.6, attack ? 1200 : 520, pan);
+    const stopBurst = this.burst(duration, volume * spatial.gain * 0.6, attack ? 1200 : 520, spatial.pan);
     const voice = c.createOscillator(),
       formant = c.createBiquadFilter(),
       gain = c.createGain(),
+      spatialGain = c.createGain(),
       panner = c.createStereoPanner();
     const vibrato = c.createOscillator(),
       depth = c.createGain();
@@ -651,32 +831,47 @@ export class GameAudio {
     gain.gain.setValueAtTime(0.001, c.currentTime);
     gain.gain.linearRampToValueAtTime(volume, c.currentTime + 0.07);
     gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + duration);
-    panner.pan.value = pan;
+    panner.pan.value = spatial.pan;
+    spatialGain.gain.value = spatial.gain;
     vibrato.frequency.value = 6 + (variant % 3);
     depth.gain.value = 9;
     vibrato.connect(depth);
     depth.connect(voice.frequency);
     voice.connect(formant);
     formant.connect(gain);
-    gain.connect(panner);
+    gain.connect(spatialGain);
+    spatialGain.connect(panner);
     panner.connect(this.world!);
     if (this.reverb) panner.connect(this.reverb);
-    this.voices++;
     voice.start();
     vibrato.start();
     voice.stop(c.currentTime + duration);
     vibrato.stop(c.currentTime + duration);
-    voice.onended = () => {
-      this.voices--;
+    const cleanup = () => {
+      this.zombieVoices.delete(voice);
+      stopBurst?.();
       voice.disconnect();
       vibrato.disconnect();
       depth.disconnect();
       formant.disconnect();
       gain.disconnect();
+      spatialGain.disconnect();
       panner.disconnect();
     };
+    voice.onended = cleanup;
+    this.zombieVoices.set(voice, {
+      stop: () => { voice.stop(); vibrato.stop(); cleanup(); },
+      enemy, kind, gain: spatialGain, panner,
+    });
   }
   dispose() {
+    this.mysterySlotFetch?.abort();
+    this.mysterySlotBuffer = null;
+    this.mysterySlotLoading = null;
+    this.resetHotel();
+    this.hotelBellFetch?.abort();
+    this.hotelBellBuffer = null;
+    this.hotelBellLoading = null;
     this.resetSlots();
     this.weapons.dispose();
     this.slotBuffers = [];

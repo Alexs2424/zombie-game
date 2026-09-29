@@ -108,6 +108,7 @@ export type GameEvent = {
     | "meleeHit"
     | "round"
     | "roundClear"
+    | "mysterySpin"
     | "diceRoll"
     | "diceWin"
     | "diceCurse"
@@ -130,7 +131,8 @@ export type GameEvent = {
   side?: number;
   count?: number;
   headshot?: boolean;
-  position?: V2;
+  enemyId?: number;
+  position?: WorldPosition;
   text?: string;
 };
 export type Enemy = WorldPosition & {
@@ -1028,7 +1030,7 @@ export class Simulation {
     if (id === "mystery") {
       const wins = this.random() < .5;
       this.mystery = {remaining:2.8,reward:wins ? MYSTERY_WEAPONS[Math.min(MYSTERY_WEAPONS.length-1,Math.floor(this.random()*MYSTERY_WEAPONS.length))] : null,resolved:false,message:"The Velvet Fortune is spinning…"};
-      this.events.push({type:"diceRoll",position:CASINO_SECRET_ANCHORS.mysteryCabinet});
+      this.events.push({type:"mysterySpin",position:CASINO_SECRET_ANCHORS.mysteryCabinet});
       return true;
     }
     if (id === "craps" || id === "craps-b") {
@@ -1206,7 +1208,7 @@ export class Simulation {
     this.earned += payout;
     if (headshot) this.headshots++;
     if (payout) this.notify(`+${payout} CHIPS · ${headshot ? "HEADSHOT" : e.health <= 0 ? "KILL" : "HIT"}`);
-    this.events.push({ type: "hit", headshot, position: { x: e.x, z: e.z } });
+    this.events.push({ type: "hit", headshot, position: { x: e.x, y: e.y, z: e.z } });
     if (e.health <= 0) {
       this.kills++;
       this.corpses.push({ enemy: { ...e, flash: 0 }, age: 0 });
@@ -1215,7 +1217,7 @@ export class Simulation {
       this.events.push({
         type: "kill",
         headshot,
-        position: { x: e.x, z: e.z },
+        position: { x: e.x, y: e.y, z: e.z },
       });
     }
   }
@@ -1750,7 +1752,8 @@ export class Simulation {
         e.attack = RULES.attackWindup;
         this.events.push({
           type: "zombieAttack",
-          position: { x: e.x, z: e.z },
+          enemyId: e.id,
+          position: { x: e.x, y: e.y, z: e.z },
         });
         continue;
       }

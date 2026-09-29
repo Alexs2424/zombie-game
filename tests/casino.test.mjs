@@ -51,6 +51,9 @@ test('mystery slot costs exactly 400, blocks duplicate spins, pauses and awards 
   const s=setup();s.player={...CASINO_SECRET_ANCHORS.mystery};assert.equal(s.purchase('mystery'),false);
   s.speakeasy=true;s.refreshMap();let i=0;s.random=()=>[.49999,.99][i++];
   assert.equal(s.purchase('mystery'),true);assert.equal(s.points,1600);assert.equal(s.purchase('mystery'),false);
+  assert.deepEqual(s.events.filter(event=>event.type==='mysterySpin'),
+    [{type:'mysterySpin',position:CASINO_SECRET_ANCHORS.mysteryCabinet}]);
+  assert.equal(s.events.some(event=>event.type==='diceRoll'),false,'Pulling the slot handle must not play craps dice');
   s.pause();tick(s,5);assert.equal(s.mystery.remaining,2.8);s.resume();tick(s,3);
   // .99 selects the last of the ten 1970s firearms: The Debt Collector.
   assert.equal(s.weapon,'launcher');assert.equal(s.inventory.launcher.owned,true);assert.equal(s.weaponDamage(),WEAPONS.launcher.damage);
@@ -59,6 +62,7 @@ test('mystery slot costs exactly 400, blocks duplicate spins, pauses and awards 
 test('50% boundary loses without a weapon or refund, and insufficient funds never roll',()=>{
   const s=setup();s.speakeasy=true;s.refreshMap();s.player={...CASINO_SECRET_ANCHORS.mystery};s.random=()=>.5;
   s.points=399;assert.equal(s.purchase('mystery'),false);assert.equal(s.mystery,null);
+  assert.equal(s.events.some(event=>event.type==='mysterySpin'),false,'Rejected pulls must be silent');
   s.points=400;assert.equal(s.purchase('mystery'),true);tick(s,3);
   assert.equal(s.points,0);assert.equal(s.mystery.reward,null);assert.deepEqual(s.relics,{});
   assert.ok(MYSTERY_WEAPONS.every(id=>!s.inventory[id].owned));
@@ -69,6 +73,8 @@ test('both craps tables independently retain physical stakes, settle profits and
   for(const t of CRAPS_TABLES){s.player={x:t.x,z:t.approachZ};assert.equal(s.placeBet(6),true);assert.equal(s.betsByTable[t.id][6],30);}
   s.random=()=>.34; // 3 + 3 pays the place six.
   for(const t of CRAPS_TABLES){s.player={x:t.x,z:t.approachZ};assert.equal(s.purchase(t.id),true);assert.equal(s.diceTables[t.id].quickWager,false);}
+  assert.equal(s.events.filter(event=>event.type==='diceRoll').length,2);
+  assert.equal(s.events.some(event=>event.type==='mysterySpin'),false,'Craps must retain its dice cue');
   assert.equal(s.points,1940);tick(s,1.7);assert.equal(s.points,2010);
   for(const t of CRAPS_TABLES){s.player={x:t.x,z:t.approachZ};assert.equal(s.betsByTable[t.id][6],30);assert.equal(s.purchase(t.id),false);assert.equal(s.placeBet(4),false);assert.equal(s.takeBets(),true);assert.deepEqual(s.betsByTable[t.id],{});}
   assert.equal(s.points,2070);assert.equal(s.earned,70);

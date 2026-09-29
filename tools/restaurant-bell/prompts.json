@@ -1,0 +1,59 @@
+{
+  "provider": "ElevenLabs",
+  "product": "Sound Effects",
+  "model": "eleven_text_to_sound_v2",
+  "modelEvidence": "Current default from official Sound Effects API documentation; no model selector shown by the website.",
+  "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+  "durationSeconds": 3,
+  "promptInfluence": 0.3,
+  "loop": false,
+  "promptEnhancer": false,
+  "publicSharing": false,
+  "variantsGenerated": 4,
+  "usage": "Bell A is the user-selected active hotelBell cue; Bells B-D are retained for comparison",
+  "assets": [
+    {
+      "file": "restaurant-bell-01.wav",
+      "rawFile": "restaurant-bell-01-raw.wav",
+      "direction": "Restaurant service bell, take A",
+      "prompt": "A restaurant service bell for a zombie survival video game. One firm press on a vintage metal countertop call bell: a crisp button click and a loud, bright DING right at the start. Sharp attack, rich metallic overtones, a clear ringing sustain decaying for two seconds. A small desk bell, urgent and attention-grabbing. Dry isolated recording. No repeated strikes, voices, zombies, music, ambience or reverb.",
+      "variation": 1,
+      "selection": "User selected Bell A for the restaurant service bell",
+      "selectedByUser": true,
+      "usage": "Active restaurant hotelBell cue"
+    },
+    {
+      "file": "restaurant-bell-02.wav",
+      "rawFile": "restaurant-bell-02-raw.wav",
+      "direction": "Restaurant service bell, take B",
+      "prompt": "A restaurant service bell for a zombie survival video game. One firm press on a vintage metal countertop call bell: a crisp button click and a loud, bright DING right at the start. Sharp attack, rich metallic overtones, a clear ringing sustain decaying for two seconds. A small desk bell, urgent and attention-grabbing. Dry isolated recording. No repeated strikes, voices, zombies, music, ambience or reverb.",
+      "variation": 2,
+      "selection": "Retained as a comparison after Bell A was selected",
+      "selectedByUser": false,
+      "usage": "Comparison only; not integrated into gameplay"
+    },
+    {
+      "file": "restaurant-bell-03.wav",
+      "rawFile": "restaurant-bell-03-raw.wav",
+      "direction": "Restaurant service bell, take C",
+      "prompt": "A restaurant service bell for a zombie survival video game. One firm press on a vintage metal countertop call bell: a crisp button click and a loud, bright DING right at the start. Sharp attack, rich metallic overtones, a clear ringing sustain decaying for two seconds. A small desk bell, urgent and attention-grabbing. Dry isolated recording. No repeated strikes, voices, zombies, music, ambience or reverb.",
+      "variation": 3,
+      "selection": "Retained as a comparison after Bell A was selected",
+      "selectedByUser": false,
+      "usage": "Comparison only; not integrated into gameplay"
+    },
+    {
+      "file": "restaurant-bell-04.wav",
+      "rawFile": "restaurant-bell-04-raw.wav",
+      "direction": "Restaurant service bell, take D",
+      "prompt": "A restaurant service bell for a zombie survival video game. One firm press on a vintage metal countertop call bell: a crisp button click and a loud, bright DING right at the start. Sharp attack, rich metallic overtones, a clear ringing sustain decaying for two seconds. A small desk bell, urgent and attention-grabbing. Dry isolated recording. No repeated strikes, voices, zombies, music, ambience or reverb.",
+      "variation": 4,
+      "selection": "Retained as a comparison after Bell A was selected",
+      "selectedByUser": false,
+      "usage": "Comparison only; not integrated into gameplay"
+    }
+  ],
+  "creditsBeforeBatch": 9520,
+  "creditsAfterBatch": 9400,
+  "creditsUsed": 120
+}
