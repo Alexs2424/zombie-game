@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createRange, refillRange} from '../lib/game/test-range.ts';
+import {createRange, refillRange, addRangeEnemies} from '../lib/game/test-range.ts';
 import {moveActor, collides, hasSight} from '../lib/game/world.ts';
 
 test('range resets real loadout and damage state without automatic waves',()=>{
@@ -21,4 +21,18 @@ test('scenario selection creates only the requested actors',()=>{
  assert.equal(createRange('blast').enemies.length,0);
  assert.ok(createRange('pursuit').enemies.every(e=>e.speed>0));
  assert.ok(createRange('targets').enemies.every(e=>e.speed===0));
+});
+
+test('adding enemies preserves the session and chooses free, separated positions',()=>{
+ const s=createRange('blast');s.pause();s.health=43;s.inventory.pistol.mag=4;
+ const player={...s.player};
+ assert.equal(addRangeEnemies(s,5),5);
+ assert.equal(addRangeEnemies(s,10,true),10);
+ assert.equal(s.phase,'paused');assert.equal(s.health,43);assert.equal(s.inventory.pistol.mag,4);
+ assert.deepEqual(s.player,player);assert.equal(new Set(s.enemies.map(e=>e.id)).size,15);
+ for(const e of s.enemies){assert.equal(collides(e,.4,s.rects),false);assert.ok(Math.hypot(e.x-player.x,e.z-player.z)>=4);}
+ assert.ok(s.enemies.slice(5).every(e=>e.speed===0));
+ addRangeEnemies(s,100);assert.equal(s.enemies.length,60);
+ assert.equal(addRangeEnemies(s,1),0);
+ s.phase='dead';s.enemies=[];assert.equal(addRangeEnemies(s,5),0);
 });

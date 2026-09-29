@@ -390,6 +390,7 @@ export default function Home() {
   const [rangeMode, setRangeMode] = useState(false);
   const [scenario, setScenario] = useState("targets");
   const [god, setGod] = useState(false);
+  const [spawnBehavior, setSpawnBehavior] = useState("pursuit");
   useEffect(() => {
     if (!playtesting || rangeMode) return;
     const key = (event: KeyboardEvent) => {
@@ -1243,6 +1244,15 @@ export default function Home() {
         </select>
         <p>{scenario === "targets" ? "Three stationary 100 HP zombies. Compare sights, spread, reloads and hit reactions. They can still attack at close range." : scenario === "pursuit" ? "Three active zombies, no automatic waves. Test movement and close combat." : scenario === "blast" ? "G throws a grenade. Compare exposed distance with the tall cover wall. Damage is enabled; nearby blasts can kill." : "Clear floor, low obstacles and full-height cover for movement checks."}</p>
         <button disabled={!ready} onClick={() => rangeAction("reset")}>Reset this scenario</button>
+        <h2>Add enemies</h2>
+        <select aria-label="Spawn behavior" value={spawnBehavior} onChange={e => setSpawnBehavior(e.target.value)}>
+          <option value="pursuit">Pursuing zombies</option>
+          <option value="stationary">Stationary targets</option>
+        </select>
+        <div className="range-spawn-buttons">
+          {[1,5,10].map(count => <button key={count} disabled={!ready || view.phase === "dead" || view.enemies >= 60} onClick={() => rangeAction(`spawn:${count}:${spawnBehavior}`)}>+{count}</button>)}
+        </div>
+        <p>Add to this run without resetting. Spawns favor space ahead of you. Limit: 60 enemies.</p>
         <h2>Loadout</h2>
         <select aria-label="Range weapon" value={view.weapon} disabled={!ready} onChange={e => rangeAction(`equip:${e.target.value}`)}>
           {Object.entries(WEAPONS).map(([id,w]) => <option key={id} value={id}>{w.label}</option>)}
