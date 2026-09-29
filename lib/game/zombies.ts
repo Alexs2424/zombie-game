@@ -65,7 +65,10 @@ export function createZombie(scene: Scene, id: number, asset: ZombieAsset) {
 }
 export function animateZombie(v: ReturnType<typeof createZombie>, e: Enemy) {
   const pose=zombiePose(e);
-  v.root.position.set(e.x,(e.y ?? 0)+pose.drop,e.z);v.root.rotation.y=e.yaw;
+  v.root.position.set(e.x,(e.y ?? 0)+pose.drop,e.z);v.root.rotation.set(0,e.yaw,0);
+  v.shadow.scaling.setAll(1);
+  v.shadow.visibility = 1;
+  for (const material of v.materials) material.alpha = 1;
   for (let i=0;i<2;i++) {
     const arm=v.pivots[LIMBS[i]], leg=v.pivots[LIMBS[i+2]];
     arm.setEnabled(!e.missing?.[LIMBS[i]]);leg.setEnabled(!e.missing?.[LIMBS[i+2]]);
@@ -87,4 +90,36 @@ export function animateZombie(v: ReturnType<typeof createZombie>, e: Enemy) {
   v.head.rotation.x = e.flash > 0 ? -.16 : pose.attacking ? .09 : 0;
   v.skin.emissiveColor.set(e.flash>0?.16:0,0,0);
   v.shadow.position.set(e.x,(e.y ?? 0)+.025,e.z);
+}
+
+/** Collapse over the existing Blender limb pivots, then fade the resting body. */
+export function animateZombieDeath(v: ReturnType<typeof createZombie>, e: Enemy, age: number) {
+  animateZombie(v, e);
+  const t = Math.min(1, age / .95);
+  const fall = t * t * (3 - 2 * t);
+  const direction = e.id % 2 ? 1 : -1;
+  const buckle = Math.sin(t * Math.PI) * .22;
+  v.root.position.y = v.root.position.y*(1-fall) + ((e.y ?? 0)+.24)*fall - buckle;
+  v.root.rotation.x = direction * Math.PI / 2 * fall;
+  v.root.rotation.y += (e.id % 3 - 1) * .18 * fall;
+  const settleAge = Math.max(0, age-.95);
+  if (age > .95) v.root.position.y += Math.abs(Math.sin(settleAge*18))*Math.exp(-settleAge*12)*.025;
+  for (let i=0;i<2;i++) {
+    const arm = v.pivots[LIMBS[i]], leg = v.pivots[LIMBS[i+2]];
+    arm.rotation.x *= 1-fall;
+    arm.rotation.z = arm.rotation.z*(1-fall)+(i ? .25 : -.25)*fall;
+    v.pivots[i ? 'rightForearm' : 'leftForearm'].rotation.x *= 1-fall;
+    leg.rotation.x = leg.rotation.x*(1-fall) + direction*.12*fall;
+  }
+  v.head.rotation.x = direction*.12*fall;
+  v.jaw.rotation.x = -.2;
+  const alpha = Math.max(0, 1-Math.max(0,age-4.5)/1.5);
+  for (const material of v.materials) {
+    material.alpha = alpha;
+    material.emissiveColor.set(0,0,0);
+  }
+  v.shadow.scaling.set(1,1+fall*1.8,1);
+  v.shadow.visibility = .2 * alpha;
+  v.shadow.position.z = e.z + Math.cos(e.yaw)*direction*.65*fall;
+  v.shadow.position.x = e.x + Math.sin(e.yaw)*direction*.65*fall;
 }
