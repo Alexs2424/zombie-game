@@ -442,6 +442,7 @@ export class GameRuntime {
         this.zombieAudio.reset();
         this.audio.resetZombies();
         this.audio.resetSlots();
+        this.audio.resetHotel();
         this.sim.start();
         this.pendingStart = false;
       } else this.sim.resume();
@@ -490,6 +491,7 @@ export class GameRuntime {
         this.zombieAudio.reset();
         this.audio.resetZombies();
         this.audio.resetSlots();
+        this.audio.resetHotel();
         this.sim.start();
         this.pendingStart = false;
       } else this.sim.resume();
@@ -570,6 +572,7 @@ export class GameRuntime {
       this.zombieAudio.reset();
       this.audio.resetZombies();
       this.audio.resetSlots();
+      this.audio.resetHotel();
       this.sim.start();
       this.sim.points = 12000;
       this.sim.intermission = 3600;
@@ -603,7 +606,8 @@ export class GameRuntime {
         x, z,
         health: 100,
         maxHealth: 100,
-        speed: 1.7,
+        // Keep the survivor audition clear of the higher-priority attack cue.
+        speed: action === "sound-last" ? 0 : 1.7,
         yaw: 0,
         attack: 0,
         cooldown: 0,
@@ -1025,12 +1029,13 @@ export class GameRuntime {
     for (const event of this.sim.events) {
       this.audio.play(event);
       this.renderer.weaponEvent(event);
-      if (event.type === "zombieAttack" && event.position)
-        this.audio.zombieAttack(
-          this.sim.player,
-          event.position,
-          this.sim.yaw,
-        );
+      if (event.type === "zombieAttack") {
+        const source = this.sim.enemies.find(enemy => enemy.id === event.enemyId);
+        if (source && source.health > 0)
+          this.audio.zombieAttack(this.sim.player, source, this.sim.yaw);
+      }
+      if (event.type === "kill" && event.position)
+        this.audio.zombieDeath(this.sim.player, event.position, this.sim.yaw);
       if (event.type === "shot") this.renderer.shot(event.weapon!, event.side);
       if (event.type === "pickup" && event.weapon)
         this.pickupCard = weaponCard(event.weapon, this.sim, performance.now());
@@ -1056,10 +1061,10 @@ export class GameRuntime {
     });
     if (zombieCue) {
       const source = this.sim.enemies.find((enemy) => enemy.id === zombieCue.enemyId);
-      this.audio.zombieCue(
+      if (source && source.health > 0) this.audio.zombieCue(
         zombieCue.kind,
         this.sim.player,
-        source ?? zombieCue.position,
+        source,
         this.sim.yaw,
         zombieCue.enemyId,
       );

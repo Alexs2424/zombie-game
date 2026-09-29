@@ -98,7 +98,7 @@ export class ZombieAudioDirector {
     if (!nearest || this.elapsed < this.sharedReadyAt) return null;
     let kind: ZombieCueKind;
     if (lastCandidate && !this.lastPlayed) {
-      // Let the survivor's situation land before the joke, and avoid preceding it
+      // Let the survivor's situation land before the scream, and avoid preceding it
       // with a normal chase sound that would consume the shared cooldown.
       if (this.lastHeld < 1.25) return null;
       kind = "last";

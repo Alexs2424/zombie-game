@@ -286,6 +286,33 @@ test("solid cover stops bullets and nearest living target receives the hit", () 
   assert.ok(s.enemies[0].health < 80);
   assert.equal(s.enemies[1].health, 80);
 });
+test("attack events identify their living source even when positions overlap", () => {
+  const s = quiet();
+  s.player = { x: -12, z: -7 };
+  const first = { ...enemy(-12, -6), id: 41 };
+  const second = { ...enemy(-12, -6), id: 42 };
+  s.enemies = [first, second];
+  s.step(0.05, idle);
+  const attacks = s.events.filter(event => event.type === "zombieAttack");
+  assert.deepEqual(attacks.map(event => event.enemyId), [41, 42]);
+  assert.ok(attacks.every(event => event.position.x === -12 && event.position.z === -6));
+  s.damageEnemy(first, 100, false);
+  const livingSource = event => s.enemies.find(e => e.id === event.enemyId && e.health > 0);
+  assert.equal(livingSource(attacks[0]), undefined, "a pending attack cannot resolve to a different survivor");
+  assert.equal(livingSource(attacks[1]), second);
+});
+test("kill events retain the victim's floor and position after removal", () => {
+  const s = quiet();
+  const victim = { ...enemy(-2, 26), y: 6.2 };
+  s.enemies = [victim];
+  s.damageEnemy(victim, 100, false);
+  const killed = s.events.find(event => event.type === "kill");
+  assert.deepEqual(killed.position, { x: -2, y: 6.2, z: 26 });
+  victim.x = 10;
+  victim.y = 0;
+  s.enemies.length = 0;
+  assert.deepEqual(killed.position, { x: -2, y: 6.2, z: 26 });
+});
 test("attack rechecks cover at contact and health has global grace between attackers", () => {
   const s = quiet();
   s.player = { x: -32.5, z: -2 };

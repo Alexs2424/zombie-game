@@ -1,0 +1,47 @@
+{
+  "service": "https://huggingface.co/spaces/stabilityai/stable-audio-3",
+  "api_origin": "https://stabilityai-stable-audio-3.hf.space",
+  "model": "stabilityai/stable-audio-3-medium",
+  "variant_key": "medium",
+  "steps": 8,
+  "cfg_scale": 1.0,
+  "sampler_type": "pingpong",
+  "assets": [
+    {
+      "file": "last-medium-01.wav",
+      "duration": 3,
+      "seed": 26092901,
+      "prompt": "TrackType: SFX. One isolated weary zombie makes a low puzzled throaty groan, then a short breathy sigh as if looking for someone in an empty hotel. Restrained natural creature vocal performance, mildly confused, subtle dry humor, no words, no laughter, no scream. Close microphone, dry recording, no echo, no music, no other sounds. Brief silence before and after."
+    },
+    {
+      "file": "chase-medium-01.wav",
+      "duration": 3,
+      "seed": 26092902,
+      "prompt": "TrackType: SFX. One husky adult zombie makes two low breathy exertion grunts followed by a tired raspy exhale while slowly pursuing someone. Restrained, quietly determined, slightly out of breath. Natural throaty monster voice, no words, no laughter, no scream. Dry close microphone recording, no footsteps, no music, no echo or background sound. Brief silence before and after."
+    },
+    {
+      "file": "chase-medium-02.wav",
+      "duration": 3,
+      "seed": 26092903,
+      "prompt": "TrackType: SFX. One weary zombie gives a gravelly nasal growl, a short pause, then a soft wheezing grunt. A different slightly higher raspy creature voice with restrained effort and subtle comic exhaustion. No words, no laughter, no scream. Isolated dry close microphone recording, no footsteps, no music, no echo or background sound. Brief silence before and after."
+    },
+    {
+      "file": "attack-medium-01.wav",
+      "duration": 2,
+      "seed": 26092904,
+      "prompt": "TrackType: SFX. A single short sharp throaty zombie attack grunt, a raspy guttural huh with a breathy snarl, then silence. Immediate compact vocal effort for a monster lunging forward. Menacing but restrained, no prolonged growl, no words, no scream. Dry close microphone recording, no impacts, no music, no echo or background sound."
+    },
+    {
+      "file": "last-medium-02.wav",
+      "duration": 4,
+      "seed": 26092906,
+      "prompt": "TrackType: SFX. A single classic undead zombie vocal: a long open-mouthed AAAAHHHH-AAAH-ahhhh moan. A coarse low male creature voice, strongly voiced open AH vowel, gravelly vocal fry and ragged rasp. The first ahhhh swells and wavers upward, catches into a second emphatic AH, then sinks into a rough throaty ahhhh finish. One continuous drawn-out hungry undead moan, menacing and anguished, about three seconds of vocalization. Original survival-horror game monster performance, dry close microphone recording, isolated voice. No words, no singing, no laughter, no comedy, no sigh, no music, no footsteps, no impacts, no background noise, no reverberation. Brief silence at both ends."
+    },
+    {
+      "file": "death-medium-01.wav",
+      "duration": 2,
+      "seed": 26092905,
+      "prompt": "TrackType: SFX. A single zombie gives a short low defeated groan that quickly falls into a soft breathy exhale and stops. Compact weary creature death vocal, restrained and slightly pathetic, no dramatic scream, no words. Dry close microphone recording, no body impact, no music, no echo or background sound. Brief silence after."
+    }
+  ]
+}
