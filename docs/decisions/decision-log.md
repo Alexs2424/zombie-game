@@ -70,3 +70,10 @@ Selected Voss's human motive and knowing complicity: preserve the casino's prosp
 No family reconciliation or forgiveness is automatic upon escaping the map. No new character becomes secretly the Collector by default. Keene, Varga and the earlier four remain distinct unresolved story elements. Dialogue examples require matching context and are not new runtime lines.
 
 Documentation only; no gameplay, voice generation, or visual assets changed.
+
+
+## 2026-09-28 — Sin City character emphasis
+
+**User clarification:** “or sin city characters,” following the request for extensive human, badass character histories.
+
+**Working interpretation:** make Sin City the stronger reference for noir character stakes—dangerous loyalties, costly personal codes, wounded pride, obsessive choices, and flashes of tenderness. Retain Fallout as a secondary reference for eccentricity and contradiction. Added a per-character noir emphasis to the ensemble bible, preserving the authored histories, surviving families, ordinary speech and distinct voices. No copied characters, plotlines, compulsory inner narration, or new gameplay mechanics.

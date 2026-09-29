@@ -14,6 +14,7 @@ This folder is the current source of truth for the game's narrative direction. I
 | [Contextual dialogue](contextual-dialogue.md) | Current action-specific noir dialogue, trigger conditions, exchanges and playback design |
 | [Dialogue samples](dialogue-samples.md) | Historical first tone samples, superseded for production writing |
 | [Voice audition pack](../voice-auditions/README.md) | First complete comic-line batch, generation prompts, preview scripts and access status |
+| [Gun sound direction](../gun-audio/README.md) | Firearm report palette, generation provenance, runtime behavior and listening preview |
 | [Decision log](decision-log.md) | Dated choices, their status and changes in direction |
 
 ## Status vocabulary
@@ -39,5 +40,5 @@ The user has delegated character preferences and creative development to the age
 - Character faces should aspire toward the grounded readability of Call of Duty Zombies, while remaining original and practical for a browser game and limited budget.
 - Blender is the preferred character asset workflow. Facial polish comes later.
 - Dialogue must be specific to player actions and each character’s perspective, with a harder, badass noir edge. Mob of the Dead and Sin City are tonal references; writing remains original.
-- Characters need extensive personal histories and human, badass personalities. Fallout is an additional broad reference for eccentricity, conviction and contradiction; no specific character is being copied.
+- Characters need extensive personal histories and human, badass personalities. Working interpretation of the latest direction: emphasize Sin City for dangerous loyalties and noir intensity, retaining Fallout as a secondary reference for eccentricity and contradiction. Keep all characters original.
 - All story, character, quest, Easter egg, and related mechanics decisions must be written down.

@@ -1,6 +1,6 @@
 # Character backstories and personality bible
 
-Status: agent-selected working canon, developed under the user's delegated character direction. These are original characters for Last Jackpot. The user requested extensive backstories and human, badass personalities, with Fallout as a broad tonal reference. No particular Fallout character, plot, actor performance, or dialogue is being reproduced.
+Status: agent-selected working canon, developed under the user's delegated character direction. These are original characters for Last Jackpot. The user requested extensive backstories and human, badass personalities, naming Fallout and then reinforcing Sin City. Working interpretation: Sin City is the stronger reference for character stakes and noir intensity; Fallout remains a secondary reference for eccentricity and human contradictions. All characters, histories and dialogue remain original.
 
 The story takes place in 1976. Ages in the cast overview are approximate until a precise calendar date is selected. These dossiers own detailed personal history and supporting-character identities; [characters.md](../characters.md) remains the concise cast, visual, and voice overview. Where an older example is less specific, use the dossiers. [Story and plot](../story-and-plot.md) owns supernatural rules and the ending. A biography cannot silently settle an open contract rule.
 
@@ -14,6 +14,21 @@ The story takes place in 1976. Ages in the cast overview are approximate until a
 | [Vivian Cross](vivian.md) | Spots desire, opportunity, and the moment a confident person stops checking. | Turns affection into a transaction she can keep winning. |
 | [Vincent Voss](voss.md) | Understands people well enough to make coercion feel like recognition. | Cannot accept a relationship in which someone owes him nothing. |
 | [Edwin Marlowe](marlowe.md) | Remembers details and can decide who gets the truth at the right moment. | Has mistaken staying useful for remaining innocent. |
+
+## Noir character emphasis
+
+Use personal codes that become expensive to obey. Let affection make otherwise capable people reckless. Tenderness may appear through a small action rather than an explanation. Violence changes relationships and leaves consequences. Humor can be an ugly truth spoken calmly; theatricality should sharpen a character rather than turn every threat into a performance.
+
+| Character | Current noir emphasis |
+| --- | --- |
+| Frankie | A brutal protector whose code is both a genuine restraint and an excuse. Defending a person must eventually cost him the employer's approval he has mistaken for self-respect. |
+| Eve | An ambitious performer pursuing the partner she wounded. Her certainty can become obsession; making the guilty look at her is a dangerous pleasure. |
+| Leon | A practical man who understands exactly how much damage a supposedly temporary compromise can do. His refusal to cooperate should be as formidable as his ability to repair. |
+| Vivian | A survivor accustomed to making desire useful. Coming back for someone threatens the exit plan she has built her whole personality around. |
+| Voss | A gracious proprietor who interprets affection as ownership and rejection as theft. Genuine warmth and deliberate cruelty can coexist in one exchange. |
+| Marlowe | A witness whose silence has helped powerful people. Speaking one precise truth at real personal cost matters more than another elegant hint. |
+
+Keep the surviving families, mundane pleasures, and awkward ordinary speech from the dossiers. The noir emphasis does not require making everyone miserable, adding a murdered loved one to every biography, or giving everyone the same gravelly delivery. Do not import an existing character, plot, signature speech pattern, or mandatory narrated monologues. This is a weighting of our original characterization, not a backstory reset.
 
 ## Human texture and tone
 

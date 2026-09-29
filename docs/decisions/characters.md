@@ -6,7 +6,7 @@ Review stage: the user has requested a more exaggerated, outlandish, dramatic ca
 
 All four playable characters initially share gameplay capabilities. Identity comes through voice, relationships, silhouette, and matching first-person clothing. An occupation never grants exclusive access to a required quest interaction.
 
-Detailed personal histories, supporting people, emotional arcs and reveal pacing live in the [character backstory bible](character-backstories/README.md). Those dossiers own biographical specifics; this overview owns visual and voice direction. The latest brief calls for human, badass personalities with the eccentricity and contradictions suggested by Fallout, while retaining our original casino setting.
+Detailed personal histories, supporting people, emotional arcs and reveal pacing live in the [character backstory bible](character-backstories/README.md). Those dossiers own biographical specifics; this overview owns visual and voice direction. The latest brief calls for human, badass personalities, with Sin City emphasized for noir intensity and personal codes, and Fallout retained as a secondary reference for eccentricity and contradiction. See the backstory bible’s noir emphasis; the casino setting and cast remain original.
 
 ## Frankie “Chips” Caruso
 
