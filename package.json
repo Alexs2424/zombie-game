@@ -11,14 +11,17 @@
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "coop:server": "node --experimental-strip-types server/coop-server.mjs",
+    "test:coop": "node --experimental-strip-types --test tests/coop-*.test.mjs"
   },
   "dependencies": {
     "@babylonjs/core": "^8.50.0",
     "@babylonjs/loaders": "^8.50.0",
     "next": "^16.3.6",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "ws": "8.21.0"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.61.0",
