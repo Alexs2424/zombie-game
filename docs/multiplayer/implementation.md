@@ -46,6 +46,35 @@ The default browser endpoint uses the page's hostname and port `2567`, with `ws:
 
 Health is available at [the local server health endpoint](http://127.0.0.1:2567/health); other ordinary HTTP paths return 404. Health reports protocol version, whether a room exists, and connected-player count, without credentials or the room code.
 
+## Two computers on the same network
+
+One computer runs both processes; your friend only needs a browser. Repository access is useful for development, but is not required to join a running game. Both computers must reach the same game server through the same trusted LAN, a configured private VPN, or a hosted server.
+
+In the examples below, replace `192.168.1.50` with the host computer's LAN address and replace the host-key placeholder with your own private value. Run these from the repository root on that computer, after installing dependencies.
+
+Terminal 1 — game server:
+
+```sh
+COOP_HOST=0.0.0.0 \
+PORT=2567 \
+COOP_HOST_KEY='replace-with-a-private-host-key' \
+COOP_ALLOWED_ORIGINS='http://192.168.1.50:3012,http://localhost:3012,http://127.0.0.1:3012' \
+npm run coop:server
+```
+
+Terminal 2 — frontend:
+
+```sh
+NEXT_PUBLIC_COOP_SERVER_URL='ws://192.168.1.50:2567' \
+npm run dev -- --host 0.0.0.0 --port 3012
+```
+
+Both players open `http://192.168.1.50:3012/coop`. The organizer chooses Create a room and enters the private host key under Advanced connection, then shares the room code. The friend chooses Join a room and enters that code. After the organizer starts the run, each player clicks Enter in their own browser. The host computer must stay awake with both processes running; its firewall must permit the two ports on that private network.
+
+If your friend prefers to run a frontend from their own checkout, they should use the same implementation revision and point Advanced connection at `ws://192.168.1.50:2567`, or set that value through `NEXT_PUBLIC_COOP_SERVER_URL` when starting their frontend. Their browser's exact frontend origin must appear in the host server's `COOP_ALLOWED_ORIGINS`. The example already includes `http://localhost:3012` and `http://127.0.0.1:3012`; add another origin if they use a different hostname or port, then restart the server between runs. They do not start a second game server to join this room.
+
+These HTTP/WS commands are for private-network playtesting. For friends on separate networks, use a configured private VPN or the HTTPS/WSS hosting setup below. Sharing the repository or a room code alone does not make a local server reachable over the internet.
+
 ## Configuration
 
 These are the current environment variables, not planned options. Server variables must be supplied to the server process or hosting environment; the standalone server does not load a dotenv file itself.
