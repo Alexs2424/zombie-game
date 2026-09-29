@@ -11,9 +11,15 @@ import {
 } from "./simulation";
 import { GameRenderer } from "./renderer";
 import { SERVICE_VIEWS } from "./service-layout";
+import { CASINO_ANCHORS, CRAPS_TABLES, ROULETTE_TABLES } from "./casino-layout";
 import { GameAudio } from "./audio";
 import { ZombieAudioDirector } from "./zombie-audio-director";
 import { HOTEL, stairPoint } from "./world";
+import {
+  getHotelMysteryDocument,
+  type HotelDocumentId,
+  type HotelMysteryState,
+} from "./hotel-mystery";
 import {
   POKER_TABLES,
   bestPokerSuit,
@@ -74,11 +80,18 @@ export type GameView = {
   shortcut: boolean;
   vip: boolean;
   tables: boolean;
+  supply: boolean;
+  cashier: boolean;
+  doorsOpen: Simulation["doorsOpen"];
   hotel: boolean;
+  hotelMystery: HotelMysteryState;
+  hotelDocument: null | ({ id: HotelDocumentId } & ReturnType<typeof getHotelMysteryDocument>);
   hotelChallenge: { phase: "idle" | "active" | "complete" | "failed"; remaining: number; pending: number; alive: number };
   slowRound: number;
   dice: Simulation["dice"];
   roulette: Simulation["roulette"];
+  diceResults: { tableId: string; label: string; dice: NonNullable<Simulation["dice"]> }[];
+  rouletteResults: { tableId: string; label: string; roulette: NonNullable<Simulation["roulette"]> }[];
   damageBoostRemaining: number;
   room: string;
   upgraded: boolean;
@@ -137,14 +150,21 @@ export const initialView: GameView = {
   lounge: false,
   shortcut: false,
   vip: false,
-  tables: false,
+  tables: true,
+  supply: false,
+  cashier: false,
+  doorsOpen: { lounge: false, shortcut: false, vip: false, vipExit: false, supply: false, cashier: false },
   hotel: false,
+  hotelMystery: { ledgerFound: false, suitcaseFound: false, keyFound: false, passageOpen: false, registerFound: false, cacheClaimed: false },
+  hotelDocument: null,
   hotelChallenge: { phase: "idle", remaining: 0, pending: 0, alive: 0 },
   slowRound: 0,
   dice: null,
   roulette: null,
+  diceResults: [],
+  rouletteResults: [],
   damageBoostRemaining: 0,
-  room: "Casino Floor",
+  room: "Grand Casino",
   upgraded: false,
   message: "",
   prompt: null,
@@ -213,6 +233,13 @@ export class GameRuntime {
     this.accumulated = 0;
   }
   private keyDown = (e: KeyboardEvent) => {
+    if (this.sim.hotelDocument) {
+      if (e.code === "Escape") {
+        e.preventDefault();
+        this.closeHotelDocument();
+      }
+      return;
+    }
     if (this.sim.pokerOpen) {
       if (e.code === "Escape") {
         e.preventDefault();
@@ -268,7 +295,7 @@ export class GameRuntime {
   private interact() {
     const p = this.sim.nearestPurchase();
     if (p) this.sim.purchase(p.id);
-    if (this.sim.shopOpen || this.sim.pokerOpen) {
+    if (this.sim.shopOpen || this.sim.pokerOpen || this.sim.hotelDocument) {
       this.clearInput();
       if (document.pointerLockElement === this.canvas)
         document.exitPointerLock();
@@ -337,6 +364,10 @@ export class GameRuntime {
     if (this.disposed) return;
     this.sim.closeBar();
     this.sim.closePoker();
+    if (this.sim.hotelDocument) {
+      this.sim.closeHotelDocument();
+      this.sim.pause();
+    }
     this.pendingStart =
       restart || this.sim.phase === "ready" || this.sim.phase === "dead";
     this.clearInput();
@@ -377,14 +408,31 @@ export class GameRuntime {
     if (document.pointerLockElement === this.canvas) document.exitPointerLock();
     this.publish();
   }
+  readHotelDocument(id: HotelDocumentId) {
+    this.sim.readHotelDocument(id);
+    this.clearInput();
+    if (document.pointerLockElement === this.canvas) document.exitPointerLock();
+    this.publish();
+  }
+  closeHotelDocument(resume = false) {
+    if (!this.sim.hotelDocument) return;
+    this.clearInput();
+    this.sim.closeHotelDocument();
+    // Resume only after mouse capture succeeds. Escape always returns to pause.
+    this.sim.pause();
+    this.publish();
+    if (resume) void this.enter();
+  }
   /** Development-only UI controls exercise the real simulation and shop without pointer-lock automation. */
   testAction(action: string) {
     if (process.env.NODE_ENV === "production") return;
     this.playtesting = true;
     const soundScenario = ["sound-chase", "sound-last", "sound-horde"].includes(action);
-    const hotelScenario = action.startsWith("hotel-");
+    const mysteryView = ["hotel-reception", "hotel-suitcase", "hotel-panel", "hotel-register", "hotel-cache"].includes(action);
+    const hotelScenario = action.startsWith("hotel-") || action === "mystery-unlock";
     const slotScenario = ["sound-slots-west", "sound-slots-east", "sound-slots-bank"].includes(action);
-    if (action === "new" || soundScenario || hotelScenario || slotScenario) {
+    if (action === "new" || soundScenario || (hotelScenario && !mysteryView && action !== "mystery-unlock") || slotScenario ||
+      ((mysteryView || action === "mystery-unlock") && (this.sim.phase === "ready" || this.sim.phase === "dead"))) {
       this.hotelTour = [];
       this.hotelTourCompleted = false;
       this.clearInput();
@@ -400,7 +448,7 @@ export class GameRuntime {
     }
     const s = this.sim;
     if (slotScenario) {
-      s.player = { x: action === "sound-slots-west" ? -10.2 : action === "sound-slots-east" ? -3.8 : 2.4, z: action === "sound-slots-bank" ? 0 : -5.5 };
+      s.player = { x: action === "sound-slots-west" ? -20.5 : action === "sound-slots-east" ? -14.1 : 9.9, z: action === "sound-slots-bank" ? -9.7 : 0.3 };
       s.yaw = 0;
       s.pitch = 0.04;
       s.roundCue = null;
@@ -409,15 +457,15 @@ export class GameRuntime {
       this.slotWalkRemaining = 2.3;
     }
     if (soundScenario) {
-      s.player = { x: -9, z: -8 };
+      s.player = { x: -3, z: -16 };
       s.yaw = 0;
       s.pitch = 0;
       s.roundCue = null;
       s.roundCueRemaining = 0;
       s.waveRemaining = action === "sound-chase" ? 2 : 0;
       const positions = [
-        [-9, -4.5], [-10.5, -4.5], [-7.5, -4.5],
-        [-9, -3.4], [-10.5, -3.4], [-7.5, -3.4],
+        [-3, -12.5], [-4.5, -12.5], [-1.5, -12.5],
+        [-3, -11.4], [-4.5, -11.4], [-1.5, -11.4],
       ];
       const count = action === "sound-horde" ? 6 : action === "sound-last" ? 1 : 2;
       s.enemies = positions.slice(0, count).map(([x, z], i) => ({
@@ -435,12 +483,47 @@ export class GameRuntime {
       }));
     }
     if (hotelScenario) {
+      this.hotelTour = [];
+      this.clearInput();
+      s.closeHotelDocument();
+      s.closeBar();
+      s.closePoker();
+      s.phase = "playing";
       s.hotel = action !== "hotel-entrance";
       s.hotelAge = 5;
       s.player = { x: -3, y: 0, z: 9.2, surfaceId: "casino" };
       s.yaw = 0;
       s.pitch = 0;
       if (action === "hotel-lobby") s.player = { x: -4, y: 0, z: 20, surfaceId: "hotel-lobby" };
+      if (action === "hotel-reception") {
+        s.player = { x: -12, y: 0, z: 23.2, surfaceId: "hotel-lobby" };
+        s.yaw = Math.PI;
+        s.pitch = 0.2;
+      }
+      if (action === "hotel-suitcase") {
+        s.player = { x: -7.8, y: 0, z: 22, surfaceId: "hotel-lobby" };
+        s.pitch = 0.34;
+      }
+      if (action === "hotel-panel" || action === "mystery-unlock") {
+        s.player = { x: -12, y: 0, z: 42.9, surfaceId: "hotel-lobby" };
+        s.pitch = 0.02;
+      }
+      if (action === "mystery-unlock") {
+        s.hotelMystery.ledgerFound = true;
+        s.hotelMystery.suitcaseFound = true;
+        s.hotelMystery.keyFound = true;
+        s.hotelMystery.passageOpen = true;
+        s.notify("QA: service gallery prepared. Guest documents retained.");
+      }
+      if (action === "hotel-register" || action === "hotel-cache") {
+        if (s.hotelMystery.passageOpen) {
+          s.player = { x: action === "hotel-register" ? -5 : 0, y: 0, z: 47.3, surfaceId: "hotel-lobby" };
+          s.pitch = 0.26;
+        } else {
+          s.player = { x: -12, y: 0, z: 42.9, surfaceId: "hotel-lobby" };
+          s.notify("Find the service key and unlock the panel before entering the gallery.");
+        }
+      }
       if (action === "hotel-upper" || action === "hotel-chase") {
         s.player = { x: -4, y: HOTEL.floorY, z: 37, surfaceId: "hotel-upper" };
         s.yaw = action === "hotel-chase" ? Math.PI : 0;
@@ -475,8 +558,8 @@ export class GameRuntime {
         const lowerZ = landing(left, 0).z;
         const upperZ = landing(left, 1).z;
         this.hotelTour = [
-          { x: HOTEL.entrance.x, z: 18 }, { x: -10, z: 18 },
-          { x: -10, z: lowerZ }, landing(left, 0), stairPoint(left, 0),
+          { x: HOTEL.entrance.x, z: 18 }, { x: -6, z: 18 },
+          { x: -6, z: lowerZ }, landing(left, 0), stairPoint(left, 0),
         ];
         for (let i = 1; i <= 36; i++) {
           this.hotelTour.push(stairPoint(left, i / 36));
@@ -492,87 +575,71 @@ export class GameRuntime {
           this.hotelTour.push(stairPoint(right, i / 36));
         }
         this.hotelTour.push(
-          landing(right, 0), { x: -4, z: lowerZ }, { x: -4, z: 46 },
-          { x: -7, z: 46 }, { x: -7, z: 49 }, { x: -7, z: 46 }, { x: -4, z: 46 },
-          { x: -4, z: lowerZ }, { x: -10, z: lowerZ }, { x: -10, z: 18 },
+          landing(right, 0), { x: -4, z: lowerZ }, { x: -4, z: 42 },
+          { x: -7, z: 42 }, { x: -7, z: 44 }, { x: -7, z: 42 },
+          { x: 0, z: 42 }, { x: 0, z: 44 },
+          { x: 0, z: 42 }, { x: -4, z: 42 },
+          { x: -4, z: lowerZ }, { x: -6, z: lowerZ }, { x: -6, z: 18 },
           { x: HOTEL.entrance.x, z: 18 }, { x: HOTEL.entrance.x, z: 9.2 },
         );
       }
       s.refreshMap();
     }
+    const [crapsA, crapsB] = CRAPS_TABLES;
+    const [rouletteA, rouletteB] = ROULETTE_TABLES;
+    const [pokerA, pokerB] = POKER_TABLES;
     const poses: Record<string, [number, number, number, number]> = {
       ...SERVICE_VIEWS,
-      floor: [-9, -8, 0.3, 0.06],
-      slotsWest: [-11.6, -1.8, Math.PI / 2, 0.1],
-      slotsEast: [-3, 0, -Math.PI / 2, 0.1],
-      slotsBank: [3.2, 5, -Math.PI / 2, 0.1],
-      bar: [12, -6.5, Math.PI, 0.03],
-      loungeWide: [14.8, 0.65, -2.72, 0.06],
-      loungeEntrance: [5.4, -3.4, 2.05, 0.03],
-      loungeSeating: [13.1, -4.8, -0.67, 0.08],
-      shotgun: [-12.7, 1.8, -Math.PI / 2, 0],
-      smg: [6.8, -0.2, -Math.PI / 2, 0],
-      rifle: [25.3, -8.2, Math.PI / 2, 0],
-      vip: [18, -8, 0.6, 0.08],
-      couch: [24.3, -1.3, 0.94, 0.23],
-      gate: [2, -4.1, Math.PI / 2, 0],
-      staff: [7, 8.6, -Math.PI / 2, 0],
-      workshop: [24.7, 8.7, 0, 0.02],
-      ammo: [-12.6, -9.1, Math.PI, 0],
-      tablesGate: [25.8, -4.1, Math.PI / 2, 0],
-      tables: [30, -8, 0.55, 0.1],
-      craps: [35, -5.3, 0, 0.28],
-      roulette: [35, 2.6, 0, 0.25],
-      rouletteClose: [35.735, 3.37, 0, 0.5],
-      "poker-a": [22, -4.8, 0, 0.52],
-      "poker-b": [22, 3.2, 0, 0.52],
+      floor: [-3, -17, 0, 0.03],
+      casinoWide: [23, -17, -0.88, 0.03],
+      slotsWest: [-21.4, 4, Math.PI / 2, 0.1],
+      slotsEast: [-13.6, 5.5, -Math.PI / 2, 0.1],
+      slotsBank: [10.2, -4.5, -Math.PI / 2, 0.1],
+      bar: [-38, -11.5, Math.PI, 0.03],
+      loungeWide: [-34.8, 1.8, -2.9, 0.03],
+      loungeEntrance: [-34.8, -2, -2.5, 0.03],
+      loungeSeating: [-36.9, -9.8, -0.67, 0.08],
+      shotgun: [CASINO_ANCHORS.shotgun.x - 1.5, CASINO_ANCHORS.shotgun.z, Math.PI / 2, 0],
+      smg: [CASINO_ANCHORS.smg.x + 1.5, CASINO_ANCHORS.smg.z, -Math.PI / 2, 0],
+      rifle: [CASINO_ANCHORS.rifle.x + 0.1, CASINO_ANCHORS.rifle.z, -Math.PI / 2, 0],
+      vip: [-24, -23, 0.5 + Math.PI / 2, 0.08],
+      couch: [-11, -31, Math.PI / 2, 0.2],
+      gate: [-31.5, -2, -Math.PI / 2, 0],
+      barExit: [-31.5, -14, -Math.PI / 2, 0],
+      vipGate: [-23, -18.5, Math.PI, 0],
+      vipExit: [-11, -18.5, Math.PI, 0],
+      staff: [-21.5, 40, -Math.PI / 2, 0],
+      workshop: [CASINO_ANCHORS.upgrade.x - 1.1, CASINO_ANCHORS.upgrade.z, Math.PI / 2, 0.08],
+      ammo: [CASINO_ANCHORS.pistolAmmo.x, CASINO_ANCHORS.pistolAmmo.z + 1.5, Math.PI, 0],
+      cashierGate: [25.5, -16, Math.PI / 2, 0],
+      cashier: [29.5, -17, 0.5, 0.05],
+      tables: [-21, -17.5, 0.55, 0.1],
+      craps: [crapsA.x, crapsA.approachZ - 0.4, 0, 0.28],
+      crapsB: [crapsB.x, crapsB.approachZ - 0.4, 0, 0.28],
+      roulette: [rouletteA.x, rouletteA.approachZ - 0.4, 0, 0.25],
+      rouletteB: [rouletteB.x, rouletteB.approachZ - 0.4, 0, 0.25],
+      rouletteClose: [rouletteA.x + 0.735, rouletteA.z - 1.63, 0, 0.5],
+      "poker-a": [pokerA.x, pokerA.approachZ - 0.1, 0, 0.52],
+      "poker-b": [pokerB.x, pokerB.approachZ - 0.1, 0, 0.52],
     };
     if (poses[action]) {
       this.hotelTour = [];
       this.slotWalkRemaining = 0;
-      if (
-        [
-          "bar",
-          "loungeWide",
-          "loungeEntrance",
-          "loungeSeating",
-          ...Object.keys(SERVICE_VIEWS),
-          "smg",
-          "rifle",
-          "vip",
-          "couch",
-          "staff",
-          "workshop",
-          "tablesGate",
-          "tables",
-          "craps",
-          "roulette",
-          "rouletteClose",
-          "poker-a",
-          "poker-b",
-        ].includes(action)
-      )
-        s.lounge = true;
-      if (
-        [
-          "rifle",
-          "vip",
-          "couch",
-          "workshop",
-          "tablesGate",
-          "tables",
-          "craps",
-          "roulette",
-          "rouletteClose",
-          "poker-a",
-          "poker-b",
-        ].includes(action)
-      )
-        s.vip = true;
-      if (["tables", "craps", "roulette", "rouletteClose"].includes(action))
-        s.tables = true;
+      if (["bar", "loungeWide", "loungeEntrance", "loungeSeating", "smg"].includes(action)) {
+        s.doorsOpen.lounge = true;
+      }
+      if (["vip", "couch", "workshop", "poker-b"].includes(action)) {
+        s.doorsOpen.vip = true;
+      }
+      if ([...Object.keys(SERVICE_VIEWS), "rifle"].includes(action)) {
+        s.hotel = true;
+        s.doorsOpen.supply = true;
+      }
+      if (action === "staff") s.hotel = true;
+      if (action === "cashier") s.doorsOpen.cashier = true;
       s.closeBar();
       s.closePoker();
+      s.closeHotelDocument();
       s.phase = "playing";
       s.intermission = 3600;
       s.invulnerable = 99999;
@@ -595,6 +662,8 @@ export class GameRuntime {
           action === "dice-seven" ? [3, 4] : [5, 4];
     }
     if (action === "roulette-spin") s.purchase("roulette");
+    if (action === "roulette-spin-b") s.purchase("roulette-b");
+    if (action === "craps-roll-b") s.purchase("craps-b");
     const rouletteOutcomes: Record<string, number> = {
       "roulette-4": 4,
       "roulette-24": 24,
@@ -651,8 +720,8 @@ export class GameRuntime {
     if (action === "knife") s.knife();
     if (action === "melee-target") {
       s.phase="playing";s.intermission=3600;s.invulnerable=99999;
-      s.player={x:-12,z:-7};s.yaw=0;s.pitch=0;
-      s.enemies=[{id:500,x:-12,z:-5.8,health:80,maxHealth:80,speed:0,yaw:Math.PI,attack:0,cooldown:0,stuck:0,flash:0,age:0}];
+      s.player={x:-3,z:-16};s.yaw=0;s.pitch=0;
+      s.enemies=[{id:500,x:-3,z:-14.8,health:80,maxHealth:80,speed:0,yaw:Math.PI,attack:0,cooldown:0,stuck:0,flash:0,age:0}];
     }
     if (action === "reload") s.reload();
     if (action.startsWith("weapon-"))
@@ -672,14 +741,14 @@ export class GameRuntime {
     }
     if (action === "crowd") {
       s.phase = "playing";
-      s.lounge = s.vip = true;
+      s.doorsOpen.lounge = s.doorsOpen.vip = true;
       s.refreshMap();
       s.intermission = 3600;
       s.invulnerable = 99999;
       s.enemies = Array.from({ length: 14 }, (_, i) => ({
         id: 100 + i,
-        x: i % 2 ? 25 : 18,
-        z: -5 + Math.floor(i / 2) * 2,
+        x: i % 2 ? -4.7 : -1.3,
+        z: -9 + Math.floor(i / 2) * 2.5,
         health: 100,
         maxHealth: 100,
         speed: 1.7,
@@ -693,9 +762,9 @@ export class GameRuntime {
     }
     if (action === "zombies") {
       s.phase = "playing"; s.intermission = 3600; s.invulnerable = 99999;
-      s.player = { x: -12, z: -7 }; s.yaw = 0; s.pitch = .12;
+      s.player = { x: -3, z: -16 }; s.yaw = 0; s.pitch = .12;
       s.enemies = Array.from({ length: 3 }, (_, i) => ({
-        id: 300 + i, x: -13 + i, z: -4, health: 1000, maxHealth: 1000,
+        id: 300 + i, x: -4 + i, z: -13, health: 1000, maxHealth: 1000,
         speed: 0, yaw: Math.PI, attack: 0, cooldown: 0, stuck: 0, flash: 0, age: 0,
       }));
     }
@@ -914,7 +983,12 @@ export class GameRuntime {
       shortcut: s.shortcut,
       vip: s.vip,
       tables: s.tables,
+      supply: s.supply,
+      cashier: s.cashier,
+      doorsOpen: { ...s.doorsOpen },
       hotel: s.hotel,
+      hotelMystery: { ...s.hotelMystery },
+      hotelDocument: s.hotelDocument ? { id: s.hotelDocument, ...getHotelMysteryDocument(s.hotelDocument, s.hotelMystery) } : null,
       hotelChallenge: {
         phase: s.hotelChallenge.phase, remaining: s.hotelChallenge.remaining,
         pending: s.hotelChallenge.pending, alive: s.hotelChallengeAlive,
@@ -922,11 +996,19 @@ export class GameRuntime {
       slowRound: s.slowRound,
       dice: s.dice ? { ...s.dice, values: [...s.dice.values] } : null,
       roulette: s.roulette ? { ...s.roulette } : null,
+      diceResults: CRAPS_TABLES.flatMap((table, i) => {
+        const dice = s.diceTables[table.id];
+        return dice ? [{ tableId: table.id, label: `CRAPS ${i + 1}`, dice: { ...dice, values: [...dice.values] as [number, number] } }] : [];
+      }),
+      rouletteResults: ROULETTE_TABLES.flatMap((table, i) => {
+        const roulette = s.rouletteTables[table.id];
+        return roulette ? [{ tableId: table.id, label: `ROULETTE ${i + 1}`, roulette: { ...roulette } }] : [];
+      }),
       damageBoostRemaining: s.damageBoostRemaining,
       room: roomName(s.player),
       zombieAudioStatus: process.env.NODE_ENV !== "production" ? this.audio.zombieStatus : undefined,
       hotelPlaytestStatus: process.env.NODE_ENV !== "production"
-        ? `${roomName(s.player)} · floor ${(s.player.y ?? 0).toFixed(2)} m${this.hotelTour.length ? ` · walking tour: ${this.hotelTour.length} waypoints left` : this.hotelTourCompleted ? " · hotel loop complete" : ""}`
+        ? `${roomName(s.player)} · floor ${(s.player.y ?? 0).toFixed(2)} m${this.hotelTour.length ? ` · walking tour: ${this.hotelTour.length} waypoints left` : this.hotelTourCompleted ? " · hotel loop complete" : ""} · clues ${+s.hotelMystery.ledgerFound + +s.hotelMystery.suitcaseFound + +s.hotelMystery.registerFound}/3 · key ${s.hotelMystery.keyFound ? "found" : "missing"} · gallery ${s.hotelMystery.passageOpen ? "open" : "locked"} · cache ${s.hotelMystery.cacheClaimed ? "claimed" : "waiting"}`
         : undefined,
       slotAudioStatus: process.env.NODE_ENV !== "production" ? this.audio.slotStatus : undefined,
       upgraded: Object.values(s.upgrades).some(Boolean),
@@ -940,8 +1022,8 @@ export class GameRuntime {
                   ? `${WEAPONS[p.id].label} ammunition`
                   : p.name,
               detail:
-                p.id === "craps"
-                  ? `7 slows you 20% ${s.intermission > 0 ? "next round" : "this round"} · other rolls pay 500 chips · once per round`
+                (p.id === "craps" || p.id === "craps-b")
+                  ? `7 slows you 20% ${s.intermission > 0 ? "next round" : "this round"} · other rolls pay 500 chips · once per table per round`
                   : p.id === "jukebox" ? (s.jukeboxOn ? "Stop the lobby record" : "Play The Lucky Note · original lounge instrumental")
                   : p.detail,
               ...info,
@@ -950,6 +1032,9 @@ export class GameRuntime {
                   ? "OPEN HAND"
                   : p.id === "hotelBell" ? "RING BELL"
                   : p.id === "jukebox" ? (s.jukeboxOn ? "STOP MUSIC" : "PLAY MUSIC")
+                  : p.id === "hotelLedger" || p.id === "hotelSuitcase" || p.id === "hotelRegister" ? "EXAMINE"
+                  : p.id === "hotelPanel" ? "UNLOCK"
+                  : p.id === "hotelCache" ? "TAKE SUPPLIES"
                   : undefined,
             }
           : null,

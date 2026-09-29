@@ -1,0 +1,2685 @@
+{
+  "source": "hotel-lobby-prototype",
+  "generated": "2026-09-29T04:03:49.742Z",
+  "units": "metres",
+  "north": "+Z",
+  "upperElevation": 4,
+  "rooms": [
+    {
+      "id": "01",
+      "name": "Grand Casino",
+      "minX": -33,
+      "maxX": 27,
+      "minZ": -20,
+      "maxZ": 12,
+      "ceilingY": 6.8,
+      "accessibleGround": true,
+      "polygon": [
+        {
+          "x": -33,
+          "z": -20
+        },
+        {
+          "x": 27,
+          "z": -20
+        },
+        {
+          "x": 27,
+          "z": 12
+        },
+        {
+          "x": -33,
+          "z": 12
+        }
+      ],
+      "key": "casino",
+      "level": 0,
+      "label": [
+        -3,
+        0.9
+      ],
+      "lines": [
+        "GRAND CASINO"
+      ],
+      "dimensions": "60 × 32 m"
+    },
+    {
+      "id": "02",
+      "name": "The Last Call Lounge",
+      "minX": -45,
+      "maxX": -33,
+      "minZ": -20,
+      "maxZ": 4,
+      "ceilingY": 4.8,
+      "accessibleGround": true,
+      "polygon": [
+        {
+          "x": -45,
+          "z": -20
+        },
+        {
+          "x": -33,
+          "z": -20
+        },
+        {
+          "x": -33,
+          "z": 4
+        },
+        {
+          "x": -45,
+          "z": 4
+        }
+      ],
+      "key": "lounge",
+      "level": 0,
+      "label": [
+        -39,
+        -0.6
+      ],
+      "lines": [
+        "Last Call",
+        "Lounge"
+      ],
+      "dimensions": "12 × 24 m"
+    },
+    {
+      "id": "03",
+      "name": "High Roller Club",
+      "minX": -28,
+      "maxX": -6,
+      "minZ": -38,
+      "maxZ": -20,
+      "ceilingY": 4.8,
+      "accessibleGround": true,
+      "polygon": [
+        {
+          "x": -28,
+          "z": -38
+        },
+        {
+          "x": -6,
+          "z": -38
+        },
+        {
+          "x": -6,
+          "z": -20
+        },
+        {
+          "x": -28,
+          "z": -20
+        }
+      ],
+      "key": "vip",
+      "level": 0,
+      "label": [
+        -17,
+        -26
+      ],
+      "lines": [
+        "High Roller"
+      ],
+      "dimensions": "22 × 18 m"
+    },
+    {
+      "id": "04",
+      "name": "Cashier",
+      "minX": 27,
+      "maxX": 43,
+      "minZ": -20,
+      "maxZ": -12,
+      "ceilingY": 4.8,
+      "accessibleGround": true,
+      "polygon": [
+        {
+          "x": 27,
+          "z": -20
+        },
+        {
+          "x": 43,
+          "z": -20
+        },
+        {
+          "x": 43,
+          "z": -12
+        },
+        {
+          "x": 27,
+          "z": -12
+        }
+      ],
+      "key": "cashier",
+      "level": 0,
+      "label": [
+        35,
+        -16
+      ],
+      "lines": [
+        "Cashier"
+      ],
+      "dimensions": "16 × 8 m"
+    },
+    {
+      "id": "05",
+      "name": "Cashier · reserved staff area",
+      "minX": 27,
+      "maxX": 43,
+      "minZ": -12,
+      "maxZ": 4,
+      "ceilingY": 4.8,
+      "accessibleGround": false,
+      "polygon": [
+        {
+          "x": 27,
+          "z": -12
+        },
+        {
+          "x": 43,
+          "z": -12
+        },
+        {
+          "x": 43,
+          "z": 4
+        },
+        {
+          "x": 27,
+          "z": 4
+        }
+      ],
+      "key": "cashierSecure",
+      "level": 0,
+      "label": [
+        35,
+        -4
+      ],
+      "lines": [
+        "SECURE CASH AREA"
+      ],
+      "dimensions": "16 × 16 m"
+    },
+    {
+      "id": "06",
+      "name": "Supply Room",
+      "minX": -37,
+      "maxX": -23,
+      "minZ": 35,
+      "maxZ": 49,
+      "ceilingY": 4.8,
+      "accessibleGround": true,
+      "polygon": [
+        {
+          "x": -37,
+          "z": 35
+        },
+        {
+          "x": -23,
+          "z": 35
+        },
+        {
+          "x": -23,
+          "z": 49
+        },
+        {
+          "x": -37,
+          "z": 49
+        }
+      ],
+      "key": "supply",
+      "level": 0,
+      "label": [
+        -30,
+        37.1
+      ],
+      "lines": [
+        "Supply Room"
+      ],
+      "dimensions": "14 × 14 m"
+    },
+    {
+      "id": "07",
+      "key": "foyer",
+      "name": "Hotel Entrance",
+      "polygon": [
+        {
+          "x": -5.5,
+          "z": 12
+        },
+        {
+          "x": -0.5,
+          "z": 12
+        },
+        {
+          "x": -0.5,
+          "z": 15
+        },
+        {
+          "x": -5.5,
+          "z": 15
+        }
+      ],
+      "level": 0,
+      "label": [
+        -3,
+        13.5
+      ],
+      "dimensions": "5 × 3 m connector"
+    },
+    {
+      "id": "08",
+      "key": "hotel",
+      "name": "Grand Hotel Lobby",
+      "polygon": [
+        {
+          "x": -15,
+          "z": 15
+        },
+        {
+          "x": 7,
+          "z": 15
+        },
+        {
+          "x": 15,
+          "z": 23
+        },
+        {
+          "x": 15,
+          "z": 43
+        },
+        {
+          "x": 7,
+          "z": 51
+        },
+        {
+          "x": -15,
+          "z": 51
+        },
+        {
+          "x": -23,
+          "z": 43
+        },
+        {
+          "x": -23,
+          "z": 23
+        }
+      ],
+      "level": 0,
+      "label": [
+        -4,
+        29
+      ],
+      "lines": [
+        "Grand Hotel Lobby"
+      ],
+      "dimensions": "38 × 36 m bounds"
+    },
+    {
+      "id": "09",
+      "key": "restaurant",
+      "name": "Grand Hotel Restaurant",
+      "polygon": [
+        {
+          "x": -15,
+          "z": 32.5
+        },
+        {
+          "x": 7,
+          "z": 32.5
+        },
+        {
+          "x": 7,
+          "z": 35.5
+        },
+        {
+          "x": 11,
+          "z": 35.5
+        },
+        {
+          "x": 11,
+          "z": 45
+        },
+        {
+          "x": 6,
+          "z": 49
+        },
+        {
+          "x": -14,
+          "z": 49
+        },
+        {
+          "x": -19,
+          "z": 45
+        },
+        {
+          "x": -19,
+          "z": 35.5
+        },
+        {
+          "x": -15,
+          "z": 35.5
+        }
+      ],
+      "level": 4,
+      "label": [
+        -4,
+        42
+      ],
+      "lines": [
+        "Grand Hotel",
+        "Restaurant"
+      ],
+      "dimensions": "30 × 16.5 m bounds"
+    }
+  ],
+  "bounds": {
+    "minX": -45,
+    "maxX": 43,
+    "minZ": -38,
+    "maxZ": 51
+  },
+  "walls": [
+    {
+      "id": "hotel-wall-0-left",
+      "x": -10.25,
+      "z": 15,
+      "w": 9.5,
+      "d": 0.2,
+      "h": 8.8,
+      "baseY": 0,
+      "yaw": 0
+    },
+    {
+      "id": "hotel-wall-0-right",
+      "x": 3.25,
+      "z": 15,
+      "w": 7.5,
+      "d": 0.2,
+      "h": 8.8,
+      "baseY": 0,
+      "yaw": 0
+    },
+    {
+      "id": "hotel-wall-1",
+      "x": 11,
+      "z": 19,
+      "w": 11.313708498984761,
+      "d": 0.2,
+      "h": 8.8,
+      "baseY": 0,
+      "yaw": 0.7853981633974483
+    },
+    {
+      "id": "hotel-wall-2",
+      "x": 15,
+      "z": 33,
+      "w": 20,
+      "d": 0.2,
+      "h": 8.8,
+      "baseY": 0,
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "hotel-wall-3",
+      "x": 11,
+      "z": 47,
+      "w": 11.313708498984761,
+      "d": 0.2,
+      "h": 8.8,
+      "baseY": 0,
+      "yaw": 2.356194490192345
+    },
+    {
+      "id": "hotel-wall-4",
+      "x": -4,
+      "z": 51,
+      "w": 22,
+      "d": 0.2,
+      "h": 8.8,
+      "baseY": 0,
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "hotel-wall-5",
+      "x": -19,
+      "z": 47,
+      "w": 11.313708498984761,
+      "d": 0.2,
+      "h": 8.8,
+      "baseY": 0,
+      "yaw": -2.356194490192345
+    },
+    {
+      "id": "hotel-wall-6-north",
+      "x": -23,
+      "z": 42.35,
+      "w": 1.2999999999999972,
+      "d": 0.2,
+      "h": 8.8,
+      "baseY": 0,
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "hotel-wall-6-south",
+      "x": -23,
+      "z": 30.65,
+      "w": 15.299999999999997,
+      "d": 0.2,
+      "h": 8.8,
+      "baseY": 0,
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "hotel-wall-7",
+      "x": -19,
+      "z": 19,
+      "w": 11.313708498984761,
+      "d": 0.2,
+      "h": 8.8,
+      "baseY": 0,
+      "yaw": -0.7853981633974483
+    },
+    {
+      "id": "hotel-foyer-wall-left",
+      "x": -5.5,
+      "z": 13.5,
+      "w": 3,
+      "d": 0.2,
+      "h": 4.8,
+      "baseY": 0,
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "hotel-foyer-wall-right",
+      "x": -0.5,
+      "z": 13.5,
+      "w": 3,
+      "d": 0.2,
+      "h": 4.8,
+      "baseY": 0,
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "hotel-gallery-wall-west",
+      "x": -16.65,
+      "z": 46,
+      "w": 6.7,
+      "d": 0.24,
+      "h": 3.72
+    },
+    {
+      "id": "hotel-gallery-wall-center",
+      "x": -4,
+      "z": 46,
+      "w": 13.4,
+      "d": 0.24,
+      "h": 3.72
+    },
+    {
+      "id": "hotel-gallery-wall-east",
+      "x": 8.65,
+      "z": 46,
+      "w": 6.7,
+      "d": 0.24,
+      "h": 3.72
+    },
+    {
+      "id": "casino-wall-nw",
+      "x": -19.25,
+      "z": 12,
+      "w": 27.5,
+      "d": 0.45,
+      "h": 6.8
+    },
+    {
+      "id": "casino-wall-ne",
+      "x": 13.25,
+      "z": 12,
+      "w": 27.5,
+      "d": 0.45,
+      "h": 6.8
+    },
+    {
+      "id": "casino-wall-sw",
+      "x": -29,
+      "z": -20,
+      "w": 8,
+      "d": 0.45,
+      "h": 6.8
+    },
+    {
+      "id": "casino-wall-sm",
+      "x": -17,
+      "z": -20,
+      "w": 8,
+      "d": 0.45,
+      "h": 6.8
+    },
+    {
+      "id": "casino-wall-se",
+      "x": 9,
+      "z": -20,
+      "w": 36,
+      "d": 0.45,
+      "h": 6.8
+    },
+    {
+      "id": "casino-wall-ws",
+      "x": -33,
+      "z": -18,
+      "w": 0.45,
+      "d": 4,
+      "h": 6.8
+    },
+    {
+      "id": "casino-wall-wm",
+      "x": -33,
+      "z": -8,
+      "w": 0.45,
+      "d": 8,
+      "h": 6.8
+    },
+    {
+      "id": "casino-wall-wn",
+      "x": -33,
+      "z": 6,
+      "w": 0.45,
+      "d": 12,
+      "h": 6.8
+    },
+    {
+      "id": "casino-wall-es",
+      "x": 27,
+      "z": -19,
+      "w": 0.45,
+      "d": 2,
+      "h": 6.8
+    },
+    {
+      "id": "casino-wall-en",
+      "x": 27,
+      "z": -1,
+      "w": 0.45,
+      "d": 26,
+      "h": 6.8
+    },
+    {
+      "id": "lounge-wall-west",
+      "x": -45,
+      "z": -8,
+      "w": 0.45,
+      "d": 24,
+      "h": 4.8
+    },
+    {
+      "id": "lounge-wall-north",
+      "x": -39,
+      "z": 4,
+      "w": 12,
+      "d": 0.45,
+      "h": 4.8
+    },
+    {
+      "id": "lounge-wall-south",
+      "x": -39,
+      "z": -20,
+      "w": 12,
+      "d": 0.45,
+      "h": 4.8
+    },
+    {
+      "id": "cashier-wall-east",
+      "x": 43,
+      "z": -8,
+      "w": 0.45,
+      "d": 24,
+      "h": 4.8
+    },
+    {
+      "id": "cashier-wall-north",
+      "x": 35,
+      "z": 4,
+      "w": 16,
+      "d": 0.45,
+      "h": 4.8
+    },
+    {
+      "id": "cashier-wall-south",
+      "x": 35,
+      "z": -20,
+      "w": 16,
+      "d": 0.45,
+      "h": 4.8
+    },
+    {
+      "id": "vip-wall-west",
+      "x": -28,
+      "z": -29,
+      "w": 0.45,
+      "d": 18,
+      "h": 4.8
+    },
+    {
+      "id": "vip-wall-east",
+      "x": -6,
+      "z": -29,
+      "w": 0.45,
+      "d": 18,
+      "h": 4.8
+    },
+    {
+      "id": "vip-wall-south",
+      "x": -17,
+      "z": -38,
+      "w": 22,
+      "d": 0.45,
+      "h": 4.8
+    },
+    {
+      "id": "supply-wall-west",
+      "x": -37,
+      "z": 42,
+      "w": 0.45,
+      "d": 14,
+      "h": 4.8
+    },
+    {
+      "id": "supply-wall-north",
+      "x": -30,
+      "z": 49,
+      "w": 14,
+      "d": 0.45,
+      "h": 4.8
+    },
+    {
+      "id": "supply-wall-south",
+      "x": -30,
+      "z": 35,
+      "w": 14,
+      "d": 0.45,
+      "h": 4.8
+    },
+    {
+      "id": "supply-wall-east",
+      "x": -23,
+      "z": 46,
+      "w": 0.45,
+      "d": 6,
+      "h": 4.8
+    }
+  ],
+  "furniture": [
+    {
+      "id": "hotel-prop-reception",
+      "kind": "reception",
+      "x": -12,
+      "z": 20.4,
+      "w": 7.6,
+      "d": 1.65,
+      "h": 1.22,
+      "collisionH": 1.22,
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "hotel-prop-reception-backdrop",
+      "kind": "reception-backdrop",
+      "x": -12,
+      "z": 16.8,
+      "w": 8.2,
+      "d": 0.65,
+      "h": 3.5,
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "hotel-prop-guest-suitcase",
+      "kind": "guest-suitcase",
+      "x": -7.8,
+      "z": 24.7,
+      "w": 1.25,
+      "d": 0.85,
+      "h": 0.9
+    },
+    {
+      "id": "hotel-prop-porter",
+      "kind": "porter-cabinet",
+      "x": -18,
+      "z": 23.7,
+      "w": 1.8,
+      "d": 0.65,
+      "h": 1.15,
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "hotel-prop-luggage-shelf-west",
+      "kind": "luggage-shelf",
+      "x": -10.8,
+      "z": 50,
+      "w": 3.8,
+      "d": 0.7,
+      "h": 2.5
+    },
+    {
+      "id": "hotel-prop-luggage-shelf-east",
+      "kind": "luggage-shelf",
+      "x": 4,
+      "z": 50,
+      "w": 3.8,
+      "d": 0.7,
+      "h": 2.5
+    },
+    {
+      "id": "hotel-prop-jukebox",
+      "kind": "jukebox",
+      "x": 13,
+      "z": 25,
+      "w": 1.5,
+      "d": 0.85,
+      "h": 2.35,
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "hotel-prop-front-sofa",
+      "kind": "sofa",
+      "x": 5.8,
+      "z": 18.8,
+      "w": 3.8,
+      "d": 1.35,
+      "h": 1.12,
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "hotel-prop-west-sofa",
+      "kind": "sofa",
+      "x": -16,
+      "z": 39,
+      "w": 3.8,
+      "d": 1.35,
+      "h": 1.12,
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "hotel-prop-west-armchair",
+      "kind": "armchair",
+      "x": -12.8,
+      "z": 42,
+      "w": 1.2,
+      "d": 1.2,
+      "h": 1.12,
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "hotel-prop-west-coffee",
+      "kind": "coffee-table",
+      "x": -16,
+      "z": 42,
+      "w": 2.4,
+      "d": 1.2,
+      "h": 0.58
+    },
+    {
+      "id": "hotel-prop-east-sofa",
+      "kind": "sofa",
+      "x": 8,
+      "z": 39,
+      "w": 3.8,
+      "d": 1.35,
+      "h": 1.12,
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "hotel-prop-east-armchair",
+      "kind": "armchair",
+      "x": 4.8,
+      "z": 42,
+      "w": 1.2,
+      "d": 1.2,
+      "h": 1.12,
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "hotel-prop-east-coffee",
+      "kind": "coffee-table",
+      "x": 8,
+      "z": 42,
+      "w": 2.4,
+      "d": 1.2,
+      "h": 0.58
+    },
+    {
+      "id": "hotel-prop-luggage",
+      "kind": "luggage-cart",
+      "x": -17.8,
+      "z": 44.8,
+      "w": 1.6,
+      "d": 1,
+      "h": 2
+    },
+    {
+      "id": "hotel-prop-west-palm",
+      "kind": "planter",
+      "x": -20.5,
+      "z": 38,
+      "w": 1.2,
+      "d": 1.2,
+      "h": 2.35
+    },
+    {
+      "id": "hotel-prop-east-palm",
+      "kind": "planter",
+      "x": 12.5,
+      "z": 38,
+      "w": 1.2,
+      "d": 1.2,
+      "h": 2.35
+    },
+    {
+      "id": "hotel-prop-rear-palm",
+      "kind": "planter",
+      "x": -4,
+      "z": 43.8,
+      "w": 1.2,
+      "d": 1.2,
+      "h": 2.35
+    },
+    {
+      "id": "hotel-prop-dining-nw",
+      "kind": "dining-table",
+      "x": -11,
+      "z": 39.2,
+      "w": 4.2,
+      "d": 3.6,
+      "h": 1.35,
+      "baseY": 4
+    },
+    {
+      "id": "hotel-prop-dining-ne",
+      "kind": "dining-table",
+      "x": 3,
+      "z": 39.2,
+      "w": 4.2,
+      "d": 3.6,
+      "h": 1.35,
+      "baseY": 4
+    },
+    {
+      "id": "hotel-prop-dining-sw",
+      "kind": "dining-table",
+      "x": -11,
+      "z": 45,
+      "w": 4.2,
+      "d": 3.6,
+      "h": 1.35,
+      "baseY": 4
+    },
+    {
+      "id": "hotel-prop-dining-se",
+      "kind": "dining-table",
+      "x": 3,
+      "z": 45,
+      "w": 4.2,
+      "d": 3.6,
+      "h": 1.35,
+      "baseY": 4
+    },
+    {
+      "id": "hotel-prop-west-booth",
+      "kind": "booth",
+      "x": -17.2,
+      "z": 40.5,
+      "w": 2,
+      "d": 6,
+      "h": 1.4,
+      "baseY": 4
+    },
+    {
+      "id": "hotel-prop-east-booth",
+      "kind": "booth",
+      "x": 9.2,
+      "z": 40.5,
+      "w": 2,
+      "d": 6,
+      "h": 1.4,
+      "baseY": 4,
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "hotel-prop-service",
+      "kind": "service-counter",
+      "x": -4,
+      "z": 47,
+      "w": 6.4,
+      "d": 1.3,
+      "h": 1.45,
+      "baseY": 4
+    },
+    {
+      "id": "hotel-prop-host",
+      "kind": "host-stand",
+      "x": -4,
+      "z": 35.4,
+      "w": 1.35,
+      "d": 0.9,
+      "h": 1.2,
+      "baseY": 4
+    },
+    {
+      "id": "hotel-gallery-register",
+      "x": -5,
+      "z": 49.3,
+      "w": 2.4,
+      "d": 0.8,
+      "h": 1.05
+    },
+    {
+      "id": "hotel-gallery-cache",
+      "x": 0,
+      "z": 49.3,
+      "w": 1.2,
+      "d": 0.7,
+      "h": 0.75
+    },
+    {
+      "id": "hotel-salon-column-west",
+      "x": -9,
+      "z": 34.2,
+      "w": 0.72,
+      "d": 0.72,
+      "h": 3.72
+    },
+    {
+      "id": "hotel-salon-column-east",
+      "x": 1,
+      "z": 34.2,
+      "w": 0.72,
+      "d": 0.72,
+      "h": 3.72
+    },
+    {
+      "id": "hotel-ammo-crate",
+      "x": -3.1,
+      "z": 36.2,
+      "w": 0.75,
+      "d": 0.55,
+      "h": 0.55,
+      "baseY": 4
+    },
+    {
+      "id": "slots-a",
+      "x": -17.3,
+      "z": 5.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-b",
+      "x": -17.3,
+      "z": -4.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-c",
+      "x": -8.3,
+      "z": 5.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-d",
+      "x": -8.3,
+      "z": -4.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-e",
+      "x": 6.7,
+      "z": 5.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-f",
+      "x": 6.7,
+      "z": -4.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-g",
+      "x": 15.7,
+      "z": 5.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-h",
+      "x": 15.7,
+      "z": -4.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "craps-table",
+      "x": -15.6,
+      "z": -13.75,
+      "w": 4.8,
+      "d": 2.5,
+      "h": 1.05
+    },
+    {
+      "id": "craps-table-b",
+      "x": 11.4,
+      "z": -13.75,
+      "w": 4.8,
+      "d": 2.5,
+      "h": 1.05
+    },
+    {
+      "id": "roulette-table",
+      "x": -26.3,
+      "z": 4.25,
+      "w": 3.4,
+      "d": 2.5,
+      "h": 1.05
+    },
+    {
+      "id": "roulette-table-b",
+      "x": -26.3,
+      "z": -5.75,
+      "w": 3.4,
+      "d": 2.5,
+      "h": 1.05
+    },
+    {
+      "id": "poker-a",
+      "x": 22.9,
+      "z": 5.2,
+      "w": 3.8,
+      "d": 2.4,
+      "h": 0.95
+    },
+    {
+      "id": "poker-b",
+      "x": -17.1,
+      "z": -33.8,
+      "w": 3.8,
+      "d": 2.4,
+      "h": 0.95
+    },
+    {
+      "id": "vip-sofa",
+      "x": -7.2,
+      "z": -27,
+      "w": 1.1,
+      "d": 5,
+      "h": 1.2
+    },
+    {
+      "id": "upgrade-machine",
+      "x": -7.05,
+      "z": -33.8,
+      "w": 1.1,
+      "d": 1.6,
+      "h": 1.8
+    },
+    {
+      "id": "cashier-counter",
+      "x": 35,
+      "z": -12.3,
+      "w": 15.8,
+      "d": 0.8,
+      "h": 1.15
+    },
+    {
+      "id": "cashier-glass",
+      "x": 35,
+      "z": -12,
+      "w": 16,
+      "d": 0.12,
+      "h": 3.65,
+      "baseY": 1.15,
+      "transparentSight": true
+    },
+    {
+      "id": "cashier-rear-counter",
+      "x": 35,
+      "z": -10.2,
+      "w": 11,
+      "d": 1.25,
+      "h": 1.05
+    },
+    {
+      "id": "cashier-safe",
+      "x": 40,
+      "z": 1.5,
+      "w": 2.1,
+      "d": 1.6,
+      "h": 2.4
+    },
+    {
+      "id": "cashier-shelves",
+      "x": 29,
+      "z": 2.9,
+      "w": 2.8,
+      "d": 0.7,
+      "h": 2.6
+    },
+    {
+      "id": "casino-bench-nw",
+      "x": -12.8,
+      "z": 10.8,
+      "w": 5,
+      "d": 1.1,
+      "h": 1.25
+    },
+    {
+      "id": "casino-bench-south",
+      "x": 21,
+      "z": -18.9,
+      "w": 3.8,
+      "d": 1.1,
+      "h": 1.25
+    },
+    {
+      "id": "casino-planter-nw",
+      "x": -29.5,
+      "z": 10.3,
+      "w": 1,
+      "d": 1,
+      "h": 1.8
+    },
+    {
+      "id": "casino-planter-mid",
+      "x": 21,
+      "z": -1,
+      "w": 1,
+      "d": 1,
+      "h": 1.8
+    },
+    {
+      "id": "lounge-bench-north",
+      "x": -39,
+      "z": 2.9,
+      "w": 5,
+      "d": 1.1,
+      "h": 1.25
+    },
+    {
+      "id": "bar",
+      "x": -38,
+      "z": -13.7,
+      "w": 5.7,
+      "d": 1.1,
+      "h": 1.38
+    },
+    {
+      "id": "lounge-backbar",
+      "x": -38,
+      "z": -16.6,
+      "w": 6.1,
+      "d": 0.7,
+      "h": 3.55
+    },
+    {
+      "id": "lounge-west-booth",
+      "x": -43,
+      "z": -12.9,
+      "w": 2.2,
+      "d": 3.6,
+      "h": 1.45
+    },
+    {
+      "id": "lounge-north-booth",
+      "x": -39.7,
+      "z": -4.9,
+      "w": 3.4,
+      "d": 1.85,
+      "h": 1.35
+    },
+    {
+      "id": "lounge-cocktail-table",
+      "x": -36.2,
+      "z": -6.1,
+      "w": 1.1,
+      "d": 1.1,
+      "h": 1.08
+    },
+    {
+      "id": "lounge-stool-a",
+      "x": -40,
+      "z": -12.35,
+      "w": 0.65,
+      "d": 0.65,
+      "h": 0.88
+    },
+    {
+      "id": "lounge-stool-b",
+      "x": -35.9,
+      "z": -12.35,
+      "w": 0.65,
+      "d": 0.65,
+      "h": 0.88
+    },
+    {
+      "id": "service-truck",
+      "x": -32.2,
+      "z": 40.65,
+      "w": 5.5,
+      "d": 2.55,
+      "h": 2.95
+    },
+    {
+      "id": "service-cartons",
+      "x": -25.5,
+      "z": 40.45,
+      "w": 1.7,
+      "d": 2.1,
+      "h": 1.9
+    },
+    {
+      "id": "service-shelf",
+      "x": -33.5,
+      "z": 46.25,
+      "w": 2.7,
+      "d": 1.1,
+      "h": 2.7
+    },
+    {
+      "id": "service-pallet-jack",
+      "x": -26.1,
+      "z": 45.95,
+      "w": 2.7,
+      "d": 1.3,
+      "h": 1.35
+    },
+    {
+      "id": "service-cabinet",
+      "x": -24.75,
+      "z": 41.95,
+      "w": 0.7,
+      "d": 0.75,
+      "h": 2
+    }
+  ],
+  "rails": [
+    {
+      "id": "hotel-upper-rail-0",
+      "x": -4,
+      "z": 32.5,
+      "w": 22,
+      "d": 0.14,
+      "h": 1.15,
+      "baseY": 4,
+      "yaw": 0
+    },
+    {
+      "id": "hotel-upper-rail-2",
+      "x": 9,
+      "z": 35.5,
+      "w": 4,
+      "d": 0.14,
+      "h": 1.15,
+      "baseY": 4,
+      "yaw": 0
+    },
+    {
+      "id": "hotel-upper-rail-3",
+      "x": 11,
+      "z": 40.25,
+      "w": 9.5,
+      "d": 0.14,
+      "h": 1.15,
+      "baseY": 4,
+      "yaw": 1.5707963267948966
+    },
+    {
+      "id": "hotel-upper-rail-4",
+      "x": 8.5,
+      "z": 47,
+      "w": 6.4031242374328485,
+      "d": 0.14,
+      "h": 1.15,
+      "baseY": 4,
+      "yaw": 2.4668517113662407
+    },
+    {
+      "id": "hotel-upper-rail-5",
+      "x": -4,
+      "z": 49,
+      "w": 20,
+      "d": 0.14,
+      "h": 1.15,
+      "baseY": 4,
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "hotel-upper-rail-6",
+      "x": -16.5,
+      "z": 47,
+      "w": 6.4031242374328485,
+      "d": 0.14,
+      "h": 1.15,
+      "baseY": 4,
+      "yaw": -2.4668517113662407
+    },
+    {
+      "id": "hotel-upper-rail-7",
+      "x": -19,
+      "z": 40.25,
+      "w": 9.5,
+      "d": 0.14,
+      "h": 1.15,
+      "baseY": 4,
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "hotel-upper-rail-8",
+      "x": -17,
+      "z": 35.5,
+      "w": 4,
+      "d": 0.14,
+      "h": 1.15,
+      "baseY": 4,
+      "yaw": 0
+    }
+  ],
+  "serviceDoors": [
+    {
+      "id": "hotel-service-door-hotel-restaurant-service",
+      "x": 3,
+      "z": 48.9,
+      "w": 1.8,
+      "d": 0.12,
+      "h": 2.7,
+      "baseY": 4,
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "hotel-service-door-hotel-restaurant-west",
+      "x": -18.9,
+      "z": 36,
+      "w": 1.8,
+      "d": 0.12,
+      "h": 2.7,
+      "baseY": 4,
+      "yaw": 1.5707963267948966
+    }
+  ],
+  "gates": [
+    {
+      "id": "lounge",
+      "from": "01",
+      "to": "02",
+      "group": "A",
+      "name": "Lounge · north entrance",
+      "x": -33,
+      "z": -2,
+      "w": 0.45,
+      "d": 4,
+      "h": 4.8,
+      "price": 900
+    },
+    {
+      "id": "shortcut",
+      "from": "01",
+      "to": "02",
+      "group": "B",
+      "name": "Lounge · south entrance",
+      "x": -33,
+      "z": -14,
+      "w": 0.45,
+      "d": 4,
+      "h": 4.8,
+      "price": 600
+    },
+    {
+      "id": "vip",
+      "from": "01",
+      "to": "03",
+      "group": "C",
+      "name": "High Roller · west entrance",
+      "x": -23,
+      "z": -20,
+      "w": 4,
+      "d": 0.45,
+      "h": 4.8,
+      "price": 1300
+    },
+    {
+      "id": "vipExit",
+      "from": "01",
+      "to": "03",
+      "group": "D",
+      "name": "High Roller · east entrance",
+      "x": -11,
+      "z": -20,
+      "w": 4,
+      "d": 0.45,
+      "h": 4.8,
+      "price": 800
+    },
+    {
+      "id": "hotel",
+      "from": "01",
+      "to": "07",
+      "group": "E",
+      "name": "Hotel · lobby + restaurant",
+      "x": -3,
+      "z": 12.25,
+      "w": 5,
+      "d": 0.45,
+      "h": 3.07,
+      "price": 2000
+    },
+    {
+      "id": "supply",
+      "from": "08",
+      "to": "06",
+      "group": "F",
+      "name": "Supply · from hotel lobby",
+      "x": -23,
+      "z": 40,
+      "w": 0.2,
+      "d": 3.4,
+      "h": 3.2,
+      "price": 1200
+    },
+    {
+      "id": "cashier",
+      "from": "01",
+      "to": "04",
+      "group": "G",
+      "name": "Cashier · public room",
+      "x": 27,
+      "z": -16,
+      "w": 0.45,
+      "d": 4,
+      "h": 4.8,
+      "price": 600
+    }
+  ],
+  "openPassages": [
+    {
+      "id": "foyer-lobby",
+      "from": "07",
+      "to": "08",
+      "x": -3,
+      "z": 15,
+      "w": 5,
+      "d": 0.2
+    }
+  ],
+  "stairs": [
+    {
+      "id": "hotel-stair-left",
+      "cx": -15,
+      "cz": 30,
+      "side": -1,
+      "innerRadius": 2.5,
+      "outerRadius": 5.5,
+      "bottomY": 0,
+      "topY": 4
+    },
+    {
+      "id": "hotel-stair-right",
+      "cx": 7,
+      "cz": 30,
+      "side": 1,
+      "innerRadius": 2.5,
+      "outerRadius": 5.5,
+      "bottomY": 0,
+      "topY": 4
+    }
+  ],
+  "overhead": [
+    {
+      "x": -15,
+      "z": 32.5
+    },
+    {
+      "x": 7,
+      "z": 32.5
+    },
+    {
+      "x": 7,
+      "z": 35.5
+    },
+    {
+      "x": 11,
+      "z": 35.5
+    },
+    {
+      "x": 11,
+      "z": 45
+    },
+    {
+      "x": 6,
+      "z": 49
+    },
+    {
+      "x": -14,
+      "z": 49
+    },
+    {
+      "x": -19,
+      "z": 45
+    },
+    {
+      "x": -19,
+      "z": 35.5
+    },
+    {
+      "x": -15,
+      "z": 35.5
+    }
+  ],
+  "foyerSurface": [
+    {
+      "x": -5.5,
+      "z": 11.5
+    },
+    {
+      "x": -0.5,
+      "z": 11.5
+    },
+    {
+      "x": -0.5,
+      "z": 17
+    },
+    {
+      "x": -5.5,
+      "z": 17
+    }
+  ],
+  "purchases": [
+    {
+      "id": "hotel",
+      "x": -3,
+      "z": 10.5,
+      "y": 0,
+      "name": "Grand Hotel",
+      "detail": "Unlock the lobby and upstairs restaurant"
+    },
+    {
+      "id": "hotelBell",
+      "x": -4,
+      "z": 34.3,
+      "y": 4,
+      "name": "Last service · ring the bell",
+      "detail": "Stay in the restaurant for 35s and clear the ambush · unlock Tommy gun"
+    },
+    {
+      "id": "tommyAmmo",
+      "x": -2.5,
+      "z": 35.4,
+      "y": 4,
+      "name": "Chicago Typewriter ammunition",
+      "detail": "Refill Tommy gun reserve"
+    },
+    {
+      "id": "jukebox",
+      "x": 11.9,
+      "z": 25,
+      "y": 0,
+      "name": "Grand Hotel jukebox",
+      "detail": "Toggle the music · free"
+    },
+    {
+      "id": "hotelLedger",
+      "x": -12,
+      "y": 0,
+      "z": 21.9,
+      "name": "Guest ledger",
+      "detail": "Inspect the unfinished departure entry"
+    },
+    {
+      "id": "hotelSuitcase",
+      "x": -7.8,
+      "y": 0,
+      "z": 23.6,
+      "name": "Varga’s suitcase",
+      "detail": "Inspect the luggage left at reception"
+    },
+    {
+      "id": "hotelPanel",
+      "x": -12,
+      "y": 0,
+      "z": 44.7,
+      "name": "Concealed service panel",
+      "detail": "A small brass keyhole in the woodwork"
+    },
+    {
+      "id": "hotelRegister",
+      "x": -5,
+      "y": 0,
+      "z": 48,
+      "name": "Collection register",
+      "detail": "Read the book beside the abandoned luggage"
+    },
+    {
+      "id": "hotelCache",
+      "x": 0,
+      "y": 0,
+      "z": 48,
+      "name": "Service supplies",
+      "detail": "Two magazines per owned weapon · two grenades"
+    },
+    {
+      "id": "poker-a",
+      "x": 22.9,
+      "z": 3.5,
+      "name": "The Dead Man’s Hand · Table I",
+      "detail": "Make a flush · five cards of one suit · one free swap per table each round"
+    },
+    {
+      "id": "poker-b",
+      "x": -17.1,
+      "z": -35.5,
+      "name": "The Dead Man’s Hand · Table II",
+      "detail": "Make a flush · five cards of one suit · one free swap per table each round"
+    },
+    {
+      "id": "pistolAmmo",
+      "x": 0,
+      "z": -18.5,
+      "name": "Pistol ammunition",
+      "detail": "Refill reserve"
+    },
+    {
+      "id": "shotgun",
+      "x": 24.9,
+      "z": -7.5,
+      "name": "Room Service",
+      "detail": "Pump shotgun"
+    },
+    {
+      "id": "smg",
+      "x": -43.7,
+      "z": -5.2,
+      "name": "Dealer’s Choice",
+      "detail": "Fast-firing SMG"
+    },
+    {
+      "id": "rifle",
+      "x": -35,
+      "z": 47.5,
+      "name": "Pit Boss",
+      "detail": "Heavy automatic rifle"
+    },
+    {
+      "id": "bartender",
+      "x": -38,
+      "z": -12.3,
+      "name": "Marlowe · bartender",
+      "detail": "Cocktail perks & weapon upgrades"
+    },
+    {
+      "id": "lounge",
+      "x": -32.1,
+      "z": -2,
+      "name": "Last Call Lounge",
+      "detail": "Open the north bar entrance"
+    },
+    {
+      "id": "shortcut",
+      "x": -32.1,
+      "z": -14,
+      "name": "Lounge south entrance",
+      "detail": "Purchase this entrance to complete the bar loop"
+    },
+    {
+      "id": "vip",
+      "x": -23,
+      "z": -19.1,
+      "name": "High Roller Club",
+      "detail": "Open the west High Roller entrance"
+    },
+    {
+      "id": "vipExit",
+      "x": -11,
+      "z": -19.1,
+      "name": "High Roller east entrance",
+      "detail": "Purchase this entrance to complete the High Roller loop"
+    },
+    {
+      "id": "supply",
+      "x": -22.1,
+      "z": 40,
+      "name": "Supply room",
+      "detail": "Truck, storage and the Pit Boss rifle"
+    },
+    {
+      "id": "cashier",
+      "x": 26.1,
+      "z": -16,
+      "name": "Cashier",
+      "detail": "Open the cashier hall · secure back area remains closed"
+    },
+    {
+      "id": "craps",
+      "x": -15.6,
+      "z": -15.75,
+      "name": "Seven’s Curse · Table I",
+      "detail": "250 chips · 7 slows you 20% this round · other rolls pay 500 chips · once per table per round"
+    },
+    {
+      "id": "craps-b",
+      "x": 11.4,
+      "z": -15.75,
+      "name": "Seven’s Curse · Table II",
+      "detail": "250 chips · 7 slows you 20% this round · other rolls pay 500 chips · once per table per round"
+    },
+    {
+      "id": "roulette",
+      "x": -26.3,
+      "z": 2.25,
+      "name": "Lucky Four roulette · Table I",
+      "detail": "4 / 24: equipped ammo · 7: all ammo · 0: all ammo + 30s double damage · 200 chips every spin"
+    },
+    {
+      "id": "roulette-b",
+      "x": -26.3,
+      "z": -7.75,
+      "name": "Lucky Four roulette · Table II",
+      "detail": "4 / 24: equipped ammo · 7: all ammo · 0: all ammo + 30s double damage · 200 chips every spin"
+    },
+    {
+      "id": "upgrade",
+      "x": -8,
+      "z": -33.8,
+      "name": "Double Down workshop",
+      "detail": "Upgrade your equipped weapon"
+    }
+  ],
+  "spawns": [
+    {
+      "x": -31.5,
+      "z": 9.5,
+      "room": "casino",
+      "id": "casino-spawn-1",
+      "y": 0
+    },
+    {
+      "x": 25.5,
+      "z": 9.5,
+      "room": "casino",
+      "id": "casino-spawn-2",
+      "y": 0
+    },
+    {
+      "x": -30.5,
+      "z": -18.5,
+      "room": "casino",
+      "id": "casino-spawn-3",
+      "y": 0
+    },
+    {
+      "x": 25.5,
+      "z": -18.5,
+      "room": "casino",
+      "id": "casino-spawn-4",
+      "y": 0
+    },
+    {
+      "x": 10,
+      "z": 10.5,
+      "room": "casino",
+      "id": "casino-spawn-5",
+      "y": 0
+    },
+    {
+      "x": -43.5,
+      "z": 2.5,
+      "room": "lounge",
+      "id": "lounge-spawn-6",
+      "y": 0
+    },
+    {
+      "x": -43.5,
+      "z": -18.5,
+      "room": "lounge",
+      "id": "lounge-spawn-7",
+      "y": 0
+    },
+    {
+      "x": -26.5,
+      "z": -36.5,
+      "room": "vip",
+      "id": "vip-spawn-8",
+      "y": 0
+    },
+    {
+      "x": -7.5,
+      "z": -36.5,
+      "room": "vip",
+      "id": "vip-spawn-9",
+      "y": 0
+    },
+    {
+      "x": -35.5,
+      "z": 36.5,
+      "room": "supply",
+      "id": "supply-spawn-10",
+      "y": 0
+    },
+    {
+      "x": -24.5,
+      "z": 47.5,
+      "room": "supply",
+      "id": "supply-spawn-11",
+      "y": 0
+    },
+    {
+      "x": 41.5,
+      "z": -18.5,
+      "room": "cashier",
+      "id": "cashier-spawn-12",
+      "y": 0
+    },
+    {
+      "x": 41.5,
+      "z": -13.5,
+      "room": "cashier",
+      "id": "cashier-spawn-13",
+      "y": 0
+    },
+    {
+      "id": "hotel-west",
+      "x": -21.3,
+      "z": 35.8,
+      "y": 0,
+      "surfaceId": "ground",
+      "yaw": 1.5707963267948966,
+      "door": {
+        "x": -22.88,
+        "z": 36,
+        "y": 0,
+        "w": 1.8,
+        "h": 2.7,
+        "yaw": 1.5707963267948966
+      },
+      "room": "hotel"
+    },
+    {
+      "id": "hotel-east",
+      "x": 13.5,
+      "z": 33,
+      "y": 0,
+      "surfaceId": "ground",
+      "yaw": -1.5707963267948966,
+      "door": {
+        "x": 14.88,
+        "z": 33,
+        "y": 0,
+        "w": 1.8,
+        "h": 2.7,
+        "yaw": -1.5707963267948966
+      },
+      "room": "hotel"
+    },
+    {
+      "id": "hotel-rear",
+      "x": 11.7,
+      "z": 43.7,
+      "y": 0,
+      "surfaceId": "ground",
+      "yaw": -2.356194490192345,
+      "door": {
+        "x": 13,
+        "z": 45,
+        "y": 0,
+        "w": 1.8,
+        "h": 2.7,
+        "yaw": -2.356194490192345
+      },
+      "room": "hotel"
+    },
+    {
+      "id": "hotel-restaurant-service",
+      "x": 3,
+      "z": 48.1,
+      "y": 4,
+      "surfaceId": "hotel-upper",
+      "yaw": 3.141592653589793,
+      "door": {
+        "x": 3,
+        "z": 48.9,
+        "y": 4,
+        "w": 1.8,
+        "h": 2.7,
+        "yaw": 3.141592653589793
+      },
+      "room": "hotel"
+    },
+    {
+      "id": "hotel-restaurant-west",
+      "x": -17.6,
+      "z": 36,
+      "y": 4,
+      "surfaceId": "hotel-upper",
+      "yaw": 1.5707963267948966,
+      "door": {
+        "x": -18.9,
+        "z": 36,
+        "y": 4,
+        "w": 1.8,
+        "h": 2.7,
+        "yaw": 1.5707963267948966
+      },
+      "room": "hotel"
+    }
+  ],
+  "start": {
+    "x": -3,
+    "z": -16.5,
+    "y": 0,
+    "surfaceId": "ground"
+  },
+  "slotBanks": [
+    {
+      "id": "slots-a",
+      "x": -17.3,
+      "z": 5.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-b",
+      "x": -17.3,
+      "z": -4.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-c",
+      "x": -8.3,
+      "z": 5.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-d",
+      "x": -8.3,
+      "z": -4.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-e",
+      "x": 6.7,
+      "z": 5.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-f",
+      "x": 6.7,
+      "z": -4.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-g",
+      "x": 15.7,
+      "z": 5.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    },
+    {
+      "id": "slots-h",
+      "x": 15.7,
+      "z": -4.5,
+      "w": 3.4,
+      "d": 5,
+      "h": 2.1
+    }
+  ],
+  "slotCabinets": [
+    {
+      "id": "slots-a:west:0",
+      "islandId": "slots-a",
+      "x": -19.04,
+      "z": 3.7,
+      "rootX": -18.3,
+      "rootZ": 3.7,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-a:west:1",
+      "islandId": "slots-a",
+      "x": -19.04,
+      "z": 5.5,
+      "rootX": -18.3,
+      "rootZ": 5.5,
+      "side": -1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-a:west:2",
+      "islandId": "slots-a",
+      "x": -19.04,
+      "z": 7.300000000000001,
+      "rootX": -18.3,
+      "rootZ": 7.300000000000001,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-a:east:0",
+      "islandId": "slots-a",
+      "x": -15.56,
+      "z": 3.7,
+      "rootX": -16.3,
+      "rootZ": 3.7,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-a:east:1",
+      "islandId": "slots-a",
+      "x": -15.56,
+      "z": 5.5,
+      "rootX": -16.3,
+      "rootZ": 5.5,
+      "side": 1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-a:east:2",
+      "islandId": "slots-a",
+      "x": -15.56,
+      "z": 7.300000000000001,
+      "rootX": -16.3,
+      "rootZ": 7.300000000000001,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-b:west:0",
+      "islandId": "slots-b",
+      "x": -19.04,
+      "z": -6.3,
+      "rootX": -18.3,
+      "rootZ": -6.3,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-b:west:1",
+      "islandId": "slots-b",
+      "x": -19.04,
+      "z": -4.5,
+      "rootX": -18.3,
+      "rootZ": -4.5,
+      "side": -1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-b:west:2",
+      "islandId": "slots-b",
+      "x": -19.04,
+      "z": -2.6999999999999997,
+      "rootX": -18.3,
+      "rootZ": -2.6999999999999997,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-b:east:0",
+      "islandId": "slots-b",
+      "x": -15.56,
+      "z": -6.3,
+      "rootX": -16.3,
+      "rootZ": -6.3,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-b:east:1",
+      "islandId": "slots-b",
+      "x": -15.56,
+      "z": -4.5,
+      "rootX": -16.3,
+      "rootZ": -4.5,
+      "side": 1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-b:east:2",
+      "islandId": "slots-b",
+      "x": -15.56,
+      "z": -2.6999999999999997,
+      "rootX": -16.3,
+      "rootZ": -2.6999999999999997,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-c:west:0",
+      "islandId": "slots-c",
+      "x": -10.040000000000001,
+      "z": 3.7,
+      "rootX": -9.3,
+      "rootZ": 3.7,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-c:west:1",
+      "islandId": "slots-c",
+      "x": -10.040000000000001,
+      "z": 5.5,
+      "rootX": -9.3,
+      "rootZ": 5.5,
+      "side": -1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-c:west:2",
+      "islandId": "slots-c",
+      "x": -10.040000000000001,
+      "z": 7.300000000000001,
+      "rootX": -9.3,
+      "rootZ": 7.300000000000001,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-c:east:0",
+      "islandId": "slots-c",
+      "x": -6.5600000000000005,
+      "z": 3.7,
+      "rootX": -7.300000000000001,
+      "rootZ": 3.7,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-c:east:1",
+      "islandId": "slots-c",
+      "x": -6.5600000000000005,
+      "z": 5.5,
+      "rootX": -7.300000000000001,
+      "rootZ": 5.5,
+      "side": 1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-c:east:2",
+      "islandId": "slots-c",
+      "x": -6.5600000000000005,
+      "z": 7.300000000000001,
+      "rootX": -7.300000000000001,
+      "rootZ": 7.300000000000001,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-d:west:0",
+      "islandId": "slots-d",
+      "x": -10.040000000000001,
+      "z": -6.3,
+      "rootX": -9.3,
+      "rootZ": -6.3,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-d:west:1",
+      "islandId": "slots-d",
+      "x": -10.040000000000001,
+      "z": -4.5,
+      "rootX": -9.3,
+      "rootZ": -4.5,
+      "side": -1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-d:west:2",
+      "islandId": "slots-d",
+      "x": -10.040000000000001,
+      "z": -2.6999999999999997,
+      "rootX": -9.3,
+      "rootZ": -2.6999999999999997,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-d:east:0",
+      "islandId": "slots-d",
+      "x": -6.5600000000000005,
+      "z": -6.3,
+      "rootX": -7.300000000000001,
+      "rootZ": -6.3,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-d:east:1",
+      "islandId": "slots-d",
+      "x": -6.5600000000000005,
+      "z": -4.5,
+      "rootX": -7.300000000000001,
+      "rootZ": -4.5,
+      "side": 1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-d:east:2",
+      "islandId": "slots-d",
+      "x": -6.5600000000000005,
+      "z": -2.6999999999999997,
+      "rootX": -7.300000000000001,
+      "rootZ": -2.6999999999999997,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-e:west:0",
+      "islandId": "slots-e",
+      "x": 4.96,
+      "z": 3.7,
+      "rootX": 5.7,
+      "rootZ": 3.7,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-e:west:1",
+      "islandId": "slots-e",
+      "x": 4.96,
+      "z": 5.5,
+      "rootX": 5.7,
+      "rootZ": 5.5,
+      "side": -1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-e:west:2",
+      "islandId": "slots-e",
+      "x": 4.96,
+      "z": 7.300000000000001,
+      "rootX": 5.7,
+      "rootZ": 7.300000000000001,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-e:east:0",
+      "islandId": "slots-e",
+      "x": 8.44,
+      "z": 3.7,
+      "rootX": 7.7,
+      "rootZ": 3.7,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-e:east:1",
+      "islandId": "slots-e",
+      "x": 8.44,
+      "z": 5.5,
+      "rootX": 7.7,
+      "rootZ": 5.5,
+      "side": 1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-e:east:2",
+      "islandId": "slots-e",
+      "x": 8.44,
+      "z": 7.300000000000001,
+      "rootX": 7.7,
+      "rootZ": 7.300000000000001,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-f:west:0",
+      "islandId": "slots-f",
+      "x": 4.96,
+      "z": -6.3,
+      "rootX": 5.7,
+      "rootZ": -6.3,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-f:west:1",
+      "islandId": "slots-f",
+      "x": 4.96,
+      "z": -4.5,
+      "rootX": 5.7,
+      "rootZ": -4.5,
+      "side": -1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-f:west:2",
+      "islandId": "slots-f",
+      "x": 4.96,
+      "z": -2.6999999999999997,
+      "rootX": 5.7,
+      "rootZ": -2.6999999999999997,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-f:east:0",
+      "islandId": "slots-f",
+      "x": 8.44,
+      "z": -6.3,
+      "rootX": 7.7,
+      "rootZ": -6.3,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-f:east:1",
+      "islandId": "slots-f",
+      "x": 8.44,
+      "z": -4.5,
+      "rootX": 7.7,
+      "rootZ": -4.5,
+      "side": 1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-f:east:2",
+      "islandId": "slots-f",
+      "x": 8.44,
+      "z": -2.6999999999999997,
+      "rootX": 7.7,
+      "rootZ": -2.6999999999999997,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-g:west:0",
+      "islandId": "slots-g",
+      "x": 13.959999999999999,
+      "z": 3.7,
+      "rootX": 14.7,
+      "rootZ": 3.7,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-g:west:1",
+      "islandId": "slots-g",
+      "x": 13.959999999999999,
+      "z": 5.5,
+      "rootX": 14.7,
+      "rootZ": 5.5,
+      "side": -1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-g:west:2",
+      "islandId": "slots-g",
+      "x": 13.959999999999999,
+      "z": 7.300000000000001,
+      "rootX": 14.7,
+      "rootZ": 7.300000000000001,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-g:east:0",
+      "islandId": "slots-g",
+      "x": 17.439999999999998,
+      "z": 3.7,
+      "rootX": 16.7,
+      "rootZ": 3.7,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-g:east:1",
+      "islandId": "slots-g",
+      "x": 17.439999999999998,
+      "z": 5.5,
+      "rootX": 16.7,
+      "rootZ": 5.5,
+      "side": 1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-g:east:2",
+      "islandId": "slots-g",
+      "x": 17.439999999999998,
+      "z": 7.300000000000001,
+      "rootX": 16.7,
+      "rootZ": 7.300000000000001,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-h:west:0",
+      "islandId": "slots-h",
+      "x": 13.959999999999999,
+      "z": -6.3,
+      "rootX": 14.7,
+      "rootZ": -6.3,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-h:west:1",
+      "islandId": "slots-h",
+      "x": 13.959999999999999,
+      "z": -4.5,
+      "rootX": 14.7,
+      "rootZ": -4.5,
+      "side": -1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-h:west:2",
+      "islandId": "slots-h",
+      "x": 13.959999999999999,
+      "z": -2.6999999999999997,
+      "rootX": 14.7,
+      "rootZ": -2.6999999999999997,
+      "side": -1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-h:east:0",
+      "islandId": "slots-h",
+      "x": 17.439999999999998,
+      "z": -6.3,
+      "rootX": 16.7,
+      "rootZ": -6.3,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    },
+    {
+      "id": "slots-h:east:1",
+      "islandId": "slots-h",
+      "x": 17.439999999999998,
+      "z": -4.5,
+      "rootX": 16.7,
+      "rootZ": -4.5,
+      "side": 1,
+      "variant": 0,
+      "modelVariant": "emerald"
+    },
+    {
+      "id": "slots-h:east:2",
+      "islandId": "slots-h",
+      "x": 17.439999999999998,
+      "z": -2.6999999999999997,
+      "rootX": 16.7,
+      "rootZ": -2.6999999999999997,
+      "side": 1,
+      "variant": 1,
+      "modelVariant": "burgundy"
+    }
+  ],
+  "crapsTables": [
+    {
+      "id": "craps",
+      "rectId": "craps-table",
+      "x": -15.6,
+      "z": -13.75,
+      "approachZ": -15.75
+    },
+    {
+      "id": "craps-b",
+      "rectId": "craps-table-b",
+      "x": 11.4,
+      "z": -13.75,
+      "approachZ": -15.75
+    }
+  ],
+  "rouletteTables": [
+    {
+      "id": "roulette",
+      "rectId": "roulette-table",
+      "x": -26.3,
+      "z": 4.25,
+      "approachZ": 2.25
+    },
+    {
+      "id": "roulette-b",
+      "rectId": "roulette-table-b",
+      "x": -26.3,
+      "z": -5.75,
+      "approachZ": -7.75
+    }
+  ],
+  "mystery": {
+    "polygon": [
+      {
+        "x": 12,
+        "z": 46
+      },
+      {
+        "x": 7,
+        "z": 51
+      },
+      {
+        "x": -15,
+        "z": 51
+      },
+      {
+        "x": -20,
+        "z": 46
+      }
+    ],
+    "gates": [
+      {
+        "id": "hotel-secret-left",
+        "x": -12,
+        "z": 46,
+        "w": 2.6,
+        "d": 0.24,
+        "h": 3.7
+      },
+      {
+        "id": "hotel-secret-right",
+        "x": 4,
+        "z": 46,
+        "w": 2.6,
+        "d": 0.24,
+        "h": 3.7
+      }
+    ],
+    "anchors": {
+      "hotelLedger": {
+        "x": -12,
+        "y": 0,
+        "z": 21.9
+      },
+      "hotelSuitcase": {
+        "x": -7.8,
+        "y": 0,
+        "z": 23.6
+      },
+      "hotelPanel": {
+        "x": -12,
+        "y": 0,
+        "z": 44.7
+      },
+      "hotelRegister": {
+        "x": -5,
+        "y": 0,
+        "z": 48
+      },
+      "hotelCache": {
+        "x": 0,
+        "y": 0,
+        "z": 48
+      }
+    }
+  },
+  "notes": [
+    "Geometry and prices come directly from the implemented game modules. The starting casino is 60 × 32 m.",
+    "Only the central casino is initially accessible. Every gold door is purchased separately.",
+    "Cashier rear area is inaccessible. Future stairs and trapdoor are reserved only, with no playable level.",
+    "The concealed hotel luggage gallery is preserved; both hidden panels open through the existing key puzzle.",
+    "Furniture shows collision footprints, not model silhouettes. Glass is shown at its actual barrier line.",
+    "Restaurant overlaps the rear lobby at +4 m; the lobby octagon and curved stairs are unchanged."
+  ]
+}

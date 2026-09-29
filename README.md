@@ -2,6 +2,37 @@
 
 A solo first-person zombie survival game set in an original abandoned Las Vegas casino. Built with Babylon.js, TypeScript, React, and Vinext. All gameplay runs locally in the browser. No accounts, networked gameplay, or paid assets are required for local play.
 
+## Grand casino reconfiguration
+
+Start in a **60 × 32 metre Grand Casino** with eight slot banks (48 cabinets),
+two independent craps tables, two roulette tables, and one flush-poker table.
+The west bar and south High Roller each have two separately purchased doors.
+The east cashier has a public counter room with a glass-secured cash area;
+its rear space is inaccessible and reserved for future stairs or a trapdoor.
+The truck/storage room and Pit Boss rifle are northwest of the hotel.
+
+The hotel lobby keeps its exact footprint, stairs, reception and hidden-gallery
+investigation; this reconfiguration only adds the supply-room doorway there.
+The second existing flush table remains in High Roller alongside its couch and
+workshop. Slots remain scenery with positional sounds.
+
+See the [current floor plan](docs/maps/last-jackpot-map.svg) and
+[implementation notes](docs/maps/reconfiguration-plan.md). Dated environment-pass
+sections below document earlier layouts and are retained as development history.
+
+## Grand Hotel reception and mystery
+
+The hotel now has an ornate side reception, expanded architectural detail and
+an optional missing-guest investigation. Start with the guest ledger on the
+reception counter, inspect the tagged suitcase, and follow its service key into
+a concealed luggage gallery. Documents pause the solo run and remain available
+in the pause-menu journal. The discovered passage opens a permanent route for
+the current run, usable by both player and zombies, with a one-time supply cache.
+
+See [the renovation notes](docs/hotel-renovation.md) for gameplay, asset sources
+and validation. Development `?playtest=1` includes reception/mystery viewpoints
+and collapsible controls.
+
 ## Run locally
 
 Requires Node.js 22.13+ (Node 24 recommended).
@@ -30,13 +61,13 @@ cross-room aisle and staff escape route. See [asset source and rebuild details](
 and [validation notes](docs/bar-assets/playtest.md). Development previews offer
 **Lounge overview**, **Lounge entry view**, and **Lounge seating** camera controls.
 
-## Service corridor loading bay
+## Northwest supply room
 
-The service corridor now contains an original Blender-built hotel-supply truck,
+The purchased supply room contains an original Blender-built hotel-supply truck,
 stacked shipping cartons, wooden pallets, loaded shelving, a pallet jack, and
 detailed utility fixtures. The parked truck and storage assemblies provide
-solid cover while the staff shortcut, VIP exit, and lounge approach remain
-connected. Editable Blender sources, rebuild scripts, previews, and placement
+solid cover with a clear route from the hotel's west doorway to the rifle rack.
+Editable Blender sources, rebuild scripts, previews, and placement
 checks are documented in [service assets](docs/service-assets/README.md).
 Development playtests include **Service overview**, **Service truck**, and
 **Service storage** viewpoints.
@@ -64,25 +95,26 @@ Start with a pistol and 400 chips. Each damaging hit awards a random integer fro
 
 Zombies use three original Blender designs: Pit Boss, Crooked Dealer, and Last Showman. They shamble, snarl, recoil, and cycle through a backhand rake, overhead hammer, and two-arm snatch with windup and recovery. Wounds remain bloody; 32 cumulative damage to an arm or leg severs that limb permanently for that zombie. Losing one leg reduces movement to 48%; losing both reduces it to 23%. Shared animation poses drive bullet hit volumes, excluding missing limbs. See `docs/zombie-assets` for the editable Blender source and preview, and `tools/zombie-assets/generate_zombies.py` to regenerate assets.
 
-- Pistol reserve: 150 chips, near the starting foyer.
-- Room Service shotgun: 800 chips, on the west casino wall. Return there for a 300-chip reserve refill.
-- Cocktail lounge: 900 chips, at the shutter on the east side of the main floor.
-- Staff passage: 1,200 chips, purchased from inside the staff area after opening the lounge. It completes the second movement loop.
-- High Roller Club: 1,300 chips from the lounge. Opens a 12 × 24 metre poker room and both its lounge and staff entrances. A private entrance starts spawning zombies only after the room opens.
-- The Devil’s Tables: 1,500 chips from the High Roller Club. Opens a 14 × 24 metre room, two connected entrances, and a delayed dealer spawn. Craps and roulette are broad training islands.
-- Seven’s Curse craps wager: 250 chips, once per round. Two fair six-sided dice roll while combat continues. A total of seven slows walking and sprinting by 20% for that round; other totals pay 500 chips (250 net). During intermission, the wager and any curse apply to the upcoming round.
+- Pistol reserve: 150 chips, on the south casino wall near the start.
+- Room Service shotgun: 800 chips, on the east casino wall; 300-chip reserve refill.
+- Cocktail lounge: 900 chips for the north entrance; its south entrance is a separate 600-chip purchase. Either entrance grants access to the west bar.
+- High Roller Club: 1,300 chips for the west entrance; its east entrance is a separate 800-chip purchase. Either entrance grants access to the south poker room and workshop.
+- Northwest supply room: 1,200 chips from inside the purchased hotel; contains the relocated truck/storage and rifle.
+- Cashier: 600 chips for the east public room. Glass blocks movement and projectiles while allowing sight. The cash behind it is scenery.
+- Seven’s Curse craps wager: 250 chips, **once per table per round**. Each table owns its roll and result. Two fair six-sided dice roll while combat continues. A total of seven slows walking and sprinting by 20% for that round; other totals pay 500 chips (250 net). Two curses do not stack, and a win at the other table does not remove a curse. During intermission, the wager and any curse apply to the upcoming round.
 - Lucky Four roulette: 200 chips on every spin, charged when the spin starts. A fair 0–36 wheel spins for six seconds while combat continues. **4 and 24** refill the equipped gun’s magazine and reserve; **7** refills every owned gun; **0** refills every owned gun and grants **double damage for 30 seconds**. Other numbers give no reward. There is no additional charge at the result and no refund on a win. Return to the table for another spin once the wheel stops.
 - Dealer’s Choice SMG: 1,100 chips in the lounge; 400-chip reserve refill.
-- Pit Boss rifle: 1,600 chips on the east wall of the High Roller Club; 500-chip reserve refill.
-- The Dead Man’s Hand revolver: complete a five-card flush at either High Roller Club card table. One free chosen-card exchange per table, per round; hands persist between visits. The first flush grants and equips the six-shot revolver in slot 5; the other table’s flush refills it.
+- Pit Boss rifle: 1,600 chips in the northwest supply room; 500-chip reserve refill.
+- The Dead Man’s Hand revolver: complete a five-card flush at either the starting casino or High Roller card table. One free chosen-card exchange per table, per round; hands persist between visits. The first flush grants and equips the six-shot revolver in slot 5; the other table’s flush refills it.
 - Marlowe, the lounge bartender: **E** from the customer side of the bar opens the menu and pauses the solo run. House Reserve costs 1,500 (+50 maximum health); Quick Pour costs 1,000 (reload time ×0.7); Night Shift costs 900 (sprint speed ×1.15). Perks are one-time purchases for the current run.
 - Double Down: 2,000 chips per owned weapon, at Marlowe’s menu or the VIP workshop. Increases magazine capacity by 50%, damage by approximately 35%, and fills the magazine once. The revolver retains six chambers and gets a 25% faster reload instead of extra magazine capacity. Select the gun to upgrade in the bar menu; the workshop upgrades your equipped gun. Both locations share upgrade state.
 
-The five-round income model leaves 500 chips for ammunition after the shotgun, the original lounge/staff/VIP unlocks, and one weapon upgrade. Extra guns and perks are competing build choices; buying everything is a longer-run goal. Values are initial playtest tuning, not final balance. Rounds continue after five with bounded enemy speed and health.
+Extra guns, separately purchased escape routes, and perks are competing build choices; buying everything is a longer-run goal. Door prices and the economy with two starting craps tables are initial playtest tuning. Rounds continue after five with bounded enemy speed and health.
 
 ## Architecture
 
 - `lib/game/simulation.ts`: pure gameplay rules, economy, rays, collisions, and shared navigation flow field.
+- `lib/game/casino-layout.ts`: shared room footprints, individual doors, table and slot placements, weapon anchors, and room spawn points.
 - `lib/game/poker.ts`: persistent five-card hands, finite shuffled decks, suit matching, and discarded-card recycling. `card-art.ts` draws the live tabletop card prints.
 - `lib/game/renderer.ts`: casino environment, local GLB weapon loading, animation, lighting, and frame sampling.
 - `lib/game/characters.ts`: articulated casino guests and Marlowe, with clothing and facial details.
@@ -94,7 +126,7 @@ The five-round income model leaves 500 chips for ammunition after the shotgun, t
 
 ## Validation and limitations
 
-125 automated checks pass (45 core simulation/combat, 20 card-table/revolver, 15 roulette rules, six roulette motion, 14 audio regressions, nine zombie cue scheduling checks, 14 slot proximity/layout checks, and two zombie-asset checks), including five-round progression and fresh-run resets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
+Automated checks cover combat, economy, independent door purchases and table wagers, reachable room routes, glass behavior, hotel stairs and mystery progression, card rewards, audio and assets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
 
 This is a rough playable: stylized geometry and humanoids, synthesized effects plus AI-generated zombie voices, no aim-down-sights, jump, crouch, random weapon station, persistent records, native app, controller support, or co-op. Mouse capture needs a focused browser and a genuine user gesture. The final feel and difficulty need a hands-on mouse playtest.
 
@@ -134,7 +166,7 @@ New asset sources, dimensions, pivots, and geometry validation are documented un
 
 ## Blender slot machines
 
-The main room's two slot islands use 12 original Blender-modeled cabinets in emerald and burgundy. Beveled panels, brass trim, curved mechanical reels, illuminated headers, control buttons, side levers, and payout trays replace the earlier block-based machines. Each style shares its geometry and materials across six hardware instances. Island footprints and walking routes are unchanged; bullet-cover height matches the taller cabinets. Slot machines remain scenery, without a new wager mechanic.
+The main room's eight slot islands use 48 original Blender-modeled cabinets in emerald and burgundy. Beveled panels, brass trim, curved mechanical reels, illuminated headers, control buttons, side levers, and payout trays replace the earlier block-based machines. Cabinets share geometry and materials through hardware instances. Each island has a matching collision footprint; bullet-cover height matches the taller cabinets. Slot machines remain scenery, without a new wager mechanic.
 
 The editable source is `assets/source/slot-machines.blend`; browser exports are `public/models/slot-machine-emerald.glb` and `public/models/slot-machine-burgundy.glb`. Reproduction instructions and previews are in `docs/slot-assets/`, with Blender Python sources under `tools/slot-assets/`. Development playtest controls include west, east, and second-bank slot viewpoints.
 
@@ -166,13 +198,13 @@ for tone and humor.
 
 ## Roulette rewards
 
-Interact with the customer side of the roulette table in The Devil’s Tables using **E**. The room must be unlocked and you need 200 chips. The number is chosen once at the start, with all 37 pockets equally likely, and the wheel and ball settle on that number. The four lucky pockets give a combined win chance of 4/37 (about 10.8%). Spins continue while you move and fight; only one roulette spin can run at a time.
+Interact with the customer side of either starting-casino roulette table using **E**. Each spin costs 200 chips. The number is chosen once at the start, with all 37 pockets equally likely, and the wheel and ball settle on that number. The four lucky pockets give a combined win chance of 4/37 (about 10.8%). Spins continue while you move and fight; each table can run one independent spin at a time.
 
 Ammo rewards fill both magazine and reserve, respect upgraded magazine sizes, and cancel an active reload. The 4/24 reward uses the weapon equipped when the ball lands. Unowned weapons stay unowned. A second zero refreshes the 30-second double-damage timer instead of stacking its multiplier; the bonus also applies to upgraded weapons. Spin, result-display, and damage-bonus timers freeze during pause and the bartender/card menus. Starting a new run clears all roulette state and bonuses.
 
-## High Roller card tables
+## Flush card tables
 
-Both poker islands now use a detailed shared GLB with stitched oxblood rails, inlaid walnut, brass trim, genuinely recessed cupholders, printed emerald felt, a pedestal base, dealer tray, and detailed chip stacks. Five live cards sit on each felt surface and match that table’s hand. Original footprints and walking routes are preserved. Editable Blender source, previews, regeneration instructions, and geometry checks are in `docs/poker-assets/` and `tools/poker-assets/`.
+The Grand Casino and High Roller poker islands use a detailed shared GLB with stitched oxblood rails, inlaid walnut, brass trim, recessed cupholders, printed emerald felt, a pedestal base, dealer tray, and detailed chip stacks. Five live cards sit on each felt surface and match that table’s hand. Editable Blender source, previews, regeneration instructions, and geometry checks are in `docs/poker-assets/` and `tools/poker-assets/`.
 
 Approach the south/customer side and press **E**. The solo game pauses while you select a card and confirm a free swap. Keep matching suits: a flush means five of the same suit, regardless of rank or order. Each table has its own hand, 52-card deck, and one-swap-per-round limit. Leaving, reopening, or entering intermission does not refresh that limit. A new actual round does. Previously discarded cards are shuffled back only when the draw pile runs out; cards still in the hand cannot be drawn again.
 

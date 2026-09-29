@@ -30,7 +30,7 @@ function table() {
   s.start();
   s.round = 3;
   s.intermission = 1e6; // Keep enemy spawns and round changes out of wagers.
-  s.lounge = s.vip = s.tables = true;
+  s.doorsOpen.lounge = s.doorsOpen.vip = true;
   s.refreshMap();
   s.player = { x: anchor.x, z: anchor.z };
   s.points = 10000;
@@ -70,7 +70,7 @@ function frozenState(s) {
 
 test("roulette exposes the agreed price, table anchor, and gameplay durations", () => {
   assert.equal(PRICES.roulette, 200);
-  assert.deepEqual({ x: anchor.x, z: anchor.z }, { x: 35, z: 3.1 });
+  assert.deepEqual({ x: anchor.x, z: anchor.z }, { x: -26.3, z: 2.25 });
   assert.deepEqual(ROULETTE_RULES, {
     spinDuration: 6,
     resultDuration: 6,
@@ -79,12 +79,11 @@ test("roulette exposes the agreed price, table anchor, and gameplay durations", 
   });
 });
 
-test("locked, distant, obstructed, inactive and 199-chip attempts cannot start or charge", () => {
+test("distant, obstructed, inactive and 199-chip attempts cannot start or charge", () => {
   const blocked = {
-    locked: (s) => { s.tables = false; },
     distant: (s) => { s.player.x += 2.21; },
     obstructed: (s) => {
-      s.player.z = 5;
+      s.player.z = 4.25;
       assert.equal(hasSight(s.player, anchor, s.rects), false);
     },
     ready: (s) => { s.phase = "ready"; },

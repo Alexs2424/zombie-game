@@ -30,6 +30,13 @@ import { paintPlayingCard } from "./card-art";
 import { LOUNGE_RECTS } from "./lounge-layout";
 import { SERVICE_RECTS } from "./service-layout";
 import { buildLoungeDecor } from "./lounge-decor";
+import {
+  CASINO_ROOMS,
+  CRAPS_TABLES,
+  ROULETTE_TABLES,
+  LOUNGE_OFFSET,
+  SERVICE_OFFSET,
+} from "./casino-layout";
 import { createZombie, loadZombieAsset, animateZombie } from "./zombies";
 import { slotCabinetsForIsland } from "./slot-machines";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
@@ -38,8 +45,6 @@ import {
   STATIC_RECTS,
   DOORS,
   PURCHASES,
-  SPAWNS,
-  BOUNDS,
   PRICES,
   ROULETTE_RULES,
   WEAPONS,
@@ -74,9 +79,11 @@ export class GameRenderer {
   private zombieAsset?: Awaited<ReturnType<typeof loadZombieAsset>>;
   private handLight: PointLight;
   private muzzleLight: PointLight;
-  private rouletteWheel?: TransformNode;
-  private rouletteBall?: TransformNode;
-  private rouletteMotion = new RouletteMotion();
+  private rouletteViews = new Map<string, {
+    wheel?: TransformNode;
+    ball?: TransformNode;
+    motion: RouletteMotion;
+  }>();
   private pokerCards: {
     table: PokerTableId;
     index: number;
@@ -84,7 +91,7 @@ export class GameRenderer {
     texture: DynamicTexture;
     material: StandardMaterial;
   }[] = [];
-  private diceMeshes: TransformNode[] = [];
+  private diceMeshes = new Map<string, TransformNode[]>();
   private handParts: Partial<
     Record<WeaponId, { node: TransformNode; rest: Vector3 }[]>
   > = {};
@@ -167,7 +174,7 @@ export class GameRenderer {
       this.scene,
     );
     this.camera.minZ = 0.04;
-    this.camera.maxZ = 75;
+    this.camera.maxZ = 105;
     this.camera.fov = 1.32;
     this.camera.inputs.clear();
     const hemi = new HemisphericLight(
@@ -180,51 +187,52 @@ export class GameRenderer {
     hemi.diffuse = new Color3(0.69, 0.79, 0.77);
     const amber = new PointLight(
       "casino lamp",
-      new Vector3(-8, 3.7, 3),
+      new Vector3(-3, 4.8, -3),
       this.scene,
     );
     amber.diffuse = new Color3(1, 0.73, 0.34);
     amber.intensity = 0.8;
-    amber.range = 13;
+    amber.range = 27;
     const lounge = new PointLight(
       "lounge lamp",
-      new Vector3(10, 3.6, -4.6),
+      new Vector3(10 + LOUNGE_OFFSET.x, 3.6, -4.6 + LOUNGE_OFFSET.z),
       this.scene,
     );
     lounge.diffuse = new Color3(1, 0.72, 0.45);
     lounge.intensity = 1.25;
     lounge.range = 12;
-    const backbar = new PointLight("Last Call shelf glow", new Vector3(12, 2.55, -10.55), this.scene);
+    this.loungeAccentLights.push(lounge);
+    const backbar = new PointLight("Last Call shelf glow", new Vector3(12 + LOUNGE_OFFSET.x, 2.55, -10.55 + LOUNGE_OFFSET.z), this.scene);
     backbar.diffuse = new Color3(1, 0.67, 0.32);
     backbar.intensity = 1.1;
     backbar.range = 7;
     backbar.renderPriority = 2;
     this.loungeAccentLights.push(backbar);
-    for (const [x, z] of [
-      [-6, 0],
-      [22, 1],
-      [35, 0],
-      [10, -4.6],
+    for (const [x, z, height] of [
+      [-17, -4, 5.9],
+      [11, -4, 5.9],
+      [-17, -29, 4.55],
+      [10 + LOUNGE_OFFSET.x, -4.6 + LOUNGE_OFFSET.z, 4.55],
     ]) {
       const key = new SpotLight(
         "chandelier pool",
-        new Vector3(x, 4.55, z),
+        new Vector3(x, height, z),
         new Vector3(0.08, -1, 0.04),
         2.35,
         1.35,
         this.scene,
       );
-      if (x === 10) {
+      if (x === 10 + LOUNGE_OFFSET.x) {
         key.renderPriority = 1;
         this.loungeAccentLights.push(key);
       }
       key.diffuse = new Color3(1, 0.8, 0.5);
       key.intensity = 2.8;
-      key.range = 18;
+      key.range = x === 10 + LOUNGE_OFFSET.x ? 18 : 28;
       key.shadowMinZ = 0.3;
-      key.shadowMaxZ = 18;
+      key.shadowMaxZ = key.range;
       const shadow = new ShadowGenerator(1024, key);
-      if (x === 10) this.loungeShadow = shadow;
+      if (x === 10 + LOUNGE_OFFSET.x) this.loungeShadow = shadow;
       shadow.usePercentageCloserFiltering = true;
       shadow.filteringQuality = ShadowGenerator.QUALITY_MEDIUM;
       shadow.bias = 0.002;
@@ -267,7 +275,7 @@ export class GameRenderer {
     pipeline.imageProcessing.exposure = 1.55;
     const tableBounce = new PointLight(
       "table room warm bounce",
-      new Vector3(35, 2.8, -3),
+      new Vector3(14, 3.8, -14),
       this.scene,
     );
     tableBounce.diffuse = new Color3(1, 0.74, 0.45);
@@ -275,7 +283,7 @@ export class GameRenderer {
     tableBounce.range = 12;
     const rouletteGlow = new PointLight(
       "roulette jade bounce",
-      new Vector3(39, 2.8, 7),
+      new Vector3(-26.3, 3.8, -1),
       this.scene,
     );
     rouletteGlow.diffuse = new Color3(0.35, 0.7, 0.61);
@@ -449,74 +457,53 @@ export class GameRenderer {
     return mesh;
   }
   private environment() {
-    const wall = this.mat("walls", "#586358"),
+    const wall = this.mat("walls", "#56635a"),
       trim = this.mat("old brass", "#b2985c"),
       dark = this.mat("charcoal", "#15221e"),
       wood = this.mat("walnut paneling", "#392c24"),
       burgundy = this.mat("velvet", "#612b35"),
       cream = this.mat("aged ivory", "#b4a58b"),
       luminous = this.mat("warm diffuser", "#f0cf8b", 0.95);
+    trim.specularColor = new Color3(0.7, 0.57, 0.3);
+    trim.specularPower = 48;
     const wallpaper = this.mat("aged fan damask", "#bcbca3");
-    const wallpaperTexture = new Texture(
-      "/textures/casino-wallpaper.png",
-      this.scene,
-    );
+    const wallpaperTexture = new Texture("/textures/casino-wallpaper.png", this.scene);
     wallpaperTexture.uScale = 1.25;
     wallpaperTexture.vScale = 1.8;
     wallpaper.diffuseTexture = wallpaperTexture;
     wallpaper.specularColor = Color3.Black();
-    trim.specularColor = new Color3(0.7, 0.57, 0.3);
-    trim.specularPower = 48;
-    const carpet = new Texture("/textures/casino-carpet.png", this.scene);
-    carpet.uScale = 14.5;
-    carpet.vScale = 6;
-    carpet.anisotropicFilteringLevel = 8;
-    const floorMat = this.mat("woven carpet", "#ffffff");
-    floorMat.diffuseTexture = carpet;
-    floorMat.specularColor = Color3.Black();
-    const width = BOUNDS.maxX - BOUNDS.minX;
-    const centerX = (BOUNDS.minX + BOUNDS.maxX) / 2;
-    this.box("floor", centerX, -0.12, 0, width, 0.2, 24, floorMat);
-    this.box(
-      "staff floor",
-      10,
-      -0.006,
-      7.5,
-      11.5,
-      0.035,
-      8.8,
-      this.mat("service concrete", "#626b62"),
-    );
+    const ceilingMat = this.mat("ceiling", "#202923");
+    // Each room has its own floor and ceiling: the space between the casino,
+    // hotel and supply room is outside, not an accidental walkable carpet slab.
+    for (const room of Object.values(CASINO_ROOMS)) {
+      const w = room.maxX - room.minX, d = room.maxZ - room.minZ;
+      const x = (room.minX + room.maxX) / 2, z = (room.minZ + room.maxZ) / 2;
+      const floor = this.mat(`${room.id} woven carpet`, "#ffffff");
+      const carpet = new Texture("/textures/casino-carpet.png", this.scene);
+      carpet.uScale = w / 4;
+      carpet.vScale = d / 4;
+      carpet.anisotropicFilteringLevel = 8;
+      floor.diffuseTexture = carpet;
+      floor.specularColor = Color3.Black();
+      this.box(`${room.id} floor`, x, -0.11, z, w, 0.2, d,
+        room.id === "supply" ? this.mat("service concrete", "#626b62") : floor);
+      this.box(`${room.id} ceiling`, x, room.ceilingY + 0.07, z, w, 0.14, d, ceilingMat);
+    }
+    const supply = CASINO_ROOMS.supply;
     const concreteJoint = this.mat("service expansion joints", "#3d4840");
-    for (let x = 7; x < 16; x += 3)
-      this.box("concrete joint", x, 0.013, 7.5, 0.018, 0.005, 8.8, concreteJoint);
-    for (let z = 6; z < 12; z += 3)
-      this.box("concrete joint", 10, 0.014, z, 11.5, 0.005, 0.018, concreteJoint);
+    for (let x = supply.minX + 2; x < supply.maxX; x += 3)
+      this.box("service concrete joint", x, 0.002, (supply.minZ + supply.maxZ) / 2,
+        0.018, 0.005, supply.maxZ - supply.minZ, concreteJoint);
+    for (let z = supply.minZ + 2; z < supply.maxZ; z += 3)
+      this.box("service concrete joint", (supply.minX + supply.maxX) / 2, 0.002, z,
+        supply.maxX - supply.minX, 0.005, 0.018, concreteJoint);
     this.serviceFallback();
-    this.box(
-      "ceiling",
-      centerX,
-      4.94,
-      0,
-      width,
-      0.14,
-      24,
-      this.mat("ceiling", "#262b24"),
-    );
-    // Decorative meshes stay inside these same solid footprints used by the simulation.
     for (const r of STATIC_RECTS) {
       if (r.id.startsWith("hotel-")) continue;
       if (LOUNGE_RECTS.some((furniture) => furniture.id === r.id)) continue;
       if (SERVICE_RECTS.some((fixture) => fixture.id === r.id)) continue;
-      if (
-        [
-          "upgrade-machine",
-          "craps-table",
-          "roulette-table",
-          "tables-sideboard",
-        ].includes(r.id)
-      )
-        continue;
+      if (r.id === "upgrade-machine" || r.id.startsWith("craps-table") ||
+        r.id.startsWith("roulette-table") || (r.id.startsWith("cashier-") && !r.id.includes("wall"))) continue;
       if (r.id.startsWith("slots")) {
         this.slotIsland(r);
         continue;
@@ -526,48 +513,13 @@ export class GameRenderer {
         continue;
       }
       if (r.id === "vip-sofa") {
-        // Keep the loading fallback out of the merged room scenery so it can
-        // be removed after the detailed couch has loaded successfully.
-        const fallback = new TransformNode(
-          "VIP couch loading fallback",
-          this.scene,
-        );
+        const fallback = new TransformNode("VIP couch loading fallback", this.scene);
         this.couchFallback = fallback;
         this.box("sofa base", r.x, 0.26, r.z, r.w, 0.4, r.d, wood, fallback);
-        this.box(
-          "tufted sofa back",
-          r.x + 0.4,
-          0.8,
-          r.z,
-          0.3,
-          0.8,
-          r.d,
-          burgundy,
-          fallback,
-        );
-        for (let z = -1; z <= 3; z++) {
-          this.box(
-            "velvet seat cushion",
-            r.x - 0.08,
-            0.58,
-            z,
-            0.85,
-            0.2,
-            0.94,
-            burgundy,
-            fallback,
-          );
-          this.box(
-            "upholstery button",
-            r.x + 0.235,
-            0.9,
-            z,
-            0.02,
-            0.04,
-            0.04,
-            trim,
-            fallback,
-          );
+        this.box("tufted sofa back", r.x + 0.4, 0.8, r.z, 0.3, 0.8, r.d, burgundy, fallback);
+        for (let z = r.z - r.d / 2 + 0.5; z < r.z + r.d / 2; z += 1) {
+          this.box("velvet seat cushion", r.x - 0.08, 0.58, z, 0.85, 0.2, 0.94, burgundy, fallback);
+          this.box("upholstery button", r.x + 0.235, 0.9, z, 0.02, 0.04, 0.04, trim, fallback);
         }
         for (const mesh of fallback.getChildMeshes()) {
           mesh.isPickable = false;
@@ -575,704 +527,336 @@ export class GameRenderer {
         }
         continue;
       }
-      if (r.id === "cashier") {
-        this.box("cashier canopy", r.x, 3.25, r.z, r.w, 0.25, r.d, wood);
-        this.box("cashier rear wall", r.x, 1.7, 11.75, r.w, 3.4, 0.2, dark);
-        for (const x of [-12.5, -9.5]) {
-          this.box("cash register", x, 1.27, 9.6, 0.7, 0.35, 0.55, trim);
-          this.box("register display", x, 1.54, 9.48, 0.45, 0.15, 0.08, dark);
-          for (let k = 0; k < 5; k++)
-            this.box(
-              "register key",
-              x - 0.2 + k * 0.1,
-              1.46,
-              9.36,
-              0.055,
-              0.025,
-              0.07,
-              cream,
-            );
+      if (r.id.includes("planter")) {
+        this.cylinder("brass planter base", r.x, 0.16, r.z, Math.min(r.w, r.d), 0.25, trim);
+        this.cylinder("fluted planter", r.x, 0.5, r.z, Math.min(r.w, r.d) * 0.84, 0.7, dark,
+          Math.min(r.w, r.d));
+        for (let i = 0; i < 7; i++) {
+          const angle = i * Math.PI * 2 / 7;
+          const leaf = MeshBuilder.CreateSphere("broad palm frond", { diameter: 1, segments: 8 }, this.scene);
+          leaf.position.set(r.x + Math.sin(angle) * 0.23, 1.35 + i % 2 * 0.18, r.z + Math.cos(angle) * 0.23);
+          leaf.scaling.set(0.13, 1.35, 0.33);
+          leaf.rotation.set(Math.cos(angle) * 0.65, angle, Math.sin(angle) * 0.65);
+          leaf.material = this.mat("palm greenery", "#345044");
         }
+        continue;
       }
-      this.box(
-        r.id,
-        r.x,
-        r.id === "cashier" ? 0.5 : r.h / 2,
-        r.z,
-        r.w,
-        r.id === "cashier" ? 1 : r.h,
-        r.d,
-        r.id === "cashier" ? wood : wall,
-      );
-      if (r.h > 4) {
-        this.box(
-          "lower walnut wainscot",
-          r.x,
-          0.68,
-          r.z,
-          r.w + 0.03,
-          1.36,
-          r.d + 0.03,
-          wood,
-        );
-        for (const [y, h] of [
-          [0.14, 0.15],
-          [1.38, 0.055],
-          [4.55, 0.18],
-          [4.73, 0.05],
-        ])
-          this.box(
-            "continuous brass molding",
-            r.x,
-            y,
-            r.z,
-            r.w + 0.065,
-            h,
-            r.d + 0.065,
-            trim,
-          );
-        const alongX = r.w > r.d,
-          length = alongX ? r.w : r.d;
-        for (let a = -length / 2 + 0.65; a < length / 2; a += 2.2) {
-          const x = r.x + (alongX ? a : 0),
-            z = r.z + (alongX ? 0 : a);
-          const bay = Math.min(1.94, length / 2 - a - 0.08);
-          if (bay > 0.5)
-            this.box(
-              "damask wall panel",
-              x,
-              2.95,
-              z,
-              alongX ? bay : r.w + 0.025,
-              2.85,
-              alongX ? r.d + 0.025 : bay,
-              wallpaper,
-            );
-          this.box(
-            "panel stile",
-            x,
-            0.75,
-            z,
-            alongX ? 0.035 : r.w + 0.06,
-            1.12,
-            alongX ? r.d + 0.06 : 0.035,
-            trim,
-          );
-          this.box(
-            "plaster pilaster",
-            x,
-            2.94,
-            z,
-            alongX ? 0.15 : r.w + 0.09,
-            2.98,
-            alongX ? r.d + 0.09 : 0.15,
-            cream,
-          );
-        }
+      if (r.id.includes("bench") || r.id.includes("banquette")) {
+        const back = r.id.includes("south") ? -1 : 1;
+        this.box("casino seating plinth", r.x, 0.15, r.z, r.w, 0.28, r.d, trim);
+        this.box("casino upholstered seat", r.x, 0.47, r.z, r.w, 0.36, r.d, burgundy);
+        this.box("casino upholstered back", r.x, 0.92, r.z + back * r.d * 0.36,
+          r.w, 0.7, Math.min(0.26, r.d / 3), burgundy);
+        for (let x = r.x - r.w / 2 + 0.45; x < r.x + r.w / 2; x += 0.7)
+          this.box("casino tufted button", x, 0.92, r.z + back * (r.d * 0.36 - 0.15), 0.04, 0.04, 0.025, trim);
+        continue;
+      }
+      this.box(r.id, r.x, (r.baseY ?? 0) + r.h / 2, r.z, r.w, r.h, r.d, wall);
+      if (r.h < 4) continue;
+      this.box("lower walnut wainscot", r.x, 0.68, r.z, r.w + 0.03, 1.36, r.d + 0.03, wood);
+      for (const [y, h] of [[0.14, 0.15], [1.38, 0.055], [r.h - 0.25, 0.18], [r.h - 0.07, 0.05]])
+        this.box("continuous brass molding", r.x, y, r.z, r.w + 0.065, h, r.d + 0.065, trim);
+      const alongX = r.w > r.d, length = alongX ? r.w : r.d;
+      for (let a = -length / 2 + 0.65; a < length / 2; a += 2.2) {
+        const x = r.x + (alongX ? a : 0), z = r.z + (alongX ? 0 : a);
+        const bay = Math.min(1.94, length / 2 - a - 0.08);
+        if (bay > 0.5) this.box("damask wall panel", x, (r.h + 1.4) / 2, z,
+          alongX ? bay : r.w + 0.025, r.h - 1.9, alongX ? r.d + 0.025 : bay, wallpaper);
+        this.box("panel stile", x, 0.75, z, alongX ? 0.035 : r.w + 0.06,
+          1.12, alongX ? r.d + 0.06 : 0.035, trim);
+        this.box("plaster pilaster", x, (r.h + 1.4) / 2, z, alongX ? 0.15 : r.w + 0.09,
+          r.h - 1.6, alongX ? r.d + 0.09 : 0.15, cream);
       }
     }
+    // Both ends of a loop are independently purchased. Frame and lettering
+    // follow the actual door axis, including the new south-facing VIP doors.
+    const doorNames: Record<string, string> = {
+      lounge: "THE LAST CALL", shortcut: "THE LAST CALL",
+      vip: "HIGH ROLLER CLUB", vipExit: "HIGH ROLLER CLUB",
+      supply: "SUPPLY & RECEIVING", cashier: "CASHIER",
+    };
     for (const [id, r] of Object.entries(DOORS)) {
-      if (id === "hotel") continue; // Hotel builder owns this north-facing entrance.
-      this.gates[id] = this.box(
-        id + " shutter",
-        r.x,
-        r.h / 2,
-        r.z,
-        r.w,
-        r.h,
-        r.d,
-        this.mat("shutter", "#50493a"),
-      );
-      for (let y = 0.15; y < 4.5; y += 0.22)
-        this.box(
-          "shutter rib",
-          0,
-          y - r.h / 2,
-          0,
-          r.w + 0.035,
-          0.04,
-          r.d,
-          trim,
-          this.gates[id],
-        );
+      if (id === "hotel") continue;
+      const acrossX = r.w > r.d, span = acrossX ? r.w : r.d;
+      const gate = this.box(`${id} shutter`, r.x, r.h / 2, r.z, r.w, r.h, r.d,
+        this.mat("shutter", "#50493a"));
+      this.gates[id] = gate;
+      for (let y = 0.15; y < r.h; y += 0.22)
+        this.box("shutter rib", 0, y - r.h / 2, 0, r.w + 0.035, 0.04, r.d + 0.035, trim, gate);
       for (const side of [-1, 1])
-        this.box(
-          "door jamb",
-          r.x,
-          2.25,
-          r.z + side * (r.d / 2 + 0.03),
-          0.58,
-          4.5,
-          0.1,
-          trim,
-        );
-      this.box("door lintel", r.x, 3.28, r.z, 0.62, 0.62, r.d + 0.2, dark);
-      const name =
-        id === "lounge"
-          ? "THE LAST CALL"
-          : id === "shortcut"
-            ? "STAFF PASSAGE"
-            : id.startsWith("tables")
-              ? "THE DEVIL’S TABLES"
-              : "HIGH ROLLER CLUB";
-      this.label(
-        id + " lintel",
-        name,
-        r.x - 0.33,
-        3.28,
-        r.z,
-        r.d - 0.12,
-        0.48,
-        "#e5c881",
-        Math.PI / 2,
-      );
-      this.label(
-        id + " reverse lintel",
-        id === "lounge" || id === "shortcut"
-          ? "CASINO FLOOR"
-          : id.startsWith("tables")
-            ? "HIGH ROLLER CLUB"
-            : "STAFF & LOUNGE",
-        r.x + 0.33,
-        3.28,
-        r.z,
-        r.d - 0.12,
-        0.48,
-        "#e5c881",
-        -Math.PI / 2,
-      );
-      this.gateSigns[id + "Back"] = this.label(
-        id + " inside price",
-        id === "shortcut" ? "E • OPEN 1200" : "ROOM ACCESS",
-        r.x + 0.26,
-        1.65,
-        r.z,
-        2.6,
-        0.44,
-        "#e5c881",
-        -Math.PI / 2,
-      );
-      this.gateSigns[id] = this.label(
-        id + " price",
-        id === "tablesExit"
-          ? "UNLOCK AT FRONT ENTRANCE"
-          : id === "vipExit"
-            ? "UNLOCK FROM LOUNGE"
-            : id === "shortcut"
-              ? "OPEN FROM STAFF SIDE"
-              : `E  •  OPEN  ${PRICES[id as "lounge" | "shortcut" | "vip" | "tables"]}`,
-        r.x - 0.26,
-        1.65,
-        r.z,
-        2.8,
-        0.5,
-        "#e5c881",
-        Math.PI / 2,
-      );
-    }
-    this.label("main sign", "LAST JACKPOT", -4, 3.5, -11.9, 7, 1.1, "#d9bd77", Math.PI);
-    this.label("cashier sign", "CASHIER", -11, 2.8, 9.12, 4, 0.7);
-    for (let x = -13.7; x < -8.2; x += 0.3)
-      this.box("cage bar", x, 2.05, 9.04, 0.035, 1.05, 0.055, trim);
-    this.box("cage counter", -11, 1.05, 9.12, 5.9, 0.16, 0.35, trim);
-    this.label(
-      "cashier notice",
-      "HOUSE CREDIT SUSPENDED",
-      -11,
-      1.85,
-      8.99,
-      2.6,
-      0.35,
-      "#ad9d7a",
-    );
-    this.label(
-      "lounge sign",
-      "THE LAST CALL",
-      12,
-      4.03,
-      -11.79,
-      5.5,
-      0.5,
-      "#cead72",
-      Math.PI,
-    );
-    for (const p of PURCHASES) {
-      if (p.id === "pistolAmmo") {
-        this.box("ammo plaque", p.x, 1.5, -11.9, 2.5, 1.6, 0.12, wood);
-        this.label(
-          "ammo header",
-          "PISTOL AMMUNITION",
-          p.x,
-          2.04,
-          -11.81,
-          2.3,
-          0.34,
-          "#a4d3bb",
-          Math.PI,
-        );
-        this.label(
-          "ammo price",
-          "E • REFILL 150",
-          p.x,
-          0.92,
-          -11.81,
-          2,
-          0.32,
-          "#c9c7a3",
-          Math.PI,
-        );
-        for (let i = 0; i < 5; i++)
-          this.box(
-            "ammunition carton",
-            p.x - 0.6 + i * 0.3,
-            1.5,
-            -11.7,
-            0.22,
-            0.3,
-            0.19,
-            trim,
-          );
-        continue;
-      }
-      if (p.id === "shotgun" || p.id === "smg" || p.id === "rifle") {
-        const x = p.id === "shotgun" ? -15.95 : p.id === "smg" ? 4.27 : 27.725;
-        const facing = p.id === "rifle" ? Math.PI / 2 : -Math.PI / 2;
-        const offset = p.id === "rifle" ? -0.12 : 0.12;
-        this.box(p.id + " walnut display", x, 1.52, p.z, 0.1, 1.65, 2.65, wood);
-        this.box(
-          p.id + " display trim",
-          x + offset * 0.3,
-          1.52,
-          p.z,
-          0.1,
-          1.75,
-          2.75,
-          trim,
-        );
-        this.box(
-          p.id + " dark backing",
-          x + offset * 0.6,
-          1.52,
-          p.z,
-          0.1,
-          1.56,
-          2.54,
-          dark,
-        );
-        this.label(
-          p.id + " rack name",
-          WEAPONS[p.id].name,
-          x + offset * 1.15,
-          2.16,
-          p.z,
-          2.4,
-          0.35,
-          "#d9c58d",
-          facing,
-        );
-        this.label(
-          p.id + " rack price",
-          `${WEAPONS[p.id].price} CHIPS • AMMO ${WEAPONS[p.id].refill}`,
-          x + offset * 1.15,
-          0.9,
-          p.z,
-          2.4,
-          0.3,
-          "#93c5ae",
-          facing,
-        );
-        const display = new TransformNode(p.id + " display weapon", this.scene);
-        display.position.set(x + offset * 2, 1.55, p.z);
-        display.scaling.setAll(1.8);
-        this.displays[p.id] = display;
-        continue;
-      }
-      if (p.id !== "upgrade") continue;
-      this.box("workshop cabinet", p.x, 0.65, 10.9, 1.6, 1.3, 1.1, dark);
-      this.box("workshop brass lip", p.x, 1.33, 10.9, 1.7, 0.12, 1.2, trim);
+        this.box("door jamb", r.x + (acrossX ? side * (span / 2 + 0.07) : 0),
+          r.h / 2, r.z + (acrossX ? 0 : side * (span / 2 + 0.07)),
+          acrossX ? 0.14 : 0.58, r.h, acrossX ? 0.58 : 0.14, trim);
+      this.box("door lintel", r.x, r.h - 0.26, r.z,
+        acrossX ? span + 0.2 : 0.62, 0.52, acrossX ? 0.62 : span + 0.2, dark);
       for (const side of [-1, 1]) {
-        this.box(
-          "workshop upright",
-          p.x + side * 0.75,
-          1.9,
-          11.25,
-          0.12,
-          1.1,
-          0.16,
-          trim,
-        );
-        this.cylinder(
-          "workshop energy canister",
-          p.x + side * 0.55,
-          1.7,
-          10.75,
-          0.17,
-          0.6,
-          this.mat("workshop glow", "#76bc9e", 0.6),
-        );
+        const rotation = acrossX ? (side < 0 ? 0 : Math.PI) : (side < 0 ? Math.PI / 2 : -Math.PI / 2);
+        const labelX = r.x + (acrossX ? 0 : side * 0.33);
+        const labelZ = r.z + (acrossX ? side * 0.33 : 0);
+        this.label(`${id} ${side} lintel`, doorNames[id] ?? "ROOM ACCESS", labelX,
+          r.h - 0.26, labelZ, Math.max(1.6, span - 0.2), 0.38, "#e5c881", rotation);
+        this.gateSigns[id + (side > 0 ? "Back" : "")] = this.label(`${id} ${side} price`,
+          `E • OPEN ${PRICES[id as keyof typeof PRICES]} CHIPS`, labelX, 1.65, labelZ,
+          Math.min(2.8, span - 0.15), 0.42, "#e5c881", rotation);
       }
-      this.label(
-        "workshop sign",
-        "DOUBLE DOWN",
-        p.x,
-        2.27,
-        11.12,
-        1.6,
-        0.35,
-        "#e3c47d",
-      );
-      this.label(
-        "workshop price",
-        "UPGRADE • 2000",
-        p.x,
-        0.88,
-        10.33,
-        1.4,
-        0.28,
-        "#e3c47d",
-      );
-      this.label(
-        "club wall title",
-        "FORTUNE FAVORS THE BOLD",
-        22,
-        3.5,
-        11.9,
-        8,
-        0.75,
-        "#e6c275",
-      );
     }
+    const casino = CASINO_ROOMS.casino;
+    const centerX = (casino.minX + casino.maxX) / 2;
+    const centerZ = (casino.minZ + casino.maxZ) / 2;
+    this.label("main sign", "LAST JACKPOT", centerX, 4.65, casino.minZ + 0.2, 10, 1.2, "#e1c789", Math.PI);
+    this.label("main subtitle", "THE GRAND CASINO", centerX, 3.78, casino.minZ + 0.21, 7, 0.36, "#adbdac", Math.PI);
+    this.label("north gallery title", "GRAND HOTEL", centerX, 4.65, casino.maxZ - 0.22, 9, 0.9, "#e1c789");
+    this.label("north gallery subtitle", "FORTUNE FAVORS THE BOLD", centerX, 3.9, casino.maxZ - 0.23, 6.5, 0.34, "#b9c5ad");
+    // Repeated carpet borders and coffers tie the much larger floor together.
+    // These flat inlays leave all combat routes and table approaches unobstructed.
+    const rug = this.mat("gaming bay green velvet", "#1b3430");
+    const rugEdge = this.mat("gaming bay woven gold", "#9a7b45");
+    const inset = (name: string, x: number, z: number, w: number, d: number) => {
+      this.box(`${name} outer rug`, x, 0.004, z, w, 0.008, d, rugEdge);
+      this.box(`${name} velvet rug`, x, 0.01, z, w - 0.11, 0.006, d - 0.11, rug);
+      this.box(`${name} inner rug border`, x, 0.014, z, w - 0.3, 0.004, d - 0.3, rugEdge);
+      this.box(`${name} field`, x, 0.018, z, w - 0.34, 0.004, d - 0.34, rug);
+    };
+    for (const table of [...CRAPS_TABLES, ...ROULETTE_TABLES]) {
+      const r = STATIC_RECTS.find((rect) => rect.id === table.rectId)!;
+      inset(table.id, r.x, r.z, r.w + 3.1, r.d + 2.8);
+    }
+    for (const table of POKER_TABLES) inset(table.id, table.x, table.z, 6.8, 6.7);
+    for (const x of [centerX - 3.45, centerX + 3.45])
+      this.box("central promenade gold border", x, 0.012, centerZ, 0.05, 0.007,
+        casino.maxZ - casino.minZ - 0.4, rugEdge);
+    for (const z of [casino.minZ + 0.6, casino.maxZ - 0.6])
+      this.box("grand casino perimeter border", centerX, 0.012, z,
+        casino.maxX - casino.minX - 1.2, 0.007, 0.065, rugEdge);
+    for (let x = casino.minX + 6; x < casino.maxX; x += 9)
+      this.box("grand coffer beam", x, casino.ceilingY - 0.18, centerZ, 0.19, 0.32,
+        casino.maxZ - casino.minZ, wood);
+    for (let z = casino.minZ + 5; z < casino.maxZ; z += 8)
+      this.box("grand coffer cross beam", centerX, casino.ceilingY - 0.18, z,
+        casino.maxX - casino.minX, 0.32, 0.19, wood);
+    const chandelier = (x: number, z: number, top: number, size = 1) => {
+      this.cylinder("chandelier stem", x, top - 0.52, z, 0.055, 1.05, trim);
+      for (const [drop, diameter] of [[1.1, 2.65], [1.42, 1.65]]) {
+        const ring = MeshBuilder.CreateTorus("chandelier brass ring",
+          { diameter: diameter * size, thickness: 0.075, tessellation: 36 }, this.scene);
+        ring.position.set(x, top - drop, z);
+        ring.material = trim;
+        for (let i = 0; i < 10; i++) {
+          const angle = i * Math.PI / 5;
+          const xx = x + Math.cos(angle) * diameter * size / 2;
+          const zz = z + Math.sin(angle) * diameter * size / 2;
+          this.cylinder("pendant frosted glass", xx, top - drop + 0.08, zz, 0.14, 0.35, luminous, 0.2);
+          this.cylinder("pendant brass base", xx, top - drop - 0.13, zz, 0.19, 0.08, trim);
+        }
+      }
+    };
+    for (const x of [-25, -12.8, -3, 11.2, 22]) {
+      for (const z of [5, -6, -14]) chandelier(x, z, casino.ceilingY - 0.04, x === -3 ? 1.22 : 0.83);
+    }
+    chandelier(-17, -29, CASINO_ROOMS.vip.ceilingY, 0.9);
+    chandelier(-39, 0, CASINO_ROOMS.lounge.ceilingY, 0.7);
+    // Perimeter sconces have no collision and sit fully against the new walls.
+    for (const x of [casino.minX + 0.18, casino.maxX - 0.18]) {
+      for (const z of [-16, -3, 8]) {
+        this.box("sconce backing", x, 3.4, z, 0.08, 1.15, 0.5, trim);
+        this.box("sconce opal glass", x + (x < centerX ? 0.07 : -0.07), 3.45, z,
+          0.14, 0.8, 0.27, luminous);
+      }
+      this.box("grand casino cove", x, casino.ceilingY - 0.42, centerZ, 0.045, 0.045,
+        casino.maxZ - casino.minZ - 0.5, luminous);
+    }
+    this.cashierDecor();
+    this.purchaseDisplays();
     this.bartender = createCharacter(this.scene, 0, true);
-    this.box("bar staff step", 12, 0.075, -9.35, 1.1, 0.15, 0.7, wood);
-    this.bartender.root.position.set(12, 0.15, -9.35);
-    this.bartender.shadow.position.set(12, 0.16, -9.35);
+    const bartenderX = 12 + LOUNGE_OFFSET.x, bartenderZ = -9.35 + LOUNGE_OFFSET.z;
+    this.box("bar staff step", bartenderX, 0.075, bartenderZ, 1.1, 0.15, 0.7, wood);
+    this.bartender.root.position.set(bartenderX, 0.15, bartenderZ);
+    this.bartender.shadow.position.set(bartenderX, 0.16, bartenderZ);
     for (const shadow of this.shadows)
-      for (const m of this.bartender.root.getChildMeshes())
-        shadow.addShadowCaster(m, false);
-    this.label(
-      "bartender counter badge",
-      "MARLOWE · PERKS & UPGRADES",
-      12,
-      1.02,
-      -8.1,
-      2.5,
-      0.27,
-      "#ddc68b",
-      Math.PI,
-    );
-    SPAWNS.forEach((p, i) => {
-      // This entry is concealed behind the new back bar; its spawn lane stays open.
-      if (i === 3) return;
-      const rotation = i === 1 ? -Math.PI / 2 : i === 2 ? 0 : Math.PI;
-      const x = i === 1 ? -15.95 : p.x,
-        z = i === 1 ? p.z : i === 2 ? 11.94 : -11.94;
-      this.label(
-        "entrance " + i,
-        [
-          "ENTRANCE",
-          "SECURITY",
-          "STAFF",
-          "BACK OF HOUSE",
-          "PRIVATE ENTRANCE",
-          "DEALER ACCESS",
-        ][i],
-        x,
-        2.9,
-        z,
-        2.5,
-        0.5,
-        "#c6b479",
-        rotation,
-      );
-      this.box(
-        "entry dark",
-        x,
-        1.25,
-        z,
-        i === 1 ? 0.08 : 2.2,
-        2.5,
-        i === 1 ? 2.2 : 0.08,
-        this.mat("entry black", "#080d0b"),
-      );
-      for (const side of [-1, 1]) {
-        this.box(
-          "entrance brass jamb",
-          x + (i === 1 ? 0 : side * 1.15),
-          1.25,
-          z + (i === 1 ? side * 1.15 : 0),
-          i === 1 ? 0.13 : 0.06,
-          2.5,
-          i === 1 ? 0.06 : 0.13,
-          trim,
-        );
-      }
-    });
-    // Coffered ceiling and suspended fixtures establish architectural scale.
-    for (let x = BOUNDS.minX; x <= BOUNDS.maxX; x += 4)
-      this.box("ceiling cross beam", x, 4.66, 0, 0.13, 0.22, 24, wood);
-    for (let z = -12; z <= 12; z += 4)
-      this.box("ceiling cross beam", centerX, 4.66, z, width, 0.22, 0.13, wood);
-    for (const [x, z] of [
-      [-7, 0],
-      [-0.7, 5],
-      [22, -3],
-      [22, 5],
-      [35, -3],
-      [35, 5],
-    ]) {
-      this.cylinder("chandelier stem", x, 4.14, z, 0.045, 1.2, trim);
-      const ring = MeshBuilder.CreateTorus(
-        "chandelier brass ring",
-        { diameter: 2.1, thickness: 0.075, tessellation: 36 },
-        this.scene,
-      );
-      ring.position.set(x, 3.62, z);
-      ring.material = trim;
-      for (let i = 0; i < 8; i++) {
-        const a = (i * Math.PI) / 4,
-          xx = x + Math.cos(a),
-          zz = z + Math.sin(a);
-        this.cylinder(
-          "pendant frosted glass",
-          xx,
-          3.8,
-          zz,
-          0.18,
-          0.4,
-          luminous,
-          0.24,
-        );
-        this.cylinder("pendant brass base", xx, 3.55, zz, 0.2, 0.08, trim);
-      }
+      for (const mesh of this.bartender.root.getChildMeshes()) shadow.addShadowCaster(mesh, false);
+    this.label("bartender counter badge", "MARLOWE · PERKS & UPGRADES", bartenderX, 1.02,
+      -8.1 + LOUNGE_OFFSET.z, 2.5, 0.27, "#ddc68b", Math.PI);
+    this.label("lounge sign", "THE LAST CALL", 12 + LOUNGE_OFFSET.x, 4.03,
+      -11.79 + LOUNGE_OFFSET.z, 5.5, 0.5, "#cead72", Math.PI);
+    this.label("club wall title", "FORTUNE FAVORS THE BOLD", -17, 3.5,
+      CASINO_ROOMS.vip.minZ + 0.2, 8, 0.75, "#e6c275", Math.PI);
+    for (const table of CRAPS_TABLES) {
+      this.label(`${table.id} house rules`, "SEVEN’S CURSE", table.x, 3.1,
+        casino.minZ + 0.2, 5.5, 0.55, "#e3b875", Math.PI);
+      this.label(`${table.id} house cost`, "250 CHIPS • ONE ROLL PER TABLE PER ROUND", table.x, 2.56,
+        casino.minZ + 0.21, 6.5, 0.32, "#c6b998", Math.PI);
     }
-    for (const x of [-15.88, 27.7, 41.88])
-      for (const z of [-8, 0, 8]) {
-        this.box("sconce backing", x, 2.85, z, 0.07, 0.8, 0.46, trim);
-        this.box(
-          "sconce light",
-          x + (x < 0 ? 0.06 : -0.06),
-          2.9,
-          z,
-          0.13,
-          0.55,
-          0.25,
-          luminous,
-        );
-      }
-    for (const x of [-15.83, 15.7, 27.7, 41.83])
-      this.box(
-        "cove light",
-        x,
-        4.48,
-        0,
-        0.045,
-        0.045,
-        23.5,
-        this.mat("cove glow", "#c6a25e", 0.7),
-      );
-    this.label(
-      "lounge wayfinding",
-      "THE LAST CALL • LOUNGE",
-      3.69,
-      2.7,
-      -8.8,
-      3.7,
-      0.42,
-      "#dbbd78",
-      Math.PI / 2,
-    );
-    this.label(
-      "vip invitation",
-      "HIGH ROLLER →",
-      7,
-      2.65,
-      2.71,
-      4.8,
-      0.5,
-      "#dbbd78",
-    );
-    this.label(
-      "tables room title",
-      "THE DEVIL’S TABLES",
-      35,
-      3.55,
-      11.9,
-      8,
-      0.65,
-      "#dfbd78",
-    );
-    this.label(
-      "tables invitation",
-      "CRAPS & ROULETTE →",
-      27.69,
-      2.7,
-      4.3,
-      3.4,
-      0.42,
-      "#dfbd78",
-      Math.PI / 2,
-    );
-    this.box(
-      "roulette rules brass frame",
-      35,
-      2.12,
-      11.93,
-      6.8,
-      2.06,
-      0.06,
-      trim,
-    );
-    this.box(
-      "roulette rules walnut board",
-      35,
-      2.12,
-      11.89,
-      6.68,
-      1.94,
-      0.035,
-      wood,
-    );
-    this.label(
-      "roulette rules title",
-      "ROULETTE • LUCKY NUMBERS",
-      35,
-      2.83,
-      11.864,
-      6.32,
-      0.39,
-      "#e3bd78",
-    );
-    this.label(
-      "roulette spin cost",
-      `${PRICES.roulette} CHIPS • EVERY SPIN`,
-      35,
-      2.43,
-      11.864,
-      6.32,
-      0.29,
-      "#d6c4a0",
-    );
-    this.label(
-      "roulette equipped ammo reward",
-      "4 / 24  •  EQUIPPED WEAPON AMMO",
-      35,
-      2.08,
-      11.864,
-      6.32,
-      0.29,
-      "#d6c4a0",
-    );
-    this.label(
-      "roulette maximum ammo reward",
-      "7  •  MAX AMMO FOR ALL OWNED WEAPONS",
-      35,
-      1.73,
-      11.864,
-      6.32,
-      0.29,
-      "#d6c4a0",
-    );
-    this.label(
-      "roulette jackpot reward",
-      `0  •  MAX AMMO + ${ROULETTE_RULES.damageMultiplier}× DAMAGE FOR ${ROULETTE_RULES.damageDuration} SECONDS`,
-      35,
-      1.38,
-      11.864,
-      6.32,
-      0.29,
-      "#e3bd78",
-    );
-    this.label(
-      "craps rules",
-      "SEVEN’S CURSE",
-      35,
-      2.5,
-      -11.9,
-      4.6,
-      0.65,
-      "#e3b875",
-      Math.PI,
-    );
-    this.label(
-      "craps cost",
-      "250 CHIPS • ONE ROLL PER ROUND",
-      35,
-      1.93,
-      -11.9,
-      5.6,
-      0.37,
-      "#c6b998",
-      Math.PI,
-    );
-    this.label(
-      "craps risk",
-      "7: −20% SPEED • OTHER ROLLS: 500 CHIPS",
-      35,
-      1.48,
-      -11.9,
-      6.5,
-      0.36,
-      "#c6b998",
-      Math.PI,
-    );
-    this.box("table room sideboard", 41.35, 0.53, 1, 1.1, 1.06, 3, wood);
-    this.box("sideboard brass top", 41.35, 1.1, 1, 1.15, 0.07, 3.05, trim);
-    for (let i = 0; i < 7; i++) {
-      this.cylinder(
-        "sideboard chip tray",
-        41.25,
-        1.18,
-        -0.1 + i * 0.34,
-        0.18,
-        0.06,
-        dark,
-      );
-      for (let j = 0; j < 4; j++)
-        this.cylinder(
-          "sideboard chips",
-          41.25,
-          1.225 + j * 0.025,
-          -0.1 + i * 0.34,
-          0.12,
-          0.02,
-          i % 2 ? burgundy : cream,
-        );
-    }
+    this.label("roulette title", "ROULETTE • LUCKY NUMBERS", casino.minX + 0.22, 3.3,
+      -0.6, 7, 0.55, "#e3bd78", -Math.PI / 2);
+    this.label("roulette rewards", "4 / 24: AMMO • 7: MAX AMMO • 0: JACKPOT", casino.minX + 0.23, 2.7,
+      -0.6, 7, 0.36, "#c6b998", -Math.PI / 2);
     this.serviceWallFinish();
     buildLoungeDecor(this.scene);
-    // Batch fixed scenery by material, keeping shutters and their children movable.
+    // Fixed pieces share material draw calls; assets, cards, glass and shutters
+    // remain separate for instancing, transparency and per-table animation.
     const groups = new Map<StandardMaterial, Mesh[]>();
     const gates = new Set(Object.values(this.gates));
-    for (const m of [...this.scene.meshes]) {
-      if (
-        !(m instanceof Mesh) ||
-        m.parent ||
-        gates.has(m) ||
-        m === this.bartender?.shadow ||
-        Object.values(this.gateSigns).includes(m) ||
-        !m.material
-      )
-        continue;
-      const mat = m.material as StandardMaterial;
-      const group = groups.get(mat) ?? [];
-      group.push(m);
-      groups.set(mat, group);
+    for (const mesh of [...this.scene.meshes]) {
+      if (!(mesh instanceof Mesh) || mesh.parent || gates.has(mesh) || mesh === this.bartender?.shadow ||
+        Object.values(this.gateSigns).includes(mesh) || !mesh.material || mesh.material.alpha < 1) continue;
+      const material = mesh.material as StandardMaterial;
+      const group = groups.get(material) ?? [];
+      group.push(mesh);
+      groups.set(material, group);
     }
     for (const [material, meshes] of groups) {
-      const merged =
-        meshes.length > 1 ? Mesh.MergeMeshes(meshes, true, true) : meshes[0];
+      const merged = meshes.length > 1 ? Mesh.MergeMeshes(meshes, true, true) : meshes[0];
       if (!merged) continue;
       merged.name = "scenery: " + material.name;
       merged.isPickable = false;
       merged.receiveShadows = true;
       merged.freezeWorldMatrix();
-      if (
-        !material.emissiveColor.equals(Color3.Black()) ||
-        material.diffuseTexture === carpet
-      )
-        continue;
+      if (!material.emissiveColor.equals(Color3.Black()) || material.name.includes("carpet") ||
+        material.name.includes("rug") || material.name.includes("concrete")) continue;
       for (const shadow of this.shadows) shadow.addShadowCaster(merged, false);
     }
+  }
+  private purchaseDisplays() {
+    const wood = this.mat("walnut paneling", "#392c24"), trim = this.mat("old brass", "#b2985c"),
+      dark = this.mat("charcoal", "#15221e");
+    for (const purchase of PURCHASES) {
+      if (purchase.id === "pistolAmmo") {
+        const z = CASINO_ROOMS.casino.minZ + 0.22;
+        this.box("ammo plaque", purchase.x, 1.5, z, 2.5, 1.6, 0.12, wood);
+        this.label("ammo header", "PISTOL AMMUNITION", purchase.x, 2.04, z + 0.09,
+          2.3, 0.34, "#a4d3bb", Math.PI);
+        this.label("ammo price", "E • REFILL 150", purchase.x, 0.92, z + 0.09,
+          2, 0.32, "#c9c7a3", Math.PI);
+        for (let i = 0; i < 5; i++)
+          this.box("ammunition carton", purchase.x - 0.6 + i * 0.3, 1.5, z + 0.2, 0.22, 0.3, 0.19, trim);
+      }
+      if (purchase.id === "shotgun" || purchase.id === "smg" || purchase.id === "rifle") {
+        const id = purchase.id;
+        // Anchors sit at the standing approach; the display is fixed on the
+        // nearest room wall, always facing the accessible side of that room.
+        const x = id === "shotgun" ? CASINO_ROOMS.casino.maxX - 0.25 :
+          id === "smg" ? CASINO_ROOMS.lounge.minX + 0.25 : CASINO_ROOMS.supply.minX + 0.42;
+        // The rifle hangs on the west wall so the preserved north storage
+        // shelving cannot obscure it from its purchase approach.
+        const z = purchase.z;
+        const side = id === "shotgun" ? -1 : 1;
+        const facing = side > 0 ? -Math.PI / 2 : Math.PI / 2;
+        this.box(`${id} walnut display`, x, 1.52, z, 0.1, 1.75, 2.75, trim);
+        this.box(`${id} dark backing`, x + side * 0.06, 1.52, z, 0.1, 1.56, 2.54, dark);
+        this.label(`${id} rack name`, WEAPONS[id].name, x + side * 0.14, 2.16, z,
+          2.4, 0.35, "#d9c58d", facing);
+        this.label(`${id} rack price`, `${WEAPONS[id].price} CHIPS • AMMO ${WEAPONS[id].refill}`,
+          x + side * 0.14, 0.9, z, 2.4, 0.3, "#93c5ae", facing);
+        const display = new TransformNode(`${id} display weapon`, this.scene);
+        display.position.set(x + side * 0.24, 1.55, z);
+        display.scaling.setAll(1.8);
+        this.displays[id] = display;
+      }
+      if (purchase.id === "upgrade") {
+        const fixture = STATIC_RECTS.find((r) => r.id === "upgrade-machine")!;
+        const x = fixture.x, z = fixture.z;
+        const previousMeshes = new Set(this.scene.meshes);
+        this.box("workshop cabinet", x, 0.65, z, 1.6, 1.3, 1.1, dark);
+        this.box("workshop brass lip", x, 1.33, z, 1.7, 0.12, 1.2, trim);
+        for (const side of [-1, 1]) {
+          this.box("workshop upright", x + side * 0.75, 1.9, z + 0.35, 0.12, 1.1, 0.16, trim);
+          this.cylinder("workshop energy canister", x + side * 0.55, 1.7, z - 0.15, 0.17, 0.6,
+            this.mat("workshop glow", "#76bc9e", 0.6));
+        }
+        this.label("workshop sign", "DOUBLE DOWN", x, 2.27, z + 0.22, 1.6, 0.35, "#e3c47d");
+        this.label("workshop price", "UPGRADE • 2000", x, 0.88, z - 0.57, 1.4, 0.28, "#e3c47d");
+        const root = new TransformNode("east wall upgrade workshop", this.scene);
+        root.position.set(x, 0, z);
+        root.rotation.y = Math.PI / 2;
+        for (const mesh of this.scene.meshes.filter((mesh) => !previousMeshes.has(mesh))) {
+          mesh.position.x -= x;
+          mesh.position.z -= z;
+          mesh.parent = root;
+        }
+      }
+    }
+  }
+  private cashierDecor() {
+    const room = CASINO_ROOMS.cashier;
+    const secure = CASINO_ROOMS.cashierSecure;
+    const centerX = (room.minX + room.maxX) / 2;
+    const width = room.maxX - room.minX - 0.4;
+    const z = secure.minZ;
+    const brass = this.mat("cashier champagne brass", "#b89a5f");
+    const wood = this.mat("cashier espresso walnut", "#342925");
+    const black = this.mat("cashier counter marble", "#172723");
+    const note = this.mat("cashier stacked banknotes", "#839375");
+    const paper = this.mat("cashier paper currency bands", "#d2c6a2");
+    this.box("cashier counter front", centerX, 0.58, z - 0.16, width, 1.16, 0.8, wood);
+    this.box("cashier marble counter", centerX, 1.18, z - 0.16, width + 0.03, 0.12, 1.05, black);
+    for (const y of [0.12, 1.06]) this.box("cashier counter brass inlay", centerX, y, z - 0.58, width, 0.035, 0.025, brass);
+    const glass = this.mat("cashier security glass", "#a0c2b6");
+    glass.alpha = 0.2;
+    glass.specularColor = new Color3(0.85, 0.92, 0.87);
+    glass.specularPower = 90;
+    glass.backFaceCulling = false;
+    const bayWidth = width / 4;
+    for (let bay = 0; bay < 4; bay++) {
+      const x = centerX - width / 2 + bay * bayWidth;
+      this.box("cashier glass partition", x + bayWidth / 2, 2.97, z, bayWidth - 0.07, 3.42, 0.035, glass);
+      this.box("cashier brass mullion", x, 2.95, z, 0.065, 3.5, 0.07, brass);
+      this.box("cashier document slot", x + bayWidth / 2, 1.245, z - 0.24, 0.72, 0.02, 0.34, brass);
+      const registerX = x + bayWidth / 2;
+      this.box("cashier terminal body", registerX, 1.39, z + 0.45, 0.65, 0.3, 0.6, black);
+      this.box("cashier terminal display", registerX, 1.64, z + 0.25, 0.48, 0.25, 0.065,
+        this.mat("cashier display glow", "#87b397", 0.3));
+    }
+    this.box("cashier glass top rail", centerX, 4.72, z, width, 0.1, 0.11, brass);
+    this.label("cashier glass title", "CASHIER", centerX, 3.9, z - 0.07, 6, 0.6, "#e7cea0");
+    this.label("cashier closed notice", "HOUSE CREDIT SUSPENDED", centerX, 2.3, z - 0.08, 3.7, 0.4, "#c6bc9b");
+    // The inaccessible area is visibly stocked but intentionally contains no
+    // working stair or trapdoor until the later story/progression pass.
+    const rear = STATIC_RECTS.find((r) => r.id === "cashier-rear-counter")!;
+    this.box("cashier secure cash desk", rear.x, rear.h / 2, rear.z, rear.w, rear.h, rear.d, wood);
+    this.box("cashier secure desk top", rear.x, rear.h + 0.045, rear.z,
+      rear.w + 0.08, 0.09, rear.d + 0.08, black);
+    for (let col = 0; col < 16; col++) for (let row = 0; row < 3; row++) {
+      const xx = rear.x - rear.w / 2 + 0.5 + col * (rear.w - 1) / 15;
+      const zz = rear.z - 0.35 + row * 0.34;
+      const stack = 0.12 + (col + row) % 3 * 0.045;
+      this.box("cash bundle", xx, rear.h + 0.09 + stack / 2, zz, 0.45, stack, 0.24, note);
+      this.box("cash bundle paper band", xx, rear.h + 0.095 + stack, zz, 0.12, 0.012, 0.245, paper);
+    }
+    const safe = STATIC_RECTS.find((r) => r.id === "cashier-safe")!;
+    this.box("cashier secure safe", safe.x, safe.h / 2, safe.z, safe.w, safe.h, safe.d, black);
+    this.box("cashier safe brass rim", safe.x, safe.h / 2, safe.z - safe.d / 2 - 0.015,
+      safe.w - 0.15, safe.h - 0.15, 0.065, brass);
+    this.box("cashier safe door", safe.x, safe.h / 2, safe.z - safe.d / 2 - 0.055,
+      safe.w - 0.24, safe.h - 0.24, 0.055, black);
+    const wheel = MeshBuilder.CreateTorus("cashier safe handle wheel",
+      { diameter: 0.6, thickness: 0.04, tessellation: 24 }, this.scene);
+    wheel.position.set(safe.x, 1.2, safe.z - safe.d / 2 - 0.14);
+    wheel.rotation.x = Math.PI / 2;
+    wheel.material = brass;
+    for (const yaw of [0, Math.PI / 3, -Math.PI / 3]) {
+      const spoke = this.box("cashier safe wheel spoke", safe.x, 1.2, safe.z - safe.d / 2 - 0.14,
+        0.55, 0.035, 0.035, brass);
+      spoke.rotation.z = yaw;
+    }
+    const shelves = STATIC_RECTS.find((r) => r.id === "cashier-shelves")!;
+    for (const side of [-1, 1])
+      this.box("cashier cabinet side", shelves.x + side * (shelves.w / 2 - 0.045), shelves.h / 2,
+        shelves.z, 0.09, shelves.h, shelves.d, wood);
+    for (let row = 0; row < 5; row++) {
+      const y = 0.12 + row * 0.53;
+      this.box("cashier currency shelf", shelves.x, y, shelves.z, shelves.w, 0.075, shelves.d, wood);
+      for (let col = 0; col < 4; col++) {
+        const x = shelves.x - 0.98 + col * 0.64;
+        this.box("cashier shelf cash case", x, y + 0.22, shelves.z, 0.48, 0.34, 0.5, note);
+        this.box("cashier shelf case label", x, y + 0.22, shelves.z - 0.256, 0.23, 0.12, 0.01, paper);
+      }
+    }
+    const light = new PointLight("cashier secure warm light", new Vector3(centerX, 3.8, z + 3.2), this.scene);
+    light.diffuse = new Color3(1, 0.83, 0.53);
+    light.intensity = 0.85;
+    light.range = 17;
+    this.box("cashier ceiling glow", centerX, 4.55, z + 2.5, width - 2, 0.06, 0.3,
+      this.mat("cashier opal light", "#e4d4a1", 0.85));
   }
   private pokerTable(x: number, z: number) {
     const table = POKER_TABLES.find((table) => table.x === x && table.z === z)!;
@@ -1345,13 +929,12 @@ export class GameRenderer {
     const metal = this.mat("service kickplate", "#6b7970");
     // Only the inward-facing solid sections are clad; all door openings remain clear.
     const panels = [
-      { x: 4.285, z: 5.15, length: 3.7, alongX: false, inward: 1 },
-      { x: 4.285, z: 11.1, length: 1.8, alongX: false, inward: 1 },
-      { x: 15.715, z: 5.15, length: 3.7, alongX: false, inward: -1 },
-      { x: 15.715, z: 11.1, length: 1.8, alongX: false, inward: -1 },
-      { x: 7.14, z: 3.263, length: 5.72, alongX: true, inward: 1 },
-      { x: 14.56, z: 3.263, length: 2.32, alongX: true, inward: 1 },
-      { x: 10, z: 11.93, length: 11.43, alongX: true, inward: -1 },
+      { x: -36.755, z: 42, length: 13.5, alongX: false, inward: 1 },
+      { x: -23.245, z: 45.5, length: 6.5, alongX: false, inward: -1 },
+      { x: -23.12, z: 36.65, length: 3.25, alongX: false, inward: -1 },
+      { x: -23.12, z: 42.34, length: 1.25, alongX: false, inward: -1 },
+      { x: -30, z: 35.245, length: 13.5, alongX: true, inward: 1 },
+      { x: -30, z: 48.755, length: 13.5, alongX: true, inward: -1 },
     ];
     for (const { x, z, length, alongX, inward } of panels) {
       const w = alongX ? length : 0.025, d = alongX ? 0.025 : length;
@@ -1406,7 +989,7 @@ export class GameRenderer {
   private serviceLighting() {
     // The loading bay has its own bounded pool; the lounge chandelier cannot
     // reach around the staff partition. One map serves both imported assets.
-    const key = new SpotLight("Service loading bay work light", new Vector3(10, 4.48, 8.4),
+    const key = new SpotLight("Service loading bay work light", new Vector3(10 + SERVICE_OFFSET.x, 4.48, 8.4 + SERVICE_OFFSET.z),
       new Vector3(0, -1, -0.12), 2.5, 1.2, this.scene);
     key.diffuse = new Color3(0.83, 0.93, 1);
     key.intensity = 2.15;
@@ -1423,7 +1006,7 @@ export class GameRenderer {
     this.serviceShadow = shadow;
     // Keep this map out of the general scenery list: unrelated table, couch,
     // and wall-weapon loaders register their meshes with every general map.
-    const fill = new PointLight("Service storage warm bounce", new Vector3(14.7, 3.55, 10.4), this.scene);
+    const fill = new PointLight("Service storage warm bounce", new Vector3(14.7 + SERVICE_OFFSET.x, 3.55, 10.4 + SERVICE_OFFSET.z), this.scene);
     fill.diffuse = new Color3(1, 0.83, 0.59);
     fill.intensity = 0.65;
     fill.range = 8;
@@ -1445,6 +1028,10 @@ export class GameRenderer {
       // These exports are already placed in world space. Keep the glTF root,
       // including its handedness transform, to preserve normals and winding.
       asset.addAllToScene();
+      const placement = new TransformNode(`Supply ${kind} placement`, this.scene);
+      placement.position.set(SERVICE_OFFSET.x, 0, SERVICE_OFFSET.z);
+      for (const node of [...asset.meshes, ...asset.transformNodes].filter((node) => !node.parent))
+        node.parent = placement;
       for (const mesh of asset.meshes) {
         mesh.isPickable = false;
         mesh.receiveShadows = true;
@@ -1486,6 +1073,10 @@ export class GameRenderer {
     }
     this.weaponAssets.push(asset);
     asset.addAllToScene();
+    const placement = new TransformNode("Relocated Last Call lounge", this.scene);
+    placement.position.set(LOUNGE_OFFSET.x, 0, LOUNGE_OFFSET.z);
+    for (const node of [...asset.meshes, ...asset.transformNodes].filter((node) => !node.parent))
+      node.parent = placement;
     // Accent lights affect this room only, and rank ahead of distant casino lights.
     // Otherwise the eight-light material cap silently drops the lounge shadow light.
     const litMeshes = [
@@ -1588,9 +1179,15 @@ export class GameRenderer {
       for (const node of imported.rootNodes) node.parent = root;
       for (const mesh of root.getChildMeshes()) {
         mesh.isPickable = false;
-        this.shadows[0].addShadowCaster(mesh, false);
+        this.shadowAt(table.x, table.z).addShadowCaster(mesh, false);
       }
     }
+  }
+  private shadowAt(x: number, z: number) {
+    return this.shadows.reduce((closest, candidate) => {
+      const a = closest.getLight().position, b = candidate.getLight().position;
+      return Math.hypot(x - a.x, z - a.z) <= Math.hypot(x - b.x, z - b.z) ? closest : candidate;
+    });
   }
   private slotIsland(island: Rect) {
     const { x, z, w, d } = island;
@@ -1678,7 +1275,7 @@ export class GameRenderer {
           for (const node of imported.rootNodes) node.parent = root;
           for (const mesh of root.getChildMeshes()) {
             mesh.isPickable = false;
-            this.shadows[0].addShadowCaster(mesh, false);
+            this.shadowAt(root.position.x, root.position.z).addShadowCaster(mesh, false);
           }
         }
       }),
@@ -1686,56 +1283,51 @@ export class GameRenderer {
   }
   private async loadTableAssets() {
     await Promise.all(
-      ["craps-table", "roulette-table", "ivory-die-a", "ivory-die-b"].map(
-        async (name, i) => {
-          const asset = await LoadAssetContainerAsync(
-            `/models/${name}.glb`,
-            this.scene,
-          );
-          if (this.scene.isDisposed) {
-            asset.dispose();
-            return;
-          }
-          this.weaponAssets.push(asset);
+      ["craps-table", "roulette-table", "ivory-die-a", "ivory-die-b"].map(async (name) => {
+        const asset = await LoadAssetContainerAsync(`/models/${name}.glb`, this.scene);
+        if (this.scene.isDisposed) {
+          asset.dispose();
+          return;
+        }
+        this.weaponAssets.push(asset);
+        const tables = name === "roulette-table" ? ROULETTE_TABLES : CRAPS_TABLES;
+        for (const table of tables) {
           const imported = asset.instantiateModelsToScene(
-            (n) => `${name}:${n}`,
-            false,
-            { doNotInstantiate: true },
-          );
-          const placement = new TransformNode(name + " placement", this.scene);
-          placement.position.set(35, 0, i === 1 ? 5 : -3);
+            (n) => `${table.id}:${name}:${n}`, false, { doNotInstantiate: true });
+          const placement = new TransformNode(`${table.id} ${name} placement`, this.scene);
+          placement.position.set(table.x, 0, table.z);
           for (const root of imported.rootNodes) root.parent = placement;
-          if (i >= 2) {
-            // Rotate inside glTF's conversion root so the documented pip faces stay correct.
+          if (name.startsWith("ivory-die")) {
+            const index = name === "ivory-die-a" ? 0 : 1;
+            // Keep die rotation beneath glTF's conversion root so the visible
+            // top pips still match the actual outcome for this specific table.
             const conversion = imported.rootNodes[0] as TransformNode;
-            const die = new TransformNode(name + " animated", this.scene);
+            const die = new TransformNode(`${table.id} ${name} animated`, this.scene);
             die.parent = conversion;
-            const children = conversion.getChildren();
-            for (const child of children) if (child !== die) child.parent = die;
-            die.position.set(i === 2 ? -0.27 : 0.28, 0.8601, -0.1);
-            this.diceMeshes[i - 2] = die;
+            for (const child of conversion.getChildren()) if (child !== die) child.parent = die;
+            die.position.set(index === 0 ? -0.27 : 0.28, 0.8601, -0.1);
+            const dice = this.diceMeshes.get(table.id) ?? [];
+            dice[index] = die;
+            this.diceMeshes.set(table.id, dice);
           }
+          const roulette = name === "roulette-table" ? { motion: new RouletteMotion() } as {
+            wheel?: TransformNode; ball?: TransformNode; motion: RouletteMotion;
+          } : undefined;
           for (const node of placement.getDescendants()) {
-            if (node.name === `${name}:roulette_wheel`)
-              this.rouletteWheel = node as TransformNode;
-            if (node.name === `${name}:roulette_ball`)
-              this.rouletteBall = node as TransformNode;
-            if (node.name.includes("Presentation red die"))
-              node.setEnabled(false);
+            if (roulette && node.name.endsWith(":roulette_wheel")) roulette.wheel = node as TransformNode;
+            if (roulette && node.name.endsWith(":roulette_ball")) roulette.ball = node as TransformNode;
+            if (node.name.includes("Presentation red die")) node.setEnabled(false);
           }
+          if (roulette) this.rouletteViews.set(table.id, roulette);
           for (const mesh of placement.getChildMeshes()) {
             mesh.isPickable = false;
             mesh.receiveShadows = true;
-            const material = mesh.material as unknown as {
-              maxSimultaneousLights?: number;
-            };
-            if (material && "maxSimultaneousLights" in material)
-              material.maxSimultaneousLights = 8;
-            for (const shadow of this.shadows)
-              shadow.addShadowCaster(mesh, false);
+            const material = mesh.material as unknown as { maxSimultaneousLights?: number };
+            if (material && "maxSimultaneousLights" in material) material.maxSimultaneousLights = 8;
+            for (const shadow of this.shadows) shadow.addShadowCaster(mesh, false);
           }
-        },
-      ),
+        }
+      }),
     );
   }
   private async loadWeaponAssets() {
@@ -2016,25 +1608,20 @@ export class GameRenderer {
         0.065,
       );
     }
-    const roulettePose = this.rouletteMotion.update(
-      sim,
-      sim.roulette,
-      ROULETTE_RULES.spinDuration,
-    );
-    if (this.rouletteWheel) {
-      this.rouletteWheel.rotationQuaternion = null;
-      this.rouletteWheel.rotation.y = roulettePose.wheelAngle;
-    }
-    if (this.rouletteBall) {
-      // Both nodes remain beneath glTF's conversion root. In these coordinates,
-      // a wheel pocket at angle alpha rotates to alpha - wheel.rotation.y.
-      this.rouletteBall.position.set(
-        ROULETTE_GEOMETRY.centerX +
-          Math.cos(roulettePose.ballAngle) * roulettePose.ballRadius,
-        roulettePose.ballHeight,
-        ROULETTE_GEOMETRY.centerZ +
-          Math.sin(roulettePose.ballAngle) * roulettePose.ballRadius,
-      );
+    for (const [id, view] of this.rouletteViews) {
+      const state = sim.rouletteTables[id as keyof typeof sim.rouletteTables];
+      const pose = view.motion.update(sim, state, ROULETTE_RULES.spinDuration);
+      if (view.wheel) {
+        view.wheel.rotationQuaternion = null;
+        view.wheel.rotation.y = pose.wheelAngle;
+      }
+      if (view.ball) {
+        view.ball.position.set(
+          ROULETTE_GEOMETRY.centerX + Math.cos(pose.ballAngle) * pose.ballRadius,
+          pose.ballHeight,
+          ROULETTE_GEOMETRY.centerZ + Math.sin(pose.ballAngle) * pose.ballRadius,
+        );
+      }
     }
     const faces = [
       Quaternion.Identity(),
@@ -2044,23 +1631,18 @@ export class GameRenderer {
       Quaternion.RotationAxis(Vector3.Right(), Math.PI / 2),
       Quaternion.RotationAxis(Vector3.Right(), Math.PI),
     ];
-    this.diceMeshes.forEach((die, i) => {
-      const rolling = !!sim.dice && !sim.dice.resolved;
-      const progress = sim.dice ? 1 - sim.dice.remaining / 1.6 : 1;
-      die.position.y =
-        0.8601 +
-        (rolling
-          ? Math.abs(Math.sin(progress * Math.PI * 4)) * (1 - progress) * 0.38
-          : 0);
-      die.position.z = -0.1 + (rolling ? (1 - progress) * 0.6 : 0);
-      die.rotationQuaternion = rolling
-        ? Quaternion.RotationYawPitchRoll(
-            progress * 17 + i,
-            progress * 23,
-            progress * 14,
-          )
-        : faces[(sim.dice?.values[i] ?? (i ? 4 : 3)) - 1];
-    });
+    for (const [id, dice] of this.diceMeshes) {
+      const state = sim.diceTables[id as keyof typeof sim.diceTables];
+      dice.forEach((die, i) => {
+        const rolling = !!state && !state.resolved;
+        const progress = state ? 1 - state.remaining / 1.6 : 1;
+        die.position.y = 0.8601 + (rolling ? Math.abs(Math.sin(progress * Math.PI * 4)) * (1 - progress) * 0.38 : 0);
+        die.position.z = -0.1 + (rolling ? (1 - progress) * 0.6 : 0);
+        die.rotationQuaternion = rolling
+          ? Quaternion.RotationYawPitchRoll(progress * 17 + i, progress * 23, progress * 14)
+          : faces[(state?.values[i] ?? (i ? 4 : 3)) - 1];
+      });
+    }
     if (this.bartender) {
       this.bartender.arms[0].rotation.x =
         -1.3 + Math.sin(this.time * 1.5) * 0.045;
@@ -2069,18 +1651,10 @@ export class GameRenderer {
       this.bartender.root.rotation.y = Math.sin(this.time * 0.3) * 0.035;
     }
     this.gun.setEnabled(sim.phase !== "ready");
-    for (const id of [
-      "lounge",
-      "shortcut",
-      "vip",
-      "vipExit",
-      "tables",
-      "tablesExit",
-    ] as const) {
-      const open =
-        id === "vipExit" ? sim.vip : id === "tablesExit" ? sim.tables : sim[id];
-      this.gates[id].setEnabled(!open);
-      this.gateSigns[id].setEnabled(!open);
+    for (const [id, gate] of Object.entries(this.gates)) {
+      const open = sim.doorsOpen[id as keyof typeof sim.doorsOpen];
+      gate.setEnabled(!open);
+      this.gateSigns[id]?.setEnabled(!open);
       this.gateSigns[id + "Back"]?.setEnabled(!open);
     }
     const characterShadows = this.serviceShadow ? [...this.shadows, this.serviceShadow] : this.shadows;
@@ -2111,13 +1685,17 @@ export class GameRenderer {
       }
       const meshes = v.root.getChildMeshes();
       const atCasinoLevel = Math.abs(e.y ?? 0) < 0.2;
-      const inLounge = atCasinoLevel && e.x > 4 && e.x < 16 && e.z > -12 && e.z < 3;
+      const loungeRoom = CASINO_ROOMS.lounge;
+      const inLounge = atCasinoLevel && e.x > loungeRoom.minX && e.x < loungeRoom.maxX &&
+        e.z > loungeRoom.minZ && e.z < loungeRoom.maxZ;
       for (const light of this.loungeAccentLights) {
         if (inLounge === light.includedOnlyMeshes.includes(meshes[0])) continue;
         if (inLounge) light.includedOnlyMeshes.push(...meshes);
         else light.includedOnlyMeshes = light.includedOnlyMeshes.filter((mesh) => !meshes.includes(mesh));
       }
-      const inService = atCasinoLevel && e.x > 4 && e.x < 16 && e.z > 3 && e.z < 12;
+      const supplyRoom = CASINO_ROOMS.supply;
+      const inService = atCasinoLevel && e.x > supplyRoom.minX && e.x < supplyRoom.maxX &&
+        e.z > supplyRoom.minZ && e.z < supplyRoom.maxZ;
       for (const light of this.serviceAccentLights) {
         if (inService === light.includedOnlyMeshes.includes(meshes[0])) continue;
         if (inService) light.includedOnlyMeshes.push(...meshes);

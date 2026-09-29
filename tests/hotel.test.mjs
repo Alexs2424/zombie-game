@@ -124,8 +124,8 @@ test("the furnished restaurant and both stair landings form a complete walking l
   const s = quiet();
   const [left, right] = HOTEL.stairs;
   const actor = ground(HOTEL.entrance.x, 18);
-  // Pass reception on its left, then enter the bottom landing from the lobby.
-  for (const point of [{ x: -10, z: 18 }, { x: -10, z: landing(left, 0).z }, landing(left, 0)])
+  // Keep the grand central approach clear of the new reception bay.
+  for (const point of [{ x: -6, z: 18 }, { x: -6, z: landing(left, 0).z }, landing(left, 0)])
     moveTo(s, actor, point);
   moveTo(s, actor, stairPoint(left, 0));
   followStair(s, actor, left, 0, 1);
@@ -149,10 +149,11 @@ test("the furnished restaurant and both stair landings form a complete walking l
   moveTo(s, actor, landing(right, 0));
   close(actor.y, 0, 1e-6, "other stair returns to lobby");
   for (const point of [
-    { x: -4, z: landing(right, 0).z }, { x: -4, z: 46 },
-    { x: -7, z: 46 }, { x: -7, z: 49 }, { x: -7, z: 46 }, { x: -4, z: 46 },
-    { x: -4, z: landing(left, 0).z }, { x: -10, z: landing(left, 0).z },
-    { x: -10, z: 18 }, { x: HOTEL.entrance.x, z: 18 }, { x: HOTEL.entrance.x, z: 10.5 },
+    { x: -4, z: landing(right, 0).z }, { x: -4, z: 42 },
+    { x: -7, z: 42 }, { x: -7, z: 44 }, { x: -7, z: 42 },
+    { x: 0, z: 42 }, { x: 0, z: 44 }, { x: 0, z: 42 }, { x: -4, z: 42 },
+    { x: -4, z: landing(left, 0).z }, { x: -6, z: landing(left, 0).z },
+    { x: -6, z: 18 }, { x: HOTEL.entrance.x, z: 18 }, { x: HOTEL.entrance.x, z: 10.5 },
   ]) {
     moveTo(s, actor, point);
     close(actor.y, 0, 1e-6, "lobby route stays on ground floor");
@@ -369,6 +370,7 @@ test("blocking the left stair makes an enemy physically reach the player using t
 test("enemies can pursue from the casino to the expanded rear of either hotel floor", () => {
   for (const destination of [ground(-7, 49), upper(-4, 48.25)]) {
     const s = quiet();
+    s.hotelMystery.passageOpen = true;
     s.player = destination;
     assert.equal(collides(s.player, RULES.playerRadius, s.rects), false,
       `rear destination is a clear walk surface: ${JSON.stringify(destination)}`);
@@ -393,12 +395,12 @@ test("enemies can pursue from the casino to the expanded rear of either hotel fl
 
 test("reception blocks the lobby while elevated dining furniture leaves the ground underneath walkable", () => {
   const s = quiet();
-  const atReception = ground(-4, 21);
-  moveActor(atReception, 0, 6, RULES.playerRadius, s.rects);
-  assert.ok(atReception.z < 22.95 && atReception.z > 22,
+  const atReception = ground(-12, 23);
+  moveActor(atReception, 0, -6, RULES.playerRadius, s.rects);
+  assert.ok(atReception.z > 21.2 && atReception.z < 21.8,
     `reception stops the player before the counter: ${JSON.stringify(atReception)}`);
-  const aroundReception = ground(-10, 21);
-  moveTo(s, aroundReception, { x: -10, z: 27 });
+  const aroundReception = ground(-6, 18);
+  moveTo(s, aroundReception, { x: -6, z: 27 });
 
   for (const x of [-11, 3]) {
     const upstairs = upper(x, 36);

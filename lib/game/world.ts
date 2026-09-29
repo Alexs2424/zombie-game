@@ -1,9 +1,11 @@
 /** Shared, deterministic hotel geometry, layered walking and navigation. Y is foot height. */
 import { HOTEL_FIXTURES } from './hotel-fixtures.ts';
 import { HOTEL_AMMO_CRATE, HOTEL_SERVICE_DOORS } from './hotel-gameplay.ts';
+import { HOTEL_RENOVATION_SOLIDS } from './hotel-renovation-layout.ts';
+import { CASINO_GROUND_POLYGONS, CASINO_ROOMS } from './casino-layout.ts';
 export type WorldPosition = { x: number; z: number; y?: number; surfaceId?: string };
 export type WorldVector = { x: number; y: number; z: number };
-export type WorldRect = { id: string; x: number; z: number; w: number; d: number; h: number; baseY?: number; yaw?: number };
+export type WorldRect = { id: string; x: number; z: number; w: number; d: number; h: number; baseY?: number; yaw?: number; transparentSight?: boolean };
 export type Point = { x: number; z: number };
 export type Stair = { id: string; cx: number; cz: number; side: number; innerRadius: number; outerRadius: number; bottomY: number; topY: number };
 const points = (pairs: number[][]): Point[] => pairs.map(([x, z]) => ({ x, z }));
@@ -18,7 +20,6 @@ export const HOTEL = {
     { id: 'hotel-stair-right', cx: 7, cz: 30, side: 1, innerRadius: 2.5, outerRadius: 5.5, bottomY: 0, topY: 4 },
   ] as Stair[],
 };
-const CASINO = points([[-16, -12], [42, -12], [42, 12], [-16, 12]]);
 const FOYER = points([[-5.5, 11.5], [-0.5, 11.5], [-0.5, 17], [-5.5, 17]]);
 export const HOTEL_SURFACES = [
   { id: 'hotel-foyer', kind: 'flat' as const, y: 0, polygon: FOYER },
@@ -40,6 +41,11 @@ function makeHotelRects() {
     if (i === 0) {
       rects.push(wall('hotel-wall-0-left', a, { x: -5.5, z: 15 }, 8.8));
       rects.push(wall('hotel-wall-0-right', { x: -0.5, z: 15 }, b, 8.8));
+    } else if (i === 6) {
+      // The only lobby change: a supply-room connection beyond the curved stair.
+      rects.push(wall('hotel-wall-6-north', a, { x: -23, z: 41.7 }, 8.8));
+      rects.push(wall('hotel-wall-6-south', { x: -23, z: 38.3 }, b, 8.8));
+      rects.push(wall('hotel-supply-lintel', { x: -23, z: 41.7 }, { x: -23, z: 38.3 }, 5.6, 3.2));
     } else rects.push(wall(`hotel-wall-${i}`, a, b, 8.8));
   }
   rects.push(wall('hotel-foyer-wall-left', { x: -5.5, z: 12 }, { x: -5.5, z: 15 }, 4.8));
@@ -57,14 +63,15 @@ function makeHotelRects() {
     if (i === 1 || i === 9) continue;
     rects.push(wall(`hotel-upper-rail-${i}`, HOTEL.upperPolygon[i], HOTEL.upperPolygon[(i + 1) % HOTEL.upperPolygon.length], 1.15, 4, 0.14));
   }
-  rects.push(...HOTEL_FIXTURES);
+  rects.push(...HOTEL_FIXTURES.map(f => ({ ...f, h: f.collisionH ?? f.h })));
+  rects.push(...HOTEL_RENOVATION_SOLIDS);
   rects.push(HOTEL_AMMO_CRATE);
   rects.push(...HOTEL_SERVICE_DOORS);
   return rects;
 }
 export const HOTEL_RECTS = makeHotelRects();
 export function hotelRoomName(p: WorldPosition): string | null {
-  if (p.z < 12) return null;
+  if (!pointInPolygon(p, FOYER) && !pointInPolygon(p, HOTEL.lobbyPolygon)) return null;
   if (p.surfaceId?.startsWith('hotel-stair')) return 'Grand Hotel Staircase';
   if ((p.y ?? 0) > 3.8) return 'Grand Hotel Restaurant';
   return p.z < 15 ? 'Hotel Entrance' : 'Grand Hotel Lobby';
@@ -88,7 +95,7 @@ function stairAt(p: Point, stair: Stair, strictSide = true) {
   return { t, radius, y: stair.bottomY + (stair.topY - stair.bottomY) * t };
 }
 function groundContains(p: Point) {
-  if (!(pointInPolygon(p, CASINO) || pointInPolygon(p, FOYER) || pointInPolygon(p, HOTEL.lobbyPolygon))) return false;
+  if (!(CASINO_GROUND_POLYGONS.some(polygon => pointInPolygon(p, polygon)) || pointInPolygon(p, FOYER) || pointInPolygon(p, HOTEL.lobbyPolygon))) return false;
   return !HOTEL.stairs.some(s => {
     const q = stairAt(p, s);
     return q && q.t > 1e-5;
@@ -251,12 +258,13 @@ const stairRayBounds = {
 };
 const upperBounds = polygonBounds(HOTEL.upperPolygon);
 /** Floors and their undersides occlude rays, as do the shared wall/guard colliders. */
-export function raycastWorld(o: WorldVector, d: WorldVector, rects: WorldRect[], maxDistance = Infinity): RayHit | null {
+export function raycastWorld(o: WorldVector, d: WorldVector, rects: WorldRect[], maxDistance = Infinity, sightOnly = false): RayHit | null {
   let best: RayHit | null = null;
   const accept = (hit: RayHit | null) => { if (hit && hit.distance <= maxDistance && (!best || hit.distance < best.distance)) best = hit; };
-  for (const q of rects) accept(rectHit(o, d, q));
+  for (const q of rects) if (!sightOnly || !q.transparentSight) accept(rectHit(o, d, q));
   if (Math.abs(d.y) > 1e-8) {
-    for (const [y, polygon] of [[0, CASINO], [4.87, CASINO], [0, FOYER], [4.77, FOYER], [0, HOTEL.lobbyPolygon], [8.8, HOTEL.lobbyPolygon], [4, HOTEL.upperPolygon], [3.72, HOTEL.upperPolygon]] as const) {
+    const casinoPlanes = Object.values(CASINO_ROOMS).flatMap(room => [[0, room.polygon], [room.ceilingY, room.polygon]] as const);
+    for (const [y, polygon] of [...casinoPlanes, [0, FOYER], [4.77, FOYER], [0, HOTEL.lobbyPolygon], [8.8, HOTEL.lobbyPolygon], [4, HOTEL.upperPolygon], [3.72, HOTEL.upperPolygon]] as const) {
       const distance = (y - o.y) / d.y;
       if (distance > 0.00001 && distance <= maxDistance && pointInPolygon({ x: o.x + d.x * distance, z: o.z + d.z * distance }, polygon)) accept({ distance, normal: { x: 0, y: d.y < 0 ? 1 : -1, z: 0 } });
     }
@@ -272,11 +280,11 @@ export function wallDistance(o: WorldVector, d: WorldVector, rects: WorldRect[])
 export function hasSight(a: WorldPosition, b: WorldPosition, rects: WorldRect[], height = 1) {
   const o = { x: a.x, y: (a.y ?? 0) + height, z: a.z }, delta = { x: b.x - a.x, y: (b.y ?? 0) - (a.y ?? 0), z: b.z - a.z };
   const len = Math.hypot(delta.x, delta.y, delta.z);
-  return len < 0.001 || !raycastWorld(o, { x: delta.x / len, y: delta.y / len, z: delta.z / len }, rects, len - 0.05);
+  return len < 0.001 || !raycastWorld(o, { x: delta.x / len, y: delta.y / len, z: delta.z / len }, rects, len - 0.05, true);
 }
 
 const NAV_STEP = 0.6;
-const navigationBounds = polygonBounds([...CASINO, ...FOYER, ...HOTEL.lobbyPolygon, ...HOTEL.upperPolygon]);
+const navigationBounds = polygonBounds([...CASINO_GROUND_POLYGONS.flat(), ...FOYER, ...HOTEL.lobbyPolygon, ...HOTEL.upperPolygon]);
 const NAV_MIN_X = Math.floor(navigationBounds.minX / NAV_STEP) * NAV_STEP;
 const NAV_MIN_Z = Math.floor(navigationBounds.minZ / NAV_STEP) * NAV_STEP;
 const NAV_NX = Math.ceil((navigationBounds.maxX - NAV_MIN_X) / NAV_STEP);

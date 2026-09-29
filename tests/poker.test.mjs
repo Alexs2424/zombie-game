@@ -63,7 +63,7 @@ function game(id = "poker-a") {
   s.start();
   s.round = 3;
   s.intermission = 1e6;
-  s.lounge = s.vip = true;
+  s.doorsOpen.lounge = s.doorsOpen.vip = true;
   s.refreshMap();
   s.points = 0; // Both the deal and the chosen exchange must be free.
   approach(s, id);
@@ -105,8 +105,8 @@ function mapState(s) {
 test("the challenge exposes two table anchors, five cards and one free swap", () => {
   assert.deepEqual(POKER_RULES, { handSize: 5, swapsPerRound: 1 });
   assert.deepEqual(POKER_TABLES.map(({ id, x, z, approachZ }) => ({ id, x, z, approachZ })), [
-    { id: "poker-a", x: 22, z: -3, approachZ: -4.7 },
-    { id: "poker-b", x: 22, z: 5, approachZ: 3.3 },
+    { id: "poker-a", x: 22.9, z: 5.2, approachZ: 3.5 },
+    { id: "poker-b", x: -17.1, z: -33.8, approachZ: -35.5 },
   ]);
   for (const table of POKER_TABLES) {
     const purchase = PURCHASES.find((p) => p.id === table.id);
@@ -256,7 +256,7 @@ test("opening either table pauses immediately, persists its hand and never charg
 
 test("opening rejects locked, distant, obstructed, inactive and invalid table requests without dealing", () => {
   const blocked = {
-    locked: (s) => { s.vip = false; s.refreshMap(); },
+    locked: (s) => { s.doorsOpen.vip = s.doorsOpen.vipExit = false; s.refreshMap(); },
     distant: (s) => { s.player.x += 2.21; },
     obstructed: (s) => {
       const anchor = { ...s.player };
@@ -269,6 +269,7 @@ test("opening rejects locked, distant, obstructed, inactive and invalid table re
     dead: (s) => { s.hurt(100); },
   };
   for (const id of tableIds) for (const [name, block] of Object.entries(blocked)) {
+    if (id === "poker-a" && name === "locked") continue; // Starting casino poker is open.
     const s = game(id);
     block(s);
     const before = structuredClone(s.pokerTables), inventory = structuredClone(s.inventory), map = mapState(s);
@@ -372,9 +373,9 @@ test("swap rechecks the active dialog, phase, VIP access, range and line of sigh
     dead: (s) => { s.phase = "dead"; },
   };
   for (const [name, block] of Object.entries(blocked)) {
-    const s = game();
-    prepareHand(s);
-    s.openPoker("poker-a");
+    const s = game("poker-b");
+    prepareHand(s, "poker-b");
+    s.openPoker("poker-b");
     block(s);
     const before = structuredClone(s.pokerTables), events = structuredClone(s.events);
     assert.equal(s.swapPoker(0), false, name);

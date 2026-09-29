@@ -5,6 +5,7 @@ import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
+import { PBRMaterial } from "@babylonjs/core/Materials/PBR/pbrMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
 import { PointLight } from "@babylonjs/core/Lights/pointLight";
 import { SpotLight } from "@babylonjs/core/Lights/spotLight";
@@ -12,6 +13,7 @@ import type { AbstractMesh } from "@babylonjs/core/Meshes/abstractMesh";
 import { HOTEL, HOTEL_RECTS, stairPoint } from "./world";
 import { buildHotelProps } from "./hotel-props";
 import { loadHotelFurniture } from "./hotel-assets";
+import { buildHotelRenovation } from "./hotel-renovation-scene";
 import { HOTEL_FIXTURES } from "./hotel-fixtures";
 import {
   HOTEL_AMMO_CRATE,
@@ -83,13 +85,13 @@ export function buildHotel(scene: Scene) {
     materials.push(m);
     return m;
   };
-  const stone = material("warm limestone", "#969386", 0.025);
-  const ivory = material("ivory plaster", "#aea99a", 0.025);
-  const teal = material("deep teal", "#315a54");
-  const tread = material("stair limestone", "#a7a08c", 0.025);
+  const stone = material("warm limestone", "#c7bfab", 0.025);
+  const ivory = material("ivory plaster", "#d6cdbb", 0.025);
+  const teal = material("forest green", "#304a3f");
+  const tread = material("stair limestone", "#c4bca8", 0.025);
   const brass = material("aged brass", "#aa8c53");
   const dark = material("dark trim", "#233834");
-  const ceiling = material("ceiling", "#626c62", 0.025);
+  const ceiling = material("ceiling", "#c1b8a6", 0.025);
   const lamp = material("warm diffuser", "#efd8a0", 0.9);
   const walnut = material("architectural walnut", "#3a2a22", 0.02);
   const crystal = material("chandelier cut glass", "#bdbea4", 0.12);
@@ -149,6 +151,13 @@ export function buildHotel(scene: Scene) {
   stone.diffuseTexture = marble;
   stone.specularColor.set(0.16, 0.14, 0.11);
   textures.push(marble);
+  const marbleFloor = new PBRMaterial("hotel polished ivory marble floor", scene);
+  marbleFloor.albedoColor = Color3.FromHexString("#d9d2c0");
+  marbleFloor.albedoTexture = marble;
+  marbleFloor.metallic = 0;
+  marbleFloor.roughness = 0.3;
+  marbleFloor.environmentIntensity = 0.65;
+  marbleFloor.maxSimultaneousLights = 8;
   brass.specularColor = new Color3(0.45, 0.36, 0.2);
   brass.specularPower = 48;
 
@@ -360,7 +369,11 @@ export function buildHotel(scene: Scene) {
     { x: foyer.maxX, z: foyer.maxZ },
     { x: foyer.minX, z: foyer.maxZ },
   ];
-  slab("lobby floor", HOTEL.lobbyPolygon, -0.28, 0, stone);
+  const lobbyFloor = slab("lobby floor", HOTEL.lobbyPolygon, -0.28, 0, stone);
+  batches.get(stone)!.splice(batches.get(stone)!.indexOf(lobbyFloor), 1);
+  lobbyFloor.material = marbleFloor;
+  lobbyFloor.freezeWorldMatrix();
+  ownedMeshes.push(lobbyFloor);
   // Foyer meets the existing casino at y=0: no step or raised threshold.
   slab("entrance floor", foyerPolygon, -0.26, -0.003, stone);
   slab(
@@ -411,7 +424,8 @@ export function buildHotel(scene: Scene) {
     if (
       rect.id.startsWith("hotel-prop-") ||
       rect.id.startsWith("hotel-service-door-") ||
-      rect.id === HOTEL_AMMO_CRATE.id
+      rect.id === HOTEL_AMMO_CRATE.id ||
+      rect.id.startsWith("hotel-gallery-") || rect.id.startsWith("hotel-salon-column-")
     )
       continue;
     const base = rect.baseY ?? 0;
@@ -871,9 +885,8 @@ export function buildHotel(scene: Scene) {
   artMaterial.diffuseTexture = artTexture;
   artMaterial.emissiveColor.set(0.05, 0.045, 0.03);
   for (const [x, y, z, yaw] of [
-    [-22.84, 2.7, 27, -Math.PI / 2],
-    [14.84, 2.7, 40, Math.PI / 2],
-    [-10, 2.7, 50.84, 0],
+    [-22.84, 2.3, 23.8, -Math.PI / 2],
+    [14.84, 2.3, 36.2, Math.PI / 2],
     [-11.5, 6.45, 50.84, 0],
     [0.6, 6.45, 50.84, 0],
   ]) {
@@ -889,9 +902,9 @@ export function buildHotel(scene: Scene) {
   }
 
   for (const [x, city, hour] of [
-    [-12.7, "LAS VEGAS", 10],
-    [-10.1, "LONDON", 6],
-    [-7.5, "TOKYO", 2],
+    [1.6, "LAS VEGAS", 10],
+    [3.7, "LONDON", 6],
+    [5.8, "MONTE CARLO", 2],
   ] as const) {
     const faceTexture = new DynamicTexture(
       `hotel ${city} clock face`,
@@ -1185,6 +1198,8 @@ export function buildHotel(scene: Scene) {
     [HOTEL.center.x, 7.4, upperCenterZ + 0.8, 1.8, 23],
     [HOTEL.center.x, 2.9, upperCenterZ + 1.5, 0.65, 19],
     [HOTEL.entrance.x, 3.5, 14, 0.48, 8],
+    [-12, 3.15, 20.4, 0.9, 11],
+    [-4, 2.8, 48.5, 0.45, 15],
   ]) {
     const light =
       lights.length < 2
@@ -1226,6 +1241,7 @@ export function buildHotel(scene: Scene) {
     merged.freezeWorldMatrix();
     ownedMeshes.push(merged);
   }
+  const renovation = buildHotelRenovation(scene);
   let propMeshes = buildHotelProps(scene);
   let furniture: Awaited<ReturnType<typeof loadHotelFurniture>> | undefined;
   let disposed = false;
@@ -1240,6 +1256,7 @@ export function buildHotel(scene: Scene) {
   const refreshLights = () => {
     const included = [
       ...ownedMeshes,
+      ...renovation.meshes,
       ...propMeshes,
       ...(furniture?.lightMeshes ?? []),
       ...enemyMeshes,
@@ -1269,6 +1286,7 @@ export function buildHotel(scene: Scene) {
   let gateWasOpen = false;
   const update = (sim: Simulation) => {
     if (disposed) return;
+    renovation.update(sim);
     if (gateWasOpen !== sim.hotel) {
       gateWasOpen = sim.hotel;
       gate.setEnabled(!sim.hotel);
@@ -1342,12 +1360,14 @@ export function buildHotel(scene: Scene) {
       if (disposed) return;
       disposed = true;
       furniture?.dispose();
+      renovation.dispose();
       disposeFallback();
       gate.material?.dispose();
       lights.forEach((light) => light.dispose());
       ownedMeshes.forEach((mesh) => mesh.dispose());
       textures.forEach((texture) => texture.dispose());
       materials.forEach((m) => m.dispose());
+      marbleFloor.dispose();
     },
   };
 }

@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { GameAudio } from "../lib/game/audio.ts";
 import { slotSoundSamples } from "../lib/game/slot-sounds.ts";
+import { SLOT_MACHINE_SOURCES } from "../lib/game/slot-machines.ts";
 
 // A graph-only Web Audio double: checks bus routing and immediate pause behavior,
 // without claiming to measure the sound of the synthesized effects.
@@ -183,7 +184,8 @@ const sampledSources = (audio) => audio.context.nodes.filter(
 const slotSources = (audio) => audio.context.nodes.filter(
   (node) => node.kind === "source" && audio.slotBuffers.includes(node.buffer),
 );
-const westAisle = { x: -10.2, z: -1.8 };
+const westCabinet = SLOT_MACHINE_SOURCES.find(source => source.id === 'slots-a:west:0');
+const westAisle = { x: westCabinet.x - 1.4, z: westCabinet.z };
 
 test("slot pass-bys follow the cabinet position and fade as the listener walks away", async () => {
   await fixture((audio) => {
@@ -196,10 +198,10 @@ test("slot pass-bys follow the cabinet position and fade as the listener walks a
     assert.equal(panner.pan.value, 1);
     assert.deepEqual(panner.outputs, [audio.world]);
     const nearLevel = gain.gain.value;
-    audio.update(0.1, true, { x: -12, z: -1.8 }, Math.PI, true, false);
+    audio.update(0.1, true, { x: westCabinet.x - 3.2, z: westCabinet.z }, Math.PI, true, false);
     assert.ok(gain.gain.value < nearLevel);
     assert.equal(panner.pan.value, -1);
-    audio.update(0.1, true, { x: -15, z: -1.8 }, Math.PI, true, false);
+    audio.update(0.1, true, { x: westCabinet.x - 6.2, z: westCabinet.z }, Math.PI, true, false);
     assert.equal(gain.gain.value, 0);
     assert.equal(slotSources(audio).length, 1, "only one cabinet can sound at a time");
   });
@@ -230,7 +232,7 @@ test("zombie voices and round stingers take priority over slot attract sounds", 
   await fixture((audio) => {
     audio.update(0.1, true, westAisle, 0, true, false);
     const first = slotSources(audio)[0];
-    audio.zombieCue("chase", westAisle, { x: -10.2, z: -2 }, 0);
+    audio.zombieCue("chase", westAisle, { x: westAisle.x, z: westAisle.z - 0.2 }, 0);
     assert.equal(first.stopped, true);
     audio.resetSlots();
     audio.update(5, true, westAisle, 0, true, false);

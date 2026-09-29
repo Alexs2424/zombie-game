@@ -8,16 +8,16 @@ export const POKER_TABLES = [
   {
     id: "poker-a",
     name: "The Dead Man’s Hand · Table I",
-    x: 22,
-    z: -3,
-    approachZ: -4.7,
+    x: 22.9,
+    z: 5.2,
+    approachZ: 3.5,
   },
   {
     id: "poker-b",
     name: "The Dead Man’s Hand · Table II",
-    x: 22,
-    z: 5,
-    approachZ: 3.3,
+    x: -17.1,
+    z: -33.8,
+    approachZ: -35.5,
   },
 ] as const;
 export type PokerState = {

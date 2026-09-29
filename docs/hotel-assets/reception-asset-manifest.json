@@ -1,0 +1,142 @@
+{
+  "provenance": "Original Blender-authored Belle Epoque reception; seeded procedural PBR textures, no downloaded assets.",
+  "units": "metres",
+  "coordinates": "Raw glTF +Y up, front -Z, floor-centered; consistent with existing hotel asset pipeline.",
+  "assets": [
+    {
+      "file": "hotel-reception.glb",
+      "bytes": 1695984,
+      "mesh_nodes": 13,
+      "material_batches": 13,
+      "triangles": 25622,
+      "vertices": 16485,
+      "bounds": [
+        [
+          -3.799999952316284,
+          0.0,
+          -0.8230634331703186
+        ],
+        [
+          3.799999952316284,
+          1.899999976158142,
+          0.8250000476837158
+        ]
+      ],
+      "expected_fixture": [
+        7.6,
+        1.65,
+        1.9
+      ],
+      "uvs": true,
+      "source": "reception-reception.blend"
+    },
+    {
+      "file": "hotel-reception-backdrop.glb",
+      "bytes": 2793156,
+      "mesh_nodes": 10,
+      "material_batches": 10,
+      "triangles": 62200,
+      "vertices": 44112,
+      "bounds": [
+        [
+          -4.099999904632568,
+          0.0,
+          -0.32499998807907104
+        ],
+        [
+          4.099999904632568,
+          3.3999998569488525,
+          0.2992209792137146
+        ]
+      ],
+      "expected_fixture": [
+        8.2,
+        0.65,
+        3.5
+      ],
+      "uvs": true,
+      "source": "reception-reception-backdrop.blend"
+    },
+    {
+      "file": "hotel-guest-suitcase.glb",
+      "bytes": 679272,
+      "mesh_nodes": 11,
+      "material_batches": 11,
+      "triangles": 5928,
+      "vertices": 3374,
+      "bounds": [
+        [
+          -0.5571066737174988,
+          1.4901161193847656e-08,
+          -0.3798174560070038
+        ],
+        [
+          0.5571066737174988,
+          0.9000000357627869,
+          0.3630894720554352
+        ]
+      ],
+      "expected_fixture": [
+        1.25,
+        0.85,
+        0.9
+      ],
+      "uvs": true,
+      "source": "reception-guest-suitcase.blend"
+    },
+    {
+      "file": "hotel-luggage-shelf.glb",
+      "bytes": 1596856,
+      "mesh_nodes": 11,
+      "material_batches": 11,
+      "triangles": 32532,
+      "vertices": 18380,
+      "bounds": [
+        [
+          -1.8799999952316284,
+          0.0,
+          -0.3500000238418579
+        ],
+        [
+          1.8799999952316284,
+          2.5,
+          0.33469271659851074
+        ]
+      ],
+      "expected_fixture": [
+        3.8,
+        0.7,
+        2.5
+      ],
+      "uvs": true,
+      "source": "reception-luggage-shelf.blend"
+    },
+    {
+      "file": "hotel-porter-cabinet.glb",
+      "bytes": 690896,
+      "mesh_nodes": 9,
+      "material_batches": 9,
+      "triangles": 5560,
+      "vertices": 3608,
+      "bounds": [
+        [
+          -0.8999999761581421,
+          0.0,
+          -0.32499998807907104
+        ],
+        [
+          0.853826105594635,
+          1.120486855506897,
+          0.28032344579696655
+        ]
+      ],
+      "expected_fixture": [
+        1.8,
+        0.65,
+        1.15
+      ],
+      "uvs": true,
+      "source": "reception-porter-cabinet.blend"
+    }
+  ]
+}

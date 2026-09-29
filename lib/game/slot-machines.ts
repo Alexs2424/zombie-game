@@ -1,4 +1,4 @@
-import { STATIC_RECTS, type Rect } from "./simulation.ts";
+import { SLOT_ISLANDS, type CasinoRect } from "./casino-layout.ts";
 
 export type SlotMachineSource = {
   id: string;
@@ -14,7 +14,7 @@ export type SlotMachineSource = {
 
 /** One layout for the visible cabinets and their outward-facing speakers. */
 export function slotCabinetsForIsland(
-  island: Pick<Rect, "id" | "x" | "z" | "w" | "d">,
+  island: Pick<CasinoRect, "id" | "x" | "z" | "w" | "d">,
 ): SlotMachineSource[] {
   const cabinets: SlotMachineSource[] = [];
   for (const side of [-1, 1] as const) {
@@ -40,5 +40,4 @@ export function slotCabinetsForIsland(
 }
 
 export const SLOT_MACHINE_SOURCES: readonly SlotMachineSource[] =
-  STATIC_RECTS.filter((rect) => rect.id === "slots-a" || rect.id === "slots-b")
-    .flatMap(slotCabinetsForIsland);
+  SLOT_ISLANDS.flatMap(slotCabinetsForIsland);
