@@ -1,0 +1,304 @@
+{
+  "loader": "Babylon NullEngine with actual GLTF AUTO left-handed conversion",
+  "assets": [
+    {
+      "file": "hands-tommy.glb",
+      "bytes": 1117564,
+      "meshes": 16,
+      "materials": 8,
+      "triangles": 19178,
+      "boundsBabylon": [
+        [
+          -0.28545939177274704,
+          -0.3934025913476944,
+          -0.8433080986142159
+        ],
+        [
+          0.5183110907673836,
+          0.06623820960521698,
+          0.2974621281027794
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-armchair.glb",
+      "bytes": 238404,
+      "meshes": 4,
+      "materials": 4,
+      "triangles": 3500,
+      "boundsBabylon": [
+        [
+          -0.6000000238418579,
+          0,
+          -0.5850000381469727
+        ],
+        [
+          0.6000000238418579,
+          1.0751999616622925,
+          0.5960000157356262
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-booth.glb",
+      "bytes": 273932,
+      "meshes": 4,
+      "materials": 4,
+      "triangles": 4364,
+      "boundsBabylon": [
+        [
+          -0.9399999976158142,
+          -4.3213367462158203e-7,
+          -2.955000162124634
+        ],
+        [
+          0.9360004663467407,
+          1.3500003814697266,
+          2.955000162124634
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-coffee-table.glb",
+      "bytes": 175856,
+      "meshes": 5,
+      "materials": 5,
+      "triangles": 2092,
+      "boundsBabylon": [
+        [
+          -1.1999999284744263,
+          0,
+          -0.5999999642372131
+        ],
+        [
+          1.1999999284744263,
+          0.5799999833106995,
+          0.5999999642372131
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-dining-table.glb",
+      "bytes": 1214972,
+      "meshes": 8,
+      "materials": 8,
+      "triangles": 28748,
+      "boundsBabylon": [
+        [
+          -2.0515711307525635,
+          0,
+          -1.5715711116790771
+        ],
+        [
+          2.0515711307525635,
+          1.284999966621399,
+          1.5715711116790771
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-host-stand.glb",
+      "bytes": 167516,
+      "meshes": 5,
+      "materials": 5,
+      "triangles": 2304,
+      "boundsBabylon": [
+        [
+          -0.675000011920929,
+          0,
+          -0.44999998807907104
+        ],
+        [
+          0.675000011920929,
+          1.1999999284744263,
+          0.42275571823120117
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-jukebox.glb",
+      "bytes": 564248,
+      "meshes": 7,
+      "materials": 7,
+      "triangles": 15004,
+      "boundsBabylon": [
+        [
+          -0.75,
+          0,
+          -0.42500001192092896
+        ],
+        [
+          0.75,
+          2.2799999713897705,
+          0.38026314973831177
+        ]
+      ],
+      "embeddedImages": 1,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-luggage-cart.glb",
+      "bytes": 166624,
+      "meshes": 5,
+      "materials": 5,
+      "triangles": 2948,
+      "boundsBabylon": [
+        [
+          -0.7699999809265137,
+          0,
+          -0.46000000834465027
+        ],
+        [
+          0.7699999809265137,
+          1.9690001010894775,
+          0.46000000834465027
+        ]
+      ],
+      "embeddedImages": 1,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-planter.glb",
+      "bytes": 204508,
+      "meshes": 5,
+      "materials": 5,
+      "triangles": 2484,
+      "boundsBabylon": [
+        [
+          -0.5792856812477112,
+          0,
+          -0.5743803381919861
+        ],
+        [
+          0.5638238191604614,
+          2.2872390747070312,
+          0.5802949666976929
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-reception.glb",
+      "bytes": 648080,
+      "meshes": 6,
+      "materials": 6,
+      "triangles": 15088,
+      "boundsBabylon": [
+        [
+          -3.4000000953674316,
+          0,
+          -1.0499999523162842
+        ],
+        [
+          3.4000000953674316,
+          1.6950000524520874,
+          1.0499999523162842
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-service-counter.glb",
+      "bytes": 249020,
+      "meshes": 5,
+      "materials": 5,
+      "triangles": 4420,
+      "boundsBabylon": [
+        [
+          -3.200000047683716,
+          0,
+          -0.6499999761581421
+        ],
+        [
+          3.200000047683716,
+          1.4499999284744263,
+          0.6222385764122009
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "hotel-sofa.glb",
+      "bytes": 278704,
+      "meshes": 4,
+      "materials": 4,
+      "triangles": 4468,
+      "boundsBabylon": [
+        [
+          -1.8999998569488525,
+          0,
+          -0.6600000262260437
+        ],
+        [
+          1.8999998569488525,
+          1.0751999616622925,
+          0.6499999761581421
+        ]
+      ],
+      "embeddedImages": 2,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    },
+    {
+      "file": "tommy.glb",
+      "bytes": 1076612,
+      "meshes": 11,
+      "materials": 6,
+      "triangles": 25892,
+      "boundsBabylon": [
+        [
+          -0.05700000002980232,
+          -0.21599999070167542,
+          -0.5299999713897705
+        ],
+        [
+          0.05700000002980232,
+          0.09750000387430191,
+          0.47999998927116394
+        ]
+      ],
+      "embeddedImages": 1,
+      "uvs": true,
+      "validIndices": true,
+      "finiteVertices": true
+    }
+  ]
+}

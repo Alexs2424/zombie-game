@@ -53,7 +53,7 @@ Development playtests include **Service overview**, **Service truck**, and
 | Sprint              | Shift                                      |
 | Reload              | R; an empty trigger also starts a reload   |
 | Buy/interact        | E when close to a purchase                 |
-| Switch weapons      | 1 / 2 / 3 / 4 / 5                          |
+| Switch weapons      | 1 / 2 / 3 / 4 / 5 / 6                      |
 | Pause/release mouse | Escape                                     |
 
 The start and pause screens provide mouse sensitivity, sound volume, and optional frame statistics. Losing focus pauses the run and clears held input. Controller support is deferred.
@@ -177,6 +177,40 @@ Both poker islands now use a detailed shared GLB with stitched oxblood rails, in
 Approach the south/customer side and press **E**. The solo game pauses while you select a card and confirm a free swap. Keep matching suits: a flush means five of the same suit, regardless of rank or order. Each table has its own hand, 52-card deck, and one-swap-per-round limit. Leaving, reopening, or entering intermission does not refresh that limit. A new actual round does. Previously discarded cards are shuffled back only when the draw pile runs out; cards still in the hand cannot be drawn again.
 
 The first flush unlocks **THE DEAD MAN’S HAND** for this run: a six-shot, 110-damage revolver with 48 reserve rounds. It equips automatically and uses weapon key **5**. Completing the other table refills it once. Completed tables retain their flush without granting repeated rewards. Roulette’s ammo rewards include the revolver once owned; Marlowe and the workshop can upgrade it to **ACE OF SPADES**. New runs reset both hands and the reward. Flush completion is represented separately from weapon ownership, ready for a future map-unlock reward; this pass adds no new room.
+
+## Grand Hotel and Last Service
+
+Buy the north casino gate for **2,000 chips** to open the Grand Hotel lobby and
+upstairs restaurant for the run. Two curved staircases connect the floors;
+continuous guards prevent dropping between levels. Five hotel service entrances
+become active after a three-second opening grace period, with modestly tougher
+hotel enemies.
+
+At the upstairs host stand, press **E** to ring the **Last Service** bell. Stay in
+the restaurant for **35 seconds** and clear all **12 ambushers**. Up to six
+ambushers can be active within the normal 14-enemy cap. Existing round enemies
+keep pursuing, while the normal spawn budget and intermission timer pause.
+Leaving for either stair fails the challenge; clear the survivors and ring again
+to retry. Ambushers award no chips, preventing free retry farming.
+
+Success equips **THE CHICAGO TYPEWRITER**, a Blender-modeled Tommy gun with a
+50-round drum, 250 reserve rounds, and a three-second reload. Select it with **6**.
+The crate beside the host stand refills its reserve for **500 chips**. Existing
+roulette ammo rewards and weapon upgrades support it; its upgraded form is
+**THE HOUSE COLLECTOR**, with a 75-round drum and heavier hits. It unlocks once
+per run and resets with a new game.
+
+Eleven original Blender furniture assets replace the lobby and restaurant
+placeholders. Marble, woodwork, Art Deco rails, chandeliers, wall art, clocks,
+service doors, and contact shading complete this hotel pass. Press **E** beside
+the lobby jukebox to start or stop an original, distance-panned lounge instrumental.
+Music and hotel cues follow the volume control and pause with the game.
+
+Gameplay rendering is capped at 60 FPS; menus and paused scenes use 15 FPS, and
+background rendering is disabled. This preview stays local. The development
+`?playtest=1` controls include the locked entrance, service bell, guided hotel
+loop, and an explicit ambusher-clear button for reward QA. Detailed editable
+asset sources and validation live in `docs/hotel-assets/` and `tools/hotel-assets/`.
 
 ## Slot-machine pass-by sounds — September 28, 2026
 

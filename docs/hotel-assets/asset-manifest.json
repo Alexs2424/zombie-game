@@ -1,0 +1,355 @@
+{
+  "provenance": "Original Blender-authored geometry and seeded procedural textures; fitted hands adapted from existing original hands-rifle.glb.",
+  "units": "metres",
+  "coordinates": "Raw glTF +Y up, furniture front -Z; booth back -X/open +X. Gun +Z forward, origin at receiver.",
+  "assets": [
+    {
+      "file": "tommy.glb",
+      "bytes": 1076612,
+      "mesh_nodes": 11,
+      "material_batches": 11,
+      "triangles": 25892,
+      "vertices": 13160,
+      "bounds": [
+        [
+          -0.05700000002980232,
+          -0.21599999070167542,
+          -0.5299999713897705
+        ],
+        [
+          0.05700000002980232,
+          0.09750000387430191,
+          0.47999998927116394
+        ]
+      ],
+      "expected_fixture": null,
+      "uvs": true
+    },
+    {
+      "file": "hotel-reception.glb",
+      "bytes": 648080,
+      "mesh_nodes": 6,
+      "material_batches": 6,
+      "triangles": 15088,
+      "vertices": 8596,
+      "bounds": [
+        [
+          -3.4000000953674316,
+          0.0,
+          -1.0499999523162842
+        ],
+        [
+          3.4000000953674316,
+          1.6950000524520874,
+          1.0499999523162842
+        ]
+      ],
+      "expected_fixture": [
+        6.8,
+        2.1,
+        1.7
+      ],
+      "uvs": true
+    },
+    {
+      "file": "hotel-jukebox.glb",
+      "bytes": 564248,
+      "mesh_nodes": 7,
+      "material_batches": 7,
+      "triangles": 15004,
+      "vertices": 8244,
+      "bounds": [
+        [
+          -0.75,
+          0.0,
+          -0.42500001192092896
+        ],
+        [
+          0.75,
+          2.2799999713897705,
+          0.38026314973831177
+        ]
+      ],
+      "expected_fixture": [
+        1.5,
+        0.85,
+        2.35
+      ],
+      "uvs": true
+    },
+    {
+      "file": "hotel-dining-table.glb",
+      "bytes": 1214972,
+      "mesh_nodes": 8,
+      "material_batches": 8,
+      "triangles": 28748,
+      "vertices": 15142,
+      "bounds": [
+        [
+          -2.0515711307525635,
+          0.0,
+          -1.5715711116790771
+        ],
+        [
+          2.0515711307525635,
+          1.284999966621399,
+          1.5715711116790771
+        ]
+      ],
+      "expected_fixture": [
+        4.2,
+        3.6,
+        1.35
+      ],
+      "uvs": true
+    },
+    {
+      "file": "hotel-sofa.glb",
+      "bytes": 278704,
+      "mesh_nodes": 4,
+      "material_batches": 4,
+      "triangles": 4468,
+      "vertices": 2296,
+      "bounds": [
+        [
+          -1.8999998569488525,
+          0.0,
+          -0.6600000262260437
+        ],
+        [
+          1.8999998569488525,
+          1.0751999616622925,
+          0.6499999761581421
+        ]
+      ],
+      "expected_fixture": [
+        3.8,
+        1.35,
+        1.12
+      ],
+      "uvs": true
+    },
+    {
+      "file": "hotel-armchair.glb",
+      "bytes": 238404,
+      "mesh_nodes": 4,
+      "material_batches": 4,
+      "triangles": 3500,
+      "vertices": 1800,
+      "bounds": [
+        [
+          -0.6000000238418579,
+          0.0,
+          -0.5850000381469727
+        ],
+        [
+          0.6000000238418579,
+          1.0751999616622925,
+          0.5960000157356262
+        ]
+      ],
+      "expected_fixture": [
+        1.2,
+        1.2,
+        1.12
+      ],
+      "uvs": true
+    },
+    {
+      "file": "hotel-booth.glb",
+      "bytes": 273932,
+      "mesh_nodes": 4,
+      "material_batches": 4,
+      "triangles": 4364,
+      "vertices": 2248,
+      "bounds": [
+        [
+          -0.9360004663467407,
+          -4.3213367462158203e-07,
+          -2.955000162124634
+        ],
+        [
+          0.9399999976158142,
+          1.3500003814697266,
+          2.955000162124634
+        ]
+      ],
+      "expected_fixture": [
+        2,
+        6,
+        1.4
+      ],
+      "uvs": true
+    },
+    {
+      "file": "hotel-luggage-cart.glb",
+      "bytes": 166624,
+      "mesh_nodes": 5,
+      "material_batches": 5,
+      "triangles": 2948,
+      "vertices": 1540,
+      "bounds": [
+        [
+          -0.7699999809265137,
+          0.0,
+          -0.46000000834465027
+        ],
+        [
+          0.7699999809265137,
+          1.9690001010894775,
+          0.46000000834465027
+        ]
+      ],
+      "expected_fixture": [
+        1.6,
+        1,
+        2
+      ],
+      "uvs": true
+    },
+    {
+      "file": "hotel-host-stand.glb",
+      "bytes": 167516,
+      "mesh_nodes": 5,
+      "material_batches": 5,
+      "triangles": 2304,
+      "vertices": 1400,
+      "bounds": [
+        [
+          -0.675000011920929,
+          0.0,
+          -0.44999998807907104
+        ],
+        [
+          0.675000011920929,
+          1.1999999284744263,
+          0.42275571823120117
+        ]
+      ],
+      "expected_fixture": [
+        1.35,
+        0.9,
+        1.2
+      ],
+      "uvs": true
+    },
+    {
+      "file": "hotel-service-counter.glb",
+      "bytes": 249020,
+      "mesh_nodes": 5,
+      "material_batches": 5,
+      "triangles": 4420,
+      "vertices": 2448,
+      "bounds": [
+        [
+          -3.200000047683716,
+          0.0,
+          -0.6499999761581421
+        ],
+        [
+          3.200000047683716,
+          1.4499999284744263,
+          0.6222385764122009
+        ]
+      ],
+      "expected_fixture": [
+        6.4,
+        1.3,
+        1.45
+      ],
+      "uvs": true
+    },
+    {
+      "file": "hotel-planter.glb",
+      "bytes": 204508,
+      "mesh_nodes": 5,
+      "material_batches": 5,
+      "triangles": 2484,
+      "vertices": 2376,
+      "bounds": [
+        [
+          -0.5638238191604614,
+          0.0,
+          -0.5743803381919861
+        ],
+        [
+          0.5792856812477112,
+          2.2872390747070312,
+          0.5802949666976929
+        ]
+      ],
+      "expected_fixture": [
+        1.2,
+        1.2,
+        2.35
+      ],
+      "uvs": true
+    },
+    {
+      "file": "hotel-coffee-table.glb",
+      "bytes": 175856,
+      "mesh_nodes": 5,
+      "material_batches": 5,
+      "triangles": 2092,
+      "vertices": 1072,
+      "bounds": [
+        [
+          -1.1999999284744263,
+          0.0,
+          -0.5999999642372131
+        ],
+        [
+          1.1999999284744263,
+          0.5799999833106995,
+          0.5999999642372131
+        ]
+      ],
+      "expected_fixture": [
+        2.4,
+        1.2,
+        0.58
+      ],
+      "uvs": true
+    },
+    {
+      "file": "hands-tommy.glb",
+      "bytes": 1117564,
+      "mesh_nodes": 16,
+      "material_batches": 16,
+      "vertices": 15117,
+      "triangles": 19178,
+      "bounds": [
+        [
+          -0.518311083316803,
+          -0.3934025764465332,
+          -0.8433080911636353
+        ],
+        [
+          0.28545939922332764,
+          0.06623820960521698,
+          0.29746213555336
+        ]
+      ],
+      "uvs": true
+    }
+  ],
+  "tommy": {
+    "muzzle": [
+      0,
+      0.025,
+      0.48
+    ],
+    "animation_nodes": [
+      "Magazine",
+      "Bolt"
+    ],
+    "hands": "hands-tommy.glb",
+    "support_grip": [
+      0,
+      -0.085,
+      0.226
+    ],
+    "right_grip": "Same profile and contact position as existing rifle",
+    "length": 1.01
+  }
+}
