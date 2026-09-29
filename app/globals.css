@@ -2382,3 +2382,5 @@ h1 i {
 .hide-explanations .range-panel > p:not(.range-kicker),
 .hide-explanations .dev-tool-list section > p,
 .hide-explanations .settings-note { display: none; }
+
+.range-panel input[type="number"] { width: 72px; margin-left: 8px; padding: 6px 8px; border: 1px solid #526264; border-radius: 4px; background: #263438; color: #e2e8e5; font: inherit; }

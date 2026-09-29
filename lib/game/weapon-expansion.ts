@@ -3,18 +3,18 @@ const gun = (name: string, upgradedName: string, label: string, magazine: number
   ({ name, upgradedName, label, magazine, reserve, damage, interval, reload, spread, pellets, price: 0, refill: 500 });
 // The spec's `revolver` id is taken by the poker table's Dead Man's Hand, so High Roller ships as `magnum`.
 export const EXTRA_WEAPONS = {
-  magnum: gun("HIGH ROLLER", "DIAMOND SIX", "Magnum", 6, 48, 160, .52, 2.9, .003),
+  magnum: gun("HIGH ROLLER", "DIAMOND SIX", "Magnum", 6, 48, 180, .52, 2.9, .003),
   // Shared by the hotel reward and Mystery Box; preserve the hotel's tuning.
-  tommy: gun("THE CHICAGO TYPEWRITER", "THE HOUSE COLLECTOR", "Drum SMG", 50, 250, 30, .105, 3, .017),
-  doublebarrel: gun("DOUBLE OR NOTHING", "ALL IN", "Double barrel", 2, 40, 24, .2, 2.4, .085, 10),
-  dual: gun("SNAKE EYES", "PAIR OF ACES", "Twin pistols", 16, 128, 34, .13, 3.1, .028),
+  tommy: gun("THE CHICAGO TYPEWRITER", "THE HOUSE COLLECTOR", "Drum SMG", 50, 250, 32, .105, 3, .017),
+  doublebarrel: gun("DOUBLE OR NOTHING", "ALL IN", "Double barrel", 2, 40, 36, .2, 2.4, .085, 10),
+  dual: gun("SNAKE EYES", "PAIR OF ACES", "Twin pistols", 16, 128, 42, .13, 3.1, .028),
   machinepistol: gun("THE ENFORCER", "COLLECTION NOTICE", "Machine pistol", 32, 192, 19, .055, 2.1, .03),
-  lever: gun("SILVER DOLLAR", "STERLING STANDARD", "Lever action", 8, 64, 95, .62, .55, .003),
-  autoshotgun: gun("LAST CALL", "CLOSING TIME", "Auto shotgun", 5, 40, 17, .3, .6, .05, 8),
-  sniper: gun("THE EYE IN THE SKY", "OMNISCIENT", "Bolt action", 5, 35, 150, 1.25, 3.2, .0008),
-  lmg: gun("HOUSE EDGE", "THE HOUSE ALWAYS COLLECTS", "LMG", 60, 240, 43, .11, 5.2, .016),
-  launcher: gun("THE DEBT COLLECTOR", "FINAL NOTICE", "Grenade launcher", 1, 8, 220, 1, 2.8, .01),
-  flare: gun("RED CARPET", "INFERNO LOUNGE", "Flare pistol", 1, 12, 100, .9, 2.2, .012),
+  lever: gun("SILVER DOLLAR", "STERLING STANDARD", "Lever action", 8, 64, 140, .62, .55, .003),
+  autoshotgun: gun("LAST CALL", "CLOSING TIME", "Auto shotgun", 5, 40, 24, .3, .6, .05, 8),
+  sniper: gun("THE EYE IN THE SKY", "OMNISCIENT", "Bolt action", 5, 35, 420, 1.25, 3.2, .0008),
+  lmg: gun("HOUSE EDGE", "THE HOUSE ALWAYS COLLECTS", "LMG", 60, 240, 55, .11, 5.2, .016),
+  launcher: gun("THE DEBT COLLECTOR", "FINAL NOTICE", "Grenade launcher", 1, 8, 420, 1, 2.8, .01),
+  flare: gun("RED CARPET", "INFERNO LOUNGE", "Flare pistol", 1, 12, 140, .9, 2.2, .012),
   axe: gun("FIRE EXIT", "EVACUATION NOTICE", "Fire axe", 1, 0, 260, 1.35, 0, 0),
   stick: gun("STICKMAN", "STICKMAN", "Craps rake", 3, 0, 350, .8, 0, 0),
 };

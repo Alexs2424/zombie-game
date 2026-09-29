@@ -1,5 +1,15 @@
 # Decision log
 
+## 2026-09-29 — Two-gun loadouts and optional Mystery Box rewards
+
+**User direction:** Q/E switch guns, carry only two guns, explicitly choose whether
+to take Mystery Box rewards, and differentiate gun power against scaling zombie
+health. **Working choices:** F interacts; third-gun pickups replace the active gun;
+melee tools are separate; Mystery Box offers last 15 seconds and pause with the
+run. Poker/hotel rewards use the same two-gun grant path. Round/damage tuning is
+owned by `docs/combat-balance.md`, and reward behavior by `quests-and-easter-eggs.md`.
+These are implemented mechanics in this change, without new story canon.
+
 ## 2026-09-28 — Cashier portrait map polish
 
 **User direction:** improve the cashier portrait's artwork. **Working choice:** an original period proprietor painting with a walnut/bronze frame. The sitter remains unnamed; this visual replacement does not establish Voss's appearance, a new character identity, or a change to the 1976 setting. Recorded in `characters.md`, with the exact generation prompt in `docs/portrait-art/README.md`.

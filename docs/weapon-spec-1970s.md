@@ -1,5 +1,7 @@
 # Mystery Box Weapon Specification — 1970s Casino Set
 
+> Current damage, round progression and two-gun inventory rules are owned by [combat-balance.md](combat-balance.md). Its tuning supersedes numerical damage and inventory assumptions in this original art/design spec; period models and sound direction remain unchanged.
+
 ## Purpose and visual rule
 
 This document is the handoff specification for the next weapon-art and gameplay pass. The setting is a privately owned casino in the late 1970s. Every weapon should look like something that could have been bought, inherited, confiscated, or hidden in that building between roughly 1968 and 1979. The names below are fictional in-game names; do not copy a real manufacturer's logo, serial-marking system, or distinctive trade dress.

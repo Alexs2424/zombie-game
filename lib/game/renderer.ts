@@ -676,7 +676,7 @@ export class GameRenderer {
         this.label(`${id} ${side} lintel`, doorNames[id] ?? "ROOM ACCESS", labelX,
           r.h - 0.26, labelZ, Math.max(1.6, span - 0.2), 0.38, "#e5c881", rotation);
         this.gateSigns[id + (side > 0 ? "Back" : "")] = this.label(`${id} ${side} price`,
-          `E • OPEN ${PRICES[id as keyof typeof PRICES]} CHIPS`, labelX, 1.65, labelZ,
+          `F • OPEN ${PRICES[id as keyof typeof PRICES]} CHIPS`, labelX, 1.65, labelZ,
           Math.min(2.8, span - 0.15), 0.42, "#e5c881", rotation);
       }
     }
@@ -805,7 +805,7 @@ export class GameRenderer {
         this.box("ammo plaque", purchase.x, 1.5, z + 0.06, 2.5, 1.6, 0.12, wood, fallback);
         this.label("ammo header", "PISTOL AMMUNITION", purchase.x, 2.05, z + 0.28,
           2.08, 0.3, "#cbd4bb", Math.PI);
-        this.label("ammo price", "E • REFILL 150", purchase.x, 0.905, z + 0.28,
+        this.label("ammo price", "F • REFILL 150", purchase.x, 0.905, z + 0.28,
           1.9, 0.24, "#d9c58d", Math.PI);
         for (let i = 0; i < 5; i++)
           this.box("ammunition carton", purchase.x - 0.6 + i * 0.3, 1.5, z + 0.2, 0.22, 0.3, 0.19, trim, fallback);
