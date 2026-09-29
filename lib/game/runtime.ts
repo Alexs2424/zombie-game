@@ -74,6 +74,7 @@ export type WeaponCard = {
   at: number;
 };
 export type GameView = {
+  previewControls?: boolean;
   aiming?: boolean;
   scoped?: boolean;
   casino: CasinoView;
@@ -234,7 +235,6 @@ export class GameRuntime {
   private pendingStart = false;
   private suppressUntil = 0;
   private disposed = false;
-  private playtesting = false;
   private hotelTour: { x: number; z: number }[] = [];
   private hotelTourCompleted = false;
   private slotWalkRemaining = 0;
@@ -278,6 +278,7 @@ export class GameRuntime {
     this.accumulated = 0;
   }
   private keyDown = (e: KeyboardEvent) => {
+    if (e.target instanceof HTMLElement && (e.target.closest(".dev-panel") || e.target.matches("input, textarea, select") || e.target.isContentEditable)) return;
     if (this.sim.pokerOpen) {
       if (e.code === "Escape") {
         e.preventDefault();
@@ -364,9 +365,10 @@ export class GameRuntime {
     }
   }
   private keyUp = (e: KeyboardEvent) => this.keys.delete(e.code);
+  private previewInput = false;
   private mouseMove = (e: MouseEvent) => {
     if (
-      document.pointerLockElement !== this.canvas ||
+      (document.pointerLockElement !== this.canvas && !(this.previewInput && e.target === this.canvas && (e.buttons & 2))) ||
       this.sim.phase !== "playing"
     )
       return;
@@ -378,10 +380,11 @@ export class GameRuntime {
     );
   };
   private mouseDown = (e: MouseEvent) => {
+    const controlsActive = document.pointerLockElement === this.canvas || (this.previewInput && e.target === this.canvas);
     // Hold right button for aligned sights; B retains the double-barrel alternate shot.
     if (
       e.button === 2 &&
-      document.pointerLockElement === this.canvas &&
+      controlsActive &&
       this.sim.phase === "playing" &&
       !this.sim.holdingChips
     ) {
@@ -390,7 +393,7 @@ export class GameRuntime {
     }
     if (
       e.button !== 0 ||
-      document.pointerLockElement !== this.canvas ||
+      !controlsActive ||
       this.sim.phase !== "playing" ||
       performance.now() < this.suppressUntil
     )
@@ -410,6 +413,7 @@ export class GameRuntime {
   private pointerChange = () => {
     this.clearInput();
     if (document.pointerLockElement === this.canvas) {
+      this.previewInput = false;
       if (this.pendingStart) {
         this.sim = new Simulation();
         this.zombieAudio.reset();
@@ -427,6 +431,22 @@ export class GameRuntime {
     this.publish();
   };
   private pointerError = () => {
+    // Embedded preview browsers may not support pointer lock. Keep a normal
+    // drag interaction available in the development workspace only.
+    if (process.env.NODE_ENV !== "production" && new URLSearchParams(window.location.search).has("playtest")) {
+      if (this.pendingStart) {
+        this.sim = new Simulation();
+        this.zombieAudio.reset(); this.audio.resetZombies(); this.audio.resetSlots();
+        this.sim.start();
+      } else this.sim.resume();
+      this.pendingStart = false;
+      this.previewInput = true;
+      this.clearInput();
+      this.canvas.focus();
+      this.onError("");
+      this.publish();
+      return;
+    }
     this.pendingStart = false;
     this.sim.pause();
     this.clearInput();
@@ -453,24 +473,12 @@ export class GameRuntime {
           "Audio is unavailable. You can still play; check your browser sound settings.",
         ),
       );
-    if (this.playtesting) {
-      if (this.pendingStart) {
-        this.sim = new Simulation();
-        this.zombieAudio.reset();
-        this.audio.resetZombies();
-        this.audio.resetSlots();
-        this.sim.start();
-        this.pendingStart = false;
-      } else this.sim.resume();
-      this.publish();
-      return;
-    }
     try {
       this.canvas.focus();
       await this.canvas.requestPointerLock();
     } catch (error) {
       this.pointerError();
-      if (error instanceof Error)
+      if (error instanceof Error && !this.previewInput)
         this.onError(
           `Mouse capture was blocked: ${error.message} Open the game in a focused Chrome tab and click Enter or Resume.`,
         );
@@ -506,7 +514,6 @@ export class GameRuntime {
       this.debugAction(action);
       return;
     }
-    this.playtesting = true;
     const soundScenario = ["sound-chase", "sound-last", "sound-horde"].includes(action);
     const hotelScenario = action.startsWith("hotel-");
     const slotScenario = ["sound-slots-west", "sound-slots-east", "sound-slots-bank"].includes(action);
@@ -1027,6 +1034,7 @@ export class GameRuntime {
       grenades: s.grenades,
       knifeReady: s.knifeCooldown <= 0 && s.grenadeCooldown <= 0,
       phase: s.phase,
+      previewControls: this.previewInput,
       health: s.health,
       maxHealth: s.maxHealth,
       inventory: WEAPON_ORDER.map((id) => ({
