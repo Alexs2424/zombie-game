@@ -37,4 +37,6 @@ Stereo placement, per-weapon gain and ±2.5% pitch variation are applied at runt
 Objective checks (onset position, level at 30/110/300 ms, spectrogram shape) were run while tuning.
 These are synthetic approximations and have not yet been judged by ear in a playtest.
 
+Thrown grenades and launcher impacts share the revised heavy blast cue: sharp pressure front, falling low-frequency body, irregular rumble, scattered debris and warm room reflections. It is original synthesized sound, not a live-explosive recording. Grenade throws preload the sample; the runtime retains a layered fallback when audio loading fails.
+
 All 94 game cues are packed into `assets/source/weapons-1970s/weapon-sound-audition.blend` as editable sound strips with weapon chapter markers. Open it in Blender and press Space to audition. Synthesis remains reproducible in Python; Blender is the native model authoring and sound audition workspace. A 32-second mixed preview is in `docs/weapon-1970s-assets/weapon-sound-showcase.wav`.

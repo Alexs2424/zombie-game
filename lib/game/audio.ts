@@ -277,8 +277,9 @@ export class GameAudio {
     if (event.type === "dry") this.burst(0.025, 0.12, 2600);
     if (event.type === "grenadeThrow") this.burst(0.12, 0.1, 900);
     if (event.type === "explosion") {
-      this.burst(0.65, 0.45, 220);
-      this.tone(90, 0.7, 0.3, "sine", 25);
+      this.burst(0.09, 0.55, 2400);
+      this.burst(0.8, 0.4, 180);
+      this.tone(110, 0.8, 0.35, "sine", 38);
     }
     if (event.type === "shot") {
       const heavy = event.weapon === "shotgun",

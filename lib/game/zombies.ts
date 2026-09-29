@@ -4,14 +4,50 @@ import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
+import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { LIMBS, zombiePose, type HitRegion } from "./zombie-pose";
 import type { Enemy } from "./simulation";
 
+type ZombieMesh = {
+  part: string; material: string; positions: number[]; indices: number[];
+  normals?: number[]; uvs?: number[]; colors?: number[];
+};
 type ZombieAsset = {
   colors: Record<string, string>;
-  variants: { name: string; meshes: { part: string; material: string; positions: number[]; indices: number[] }[] }[];
+  surfaces?: Record<string, string>;
+  roughness?: Record<string, number>;
+  variants: { name: string; palette?: Record<string, string>; meshes: ZombieMesh[] }[];
 };
+// Surface maps belong to the scene; per-enemy material disposal keeps them alive.
+const surfaceTextures = new WeakMap<Scene, Map<string, Texture>>();
+const preparedMeshes = new WeakMap<ZombieMesh, VertexData>();
+function surfaceTexture(scene: Scene, surface: string, channel: 'color' | 'normal') {
+  let textures = surfaceTextures.get(scene);
+  if (!textures) { textures = new Map(); surfaceTextures.set(scene, textures); }
+  const key = `${surface}-${channel}`;
+  let texture = textures.get(key);
+  if (!texture) {
+    texture = new Texture(`/textures/zombies/${key}.png`, scene);
+    texture.gammaSpace = channel === 'color';
+    texture.anisotropicFilteringLevel = 4;
+    if (channel === 'normal') texture.level = surface === 'skin' ? .8 : .38;
+    textures.set(key, texture);
+  }
+  return texture;
+}
+function prepareMesh(data: ZombieMesh) {
+  let vd = preparedMeshes.get(data);
+  if (!vd) {
+    vd = new VertexData(); vd.positions = data.positions; vd.indices = data.indices;
+    vd.normals = data.normals ?? [];
+    if (!data.normals) VertexData.ComputeNormals(data.positions, data.indices, vd.normals);
+    if (data.uvs) vd.uvs = data.uvs;
+    if (data.colors) vd.colors = data.colors;
+    preparedMeshes.set(data, vd);
+  }
+  return vd;
+}
 export async function loadZombieAsset(): Promise<ZombieAsset> {
   const response = await fetch('/models/zombies.json');
   if (!response.ok) throw new Error(`Zombie models: ${response.status}`);
@@ -24,11 +60,19 @@ export function createZombie(scene: Scene, id: number, asset: ZombieAsset) {
   const materials = Object.fromEntries(Object.entries(asset.colors).map(([name, hex]) => {
     const m = new StandardMaterial(`zombie-${id}-${name}`, scene);
     m.diffuseColor = Color3.FromHexString(hex);
-    if (name === 'suit') m.diffuseColor = Color3.FromHexString(['#364e49', '#593e49', '#3b425a'][id % 3]);
-    if (name === 'skin') m.diffuseColor = Color3.FromHexString(['#849574', '#a0a082', '#819393'][id % 3]);
+    if (variant.palette?.[name]) m.diffuseColor = Color3.FromHexString(variant.palette[name]);
+    else if (name === 'suit') m.diffuseColor = Color3.FromHexString(['#364e49', '#593e49', '#3b425a'][id % 3]);
+    else if (name === 'skin') m.diffuseColor = Color3.FromHexString(['#849574', '#a0a082', '#819393'][id % 3]);
     m.specularColor.set(name === 'blood' ? .22 : .045, .025, .025);
+    const roughness = asset.roughness?.[name] ?? .85;
+    m.specularPower = 8 + 120 * (1 - roughness) ** 2;
+    const surface = asset.surfaces?.[name];
+    if (surface) {
+      m.diffuseTexture = surfaceTexture(scene, surface, 'color');
+      m.bumpTexture = surfaceTexture(scene, surface, 'normal');
+    }
     m.maxSimultaneousLights = 8;
-    if (name === 'eye') m.emissiveColor.set(.3,.15,.015);
+    if (name === 'eye') m.emissiveColor.set(.65,.38,.08);
     return [name,m];
   }));
   const pivots: Record<string, TransformNode> = { body: root };
@@ -48,9 +92,8 @@ export function createZombie(scene: Scene, id: number, asset: ZombieAsset) {
   const wounds: { mesh: Mesh; region: HitRegion; stump: boolean }[] = [];
   for (const data of variant.meshes) {
     const mesh = new Mesh(data.part, scene);
-    const vd = new VertexData(); vd.positions=data.positions; vd.indices=data.indices;
-    vd.normals=[]; VertexData.ComputeNormals(data.positions, data.indices, vd.normals);
-    vd.applyToMesh(mesh); mesh.material=materials[data.material];
+    prepareMesh(data).applyToMesh(mesh); mesh.material=materials[data.material];
+    mesh.useVertexColors = !!data.colors;
     mesh.isPickable=false; mesh.receiveShadows=true;
     if (data.part.startsWith('wound_') || data.part.startsWith('stump_')) {
       const stump = data.part.startsWith('stump_');

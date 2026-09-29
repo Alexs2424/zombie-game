@@ -530,11 +530,14 @@ export class GameRuntime {
     if (resume) void this.enter();
   }
   /** Small cheats for the current run; preserve pause, position, weapons and input mode. */
-  debugAction(action: "unlock-all" | "add-chips") {
+  debugAction(action: "unlock-all" | "add-chips" | "toggle-invulnerability") {
     if (process.env.NODE_ENV === "production") return;
     const s = this.sim;
     if (s.phase === "ready" || s.phase === "dead") return;
-    if (action === "unlock-all") {
+    if (action === "toggle-invulnerability") {
+      s.invulnerable = s.invulnerable > 1 ? 0 : 99999;
+      s.notify(s.invulnerable ? "DEBUG · Invulnerability on" : "DEBUG · Invulnerability off · damage enabled");
+    } else if (action === "unlock-all") {
       s.doorsOpen = { lounge: true, shortcut: true, vip: true, vipExit: true, supply: true, cashier: true };
       s.hotel = s.speakeasy = true;
       s.paintingOpen = true;
@@ -549,7 +552,7 @@ export class GameRuntime {
   /** Development-only UI controls exercise the real simulation and shop without pointer-lock automation. */
   testAction(action: string) {
     if (process.env.NODE_ENV === "production") return;
-    if (action === "unlock-all" || action === "add-chips") {
+    if (action === "unlock-all" || action === "add-chips" || action === "toggle-invulnerability") {
       this.debugAction(action);
       return;
     }
@@ -730,7 +733,10 @@ export class GameRuntime {
       smg: [CASINO_ANCHORS.smg.x + 1.5, CASINO_ANCHORS.smg.z, -Math.PI / 2, 0],
       rifle: [CASINO_ANCHORS.rifle.x + 0.1, CASINO_ANCHORS.rifle.z, -Math.PI / 2, 0],
       vip: [-24, -23, 0.5 + Math.PI / 2, 0.08],
-      couch: [-11, -31, Math.PI / 2, 0.2],
+      couch: [-11, -27, Math.PI / 2, 0.2],
+      casinoCouchNorth: [-12.8, 7.2, 0, 0.2],
+      casinoCouchSouth: [21, -15.3, Math.PI, 0.2],
+      loungeCouch: [-39, -0.7, 0, 0.2],
       gate: [-31.5, -2, -Math.PI / 2, 0],
       barExit: [-31.5, -14, -Math.PI / 2, 0],
       vipGate: [-23, -18.5, Math.PI, 0],
@@ -752,7 +758,7 @@ export class GameRuntime {
     if (poses[action]) {
       this.hotelTour = [];
       this.slotWalkRemaining = 0;
-      if (["bar", "loungeWide", "loungeEntrance", "loungeSeating", "smg"].includes(action)) {
+      if (["bar", "loungeWide", "loungeEntrance", "loungeSeating", "loungeCouch", "smg"].includes(action)) {
         s.doorsOpen.lounge = true;
       }
       if (["vip", "couch", "workshop", "poker-b"].includes(action)) {

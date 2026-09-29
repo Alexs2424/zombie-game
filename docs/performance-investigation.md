@@ -20,6 +20,8 @@ No GLB assets, polygon detail, texture sizes, render resolution, shadow resoluti
 
 Raw captures: [baseline](performance/baseline.json) and [optimized](performance/after.json).
 
+These measurements compare `95184c8` with performance commit `d388582`. The PR subsequently integrated `main` at `a7d5fc7`, retaining its new detailed couches, zombie models, and explosion effects. The numerical comparisons below were recorded before those additions; they are not a new benchmark of the integrated model set.
+
 | View | Draw calls before → after | Mean render CPU before → after | Render CPU p95 before → after |
 | --- | ---: | ---: | ---: |
 | Casino | 2,591 → 1,546 (40% fewer) | 14.76 → 13.37 ms | 16.60 → 14.80 ms |
@@ -42,7 +44,7 @@ Visual checks cover casino, hotel, supply, and both craps-table views. Comparabl
 
 Regression coverage includes all 1,024 door combinations, full navigation-graph comparisons, stairs/upper floor, moved static geometry, cross-simulation cache isolation, dynamic hotel-light membership, and shadow-frustum boundary cases.
 
-Validation completed: **244 tests passed**, `npm run typecheck`, `npm run lint`, and `npm run build`. The build reports vinext dependency import/chunk warnings but completes successfully. Source assets under `public/models/` are unchanged.
+Original validation: **244 tests passed**, `npm run typecheck`, `npm run lint`, and `npm run build`. After integration with `a7d5fc7`, **247 tests passed**, alongside type checking, lint, production build, and the browser scenery/chip/hand checks. The build reports vinext dependency import/chunk warnings but completes successfully. This PR preserves the source assets under `public/models/` from `main`.
 
 ## Measurement method
 
