@@ -7,7 +7,11 @@ is development-only. Casino integration tests remain at `/?playtest=1`.
 Use a repeatable loop: select a scenario, select a weapon, click Play scenario,
 perform the test, press Escape, inspect health/ammunition/enemies, then Reset.
 Changing a scenario creates a fresh simulation with the same initial state.
-Changing a weapon or using inspector utilities pauses the simulation. Click Play
+Use Add enemies to add 1, 5 or 10 pursuing zombies or stationary targets to any
+scenario without resetting position, health, ammo or pause state. Spawn placement
+favors free space ahead of the player, avoids cover and other enemies, and keeps
+a four-metre buffer around the player. The lab allows up to 60 living enemies.
+Changing a weapon or using other inspector utilities pauses the simulation. Click Play
 to continue. Reset restores damage, health, all weapons and twenty grenades.
 Invulnerability is opt-in. There are no automatic waves or automatic ammo refills.
 

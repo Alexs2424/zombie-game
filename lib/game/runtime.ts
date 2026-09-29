@@ -1,4 +1,4 @@
-import { createRange, refillRange, type RangeScenario } from './test-range';
+import { createRange, refillRange, addRangeEnemies, type RangeScenario } from './test-range';
 import {
   Simulation,
   RULES,
@@ -552,6 +552,13 @@ export class GameRuntime {
   }
   rangeAction(action: string) {
     if (!this.rangeMode) return;
+    if (action.startsWith("spawn:")) {
+      const [, count, behavior] = action.split(":");
+      const added = addRangeEnemies(this.sim, Number(count), behavior === "stationary");
+      this.sim.notify(added ? `Added ${added} zombies` : "No spawn space · clear enemies or restart");
+      this.publish();
+      return;
+    }
     this.pause();
     if (["targets", "pursuit", "blast", "empty", "reset"].includes(action)) {
       if (action !== "reset") this.rangeScenario = action as RangeScenario;

@@ -2365,3 +2365,5 @@ h1 i {
 .range-panel h1 { letter-spacing: normal; text-transform: none; }
 .range-workspace .progress-list, .range-workspace .wave-box, .range-workspace .points, .range-workspace .weapon-slots { display: none; }
 .range-workspace .hud-top { justify-content: center; }
+
+.range-spawn-buttons { display: flex; gap: 8px; }
