@@ -1278,6 +1278,8 @@ export function buildHotel(scene: Scene) {
       gate.setEnabled(!sim.hotel && !entry);
       entry?.setOpen(sim.hotel);
       gatePrice.setEnabled(!sim.hotel);
+      // Refresh the static captures once when the purchase gate changes state.
+      refreshLights();
     }
     const phase = sim.hotelChallenge.phase;
     const lines =
