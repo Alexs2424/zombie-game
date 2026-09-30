@@ -30,7 +30,7 @@ export function buildHotelRenovation(scene: Scene) {
     m.albedoColor = Color3.FromHexString(color).toLinearSpace();
     m.metallic = metallic;
     m.roughness = roughness;
-    m.maxSimultaneousLights = 8;
+    m.maxSimultaneousLights = 10;
     materials.push(m);
     return m;
   };

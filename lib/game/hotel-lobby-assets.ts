@@ -11,7 +11,7 @@ export async function loadHotelLobbyAsset(scene: Scene, kind: "stairs" | "ceilin
   const meshes: AbstractMesh[] = [];
   for (const material of container.materials) {
     const lit = material as typeof material & { maxSimultaneousLights?: number };
-    if ("maxSimultaneousLights" in lit) lit.maxSimultaneousLights = 8;
+    if ("maxSimultaneousLights" in lit) lit.maxSimultaneousLights = 10;
   }
   for (const mesh of container.meshes) {
     mesh.isPickable = false;
