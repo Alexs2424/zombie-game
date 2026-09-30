@@ -5,5 +5,12 @@
     "editableParts": 1694,
     "evaluatedVertices": 165852,
     "packedImages": 1
+  },
+  {
+    "asset": "hotel-grand-ceiling",
+    "status": "passed",
+    "editableParts": 1241,
+    "evaluatedVertices": 61728,
+    "packedImages": 0
   }
 ]
