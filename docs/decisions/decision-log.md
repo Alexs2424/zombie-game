@@ -225,3 +225,7 @@ The user approved all roadmap improvements, requested a methodical PR stack, and
 ## 2026-09-30 — Stair and balcony architectural treatment
 
 **Implemented working design:** original Blender curved walnut handrails, closed green guard panels with applied brass ornament, turned newels, curved stone spandrels, balcony fascia, and fluted leaf-capital columns. Preserve solid guard behavior and existing route geometry. Closed panels deliberately avoid decorative openings with invisible bullet barriers. The [asset record](../hotel-assets/lobby/README.md) owns source, exports, and validation.
+
+## 2026-09-30 — Coordinated chandelier and ceiling family
+
+**Implemented working design:** tiered brass and cut-crystal fixtures, opal candle lamps, plaster canopy roses, and stepped coffer molding replace the simple ring fixtures and thin dark ceiling beams. Main and dining fixtures share one visual family; the rear salon uses matching shallow opal bowls. Editable Blender source, exported GLB, and game-view verification live in the [fidelity asset record](../hotel-assets/lobby/README.md). No narrative or gameplay changes.
