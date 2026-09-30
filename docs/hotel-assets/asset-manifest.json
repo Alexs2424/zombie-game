@@ -79,21 +79,21 @@
     },
     {
       "file": "hotel-sofa.glb",
-      "bytes": 278704,
-      "mesh_nodes": 4,
-      "material_batches": 4,
-      "triangles": 4468,
-      "vertices": 2296,
+      "bytes": 1047216,
+      "mesh_nodes": 5,
+      "material_batches": 5,
+      "triangles": 18020,
+      "vertices": 12607,
       "bounds": [
         [
-          -1.8999998569488525,
+          -1.8949999809265137,
           0,
-          -0.6600000262260437
+          -0.6539999842643738
         ],
         [
-          1.8999998569488525,
-          1.0751999616622925,
-          0.6499999761581421
+          1.8949999809265137,
+          1.0986841917037964,
+          0.6650000214576721
         ]
       ],
       "expected_fixture": [
@@ -101,25 +101,27 @@
         1.35,
         1.12
       ],
-      "uvs": true
+      "uvs": true,
+      "source": "assets/source/hotel-sofa.blend",
+      "generator": "tools/hotel-lobby/build_seating.py"
     },
     {
       "file": "hotel-armchair.glb",
-      "bytes": 238404,
+      "bytes": 840432,
       "mesh_nodes": 4,
       "material_batches": 4,
-      "triangles": 3500,
-      "vertices": 1800,
+      "triangles": 9988,
+      "vertices": 7683,
       "bounds": [
         [
-          -0.6000000238418579,
+          -0.5949999690055847,
           0,
-          -0.5850000381469727
+          -0.5789999961853027
         ],
         [
-          0.6000000238418579,
-          1.0751999616622925,
-          0.5960000157356262
+          0.5949999690055847,
+          1.090218186378479,
+          0.5900000333786011
         ]
       ],
       "expected_fixture": [
@@ -127,25 +129,27 @@
         1.2,
         1.12
       ],
-      "uvs": true
+      "uvs": true,
+      "source": "assets/source/hotel-armchair.blend",
+      "generator": "tools/hotel-lobby/build_seating.py"
     },
     {
       "file": "hotel-booth.glb",
-      "bytes": 273932,
+      "bytes": 1159116,
       "mesh_nodes": 4,
       "material_batches": 4,
-      "triangles": 4364,
-      "vertices": 2248,
+      "triangles": 22008,
+      "vertices": 15388,
       "bounds": [
         [
-          -0.9360004663467407,
-          -4.3213367462158203e-7,
-          -2.955000162124634
+          -0.9589999914169312,
+          0,
+          -2.993000030517578
         ],
         [
-          0.9399999976158142,
-          1.3500003814697266,
-          2.955000162124634
+          0.9700000286102295,
+          1.360032558441162,
+          2.993000030517578
         ]
       ],
       "expected_fixture": [
@@ -153,7 +157,9 @@
         6,
         1.4
       ],
-      "uvs": true
+      "uvs": true,
+      "source": "assets/source/hotel-booth.blend",
+      "generator": "tools/hotel-lobby/build_seating.py"
     },
     {
       "file": "hotel-luggage-cart.glb",
@@ -370,7 +376,7 @@
       "bounds": [
         [
           -0.5571066737174988,
-          1.4901161193847656e-8,
+          1.4901161193847656e-08,
           -0.3798174560070038
         ],
         [
