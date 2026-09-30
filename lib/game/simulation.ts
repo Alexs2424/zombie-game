@@ -151,8 +151,10 @@ export type Enemy = WorldPosition & {
   limbDamage?: Partial<Record<Limb, number>>;
   wounds?: Partial<Record<HitRegion, number>>;
   hotelAmbush?: boolean;
+  /** Co-op attacks retain their selected victim through the windup. */
+  targetId?: string;
 };
-export type Grenade = V3 & { id: number; vx: number; vy: number; vz: number; fuse: number; kind?: "grenade" | "flare"; damage?: number };
+export type Grenade = V3 & { ownerId?: string; id: number; vx: number; vy: number; vz: number; fuse: number; kind?: "grenade" | "flare"; damage?: number };
 export const RULES = {
   playerRadius: 0.32,
   enemyRadius: 0.3,
@@ -403,6 +405,8 @@ export function waveStats(round: number) {
 }
 
 export class Simulation {
+  /** Empty in solo; assigned by the authoritative co-op room. */
+  actorId = "";
   phase: Phase = "ready";
   player: WorldPosition = { ...CASINO_ANCHORS.spawn, y: 0, surfaceId: "ground" };
   yaw = 0.16;
@@ -494,7 +498,7 @@ export class Simulation {
   lastFirearm: WeaponId = "pistol";
   meleeRemaining = 0;
   private meleeWeapon: WeaponId | null = null;
-  fires: (V3 & {id:number; remaining:number; tick:number; damage:number})[] = [];
+  fires: (V3 & {ownerId?:string; id:number; remaining:number; tick:number; damage:number})[] = [];
   perks: Record<PerkId, boolean> = {
     reserve: false,
     quickPour: false,
@@ -523,7 +527,8 @@ export class Simulation {
   knifeRemaining = 0;
   knifeCooldown = 0;
   grenadeCooldown = 0;
-  private nextGrenadeId = 1;
+  /** Shared allocator in co-op so projectile IDs stay unique across players. */
+  nextGrenadeId = 1;
   events: GameEvent[] = [];
   rects: Rect[] = [];
   walkRects: Rect[] = [];
@@ -1260,16 +1265,17 @@ export class Simulation {
     this.grenades--; this.grenadeCooldown=.65;
     this.holdingChips = false;
     this.reloadRemaining=0;
-    this.projectiles.push({ id:this.nextGrenadeId++, ...this.player, y:(this.player.y ?? 0)+1.5,
+    this.projectiles.push({ ownerId:this.actorId || undefined, id:this.nextGrenadeId++, ...this.player, y:(this.player.y ?? 0)+1.5,
       vx:Math.sin(this.yaw)*Math.cos(this.pitch)*8, vz:Math.cos(this.yaw)*Math.cos(this.pitch)*8,
       vy:2.5-Math.sin(this.pitch)*8, fuse:2.2 });
     this.events.push({type:"grenadeThrow"});
     return true;
   }
-  private stepGrenades(dt: number) {
+  private stepGrenades(dt: number, actors: readonly Simulation[] = [this]) {
     this.explosions.forEach(e => e.remaining -= dt);
     this.explosions = this.explosions.filter(e => e.remaining > 0);
     for (const g of this.projectiles) {
+      const owner = actors.find(actor => actor.actorId === (g.ownerId ?? ""));
       g.fuse -= dt;
       // Sweep each short flight segment against walls, stair treads and floor slabs.
       const steps = Math.max(1, Math.ceil(dt / (1 / 120)));
@@ -1304,11 +1310,11 @@ export class Simulation {
       }
       if (g.fuse > 0) continue;
       if (g.kind === "flare") {
-        this.fires.push({id:g.id,x:g.x,y:g.y,z:g.z,remaining:4,tick:0,damage:g.damage ?? 100});
-        this.events.push({type:"explosion",weapon:"flare",position:g});continue;
+        this.fires.push({ownerId:g.ownerId,id:g.id,x:g.x,y:g.y,z:g.z,remaining:4,tick:0,damage:g.damage ?? 100});
+        owner?.events.push({type:"explosion",weapon:"flare",position:g});continue;
       }
       this.explosions.push({ id: g.id, x: g.x, y: g.y, z: g.z, remaining: 0.5 });
-      this.events.push({ type: "explosion", position: { x: g.x, z: g.z }, weapon:g.kind === "grenade" ? "launcher" : undefined });
+      owner?.events.push({ type: "explosion", position: { x: g.x, z: g.z }, weapon:g.kind === "grenade" ? "launcher" : undefined });
       const exposed = (p: WorldPosition) => {
         const origin = { x: g.x, y: g.y + 0.02, z: g.z };
         const delta = { x: p.x - origin.x, y: (p.y ?? 0) + 0.8 - origin.y, z: p.z - origin.z };
@@ -1320,18 +1326,21 @@ export class Simulation {
       for (const e of this.enemies) {
         const distance = dist(g, e);
         if (e.health > 0 && distance < 4.5 && exposed(e))
-          this.damageEnemy(e, (g.damage ?? 220) * (1 - distance / 5.5), false);
+          owner?.damageEnemy(e, (g.damage ?? 220) * (1 - distance / 5.5), false);
       }
-      const distance = dist(g, this.player);
-      if (distance < 4.5 && exposed(this.player)) this.hurt(90 * (1 - distance / 4.5));
+      if (owner) {
+        const distance = dist(g, owner.player);
+        if (distance < 4.5 && exposed(owner.player)) owner.hurt(90 * (1 - distance / 4.5));
+      }
     }
     this.projectiles=this.projectiles.filter(g=>g.fuse>0);
     for (const fire of this.fires) {
+      const owner = actors.find(actor => actor.actorId === (fire.ownerId ?? ""));
       fire.remaining-=dt;fire.tick-=dt;
       if (fire.tick>0) continue;
       fire.tick=.5;
-      for (const e of this.enemies) if(e.health>0 && dist(fire,e)<2.5 && hasSight(fire,e,this.rects,.5)) this.damageEnemy(e,fire.damage*.25,false);
-      if(dist(fire,this.player)<2.5 && hasSight(fire,this.player,this.rects,.5)) this.hurt(12);
+      for (const e of this.enemies) if(e.health>0 && dist(fire,e)<2.5 && hasSight(fire,e,this.rects,.5)) owner?.damageEnemy(e,fire.damage*.25,false);
+      if(owner && dist(fire,owner.player)<2.5 && hasSight(fire,owner.player,this.rects,.5)) owner.hurt(12);
     }
     this.fires=this.fires.filter(f=>f.remaining>0);
   }
@@ -1390,7 +1399,7 @@ export class Simulation {
     const spread = cfg.spread * (this.aiming && cfg.pellets === 1 ? .35 : 1) + this.bloom;
     this.bloom = Math.min(maxBloom(this.weapon), this.bloom + bloomPerShot(this.weapon));
     if (this.weapon === "launcher" || this.weapon === "flare") {
-      this.projectiles.push({id:this.nextGrenadeId++,...this.player,y:(this.player.y ?? 0)+1.5,
+      this.projectiles.push({ownerId:this.actorId || undefined,id:this.nextGrenadeId++,...this.player,y:(this.player.y ?? 0)+1.5,
         vx:Math.sin(this.yaw)*Math.cos(this.pitch)*17,vz:Math.cos(this.yaw)*Math.cos(this.pitch)*17,
         vy:1-Math.sin(this.pitch)*17,fuse:this.weapon === "flare" ? 1.2 : 1.6,
         kind:this.weapon === "flare" ? "flare" : "grenade",damage:this.weaponDamage()});
@@ -1495,14 +1504,14 @@ export class Simulation {
       this.events.push({ type: "hotelComplete", weapon: "tommy" });
     }
   }
-  spawn(ambush = false) {
+  spawn(ambush = false, players: readonly WorldPosition[] = [this.player]) {
     if (this.enemies.filter(e => e.health > 0).length >= RULES.cap) return false;
     if (ambush && (this.hotelChallenge.phase !== "active" || this.hotelChallenge.pending <= 0 || this.hotelChallengeAlive >= HOTEL_RULES.ambushCap)) return false;
     const options = ALL_SPAWNS.filter(
       (p, i) =>
         this.spawnEnabled(i) &&
         (!ambush || (SPAWN_RECORDS[i].room === "hotel" && (p.y ?? 0) === 4)) &&
-        dist(p, this.player) >= 8 &&
+        players.every(player => dist(p, player) >= 8) &&
         !collides(p, 0.35, this.rects) &&
         this.enemies.every((e) => dist(e, p) > 0.8),
     );
@@ -1557,11 +1566,16 @@ export class Simulation {
     input: { forward: number; strafe: number; sprint: boolean; fire: boolean },
   ) {
     if (this.phase !== "playing") return;
+    this.stepPlayer(dt, input);
+    this.stepWorld(dt);
+  }
+  /** Advance only this actor: personal timers, movement and attacks. */
+  stepPlayer(
+    dt: number,
+    input: { forward: number; strafe: number; sprint: boolean; fire: boolean },
+  ) {
+    if (this.phase !== "playing") return;
     dt = Math.min(0.05, Math.max(0, dt));
-    this.time += dt;
-    for (const corpse of this.corpses) corpse.age += dt;
-    this.corpses = this.corpses.filter(corpse => corpse.age < 6);
-    this.codeFlash = this.codeFlash > 0 ? Math.max(0,this.codeFlash-dt) : Math.min(0,this.codeFlash+dt);
     if (this.mystery && !this.mystery.resolved) {
       this.mystery.remaining = Math.max(0,this.mystery.remaining-dt);
       if (!this.mystery.remaining) {
@@ -1578,8 +1592,6 @@ export class Simulation {
         this.notify(this.mystery.message);
       }
     }
-    this.roundCueRemaining = Math.max(0, this.roundCueRemaining - dt);
-    if (!this.roundCueRemaining) this.roundCue = null;
     this.damageAgo += dt;
     this.invulnerable = Math.max(0, this.invulnerable - dt);
     this.fireCooldown = Math.max(0, this.fireCooldown - dt);
@@ -1601,17 +1613,8 @@ export class Simulation {
       this.meleeWeapon=null;
     }
     if (knifeBefore > .37 && this.knifeRemaining <= .37) this.knifeContact();
-    this.stepGrenades(dt);
-    if (this.phase !== "playing") return;
     this.messageRemaining = Math.max(0, this.messageRemaining - dt);
     this.damageBoostRemaining = Math.max(0, this.damageBoostRemaining - dt);
-    if (this.lounge) this.loungeAge += dt;
-    if (this.vip) this.vipAge += dt;
-    if (this.tables) this.tablesAge += dt;
-    if (this.hotel) this.hotelAge += dt;
-    if (this.supply) this.supplyAge += dt;
-    if (this.cashier) this.cashierAge += dt;
-    if (this.speakeasy) this.speakeasyAge += dt;
     for (const { id } of ROULETTE_TABLES) {
       const spin = this.rouletteTables[id];
       if (!spin) continue;
@@ -1707,6 +1710,27 @@ export class Simulation {
       this.navigation.update(this.player);
       this.navTimer = 0.3;
     }
+  }
+  /** Advance the shared world exactly once after all actor inputs. */
+  stepWorld(dt: number, actors: readonly Simulation[] = [this]) {
+    if (this.phase !== "playing") return;
+    dt = Math.min(0.05, Math.max(0, dt));
+    this.time += dt;
+    for (const corpse of this.corpses) corpse.age += dt;
+    this.corpses = this.corpses.filter(corpse => corpse.age < 6);
+    this.codeFlash = this.codeFlash > 0 ? Math.max(0,this.codeFlash-dt) : Math.min(0,this.codeFlash+dt);
+    this.roundCueRemaining = Math.max(0, this.roundCueRemaining - dt);
+    if (!this.roundCueRemaining) this.roundCue = null;
+    if (this.lounge) this.loungeAge += dt;
+    if (this.vip) this.vipAge += dt;
+    if (this.tables) this.tablesAge += dt;
+    if (this.hotel) this.hotelAge += dt;
+    if (this.supply) this.supplyAge += dt;
+    if (this.cashier) this.cashierAge += dt;
+    if (this.speakeasy) this.speakeasyAge += dt;
+    this.stepGrenades(dt, actors);
+    const living = () => actors.filter(actor => actor.phase === "playing" && actor.health > 0);
+    if (!living().length) return;
     this.enemies = this.enemies.filter((e) => e.health > 0);
     this.stepHotelChallenge(dt);
     // Hold regular wave spawning and intermission during the finite ambush.
@@ -1739,7 +1763,7 @@ export class Simulation {
         this.enemies.length < RULES.cap &&
         this.spawnTimer <= 0
       ) {
-        this.spawnTimer = this.spawn() ? waveStats(this.round).cadence : 0.4;
+        this.spawnTimer = this.spawn(false, living().map(actor => actor.player)) ? waveStats(this.round).cadence : 0.4;
       }
     }
     for (const e of this.enemies) {
@@ -1747,16 +1771,23 @@ export class Simulation {
       e.age += dt;
       e.flash = Math.max(0, e.flash - dt);
       e.cooldown = Math.max(0, e.cooldown - dt);
-      const range = dist(e, this.player);
-      e.yaw = Math.atan2(this.player.x - e.x, this.player.z - e.z);
+      const candidates = living();
+      if (!candidates.length) break;
+      // Lock a windup to its victim; a dead victim cancels that attack.
+      let actor = e.attack > 0 ? candidates.find(candidate => candidate.actorId === e.targetId) : undefined;
+      if (e.attack > 0 && e.targetId !== undefined && !actor) { e.attack = 0; e.cooldown = 0.3; }
+      actor ??= candidates.reduce((best, candidate) => dist(e, candidate.player) < dist(e, best.player) ? candidate : best);
+      e.targetId = actor.actorId;
+      const range = dist(e, actor.player);
+      e.yaw = Math.atan2(actor.player.x - e.x, actor.player.z - e.z);
       if (e.attack > 0) {
         e.attack -= dt;
         if (e.attack <= 0) {
           if (
-            dist(e, this.player) < RULES.attackRange + 0.15 &&
-            hasSight(e, this.player, this.rects)
+            dist(e, actor.player) < RULES.attackRange + 0.15 &&
+            hasSight(e, actor.player, this.rects)
           )
-            this.hurt(RULES.attackDamage);
+            actor.hurt(RULES.attackDamage);
           e.cooldown = 1.1;
         }
         continue;
@@ -1764,7 +1795,7 @@ export class Simulation {
       if (
         range < RULES.attackRange &&
         e.cooldown <= 0 &&
-        hasSight(e, this.player, this.rects)
+        hasSight(e, actor.player, this.rects)
       ) {
         e.attackStyle = ((e.attackStyle ?? e.id % 3) + 1) % 3;
         e.attack = RULES.attackWindup;
@@ -1777,9 +1808,9 @@ export class Simulation {
       }
       if (range < 0.65) continue;
       // Walking must go around low tables even when the eye-height ray clears them.
-      const target = canWalkDirect(e, this.player, RULES.enemyRadius + 0.02, this.rects)
-        ? this.player
-        : this.navigation.next(e);
+      const target = canWalkDirect(e, actor.player, RULES.enemyRadius + 0.02, this.rects)
+        ? actor.player
+        : actor.navigation.next(e);
       let vx = target.x - e.x,
         vz = target.z - e.z;
       const mag = Math.hypot(vx, vz);
@@ -1813,7 +1844,7 @@ export class Simulation {
             this.spawnEnabled(i) &&
             (!e.hotelAmbush || (SPAWN_RECORDS[i].room === "hotel" && (p.y ?? 0) === 4)) &&
             !collides(p, RULES.enemyRadius, this.rects) &&
-            dist(p, this.player) > 10 &&
+            living().every(candidate => dist(p, candidate.player) > 10) &&
             this.enemies.every((o) => o === e || dist(o, p) > 1),
         );
         if (replacement) {
@@ -1824,7 +1855,6 @@ export class Simulation {
           e.stuck = 0;
         }
       }
-      if (this.health <= 0) break;
     }
   }
 }
