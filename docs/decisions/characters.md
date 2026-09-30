@@ -1,6 +1,6 @@
 # Characters
 
-**Latest direction (2026-09-30):** the user rejected the first voice pilot. [Round 02](voice-direction-round-02.md) owns the stronger sexy, raspy, exaggerated performance targets and replacement writing proposals; these supersede the prior pilot’s artistic direction. Final casting is pending custom-voice access.
+**Latest direction (2026-09-30):** [Round 04](voice-direction-round-04.md) owns the requested original redesign of all six voices and more theatrical scripts. Custom API access now works; 18 original previews are generated. Casting is awaiting listening and selection, not blocked by the prior account plan.
 
 
 Status: agent-selected working cast. The user has delegated character preferences. Names and details below are production defaults until revised, not final recorded performances.
@@ -122,7 +122,7 @@ When challenged publicly, he enlarges the performance and makes the room laugh w
 ## Marlowe
 
 - **Identity:** Edwin Marlowe, appears about 63; long-serving bartender originally from near Leeds, working for Voss by 1959. His exact age and supernatural status remain open. His sister Elsie is alive in England. See the [Marlowe dossier](character-backstories/marlowe.md).
-- **Voice:** dry, airy middle-low register, light northern English accent. Unhurried, courteous, and plain. Voss fills a room; Marlowe lets a silence do the work.
+- **Voice:** weathered middle-register tenor with papery rasp and a reedy breath, light northern English accent. Usually courteous and plain, with a startling sharp bark when provoked. Voss fills a room; Marlowe lets a silence do the work.
 - **Behavior:** remembers orders and notices absence. His clues sound like observations from a working bartender, not prophetic riddles.
 - **Humor:** small corrections delivered without inviting laughter.
 - **Appearance:** meticulously kept burgundy staff waistcoat, older badge and casino crest, practical white shirt. Preserve recognition of the existing bartender while improving the model later.

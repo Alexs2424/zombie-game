@@ -1,0 +1,284 @@
+{
+  "round": "04",
+  "status": "Generated original voice auditions; user selection pending",
+  "provider": "ElevenLabs",
+  "model_id": "eleven_ttv_v3",
+  "characters": [
+    {
+      "id": "frankie",
+      "title": "Frankie \u00b7 A dangerous man having far too much fun",
+      "request": {
+        "voice_description": "Male, 47, Newark, New Jersey. An original larger-than-life crime-game character. Thick chesty baritone, coarse dry gravel and a crooked nasal edge; recognizably human and worn, not digitally distorted. Strong musical North Jersey vowels, short biting consonants. Irresistible roguish warmth and swagger. He savors a beautiful weapon, explodes into high cracked outrage, laughs from the belly, then abruptly becomes dangerously quiet. Highly elastic pitch and tempo; extravagant and occasionally ridiculous, but never a comedy mobster impersonation. Seductive physical presence, messy breath, rough chuckles, impatient interruptions. Act the emotional turns with animated-film intensity. No even-paced narration, radio polish, trailer growl or background music. Close dry studio performance.",
+        "text": "Ohhh, sweetheart. Where have you been all my life? Look at those barrels! Ruth would have HATED you. ... Everybody gets a turn! I am a VERY generous man! ... He asked me to wait. I heard him. ... I left anyway.",
+        "model_id": "eleven_ttv_v3",
+        "auto_generate_text": false,
+        "stream_previews": false,
+        "should_enhance": false,
+        "guidance_scale": 5,
+        "loudness": 0.5
+      },
+      "returned_text": "Ohhh, sweetheart. Where have you been all my life? Look at those barrels! Ruth would have HATED you. ... Everybody gets a turn! I am a VERY generous man! ... He asked me to wait. I heard him. ... I left anyway.",
+      "created_at": "20260930T174655218216Z",
+      "request_id": null,
+      "candidates": [
+        {
+          "label": "A",
+          "file": "frankie-1.mp3",
+          "generated_voice_id": "2PJNDMfczG2aIL8q4D7i",
+          "duration_seconds": 17.789375,
+          "bytes": 426990,
+          "sha256": "47a53a66d16fa052f4c69e55c9a24c6bad9aa3db1c703ac027396322c7b142d7",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "B",
+          "file": "frankie-2.mp3",
+          "generated_voice_id": "Qo4o2THvgO1y3FttMX2W",
+          "duration_seconds": 17.55425,
+          "bytes": 421347,
+          "sha256": "0f4ecb1abfad22ef1578e5bc5d0e155ad2072ee6f655fc969ef9a050b79d46b0",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "C",
+          "file": "frankie-3.mp3",
+          "generated_voice_id": "xmYbjOz7HPtiWSSZkZmI",
+          "duration_seconds": 22.595917,
+          "bytes": 542347,
+          "sha256": "2619f40bcc9fbdf4027e9b2a6729e52d531e6b7ffb93c684a42a8c24e52755b5",
+          "selection": "unreviewed"
+        }
+      ]
+    },
+    {
+      "id": "eve",
+      "title": "Eve \u00b7 Velvet command, spectacular temper",
+      "request": {
+        "voice_description": "Female, 34, Black British illusionist from south London. Original flamboyant adult game character. Unusually low, dark contralto with a smoky, dry rasp; rich chest resonance and incisive bright consonants. Educated London phrasing over audible south London roots. Sensual and imperious, never soft background narration. A close teasing purr can suddenly open into a huge ringing stage command; an ugly delighted laugh briefly tears through immaculate diction. Stretch a delicious word, then snap three words rapidly. Broad pitch leaps, dramatic interruptions and extravagant wounded vanity. When genuinely afraid, all the ornament vanishes and her voice becomes small and direct. Human grain, no electronic effects, no ASMR monotone, no smooth audiobook delivery. Clean close studio speech.",
+        "text": "Oh, that is FILTHY. ... Give it here. A lady should always arrive with something devastating. ... You tore my sleeve. I made that. I MADE THAT, you miserable sack of leftovers! ... No. Play it again. ... Please. I need to hear if it is him.",
+        "model_id": "eleven_ttv_v3",
+        "auto_generate_text": false,
+        "stream_previews": false,
+        "should_enhance": false,
+        "guidance_scale": 5,
+        "loudness": 0.5
+      },
+      "returned_text": "Oh, that is FILTHY. ... Give it here. A lady should always arrive with something devastating. ... You tore my sleeve. I made that. I MADE THAT, you miserable sack of leftovers! ... No. Play it again. ... Please. I need to hear if it is him.",
+      "created_at": "20260930T174734000562Z",
+      "request_id": null,
+      "candidates": [
+        {
+          "label": "A",
+          "file": "eve-1.mp3",
+          "generated_voice_id": "DQHUFctjh9lpn5PA4vSm",
+          "duration_seconds": 24.528958,
+          "bytes": 588740,
+          "sha256": "7ca668e90012e3abfd68a98ee4b3a467549c630100e02a0850cefb3ab2089112",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "B",
+          "file": "eve-2.mp3",
+          "generated_voice_id": "CQMHryxCCM1fiDDaZvfz",
+          "duration_seconds": 26.122417,
+          "bytes": 626983,
+          "sha256": "baf25d975af7a736be8a4cef6c961b119c0a25febbbdc36db1b31c0d34288742",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "C",
+          "file": "eve-3.mp3",
+          "generated_voice_id": "wyursovX6OVwVeoEp3bo",
+          "duration_seconds": 30.850583,
+          "bytes": 740459,
+          "sha256": "660b997c201453981bf5853b53d32b0819fdd35ac302e3b001300b1a447c7451",
+          "selection": "unreviewed"
+        }
+      ]
+    },
+    {
+      "id": "leon",
+      "title": "Leon \u00b7 Warm thunder with a frayed edge",
+      "request": {
+        "voice_description": "Male, 39, Black American maintenance engineer from southeast Texas. Original heightened noir-game character. Broad resonant middle-low voice, honeyed warmth with a sandy frayed edge and a slight forward nasal twang. This is not a deep trailer bass. Southern vowels roll leisurely until indignation pulls the words into a rising, almost musical rant. A big infectious laugh, sensual warmth and joyous appetite for powerful machinery. Distinctive uneven rhythm: patient low start, sudden emphatic upward jump, then a dry muttered afterthought. Expressive, physically present, rough around the edges; credible intelligence and tenderness. Fully act delight, frustration and a quiet return to ordinary life. Never cowboy parody, preacher impersonation, radio voice or evenly paced narration. Dry studio speech.",
+        "text": "Well, would you LISTEN to her! Della, forgive me. I have met somebody loud, expensive, and absolutely no good for me. ... Four seconds! I ask for FOUR SECONDS, and the whole damn cemetery gets ambitious! ... I need a telephone. No, the building can wait. ... I am calling home.",
+        "model_id": "eleven_ttv_v3",
+        "auto_generate_text": false,
+        "stream_previews": false,
+        "should_enhance": false,
+        "guidance_scale": 5,
+        "loudness": 0.5
+      },
+      "returned_text": "Well, would you LISTEN to her! Della, forgive me. I have met somebody loud, expensive, and absolutely no good for me. ... Four seconds! I ask for FOUR SECONDS, and the whole damn cemetery gets ambitious! ... I need a telephone. No, the building can wait. ... I am calling home.",
+      "created_at": "20260930T174753193532Z",
+      "request_id": null,
+      "candidates": [
+        {
+          "label": "A",
+          "file": "leon-1.mp3",
+          "generated_voice_id": "0gzwX8bckrb0hnB4hwK4",
+          "duration_seconds": 28.917542,
+          "bytes": 694066,
+          "sha256": "81d8b797f430abb9cc1417245d92cde0b2d5ba8f7bf6c9dab95ae815adcd8512",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "B",
+          "file": "leon-2.mp3",
+          "generated_voice_id": "OwIDn2sQs7k75zrguAza",
+          "duration_seconds": 26.044083,
+          "bytes": 625103,
+          "sha256": "1042cc91478e523367b00e7f2f05611c2c31983de2396ab0cee5cbdf8586cd89",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "C",
+          "file": "leon-3.mp3",
+          "generated_voice_id": "WxKGgVoixG0uOxHaAmhC",
+          "duration_seconds": 22.67425,
+          "bytes": 544227,
+          "sha256": "da462a3536e18f689a1d819881d42822cf167d717ac87e18d9a712f69de11ba7",
+          "selection": "unreviewed"
+        }
+      ]
+    },
+    {
+      "id": "vivian",
+      "title": "Vivian \u00b7 A smoky laugh and a very expensive temper",
+      "request": {
+        "voice_description": "Female, 29, Mexican American Los Angeles confidence trickster; native Los Angeles English, no imposed Spanish accent. Original adult noir-comedy game character. Low-middle pitch with a coarse smoky bottom, bright nasal sting on emphatic words, and a wonderfully ragged laugh. Sexy through mischievous intimacy and shameless confidence, not perpetual whispering. Fast conspiratorial asides give way to languid appraisal, then a startling high outraged snap. Richly varied pitch, flirtatious power, imperfect breath and comic timing. She appears to enjoy an appalling idea before she has finished saying it. Real vulnerability strips away the musical sales pitch. Exaggerated animated-character range with a human body behind the voice. No polished commercial cheer, flat vocal fry or soothing narration. Close dry recording.",
+        "text": "Oh, he was SAVING this. For what? His second funeral? ... Come to Mama. ... Eight hundred? For a DOOR? Darling, I charge less to ruin a marriage! ... I keep sending money. He keeps sending it back. ... I do not know what else to send.",
+        "model_id": "eleven_ttv_v3",
+        "auto_generate_text": false,
+        "stream_previews": false,
+        "should_enhance": false,
+        "guidance_scale": 5,
+        "loudness": 0.5
+      },
+      "returned_text": "Oh, he was SAVING this. For what? His second funeral? ... Come to Mama. ... Eight hundred? For a DOOR? Darling, I charge less to ruin a marriage! ... I keep sending money. He keeps sending it back. ... I do not know what else to send.",
+      "created_at": "20260930T174811283879Z",
+      "request_id": null,
+      "candidates": [
+        {
+          "label": "A",
+          "file": "vivian-1.mp3",
+          "generated_voice_id": "d5PufNRhDjdtXC7hcp9F",
+          "duration_seconds": 26.200792,
+          "bytes": 628864,
+          "sha256": "d83662ac82510a5c3e7940b09f43be213103e86c9c4485d07edd03210a383b97",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "B",
+          "file": "vivian-2.mp3",
+          "generated_voice_id": "zvDrw84WvYOp8tbbW1cy",
+          "duration_seconds": 16.509375,
+          "bytes": 396270,
+          "sha256": "6df173176ef7de9076bd2a53d48c9fc48edd73a6404dddf0dfa4bbd2c78d64f3",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "C",
+          "file": "vivian-3.mp3",
+          "generated_voice_id": "6ZpSdqyrXtcd7ujeaGMH",
+          "duration_seconds": 26.200792,
+          "bytes": 628864,
+          "sha256": "5b5552dcb0304262298f27b5aa4ec8c325ed4c98c7f795f62f6ff31760742667",
+          "selection": "unreviewed"
+        }
+      ]
+    },
+    {
+      "id": "voss",
+      "title": "Voss \u00b7 The host who enjoys owning the room",
+      "request": {
+        "voice_description": "Male, apparent age 58, American theatrical casino kingpin. An original character. Rich rounded bass-baritone with a fine sandpaper burr, heavy chest resonance and bright smiling upper overtones. Cultivated mid-Atlantic American articulation. Opulent seductive hospitality: he savors names, relishes a ceremonial phrase, then unexpectedly clips the next sentence short. His expansive almost operatic delight can turn into a tiny cold intimate threat without a generic sinister growl. Dry chuckles, strategic breath, unsettling warmth and explosive wounded vanity when refused. Large animated-villain performance range while sounding physically human and intelligent. Never a broadcast announcer, smooth audiobook narrator, frail aristocrat or celebrity imitation. Close clean dry studio speech, no PA filter, no music.",
+        "text": "My dear, I paid for the flowers. I paid for the orchestra. I even paid the man who will carry you out. The LEAST you can do is enjoy the evening. ... No? ... You came into MY house to say NO to ME? ... How refreshing. ... I knew everything she liked. ... Apparently that was not the same as listening.",
+        "model_id": "eleven_ttv_v3",
+        "auto_generate_text": false,
+        "stream_previews": false,
+        "should_enhance": false,
+        "guidance_scale": 5,
+        "loudness": 0.5
+      },
+      "returned_text": "My dear, I paid for the flowers. I paid for the orchestra. I even paid the man who will carry you out. The LEAST you can do is enjoy the evening. ... No? ... You came into MY house to say NO to ME? ... How refreshing. ... I knew everything she liked. ... Apparently that was not the same as listening.",
+      "created_at": "20260930T174829029791Z",
+      "request_id": null,
+      "candidates": [
+        {
+          "label": "A",
+          "file": "voss-1.mp3",
+          "generated_voice_id": "PKuVuOkmX1RSuMlTNkce",
+          "duration_seconds": 30.119167,
+          "bytes": 722905,
+          "sha256": "7c39a6841dd8492469df0859f74f03df990e9d9703e4f78d92e2e4870d42362a",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "B",
+          "file": "voss-2.mp3",
+          "generated_voice_id": "Wamv8smHgpUnMSzvXwVa",
+          "duration_seconds": 27.480792,
+          "bytes": 659584,
+          "sha256": "0253197ff43a44809160e470f96342c9a2cd1864befd1bcaf25f69719d0e65ac",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "C",
+          "file": "voss-3.mp3",
+          "generated_voice_id": "LzsGgrvWRIFS0CU0wWql",
+          "duration_seconds": 30.197542,
+          "bytes": 724786,
+          "sha256": "f26d499561c9dd98b10147a0ee45a0196b13ef74892c8d71c7029433ad2628ad",
+          "selection": "unreviewed"
+        }
+      ]
+    },
+    {
+      "id": "marlowe",
+      "title": "Marlowe \u00b7 A ruined tenor with immaculate manners",
+      "request": {
+        "voice_description": "Male, appears 63, from near Leeds in northern England. Original casino bartender character. A narrow, weather-beaten middle-register tenor, papery rasp and a faint reedy whistle in breath; lower notes unexpectedly warm and intimate. Clearly distinct from deep gangster voices. Soft Yorkshire vowels, clipped practical consonants, wonderfully uneven dry timing. Courteous words carry impudent private delight. Usually speaks close and plain, but a tiny affront can produce a sudden piercing bark before manners return. A dusty almost involuntary chuckle, lived-in wit and surprising emotional bite. Heightened character acting, never a sleepy old narrator, whisper-only voice or generic butler. A shameful admission loses the clever timing. No actor imitation or audio effects. Dry clean studio speech.",
+        "text": "Sir! ... If you are going to come apart, do it OVER THERE. ... That is the good rug. ... Mr Voss says the drinks are on the house. Very generous. ... Considering what the house drinks. ... I hoped you would find a way out that did not involve me. ... There. Nothing mysterious about it. Just a coward.",
+        "model_id": "eleven_ttv_v3",
+        "auto_generate_text": false,
+        "stream_previews": false,
+        "should_enhance": false,
+        "guidance_scale": 5,
+        "loudness": 0.5
+      },
+      "returned_text": "Sir! ... If you are going to come apart, do it OVER THERE. ... That is the good rug. ... Mr Voss says the drinks are on the house. Very generous. ... Considering what the house drinks. ... I hoped you would find a way out that did not involve me. ... There. Nothing mysterious about it. Just a coward.",
+      "created_at": "20260930T174849083874Z",
+      "request_id": null,
+      "candidates": [
+        {
+          "label": "A",
+          "file": "marlowe-1.mp3",
+          "generated_voice_id": "sNqoLDSVh05lxetdEft6",
+          "duration_seconds": 24.450583,
+          "bytes": 586859,
+          "sha256": "61a1cbb79c6eaca13f2e212370bde3f2c5e874ddfaa7fbadc2657f30af1a8ac1",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "B",
+          "file": "marlowe-2.mp3",
+          "generated_voice_id": "3Fzp2iijdxngs3HSNC0q",
+          "duration_seconds": 25.808958,
+          "bytes": 619460,
+          "sha256": "90467d272575a26818db7602b4f37f489f8246f601920095126c481ab5f07f30",
+          "selection": "unreviewed"
+        },
+        {
+          "label": "C",
+          "file": "marlowe-3.mp3",
+          "generated_voice_id": "bZBTKdalNZHfDZZIntLt",
+          "duration_seconds": 22.831,
+          "bytes": 547989,
+          "sha256": "ef3852d91bd31eb1897d56bbac27fd71b3cf7773286eecaa2e11c3e2f6105acb",
+          "selection": "unreviewed"
+        }
+      ]
+    }
+  ]
+}

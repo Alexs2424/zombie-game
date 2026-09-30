@@ -222,3 +222,12 @@ decline and closing lockout; browser captures verify closed/open/returned poses.
 Sound direction is an original synthesized working choice, not recorded foley or
 a user-approved audition. [Prop and audio notes](../velvet-case.md) own production
 details; [reward rules](quests-and-easter-eggs.md) own current design.
+
+
+## 2026-09-30 — Original redesign of all six voices; custom API access works
+
+**Established:** user added ElevenLabs credits, requested all voices be redesigned to be more unique, and requested more theatrical writing. This supersedes the round-03 library-first plan and satisfies its pending user access notification.
+
+**Working direction:** six distinct original voice descriptions and 18 theatrical acting beats. Frankie keeps gritty musical Jersey character; Eve a smoky commanding contralto; Leon sandy Texas warmth and rising indignation; Vivian a smoky/mobile voice with a jagged laugh; Voss opulent hospitality with a dry burr; Marlowe a papery, reedy tenor, replacing his prior middle-low target. Biographies and accents remain unchanged. Chuck is a positive texture reference, not a cloned voice or final casting exception.
+
+**Verified production:** six successful eleven_ttv_v3 Voice Design calls returned 18 original previews, three per character. Published local audio, exact request/returned text, generated IDs, timestamps, duration/byte/hash metadata and a comparison page. MP3 checks cover all 18. No permanent voices, retries, game bank replacement or new mechanics. User listening and take selection remain pending. [Round 04](voice-direction-round-04.md) is the current owning direction; earlier rounds are historical.

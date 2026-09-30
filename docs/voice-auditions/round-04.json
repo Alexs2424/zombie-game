@@ -1,0 +1,146 @@
+{
+  "round": "04",
+  "status": "original custom voice audition; no final casting or gameplay replacement",
+  "model_id": "eleven_ttv_v3",
+  "request_limit": 6,
+  "characters": [
+    {
+      "id": "frankie",
+      "title": "Frankie \u00b7 A dangerous man having far too much fun",
+      "prompt": "Male, 47, Newark, New Jersey. An original larger-than-life crime-game character. Thick chesty baritone, coarse dry gravel and a crooked nasal edge; recognizably human and worn, not digitally distorted. Strong musical North Jersey vowels, short biting consonants. Irresistible roguish warmth and swagger. He savors a beautiful weapon, explodes into high cracked outrage, laughs from the belly, then abruptly becomes dangerously quiet. Highly elastic pitch and tempo; extravagant and occasionally ridiculous, but never a comedy mobster impersonation. Seductive physical presence, messy breath, rough chuckles, impatient interruptions. Act the emotional turns with animated-film intensity. No even-paced narration, radio polish, trailer growl or background music. Close dry studio performance.",
+      "lines": [
+        {
+          "context": "Acquiring a double-barrel shotgun",
+          "text": "Ohhh, sweetheart. Where have you been all my life? Look at those barrels! Ruth would have HATED you.",
+          "delivery": "Greedy, intimate admiration builds into delighted, cracked laughter."
+        },
+        {
+          "context": "After a rapid multi-kill",
+          "text": "Everybody gets a turn! I am a VERY generous man!",
+          "delivery": "Open-armed, outrageous hospitality; still out of breath."
+        },
+        {
+          "context": "Quiet confession after the Keene evidence",
+          "text": "He asked me to wait. I heard him. ... I left anyway.",
+          "delivery": "Drop all swagger. Plain, unprotected, almost reluctant."
+        }
+      ],
+      "preview_text": "Ohhh, sweetheart. Where have you been all my life? Look at those barrels! Ruth would have HATED you. ... Everybody gets a turn! I am a VERY generous man! ... He asked me to wait. I heard him. ... I left anyway."
+    },
+    {
+      "id": "eve",
+      "title": "Eve \u00b7 Velvet command, spectacular temper",
+      "prompt": "Female, 34, Black British illusionist from south London. Original flamboyant adult game character. Unusually low, dark contralto with a smoky, dry rasp; rich chest resonance and incisive bright consonants. Educated London phrasing over audible south London roots. Sensual and imperious, never soft background narration. A close teasing purr can suddenly open into a huge ringing stage command; an ugly delighted laugh briefly tears through immaculate diction. Stretch a delicious word, then snap three words rapidly. Broad pitch leaps, dramatic interruptions and extravagant wounded vanity. When genuinely afraid, all the ornament vanishes and her voice becomes small and direct. Human grain, no electronic effects, no ASMR monotone, no smooth audiobook delivery. Clean close studio speech.",
+      "lines": [
+        {
+          "context": "First extravagant firearm acquisition",
+          "text": "Oh, that is FILTHY. ... Give it here. A lady should always arrive with something devastating.",
+          "delivery": "Low private delight, then gloriously public self-importance."
+        },
+        {
+          "context": "Costume damage acting exercise; not an implemented mechanic",
+          "text": "You tore my sleeve. I made that. I MADE THAT, you miserable sack of leftovers!",
+          "delivery": "Control collapses into a sudden theatrical outburst."
+        },
+        {
+          "context": "Future authenticated Art recording",
+          "text": "No. Play it again. ... Please. I need to hear if it is him.",
+          "delivery": "Quiet, bare and shaky; stop performing for an audience."
+        }
+      ],
+      "preview_text": "Oh, that is FILTHY. ... Give it here. A lady should always arrive with something devastating. ... You tore my sleeve. I made that. I MADE THAT, you miserable sack of leftovers! ... No. Play it again. ... Please. I need to hear if it is him."
+    },
+    {
+      "id": "leon",
+      "title": "Leon \u00b7 Warm thunder with a frayed edge",
+      "prompt": "Male, 39, Black American maintenance engineer from southeast Texas. Original heightened noir-game character. Broad resonant middle-low voice, honeyed warmth with a sandy frayed edge and a slight forward nasal twang. This is not a deep trailer bass. Southern vowels roll leisurely until indignation pulls the words into a rising, almost musical rant. A big infectious laugh, sensual warmth and joyous appetite for powerful machinery. Distinctive uneven rhythm: patient low start, sudden emphatic upward jump, then a dry muttered afterthought. Expressive, physically present, rough around the edges; credible intelligence and tenderness. Fully act delight, frustration and a quiet return to ordinary life. Never cowboy parody, preacher impersonation, radio voice or evenly paced narration. Dry studio speech.",
+      "lines": [
+        {
+          "context": "First firing of a newly acquired loud automatic",
+          "text": "Well, would you LISTEN to her! Della, forgive me. I have met somebody loud, expensive, and absolutely no good for me.",
+          "delivery": "Warm astonishment opens into an enormous pleased laugh; mock confession."
+        },
+        {
+          "context": "Reload finishes just before killing an approaching enemy",
+          "text": "Four seconds! I ask for FOUR SECONDS, and the whole damn cemetery gets ambitious!",
+          "delivery": "Exasperation builds upward; furious, precise and ridiculous. Timing is an acting scenario, not a runtime claim."
+        },
+        {
+          "context": "Quiet post-escape moment",
+          "text": "I need a telephone. No, the building can wait. ... I am calling home.",
+          "delivery": "Firm, warm, ordinary. A decision, not another joke."
+        }
+      ],
+      "preview_text": "Well, would you LISTEN to her! Della, forgive me. I have met somebody loud, expensive, and absolutely no good for me. ... Four seconds! I ask for FOUR SECONDS, and the whole damn cemetery gets ambitious! ... I need a telephone. No, the building can wait. ... I am calling home."
+    },
+    {
+      "id": "vivian",
+      "title": "Vivian \u00b7 A smoky laugh and a very expensive temper",
+      "prompt": "Female, 29, Mexican American Los Angeles confidence trickster; native Los Angeles English, no imposed Spanish accent. Original adult noir-comedy game character. Low-middle pitch with a coarse smoky bottom, bright nasal sting on emphatic words, and a wonderfully ragged laugh. Sexy through mischievous intimacy and shameless confidence, not perpetual whispering. Fast conspiratorial asides give way to languid appraisal, then a startling high outraged snap. Richly varied pitch, flirtatious power, imperfect breath and comic timing. She appears to enjoy an appalling idea before she has finished saying it. Real vulnerability strips away the musical sales pitch. Exaggerated animated-character range with a human body behind the voice. No polished commercial cheer, flat vocal fry or soothing narration. Close dry recording.",
+      "lines": [
+        {
+          "context": "Taking a firearm from a known private stash",
+          "text": "Oh, he was SAVING this. For what? His second funeral? ... Come to Mama.",
+          "delivery": "Conspiratorial discovery; delighted disbelief, then greedy affection for the gun."
+        },
+        {
+          "context": "A door costs more than her available chips",
+          "text": "Eight hundred? For a DOOR? Darling, I charge less to ruin a marriage!",
+          "delivery": "Immediate spectacular outrage; an absurd boast, not a new biographical fact."
+        },
+        {
+          "context": "Quiet Tomas admission",
+          "text": "I keep sending money. He keeps sending it back. ... I do not know what else to send.",
+          "delivery": "Flat, unfinished, unable to sell a way out of the feeling."
+        }
+      ],
+      "preview_text": "Oh, he was SAVING this. For what? His second funeral? ... Come to Mama. ... Eight hundred? For a DOOR? Darling, I charge less to ruin a marriage! ... I keep sending money. He keeps sending it back. ... I do not know what else to send."
+    },
+    {
+      "id": "voss",
+      "title": "Voss \u00b7 The host who enjoys owning the room",
+      "prompt": "Male, apparent age 58, American theatrical casino kingpin. An original character. Rich rounded bass-baritone with a fine sandpaper burr, heavy chest resonance and bright smiling upper overtones. Cultivated mid-Atlantic American articulation. Opulent seductive hospitality: he savors names, relishes a ceremonial phrase, then unexpectedly clips the next sentence short. His expansive almost operatic delight can turn into a tiny cold intimate threat without a generic sinister growl. Dry chuckles, strategic breath, unsettling warmth and explosive wounded vanity when refused. Large animated-villain performance range while sounding physically human and intelligent. Never a broadcast announcer, smooth audiobook narrator, frail aristocrat or celebrity imitation. Close clean dry studio speech, no PA filter, no music.",
+      "lines": [
+        {
+          "context": "A threatening welcome after hostility is established",
+          "text": "My dear, I paid for the flowers. I paid for the orchestra. I even paid the man who will carry you out. The LEAST you can do is enjoy the evening.",
+          "delivery": "Lavish hospitality grows joyfully extravagant, then lands as a quiet personal demand. Audition rhetoric, not new prop commitments."
+        },
+        {
+          "context": "A crew member refuses him",
+          "text": "No? ... You came into MY house to say NO to ME? ... How refreshing.",
+          "delivery": "Genuine wounded outrage; visibly force the gracious host back into his voice."
+        },
+        {
+          "context": "Quiet Helena admission",
+          "text": "I knew everything she liked. ... Apparently that was not the same as listening.",
+          "delivery": "For one sentence he is a disappointed man, not the owner."
+        }
+      ],
+      "preview_text": "My dear, I paid for the flowers. I paid for the orchestra. I even paid the man who will carry you out. The LEAST you can do is enjoy the evening. ... No? ... You came into MY house to say NO to ME? ... How refreshing. ... I knew everything she liked. ... Apparently that was not the same as listening."
+    },
+    {
+      "id": "marlowe",
+      "title": "Marlowe \u00b7 A ruined tenor with immaculate manners",
+      "prompt": "Male, appears 63, from near Leeds in northern England. Original casino bartender character. A narrow, weather-beaten middle-register tenor, papery rasp and a faint reedy whistle in breath; lower notes unexpectedly warm and intimate. Clearly distinct from deep gangster voices. Soft Yorkshire vowels, clipped practical consonants, wonderfully uneven dry timing. Courteous words carry impudent private delight. Usually speaks close and plain, but a tiny affront can produce a sudden piercing bark before manners return. A dusty almost involuntary chuckle, lived-in wit and surprising emotional bite. Heightened character acting, never a sleepy old narrator, whisper-only voice or generic butler. A shameful admission loses the clever timing. No actor imitation or audio effects. Dry clean studio speech.",
+      "lines": [
+        {
+          "context": "A corpse collapses by the counter",
+          "text": "Sir! ... If you are going to come apart, do it OVER THERE. ... That is the good rug.",
+          "delivery": "A sudden sharp command, outraged precision, then immaculate quiet manners. Staging test, not a rug gameplay rule."
+        },
+        {
+          "context": "After the crew understands the House bargain",
+          "text": "Mr Voss says the drinks are on the house. Very generous. ... Considering what the house drinks.",
+          "delivery": "An ordinary service announcement develops a dry, dangerous implication; no horror-trailer voice."
+        },
+        {
+          "context": "Marlowe admits his initial silence",
+          "text": "I hoped you would find a way out that did not involve me. ... There. Nothing mysterious about it. Just a coward.",
+          "delivery": "Stop being charming. Tired, ashamed, angry with himself."
+        }
+      ],
+      "preview_text": "Sir! ... If you are going to come apart, do it OVER THERE. ... That is the good rug. ... Mr Voss says the drinks are on the house. Very generous. ... Considering what the house drinks. ... I hoped you would find a way out that did not involve me. ... There. Nothing mysterious about it. Just a coward."
+    }
+  ]
+}
