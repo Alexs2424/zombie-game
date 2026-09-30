@@ -1,5 +1,9 @@
 # Grand Hotel original assets
 
+The [lobby design roadmap](lobby-design.md) records proposed next Blender and visual upgrades.
+
+The runtime-authored architectural wall pass is documented in [Lobby wall upgrade](lobby-walls.md), including art direction, source, and visual verification.
+
 Thirteen self-contained GLBs were authored for this project in Blender: eleven furniture types, the drum-fed Tommy reward weapon, and its fitted hands. The furniture and weapon use original geometry and seeded procedural walnut, velvet-weave, and green-marble textures. Hands adapt this project's existing original `hands-rifle.glb`; no external art was downloaded.
 
 Furniture uses metres, a floor-centred origin, and its authored collision footprint. Load at unit scale and apply the fixture's existing yaw. Faces point toward Babylon local **-Z**. The long booth is the exception: back at local **-X**, open side **+X**, so its opposite-wall instance uses yaw PI. The exporter compensates for Babylon's default glTF X reflection on this asymmetric model.
