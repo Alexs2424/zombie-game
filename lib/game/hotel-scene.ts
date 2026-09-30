@@ -71,7 +71,7 @@ function triangulate(outline: readonly Point[]) {
  * visible stair treads sit over the simulation's smooth curved ramps.
  * Static geometry is merged by material to keep the larger map inexpensive.
  */
-export function buildHotel(scene: Scene) {
+export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
   const batches = new Map<StandardMaterial, Mesh[]>();
   const ownedMeshes: Mesh[] = [];
   const materials: StandardMaterial[] = [];
@@ -1309,7 +1309,7 @@ export function buildHotel(scene: Scene) {
   const entryReady=loadHotelEntry(scene).then(loaded=>{
     if(disposed || scene.isDisposed){loaded.dispose();return;}
     entry=loaded;entryFallback.forEach(mesh=>mesh.setEnabled(false));gate.setEnabled(false);
-    loaded.setOpen(gateWasOpen);refreshLights();
+    loaded.setOpen(gateWasOpen);onEntryLoaded?.();refreshLights();
   }).catch(error=>{if(!disposed && !scene.isDisposed) console.warn("Hotel entrance model unavailable; keeping its surround.",error);});
   const ready=Promise.all([furnitureReady,entryReady]).then(()=>undefined);
   let bellCaption = "";

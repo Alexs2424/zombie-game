@@ -16,14 +16,14 @@ export async function loadHotelEntry(scene: Scene) {
     containers.forEach(container => container.dispose());
   };
   try {
-    for (const kind of ["portal", "gate"] as const) {
+    for (const kind of ["portal", "gate", "wall-west", "wall-east"] as const) {
       const container = await LoadAssetContainerAsync(`/models/hotel-entry-${kind}.glb`, scene);
       containers.push(container);
       if (scene.isDisposed) throw new Error("Hotel scene disposed during entrance loading");
       const root = new TransformNode(`hotel original entry ${kind}`, scene);
-      // The facing sits ahead of the casino's projecting wall pilasters;
-      // the movable grille retains the gameplay gate plane inside the reveal.
-      roots.push(root);root.position.set(HOTEL_GATE.x,0,HOTEL_GATE.z-(kind==="portal"?.13:0));
+      // All four Blender exports share the gate origin; setbacks are baked
+      // into the source so portal, wall courses and grille remain aligned.
+      roots.push(root);root.setEnabled(false);root.position.set(HOTEL_GATE.x,0,HOTEL_GATE.z);
       container.addAllToScene();
       for (const node of [...container.meshes,...container.transformNodes].filter(node => !node.parent)) node.parent=root;
       for (const material of container.materials) {
@@ -36,6 +36,7 @@ export async function loadHotelEntry(scene: Scene) {
       }
       if (kind==="gate") gate=root;
     }
+    roots.forEach(root => root.setEnabled(true));
     return { meshes, setOpen(open: boolean) {gate?.setEnabled(!open);}, dispose };
   } catch (error) {dispose();throw error;}
 }

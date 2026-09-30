@@ -14,7 +14,7 @@ OUT=ROOT/'public/models';DOC=ROOT/'docs/hotel-assets/entry';DOC.mkdir(parents=Tr
 SOURCE=ROOT/'assets/source/hotel-entry.blend'
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 bpy.context.preferences.filepaths.save_version=0
-PARTS={'portal':[],'gate':[]};GROUP='portal';LETTERS=[]
+PARTS={'portal':[],'gate':[],'wall-west':[],'wall-east':[]};GROUP='portal';LETTERS=[]
 def xyz(p):return (p[0],-p[2],p[1])
 def mat(name,color,rough=.4,metal=0,emission=0):
     m=bpy.data.materials.new(name);m.use_nodes=True;p=m.node_tree.nodes.get('Principled BSDF')
@@ -26,11 +26,16 @@ STONE=mat('Entry carved limestone',(.64,.59,.48),.45)
 BRONZE=mat('Entry aged bronze',(.31,.19,.072),.34,.78)
 GOLD=mat('Entry burnished gold',(.61,.42,.16),.26,.74)
 GREEN=mat('Entry bottle green enamel',(.023,.065,.047),.27,.12)
+WALNUT=mat('Entry smoked walnut',(.105,.058,.033),.48)
+PLASTER=mat('Entry jade plaster',(.105,.16,.125),.83)
 OPAL=mat('Entry warm opal',(.93,.78,.47),.3,0,.7)
 # Seeded mineral veins are embedded in the GLB, with no external texture fetches.
 n=512;v,u=np.mgrid[0:n,0:n]/n
-vein=np.abs(np.sin(u*15+v*5+np.sin(v*23)*.7))**60
-value=.87-.20*vein+np.random.default_rng(1896).normal(0,.004,(n,n))
+# Fine irregular mineral seams, not the former broad repeating sine stripes.
+flow=u*9+v*4+np.sin(v*19+u*5)*.7+np.sin(v*43-u*17)*.13
+vein=np.exp(-((np.sin(flow)/.045)**2))
+cloud=np.sin(u*17+v*11)*np.sin(v*29-u*7)
+value=.84-.055*vein+.012*cloud+np.random.default_rng(1896).normal(0,.003,(n,n))
 pixels=np.ones((n,n,4),np.float32);pixels[:,:,:3]=np.stack([value,value*.965,value*.885],axis=2)
 im=bpy.data.images.new('Entry original ivory mineral veining',width=n,height=n);im.pixels.foreach_set(pixels.ravel());im.pack()
 tex=MARBLE.node_tree.nodes.new('ShaderNodeTexImage');tex.image=im
@@ -68,10 +73,10 @@ def border(name,x,y,z,w,h,r=.012,m=GOLD):
     return line(name,[(x-w/2,y-h/2,z),(x+w/2,y-h/2,z),(x+w/2,y+h/2,z),(x-w/2,y+h/2,z),(x-w/2,y-h/2,z)],r,m)
 for side in [-1,1]:
     x=side*2.67
-    box('Solid marble door pier',(x,1.535,0),(.54,3.07,.82))
-    box('Marble plinth block',(x,.11,-.015),(.54,.22,.90),MARBLE,.018)
+    box('Solid marble door pier',(x+side*.015,1.535,0),(.51,3.07,.82))
+    box('Marble plinth block',(x+side*.005,.11,-.015),(.53,.22,.90),MARBLE,.018)
     box('Bronze floor shoe',(x,.026,-.026),(.54,.052,.91),BRONZE,.005)
-    for y,h in [(.28,.055),(3.105,.07),(3.21,.09)]:box('Pier carved collar',(x,y,-.04),(.54,h,.90),STONE,.007)
+    for y,h in [(.28,.055),(3.105,.07),(3.21,.09)]:box('Pier carved collar',(x+side*.005,y,-.04),(.53,h,.90),STONE,.007)
     box('Fluted pier inset',(x,1.69,-.427),(.38,2.62,.025),STONE,.004)
     for dx in [-.125,-.0625,0,.0625,.125]:rod('Pier bronze flute',(x+dx,.48,-.452),(x+dx,2.94,-.452),.010,BRONZE)
     border('Pier fine gold bead',x,1.70,-.453,.42,2.69,.008)
@@ -81,7 +86,7 @@ for side in [-1,1]:
     for dx in [-.073,0,.073]:rod('Lantern bronze cage',(x+dx,2.115,-.605),(x+dx,2.485,-.605),.008,BRONZE)
     for y in [2.11,2.49]:box('Lantern stepped cap',(x,y,-.55),(.21,.045,.13),GOLD,.009)
 box('Structural marble lintel',(0,3.865,0),(5.88,1.59,.82),MARBLE,.018)
-for y,w,h,d,m in [(3.105,5.90,.07,.87,STONE),(3.20,5.95,.07,.94,GOLD),(4.60,5.94,.09,.91,STONE),(4.70,6.02,.11,1.02,MARBLE),(4.82,6.14,.10,1.08,MARBLE)]:
+for y,w,h,d,m in [(3.12,5.90,.07,.87,STONE),(3.20,5.95,.07,.94,GOLD),(4.60,5.94,.09,.91,STONE),(4.70,6.02,.11,1.02,MARBLE),(4.82,6.14,.10,1.08,MARBLE)]:
     box('Continuous entrance cornice',(0,y,-.035),(w,h,d),m,.012)
 box('Recessed green hotel name',(0,3.90,-.432),(4.80,.69,.046),GREEN,.023)
 border('Nameplate double bronze border',0,3.90,-.462,4.77,.66,.018,BRONZE)
@@ -92,6 +97,52 @@ for side in [-1,1]:
         a=i*.32
         line('Carved fan relief',[(side*(2.47+.035*i),3.49,-.446),(side*(2.40+.075*i),3.77,-.446),(side*(2.35+.12*i),4.26,-.446)],.011,GOLD)
 for x in np.arange(-2.72,2.73,.17):box('Cornice carved dentil',(float(x),4.51,-.457),(.075,.09,.09),STONE,.005)
+
+
+# Full-height attic joins the 6.8m casino ceiling and the adjacent wall crown.
+# Its inset fan is sculpted geometry; every reveal has a real shadow edge.
+box('Attic stone backing',(0,5.675,.10),(5.88,1.61,.62),STONE,.012)
+box('Attic recessed jade field',(0,5.64,-.225),(5.34,1.40,.045),PLASTER,.008)
+border('Attic stepped stone bead',0,5.64,-.266,5.47,1.48,.024,STONE)
+border('Attic fine bronze inlay',0,5.64,-.295,5.20,1.23,.009,GOLD)
+for side in [-1,1]:
+    for i in range(4):
+        box('Attic vertical reed',(side*(2.57+i*.065),5.65,-.277),(.018,1.38,.032),GOLD,.004)
+# A low semicircular sunrise balances the horizontal sign without new lore.
+for radius in [.34,.59,.84]:
+    line('Attic concentric sun',[(math.cos(a)*radius,5.19+math.sin(a)*radius,-.297) for a in np.linspace(0,math.pi,33)],.014,GOLD)
+for a in np.linspace(.12,math.pi-.12,13):
+    line('Attic radiating flute',[(math.cos(a)*.89,5.19+math.sin(a)*.89,-.293),(math.cos(a)*1.28,5.19+math.sin(a)*.99,-.293)],.008,BRONZE)
+for side in [-1,1]:
+    for y,w in [(5.22,1.1),(5.39,.86),(5.56,.62)]:
+        box('Attic wing chevron',(side*1.72,y,-.285),(w,.018,.025),GOLD,.004)
+for y,h,d,m in [(6.43,.10,.82,STONE),(6.53,.10,.92,MARBLE),(6.62,.06,.98,GOLD),(6.73,.14,1.04,STONE)]:
+    box('Ceiling meeting crown',(0,y,-.01),(6.14,h,d),m,.01)
+
+# Nine evenly sized bays per wing. All panels meet the jamb and room corners;
+# unlike the old fixed-step decorations there are no truncated edge panels.
+for side,kind in [(-1,'wall-west'),(1,'wall-east')]:
+    GROUP=kind
+    start,end=2.94,30.225
+    span=end-start; step=span/9; center=side*(start+end)/2
+    box('North wall structural backing',(center,3.4,-.25),(span,6.8,.45),PLASTER,0)
+    for y,h,depth,m in [(.10,.20,.51,STONE),(.245,.07,.55,MARBLE),(1.32,.085,.53,WALNUT),(1.40,.045,.55,GOLD),(6.30,.12,.52,STONE),(6.43,.10,.56,STONE),(6.53,.10,.66,MARBLE),(6.62,.06,.72,GOLD),(6.73,.14,.78,STONE)]:
+        box('Continuous wall course',(center,y,-.25),(span,h,depth),m,.006)
+    for i in range(9):
+        x=side*(start+(i+.5)*step)
+        box('Walnut dado field',(x,.79,-.495),(step-.12,.94,.06),WALNUT,.008)
+        border('Dado raised bronze panel',x,.79,-.538,step-.38,.70,.010,BRONZE)
+        box('Inset jade wall panel',(x,3.84,-.491),(step-.34,4.59,.04),GREEN,.005)
+        border('Panel limestone surround',x,3.84,-.521,step-.33,4.60,.023,STONE)
+        border('Panel gilt inner bead',x,3.84,-.544,step-.48,4.43,.008,GOLD)
+        # A restrained fan relief sits high in each tall recessed field.
+        for a in np.linspace(.2,math.pi-.2,9):
+            line('Panel fan flute',[(x+math.cos(a)*.13,5.20+math.sin(a)*.13,-.527),(x+math.cos(a)*.72,5.20+math.sin(a)*.68,-.527)],.008,BRONZE)
+        line('Panel fan arch',[(x+math.cos(a)*.76,5.20+math.sin(a)*.72,-.527) for a in np.linspace(0,math.pi,25)],.012,GOLD)
+        border('Lower panel inset',x,2.92,-.527,step-.70,2.23,.009,BRONZE)
+        for px in [x-step/2+.055,x+step/2-.055]:
+            box('Wall fluted stile',(px,3.83,-.513),(.075,4.61,.075),STONE,.008)
+            box('Wall stile bronze reed',(px,3.83,-.558),(.014,4.47,.018),BRONZE,.003)
 
 GROUP='gate'
 for x in [-2.355,2.355,-.028,.028]:box('Grille vertical stile',(x,1.54,0),(.05,2.99,.105),BRONZE,.009)
@@ -107,11 +158,20 @@ for side in [-1,1]:
     border('Grille lower inset',center,.77,-.014,2.18,1.01,.014,GOLD)
     box('Gate lock escutcheon',(side*.14,1.45,-.072),(.15,.30,.04),BRONZE,.025)
     line('Gate rounded pull',[(side*.14,1.35,-.092),(side*.14,1.37,-.145),(side*.14,1.53,-.145),(side*.14,1.55,-.092)],.015,GOLD)
+# Hinges and shoe rails give the closed grille a credible fitted frame.
+for side in [-1,1]:
+    for y in [.43,1.53,2.68]:
+        rod('Gate barrel hinge',(side*2.37,y-.085,.012),(side*2.37,y+.085,.012),.037,BRONZE)
+    for x in np.linspace(.25,2.13,7):
+        x=float(x)*side
+        line('Gate lower diamond',[(x,.37,-.021),(x+.10,.58,-.021),(x,.79,-.021),(x-.10,.58,-.021),(x,.37,-.021)],.010,BRONZE)
 box('Purchase plaque enamel backing',(0,1.86,-.105),(3.2,.46,.035),GREEN,.018)
 border('Purchase plaque bronze rim',0,1.86,-.126,3.15,.405,.015,GOLD)
 
+# Save the same aligned placement in the editable source and the exports.
+for o in PARTS['portal']:o.location.y+=.13
 # Save named editable originals before generating reflected material batches.
-bpy.context.scene['authorship']='Original map-polish marble/bronze entrance; generated locally'
+bpy.context.scene['authorship']='Original full-height jade, limestone and bronze hotel facade; generated locally'
 bpy.context.scene['clear_opening']='4.8m wide, 3.07m high; follows existing foyer collision'
 bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE))
 reports=[];reflection=Matrix.Diagonal((-1.,1.,1.,1.))
@@ -143,15 +203,15 @@ for kind,objects in PARTS.items():
     for o in exported:bpy.data.objects.remove(o,do_unlink=True)
 (DOC/'asset-report.json').write_text(json.dumps(reports,indent=2)+'\n')
 
-# Architectural study shows the two aligned assemblies; staging is not exported.
+# Architectural study shows aligned assemblies; staging is not exported.
 GROUP='portal'
 box('Preview floor',(0,-.04,0),(30,.06,30),STONE,0)
 for name,position,power,size in [('Key',(-4,7,-6),1800,7),('Fill',(5,4,-4),1200,6),('Rim',(0,6,4),1800,5)]:
     data=bpy.data.lights.new(name,'AREA');data.energy=power;data.shape='DISK';data.size=size
     o=bpy.data.objects.new(name,data);bpy.context.scene.collection.objects.link(o);o.location=xyz(position)
     o.rotation_euler=(Vector(xyz((0,2,0)))-o.location).to_track_quat('-Z','Y').to_euler()
-bpy.ops.object.camera_add(location=xyz((7,5.5,-12)));camera=bpy.context.object
-camera.rotation_euler=(Vector(xyz((0,2.4,0)))-camera.location).to_track_quat('-Z','Y').to_euler();camera.data.type='ORTHO';camera.data.ortho_scale=8.2
+bpy.ops.object.camera_add(location=xyz((10,7.0,-18)));camera=bpy.context.object
+camera.rotation_euler=(Vector(xyz((0,3.4,0)))-camera.location).to_track_quat('-Z','Y').to_euler();camera.data.type='ORTHO';camera.data.ortho_scale=16.5
 scene=bpy.context.scene;scene.camera=camera;scene.render.engine='CYCLES';scene.cycles.samples=16;scene.cycles.use_denoising=True
 scene.render.resolution_x=1400;scene.render.resolution_y=1100;scene.render.resolution_percentage=100;scene.world.color=(.12,.12,.12)
 scene.render.filepath=str(DOC/'preview.png');scene.render.image_settings.file_format='PNG';bpy.ops.render.render(write_still=True)

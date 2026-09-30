@@ -12,13 +12,14 @@ import { HOTEL_GATE } from "../../lib/game/hotel-gameplay.ts";
 
 const engine=new NullEngine(),scene=new Scene(engine),assets=[];
 let portal,gate;
+const wings=[];
 try {
-  for (const kind of ["portal","gate"]) {
+  for (const kind of ["portal","gate","wall-west","wall-east"]) {
     const bytes=await readFile(new URL(`../../public/models/hotel-entry-${kind}.glb`,import.meta.url));
     const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString());
     for (const image of gltf.images??[]) assert.ok(image.bufferView!==undefined && image.uri===undefined,"embedded textures only");
     const container=await LoadAssetContainerAsync(bytes,scene,{pluginExtension:".glb",pluginOptions:{gltf:{skipMaterials:true}}});
-    const root=new TransformNode(`entry ${kind}`,scene);root.position.set(HOTEL_GATE.x,0,HOTEL_GATE.z-(kind==="portal"?.13:0));
+    const root=new TransformNode(`entry ${kind}`,scene);root.position.set(HOTEL_GATE.x,0,HOTEL_GATE.z);
     container.addAllToScene();
     for (const node of [...container.meshes,...container.transformNodes].filter(node=>!node.parent)) node.parent=root;
     const meshes=root.getChildMeshes().filter(mesh=>mesh.getTotalVertices()>0);
@@ -32,7 +33,7 @@ try {
     assert.ok(meshes.length<=8 && triangles<40000,"bounded material/triangle cost");
     assert.ok(bytes.length<3*1024*1024,"bounded binary size");
     assets.push({kind,bytes:bytes.length,meshes:meshes.length,triangles,bounds:{min:bounds.min.asArray(),max:bounds.max.asArray()}});
-    if(kind==="portal") portal=root;else gate=root;
+    if(kind==="portal") portal=root;else if(kind==="gate") gate=root;else wings.push(root);
   }
   const pick=(x,y,root)=>scene.pickWithRay(new Ray(new Vector3(HOTEL_GATE.x+x,y,HOTEL_GATE.z-1),Vector3.Forward(),2),
     mesh=>mesh.isEnabled() && mesh.isDescendantOf(root));
@@ -44,7 +45,21 @@ try {
   assert.equal(Boolean(pick(0,1.65,gate)?.hit),true,"closed gate visible");
   gate.setEnabled(false);
   assert.equal(Boolean(pick(0,1.65,gate)?.hit),false,"opened gate disappears");
-  const report={status:"passed",assets,checks:["clear foyer opening","jamb and lintel contact","gate visibility","embedded textures","finite geometry and normals","asset budgets"]};
+  // Probe the actual GLBs across seams and above the old short entrance.
+  for (const y of [3.12,4.84,4.92,5.4,6.3,6.75])
+    assert.ok(pick(0,y,portal)?.hit,`full-height entrance missing at y=${y}`);
+  for (const side of [-1,1]) for (const x of [2.93,2.96,3.05,4.4,6,15,29.9,30.20])
+    for (const y of [.12,.8,1.4,3.3,5.8,6.75]) {
+      assert.ok([portal,...wings].some(root=>pick(side*x,y,root)?.hit),`wall seam at ${side*x},${y}`);
+    }
+  // The back face must also close the wall, with no one-sided holes.
+  for (const x of [-15,0,15]) {
+    const hit=scene.pickWithRay(new Ray(new Vector3(HOTEL_GATE.x+x,5.5,HOTEL_GATE.z+1),new Vector3(0,0,-1),2),
+      mesh=>mesh.isEnabled() && [portal,...wings].some(root=>mesh.isDescendantOf(root)));
+    assert.ok(hit?.hit,`missing rear wall face at ${x}`);
+  }
+  assert.ok(assets.filter(a=>a.kind!=="gate").every(a=>Math.abs(a.bounds.max[1]-6.8)<.02),"facade meets ceiling");
+  const report={status:"passed",assets,checks:["full-height facade and rear faces", "wing seams and ceiling contact", "clear foyer opening","jamb and lintel contact","gate visibility","embedded textures","finite geometry and normals","asset budgets"]};
   await writeFile(new URL("../../docs/hotel-assets/entry/runtime-validation.json",import.meta.url),JSON.stringify(report,null,2)+"\n");
   console.log(JSON.stringify(report,null,2));
 } finally {scene.dispose();engine.dispose();}

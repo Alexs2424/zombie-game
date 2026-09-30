@@ -85,6 +85,7 @@ export class GameRenderer {
   ready: Promise<void>;
   private weaponAssets: AssetContainer[] = [];
   private ammoDisplayFallback?: TransformNode;
+  private hotelFacadeFallback?: TransformNode;
   private planterFallbacks = new Map<string, { root: TransformNode; footprint: Rect }>();
   private hotel: ReturnType<typeof buildHotel>;
   private couchFallbacks = new Map<string, {
@@ -329,7 +330,7 @@ export class GameRenderer {
     rouletteGlow.range = 9;
     this.environment();
     if (process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("range")) buildTestRange(this.scene);
-    this.hotel = buildHotel(this.scene);
+    this.hotel = buildHotel(this.scene, () => this.hotelFacadeFallback?.setEnabled(false));
     this.serviceLighting();
     this.handLight = new PointLight(
       "weapon bounce",
@@ -626,6 +627,13 @@ export class GameRenderer {
           mesh.isPickable = false;
           this.shadowAt(r.x, r.z).addShadowCaster(mesh, false);
         }
+        continue;
+      }
+      // The original Blender facade replaces these complete wall spans atomically.
+      // Parent the fallback so static batching cannot absorb and retain it.
+      if (["casino-wall-nw", "casino-wall-ne", "casino-lintel-hotel"].includes(r.id)) {
+        this.hotelFacadeFallback ??= new TransformNode("hotel facade loading fallback", this.scene);
+        this.box(r.id, r.x, (r.baseY ?? 0) + r.h / 2, r.z, r.w, r.h, r.d, wall, this.hotelFacadeFallback);
         continue;
       }
       this.box(r.id, r.x, (r.baseY ?? 0) + r.h / 2, r.z, r.w, r.h, r.d, wall);

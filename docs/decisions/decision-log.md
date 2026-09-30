@@ -83,3 +83,20 @@ Documentation only; no gameplay, voice generation, or visual assets changed.
 **User clarification:** “or sin city characters,” following the request for extensive human, badass character histories.
 
 **Working interpretation:** make Sin City the stronger reference for noir character stakes—dangerous loyalties, costly personal codes, wounded pride, obsessive choices, and flashes of tenderness. Retain Fallout as a secondary reference for eccentricity and contradiction. Added a per-character noir emphasis to the ensemble bible, preserving the authored histories, surviving families, ordinary speech and distinct voices. No copied characters, plotlines, compulsory inner narration, or new gameplay mechanics.
+
+## 2026-09-29 — Hotel gate and surrounding wall alignment
+
+**Established direction:** the user requested a new branch/worktree to fix the
+hotel gate and adjacent walls shown in their screenshot, using detailed Blender
+models with carefully aligned placement.
+
+**Working art direction:** extend the entrance into a full-height Art Deco facade
+with jade wall panels, walnut dado panels, limestone crowns, restrained marble
+veining and bronze fan/sunburst reliefs. Treat those reliefs as architectural
+ornaments, without introducing new lore, clues or interaction requirements.
+The owning asset document is [the entrance README](../hotel-assets/entry/README.md).
+
+**Implemented:** the portal, grille and two wall wings are original Blender
+exports with a shared origin. Geometry audits verify the unchanged 4.8 m passage,
+full-height closure and wall joints. The existing 2,000-chip unlock and gate
+removal behavior remain; no opening animation or new quest is claimed.
