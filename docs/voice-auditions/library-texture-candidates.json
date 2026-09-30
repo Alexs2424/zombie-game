@@ -1,5 +1,5 @@
 {
-  "status": "unreviewed existing library previews; no new synthesis",
+  "status": "User reviewed: Chuck Miller preferred; Dean, Tatiana and Rosie rejected. No new synthesis.",
   "candidates": [
     {
       "voice_id": "HIGUfNOdjuWQwwapnTRW",
@@ -10,7 +10,8 @@
       "gender": "male",
       "age": "middle_aged",
       "free_users_allowed": true,
-      "search": "raspy"
+      "search": "raspy",
+      "user_verdict": "preferred preview; final character performance untested"
     },
     {
       "voice_id": "5OIl3MClvHTQsNIdLybn",
@@ -21,7 +22,8 @@
       "gender": "male",
       "age": "middle_aged",
       "free_users_allowed": true,
-      "search": "raspy"
+      "search": "raspy",
+      "user_verdict": "rejected: boring, nerdy, radio-like, lacking character, monotone"
     },
     {
       "voice_id": "F59Bv0jP18ftxRfYvYo5",
@@ -32,7 +34,8 @@
       "gender": "female",
       "age": "middle_aged",
       "free_users_allowed": true,
-      "search": "smoky"
+      "search": "smoky",
+      "user_verdict": "rejected: boring, nerdy, radio-like, lacking character, monotone"
     },
     {
       "voice_id": "V1sMnmZsNBJuEOA7aVqB",
@@ -43,7 +46,8 @@
       "gender": "female",
       "age": "young",
       "free_users_allowed": true,
-      "search": "smoky"
+      "search": "smoky",
+      "user_verdict": "rejected: boring, nerdy, radio-like, lacking character, monotone"
     }
   ]
 }

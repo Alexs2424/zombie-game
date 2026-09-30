@@ -7,6 +7,10 @@ Status: AI character voices are established direction. ElevenLabs Voice Design v
 
 Use the [character production design bible](character-production-design.md) for detailed vocal contrast and the [playable scene treatment](story-scenes.md) for dramatic context. Both are working direction; final casting and recording remain pending.
 
+## Current listening choice
+
+The user prefers Chuck Miller and rejects Dean, Tatiana and Rosie. Chuck is the reference for texture and the next Frankie audition candidate; his performance of our script remains untested because library API generation is plan-blocked. [Round 02](voice-direction-round-02.md) records the precise verdict and casting criteria.
+
 ## Implemented gameplay pilot
 
 The [six-line Frankie pilot](gameplay-voice-pilot.md) now supplies local prerecorded reactions to first firearm acquisition and rapid multi-kills, with subtitles and cooldowns. Adam is provisional casting, not the final voice. This bounded implementation supersedes the earlier “no additional audio generated” status for these six takes only. The broader scene script and four-character casting remain pending.

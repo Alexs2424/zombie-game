@@ -185,3 +185,10 @@ Created [arsenal reference](../arsenal.md) from current weapon definitions with 
 **Verified access:** library metadata search succeeds. A bounded test using Chuck Miller with eleven_v3 returned HTTP 402 `payment_required`: free users cannot use library voices through the API. The second planned candidate, Dean, was not submitted. Catalog `free_users_allowed` is not proof of API entitlement. No new audio was generated.
 
 Prepared `/audio/dialogue/casting.html` with four original provider preview URLs: Chuck Miller, Dean, Tatiana and Rosie. Catalog descriptions motivated these candidates; there is no claim of listening approval or accent match. These are casting references, not a return to approved stock casting. Previews remain remote; no library audio was downloaded or shipped as a game asset. Exact candidate metadata is in [library texture candidates](../voice-auditions/library-texture-candidates.json).
+
+
+## 2026-09-30 — Chuck Miller preferred; other texture candidates rejected
+
+**Established:** the user likes only Chuck Miller from the four previews; rejects Dean, Tatiana and Rosie as boring, nerdy, radio-like, lacking character and monotone. Voice quality remains the priority.
+
+**Recorded:** Chuck is the preferred voice reference and next Frankie audition candidate, not yet a verified final character performance. Updated the casting page and candidate metadata with the actual listening verdict. Future selection requires audible character and emotional contrast, not catalog adjectives. [Round 02](voice-direction-round-02.md) owns this correction. No new generation or runtime change; API access remains blocked as previously verified.

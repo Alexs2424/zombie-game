@@ -65,6 +65,17 @@ The user explicitly prioritizes voice quality over further script expansion. Opt
 
 Library search succeeded, but a test synthesis request for Chuck Miller returned HTTP 402 `payment_required`: free users cannot use library voices via the API. Dean was not submitted after this rejection. This is separate from the earlier custom Voice Design 403. Both production routes need eligible account access; the catalog's free-user flag is not sufficient evidence of API availability.
 
-A comparison page at `/audio/dialogue/casting.html` contains existing remote previews for Chuck Miller, Dean, Tatiana and Rosie. These are unreviewed texture references chosen from catalog descriptions, not newly generated speech or selected characters. No canonical accents change. [Candidate metadata](../voice-auditions/library-texture-candidates.json) preserves the source descriptions and preview URLs. No remote preview is downloaded into gameplay assets.
+The comparison page at `/audio/dialogue/casting.html` retains existing remote previews for Chuck Miller, Dean, Tatiana and Rosie. Following user listening, Chuck is preferred and the other three are rejected; see the verdict below. These are not newly generated performances of our characters. No canonical accents change. [Candidate metadata](../voice-auditions/library-texture-candidates.json) preserves the source descriptions and preview URLs. No remote preview is downloaded into gameplay assets.
 
 Two fresh Frankie acting proposals are “Oh, I missed this. Being understood.” for a first firearm acquisition, and “Five of you. Not one fucking apology.” after five confirmed kills following recent enemy damage. The latter requires a new five-kill/damage predicate and must not be installed on the current four-kill rule. These are unrecorded tests, not proof of improved quality.
+
+
+## Listening verdict — Chuck Miller only
+
+**Established user feedback, 2026-09-30:** only Chuck Miller sounds good. Dean, Tatiana and Rosie were rejected as boring, nerdy, radio-like, lacking character and monotone. Chuck is the preferred candidate and positive voice reference. This is approval of the heard preview, not proof of a final character/accent match or emotional range on our dialogue.
+
+**Working casting standard:** prioritize audible wear, roughness, irregularity and personal presence. A low pitch, smoky catalog description or polished radio delivery is not enough. Auditions must expose amused pleasure, genuine annoyance and a sudden shift of intensity, as well as a quiet human sentence. Cartoonish expressiveness remains required; continuous shouting is not its substitute. Do not assume Chuck's full range has been heard from one preview.
+
+Keep Chuck first for the next Frankie acting test once generation access is available. Seek the same degree of distinctive texture for the others while preserving their different genders, accents, rhythms and personalities; do not make them all sound like Chuck or silently replace their biographies. Do not re-present Dean, Tatiana or Rosie as viable candidates without an explicit reason and new evidence.
+
+The live casting page now features Chuck as the preferred reference and labels the other candidates rejected. Existing remote previews are retained only as historical comparison. No new paid request, voice cloning, game recasting or replacement audio occurred. The previously verified library API paywall remains unresolved; no redundant request was made this turn.
