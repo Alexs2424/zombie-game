@@ -1,0 +1,19 @@
+{
+  "speaker": "Frankie Caruso",
+  "casting": "Adam stock voice; provisional gameplay audition, not final North Jersey casting",
+  "provider": "ElevenLabs",
+  "voice_id": "pNInz6obpgDQGcFmaJgB",
+  "request": {
+    "text": "[angry] Anybody else? Come on. I'm already in a bad mood.",
+    "model_id": "eleven_v3",
+    "voice_settings": {
+      "stability": 0.5
+    }
+  },
+  "subtitle": "Anybody else? Come on. I'm already in a bad mood.",
+  "generated_at": "2026-09-30T06:48:47.665370+00:00",
+  "request_id": "UXpUr12c4rav5QaHMhWz",
+  "bytes": 63991,
+  "sha256": "f6f8ad12b97a22e64f6c80369e1dd1a0aec68e1fc07458c09c0bbb689daede73",
+  "processing": "Unprocessed provider MP3; gain controlled at runtime."
+}

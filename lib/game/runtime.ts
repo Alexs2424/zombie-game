@@ -15,6 +15,7 @@ import { GameRenderer } from "./renderer";
 import { SERVICE_VIEWS } from "./service-layout";
 import { CASINO_ANCHORS, CRAPS_TABLES, ROULETTE_TABLES } from "./casino-layout";
 import { GameAudio } from "./audio";
+import { CharacterDialogueDirector, CharacterSpeech } from "./character-dialogue";
 import { ZombieAudioDirector } from "./zombie-audio-director";
 import { HOTEL, stairPoint } from "./world";
 import {
@@ -75,6 +76,7 @@ export type WeaponCard = {
   at: number;
 };
 export type GameView = {
+  dialogue?: string;
   previewControls?: boolean;
   aiming?: boolean;
   scoped?: boolean;
@@ -240,6 +242,9 @@ export class GameRuntime {
   sim = new Simulation();
   renderer: GameRenderer;
   audio = new GameAudio();
+  private dialogue = new CharacterDialogueDirector();
+  private speech = new CharacterSpeech();
+  private dialogueSimulation: Simulation | null = null;
   sensitivity = 1;
   private keys = new Set<string>();
   private firing = false;
@@ -517,6 +522,7 @@ export class GameRuntime {
     this.clearInput();
     void this.audio
       .unlock()
+      .then(() => { if (this.audio.context) return this.speech.preload(this.audio.context); })
       .catch(() =>
         this.onError(
           "Audio is unavailable. You can still play; check your browser sound settings.",
@@ -1079,6 +1085,15 @@ export class GameRuntime {
       }
     }
     this.audio.setActive(this.sim.phase === "playing");
+    const ownedWeapons = WEAPON_ORDER.filter(id => this.sim.inventory[id].owned);
+    if (this.dialogueSimulation !== this.sim) {
+      this.dialogueSimulation = this.sim;
+      this.dialogue.reset(ownedWeapons);
+      this.speech.stop();
+    }
+    const line = this.dialogue.update(performance.now() / 1000, this.sim.phase === "playing", this.sim.events, ownedWeapons, this.speech.busy);
+    if (this.sim.phase !== "playing") this.speech.stop();
+    else if (line && this.audio.context && this.audio.master) this.speech.play(line, this.audio.context, this.audio.master);
     for (const event of this.sim.events) {
       this.audio.play(event);
       this.renderer.weaponEvent(event);
@@ -1164,7 +1179,9 @@ export class GameRuntime {
     this.renderer.engine.maxFPS = s.phase === "playing" ? 60 : 15;
     this.audio.setActive(s.phase === "playing");
     const card = !s.aiming && !s.holdingChips && this.pickupCard && performance.now() - this.pickupCard.at < 4200 ? this.pickupCard : null;
+    if (s.phase !== "playing") this.speech.stop();
     this.onView({
+      dialogue: this.speech.caption,
       aiming: this.renderer.aimBlend > .85,
       scoped: this.renderer.aimBlend > .95 && s.weapon === "sniper",
       owned: ownedSlots(s),
@@ -1354,6 +1371,7 @@ export class GameRuntime {
     window.removeEventListener("resize", this.resize);
     this.canvas.removeEventListener("contextmenu", this.contextMenu);
     this.canvas.removeEventListener("webglcontextlost", this.contextLost);
+    this.speech.dispose();
     this.audio.dispose();
     this.renderer.dispose();
   }

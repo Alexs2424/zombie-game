@@ -838,6 +838,7 @@ export default function Home() {
                   style={{ opacity: view.damage / 0.4 }}
                 />
               )}
+              {view.dialogue && <div className="character-subtitle" role="status">{view.dialogue}</div>}
               {view.message && (
                 <div className="game-message" role="status">
                   {view.message}
@@ -1246,6 +1247,7 @@ export default function Home() {
         onPlay={()=>{setDevOpen(false);setSettings(false);void runtime.current?.enter();}}
         onPause={()=>runtime.current?.pause()} onClose={()=>setDevOpen(false)} />}
       {rangeMode && <aside className="range-panel" aria-label="Mechanics test range">
+        <a href="/audio/dialogue/index.html" target="_blank" rel="noreferrer">Listen to Frankie’s voice pilot ↗</a>
         <p className="range-kicker">DEVELOPMENT / SANDBOX</p>
         <h1>Mechanics lab</h1>
         <p>Move freely. Test one variable. Reset and repeat.</p>

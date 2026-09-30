@@ -1,0 +1,19 @@
+{
+  "speaker": "Frankie Caruso",
+  "casting": "Adam stock voice; provisional gameplay audition, not final North Jersey casting",
+  "provider": "ElevenLabs",
+  "voice_id": "pNInz6obpgDQGcFmaJgB",
+  "request": {
+    "text": "[amused] Now that's a proper complaint department.",
+    "model_id": "eleven_v3",
+    "voice_settings": {
+      "stability": 0.5
+    }
+  },
+  "subtitle": "Now that's a proper complaint department.",
+  "generated_at": "2026-09-30T06:48:31.834296+00:00",
+  "request_id": "hf4Sdvxaw2GHHY3IVlDW",
+  "bytes": 40586,
+  "sha256": "4fda2c8dc54b4d20dbd69a9a84799572664644568bdaa6ed9c4af55b56cb30f0",
+  "processing": "Unprocessed provider MP3; gain controlled at runtime."
+}

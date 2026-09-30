@@ -104,3 +104,12 @@ Documentation only; no gameplay, voice generation, or visual assets changed.
 The existing biographies remain authoritative. No required cinematics, character-exclusive gameplay roles, final voice selections or new supernatural contract rules were introduced. The existing cashier portrait remains an unnamed proprietor, not a confirmed Voss likeness. Final contract wording, signature eligibility, counter-wager, Collector design, Voss's fate and post-ending session flow remain open. New scripts and visual directions are unimplemented and unrecorded.
 
 Updated the index and owning documents so current narrative sources are linked. Documentation-only verification covers links, unique line/scene IDs, scope and whitespace; no gameplay tests or paid generation were needed. Publication follows the user's standing instruction to put creative Markdown decisions on main and push.
+
+
+## 2026-09-29 — First in-game voiced reactions
+
+**Established:** user requested actual generated speech in the game for exciting weapon acquisitions and killing groups of zombies, reusing suitable earlier lines.
+
+**Working casting:** Frankie only for this solo pilot; six ElevenLabs Adam / eleven_v3 takes, explicitly provisional rather than final North Jersey casting. Reused the earlier shotgun line and wrote five firearm/multi-kill reactions. Voss's earlier voice is not assigned to the player.
+
+**Implemented:** local speech assets and request manifests; ownership-based firearm reactions; four-kills-in-four-seconds reactions; 12-second overall spacing, 180-second per-line cooldown, two uses per run, one active voice, subtitles and lifecycle cleanup. Reacquisition under the new two-gun loadout does not repeat first-acquisition dialogue. Added a listening page and range link. No runtime API calls or new co-op attribution claims. Exact scripts, limitations and verification are owned by [gameplay voice pilot](gameplay-voice-pilot.md). Subjective voice and combat-mix approval remain open.

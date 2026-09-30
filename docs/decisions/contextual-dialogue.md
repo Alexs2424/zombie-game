@@ -2,6 +2,10 @@
 
 Status: working writing pass responding to user feedback; not implemented, recorded, or approved final dialogue. This document owns the current dialogue direction. Round 01 is retained as an earlier audition, not the current production script.
 
+## Recorded pilot exception
+
+The [gameplay voice pilot](gameplay-voice-pilot.md) records and implements the Frankie shotgun line plus five new gun/streak reactions. Its exact trigger and repetition rules own that small implemented subset; the rest of this bank remains unrecorded and unimplemented.
+
 ## User direction and reference
 
 Lines should respond to what the player is actually doing, be more individual, and feel badass. The user supplied [the Mob of the Dead cinematic intro](https://www.youtube.com/watch?v=lpG7vEOlbIc) and named Sin City as inspiration. The linked video's identity was verified through its page; transcript retrieval returned no transcript. No claim of having listened to or transcribed it is made.
