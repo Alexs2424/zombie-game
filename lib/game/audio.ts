@@ -1,3 +1,5 @@
+import { CASE_OPEN_SECONDS, CASE_OFFER_SECONDS, CASE_CLOSE_SECONDS, type CaseState } from "./mystery-case.ts";
+import { CASINO_SECRET_ANCHORS } from "./casino.ts";
 import type { GameEvent, V2 } from "./simulation";
 import type { WorldPosition } from "./world";
 import { HOTEL_FIXTURES } from "./hotel-fixtures.ts";
@@ -66,9 +68,12 @@ export class GameAudio {
   private hotelBellVoice: { stop: () => void } | null = null;
   private stickFallbackStop: (() => void) | null = null;
   private mysterySlotBuffer: AudioBuffer | null = null;
+  private caseBuffers = new Map<string, AudioBuffer>();
+  private caseState: CaseState | null = null;
+  private caseStage = "";
   private mysterySlotLoading: Promise<void> | null = null;
   private mysterySlotFetch: AbortController | null = null;
-  private mysterySlotVoice: { stop: () => void } | null = null;
+  private mysterySlotVoice: { stop: () => void; spatial?: (volume:number,pan:number)=>void } | null = null;
   private recordTimer = 0;
   private recordStep = 0;
   private lastZombiePlayback = "none";
@@ -190,15 +195,19 @@ export class GameAudio {
   private async loadMysterySlot(context: AudioContext) {
     this.mysterySlotFetch = new AbortController();
     const signal = this.mysterySlotFetch.signal;
-    try {
-      const response = await fetch("/audio/casino/slot-attract-elevenlabs-04.wav", { signal });
-      if (!response.ok) return;
-      const buffer = await context.decodeAudioData(await response.arrayBuffer());
-      if (this.context === context && !signal.aborted) this.mysterySlotBuffer = buffer;
-    } catch {
-      // The mystery handle retains its original synthesized cue on failure.
-    }
+    await Promise.all(["opening", "offer", "closing", "take"].map(async cue => {
+      try {
+        const response = await fetch(`/audio/velvet-case/${cue}.wav`, { signal });
+        if (!response.ok) return;
+        const buffer = await context.decodeAudioData(await response.arrayBuffer());
+        if (this.context === context && !signal.aborted) {
+          this.caseBuffers.set(cue, buffer);
+          if (cue === "opening") this.mysterySlotBuffer = buffer;
+        }
+      } catch { /* The procedural opening cue remains available if loading fails. */ }
+    }));
   }
+
   setVolume(v: number) {
     this.volume = v;
     if (this.master && this.context)
@@ -208,6 +217,7 @@ export class GameAudio {
     this.active = playing;
     this.weapons.setActive(playing);
     if (!playing) {
+      this.caseStage="";
       this.stopZombieVoices();
       this.slotVoice?.stop();
       this.hotelBellVoice?.stop();
@@ -310,7 +320,7 @@ export class GameAudio {
     if (event.type === "shot" && event.weapon) this.weaponCues.shot(event.weapon);
     if (this.weapons.event(event, this.listener.player, this.listener.yaw)) return;
     if (event.type === "hotelBell") this.playHotelBell();
-    if (event.type === "mysterySpin") this.playMysterySlot();
+    // Case audio follows simulation time in updateMystery, including pause/resume.
     if (event.type === "hotelComplete") {
       [196, 246.94, 293.66, 392].forEach((note, i) => this.tone(note, 0.65, 0.11, "triangle", undefined, i * 0.14));
       this.tone(1174.66, 0.8, 0.055, "sine", undefined, 0.5);
@@ -441,29 +451,49 @@ export class GameAudio {
     if (event.type === "death")
       this.tone(180, 1, 0.2, "sawtooth", 40, 0, 0, true);
   }
-  private playMysterySlot() {
+  updateMystery(state: CaseState | null, playing: boolean, player: WorldPosition, yaw: number) {
+    if (state !== this.caseState) { this.mysterySlotVoice?.stop(); this.caseStage=""; this.caseState=state; }
+    const stage = !state ? "" : !state.resolved ? "opening" : (state.closingRemaining??0)>0 ? (state.taken ? "take" : "closing") : !state.claimed && (state.offerRemaining??0)>0 ? "offer" : "";
+    if (!playing || !stage) { this.mysterySlotVoice?.stop(); this.caseStage=""; return; }
+    if (stage !== this.caseStage) {
+      this.mysterySlotVoice?.stop();
+      const offset = stage === "opening" ? CASE_OPEN_SECONDS-state!.remaining : stage === "offer" ? CASE_OFFER_SECONDS-state!.offerRemaining! : CASE_CLOSE_SECONDS-state!.closingRemaining!;
+      this.playMysterySlot(stage, offset);
+      if (this.mysterySlotVoice) this.caseStage=stage;
+    }
+    const anchor=CASINO_SECRET_ANCHORS.mysteryCabinet, distance=Math.hypot(anchor.x-player.x,anchor.z-player.z);
+    const pan=Math.sin(Math.atan2(anchor.x-player.x,anchor.z-player.z)-yaw);
+    this.mysterySlotVoice?.spatial?.(.65*Math.max(0,1-distance/15)**2,pan);
+  }
+  private playMysterySlot(cue = "opening", offset = 0) {
     const c = this.context;
     if (!c || !this.world || !this.active || c.state !== "running") return;
     this.mysterySlotVoice?.stop();
     this.slotVoice?.stop();
-    if (this.mysterySlotBuffer) {
+    const buffer=this.caseBuffers.get(cue) ?? (cue === "opening" ? this.mysterySlotBuffer : null);
+    if (buffer) {
+      if (cue !== "offer" && offset >= buffer.duration) return;
       const source = c.createBufferSource(), gain = c.createGain();
-      source.buffer = this.mysterySlotBuffer;
+      source.buffer = buffer;
+      source.loop = cue === "offer";
+      const panner=c.createStereoPanner();
       gain.gain.value = 0.65;
       source.connect(gain);
-      gain.connect(this.world);
-      const voice = { stop: () => { source.stop(); cleanup(); } };
+      gain.connect(panner); panner.connect(this.world);
+      let stopped=false;
+      const voice = { stop: () => { if(stopped)return;stopped=true;source.stop(); cleanup(); },
+        spatial:(volume:number,pan:number)=>{gain.gain.setTargetAtTime(volume,c.currentTime,.05);panner.pan.setTargetAtTime(pan,c.currentTime,.05);} };
       const cleanup = () => {
         if (this.mysterySlotVoice === voice) this.mysterySlotVoice = null;
-        source.disconnect();
-        gain.disconnect();
+        source.disconnect(); gain.disconnect(); panner.disconnect();
       };
       source.onended = cleanup;
       this.mysterySlotVoice = voice;
-      source.start();
+      source.start(0, source.loop ? offset % buffer.duration : offset);
       return;
     }
-    // This handle previously emitted diceRoll; preserve its short cue as fallback.
+    if (cue !== "opening") return;
+    // Short original mechanical fallback if the opening sample is unavailable.
     let remaining = 6;
     const ended = () => {
       if (--remaining === 0 && this.mysterySlotVoice === voice) this.mysterySlotVoice = null;
@@ -652,6 +682,7 @@ export class GameAudio {
     }
   }
   resetSlots() {
+    this.caseStage=""; this.caseState=null;
     this.stickFallbackStop?.();
     this.mysterySlotVoice?.stop();
     this.weapons.stop();
@@ -868,6 +899,7 @@ export class GameAudio {
   dispose() {
     this.mysterySlotFetch?.abort();
     this.mysterySlotBuffer = null;
+    this.caseBuffers.clear();
     this.mysterySlotLoading = null;
     this.resetHotel();
     this.hotelBellFetch?.abort();

@@ -1,3 +1,4 @@
+import { casePose } from "./mystery-case";
 import { buildTestRange } from './test-range-scene';
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { Scene } from "@babylonjs/core/scene";
@@ -143,7 +144,6 @@ export class GameRenderer {
   private cabinetPane?: TransformNode;
   private mysteryDisplay: Partial<Record<WeaponId, TransformNode>> = {};
   private viewmodel = new ViewmodelState();
-  private revealUntil = 0;
   private grenadeMeshes = new Map<number, Mesh>();
   private blastMeshes = new Map<number, ReturnType<typeof createExplosion>>();
   private explosionRun: Simulation | null = null;
@@ -1708,14 +1708,15 @@ export class GameRenderer {
     axe.rotation.set(0, -Math.PI / 2, 0);
     world("axe", "world-axe", axe);
     this.axeProp = axe;
-    // Velvet Fortune reveal: the reels shuffle through the ten firearms above the cabinet.
+    // Existing weapon assets rise from the velvet tray, then return when unclaimed.
     for (const id of MYSTERY_WEAPONS) {
       const node = new TransformNode(`mystery reveal ${id}`, this.scene);
-      node.position.set(CASINO_SECRET_ANCHORS.mysteryCabinet.x, 1.72, CASINO_SECRET_ANCHORS.mysteryCabinet.z + 0.68);
-      node.scaling.setAll(1.35);
+      node.position.set(CASINO_SECRET_ANCHORS.mysteryCabinet.x, 1.12, CASINO_SECRET_ANCHORS.mysteryCabinet.z);
+      node.scaling.setAll(1.05);
       world(id, `mystery-${id}`, node, ["Loading shell", "Loading round", "Stripper clip"]);
       node.setEnabled(false);
       this.mysteryDisplay[id] = node;
+      this.casino.lightCaseDisplay(node);
     }
   }
   private weapon(id: WeaponId) {
@@ -1856,22 +1857,15 @@ export class GameRenderer {
     this.stickProp?.setEnabled(!sim.stickTaken);
     this.axeProp?.setEnabled(!sim.axeTaken);
     this.cabinetPane?.setEnabled(!sim.axeTaken);
-    const reveal = sim.mystery;
-    const shown = !reveal
-      ? null
-      : !reveal.resolved
-        ? MYSTERY_WEAPONS[Math.floor(this.time * 11) % MYSTERY_WEAPONS.length]
-        : reveal.reward && reveal.remaining <= 0 && this.revealUntil > this.time
-          ? reveal.reward
-          : null;
-    if (reveal && !reveal.resolved) this.revealUntil = this.time + 2.2;
+    const reveal = sim.mystery, pose = casePose(reveal);
     for (const id of MYSTERY_WEAPONS) {
       const node = this.mysteryDisplay[id];
       if (!node) continue;
-      node.setEnabled(id === shown);
-      if (id === shown) {
-        node.rotation.y = this.time * (reveal?.resolved ? 1.2 : 0.4) + Math.PI / 2;
-        node.position.y = 1.72 + Math.sin(this.time * 2.2) * 0.02 + (reveal?.resolved ? Math.min(0.25, (2.2 - (this.revealUntil - this.time)) * 0.4) : 0);
+      const shown=pose.visible && reveal?.reward === id;
+      node.setEnabled(shown);
+      if (shown) {
+        node.rotation.y = Math.PI / 2 + Math.sin(sim.time*.6)*.08;
+        node.position.y = 1.03 + pose.lift*.64;
       }
     }
     this.hotel.update(sim);

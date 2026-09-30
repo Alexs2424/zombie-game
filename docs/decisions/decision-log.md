@@ -5,8 +5,8 @@
 **User direction:** Q/E switch guns, carry only two guns, explicitly choose whether
 to take Mystery Box rewards, and differentiate gun power against scaling zombie
 health. **Working choices:** F interacts; third-gun pickups replace the active gun;
-melee tools are separate; Mystery Box offers last 15 seconds and pause with the
-run. Poker/hotel rewards use the same two-gun grant path. Round/damage tuning is
+melee tools are separate; Mystery Box offers originally lasted 15 seconds
+(superseded by the user’s 20-second request below) and pause with the run. Poker/hotel rewards use the same two-gun grant path. Round/damage tuning is
 owned by `docs/combat-balance.md`, and reward behavior by `quests-and-easter-eggs.md`.
 These are implemented mechanics in this change, without new story canon.
 
@@ -201,3 +201,24 @@ Prepared `/audio/dialogue/casting.html` with four original provider preview URLs
 **Working preparation:** retain Chuck Miller for Frankie; screen Charmion for Eve, Kathie for Vivian, and Monty for Voss. These three are new unreviewed candidates selected from character-oriented catalog descriptions. Softness, insufficient huskiness and age mismatch are explicitly flagged for rejection, not hidden by declaring a cast. Leon and Marlowe remain open. Dean, Tatiana and Rosie stay rejected.
 
 Prepared three-beat scripts per candidate (pleasure, anger, quiet admission) in [round 03](../voice-auditions/round-03.json), with exact contexts and delivery notes. New Vivian and Voss lines remain unrecorded proposals grounded in existing biographies. Added `/audio/dialogue/casting-round-03.html` with original remote previews and expandable scripts. No voice generation, downloaded library audio, runtime recasting or account change occurred.
+
+
+## 2026-09-30 — The Velvet Case replaces the mystery slot cabinet
+
+**Established:** user requested music and sounds, a box that opens and displays
+the weapon, explicit pickup, and return after 20 seconds; a gambling machine is
+not required.
+
+**Working choices:** walnut/brass presentation case with burgundy velvet lining,
+400 chips for a guaranteed random firearm offer, 2.8-second opening and 1.2-second
+closing. Original chime music, latch clicks and wood thuds replace the mystery
+slot sample. The old 50% empty outcome is superseded; other casino games retain
+their existing rules and sounds.
+
+**Implemented and checked:** native Blender source and glTF hinged prop, rising
+weapon, explicit F pickup / X decline, timed return and closing, pause-aware
+spatial sound. Simulation tests cover expiry, no automatic grant, acceptance,
+decline and closing lockout; browser captures verify closed/open/returned poses.
+Sound direction is an original synthesized working choice, not recorded foley or
+a user-approved audition. [Prop and audio notes](../velvet-case.md) own production
+details; [reward rules](quests-and-easter-eggs.md) own current design.
