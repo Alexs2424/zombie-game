@@ -1,0 +1,20 @@
+[
+  {
+    "idle": {
+      "shadows": 0,
+      "faces": 0
+    },
+    "transitions": {
+      "shadows": 2,
+      "faces": 12
+    },
+    "settled": {
+      "shadows": 0,
+      "faces": 0
+    }
+  },
+  {
+    "mappedFloorMeshes": 7,
+    "hotelLights": 8
+  }
+]
