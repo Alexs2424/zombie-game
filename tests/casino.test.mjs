@@ -56,6 +56,8 @@ test('mystery slot costs exactly 400, blocks duplicate spins, pauses and awards 
   assert.equal(s.events.some(event=>event.type==='diceRoll'),false,'Pulling the slot handle must not play craps dice');
   s.pause();tick(s,5);assert.equal(s.mystery.remaining,2.8);s.resume();tick(s,3);
   // .99 selects the last of the ten 1970s firearms: The Debt Collector.
+  assert.equal(s.weapon,'pistol');assert.equal(s.inventory.launcher.owned,false);
+  assert.equal(s.purchase('mystery'),true);assert.equal(s.points,1600);
   assert.equal(s.weapon,'launcher');assert.equal(s.inventory.launcher.owned,true);assert.equal(s.weaponDamage(),WEAPONS.launcher.damage);
   assert.equal(s.inventory.launcher.mag,s.capacity('launcher'));s.inventory.launcher.mag=0;tick(s,4);assert.equal(s.inventory.launcher.mag,0);
 });

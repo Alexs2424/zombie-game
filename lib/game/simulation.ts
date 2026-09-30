@@ -199,7 +199,7 @@ export const WEAPONS = {
     label: "Shotgun",
     magazine: 6,
     reserve: 30,
-    damage: 14,
+    damage: 24,
     pellets: 8,
     interval: 0.8,
     reload: 2.5,
@@ -213,7 +213,7 @@ export const WEAPONS = {
     price: 1100,
     magazine: 30,
     reserve: 180,
-    damage: 24,
+    damage: 22,
     pellets: 1,
     interval: 0.085,
     reload: 1.9,
@@ -227,7 +227,7 @@ export const WEAPONS = {
     price: 1600,
     magazine: 24,
     reserve: 120,
-    damage: 48,
+    damage: 65,
     pellets: 1,
     interval: 0.18,
     reload: 2.4,
@@ -393,10 +393,15 @@ function raySphere(o: V3, d: V3, c: V3, r: number) {
       ? -b - Math.sqrt(v)
       : Infinity;
 }
+/** Gentle early rounds, then 12% compounding per round; no late-game 300 HP plateau. */
+export function zombieHealth(round: number) {
+  const r = Math.max(1, Math.floor(Number.isFinite(round) ? round : 1));
+  return Math.round(r <= 10 ? 80 + 20 * (r - 1) : 260 * 1.12 ** (r - 10));
+}
 export function waveStats(round: number) {
   return {
     count: [6, 9, 12, 16, 20][round - 1] ?? 20 + (round - 5) * 4,
-    health: Math.min(300, 70 + round * 10),
+    health: zombieHealth(round),
     speed: Math.min(3.4, 1.5 + round * 0.2),
     cadence: Math.max(0.5, 1.65 - round * 0.15),
   };
@@ -444,7 +449,7 @@ export class Simulation {
   set crapsResult(value: string) { this.crapsResults.craps = value; }
   chipValue = 25;
   relics: Partial<Record<WeaponId, boolean>> = {};
-  mystery: { remaining: number; reward: WeaponId | null; resolved: boolean; message: string } | null = null;
+  mystery: { remaining: number; reward: WeaponId | null; resolved: boolean; message: string; offerRemaining?: number; claimed?: boolean } | null = null;
   tablesAge = 0;
   supply = false;
   cashier = false;
@@ -696,17 +701,10 @@ export class Simulation {
     state.completed = true;
     const first = !this.flushRewardUnlocked;
     this.flushRewardUnlocked = true;
-    this.inventory.revolver = {
-      owned: true,
-      mag: this.capacity("revolver"),
-      reserve: WEAPONS.revolver.reserve,
-    };
-    this.weapon = "revolver";
-    this.reloadRemaining = 0;
-    this.fireCooldown = Math.max(this.fireCooldown, 0.2);
+    this.acquireWeapon("revolver");
     this.notify(
       first
-        ? "FLUSH · THE DEAD MAN’S HAND unlocked · weapon 5"
+        ? "FLUSH · THE DEAD MAN’S HAND equipped"
         : "FLUSH · THE DEAD MAN’S HAND refilled",
     );
     this.events.push({ type: "pokerFlush", weapon: "revolver" });
@@ -768,6 +766,32 @@ export class Simulation {
     this.lastMessage = text;
     this.messageRemaining = 2.6;
   }
+  get firearms() { return WEAPON_ORDER.filter(id => this.inventory[id].owned && !isMelee(id)); }
+  /** All pickups share the two-firearm rule; melee tools use separate slots. */
+  acquireWeapon(id: WeaponId) {
+    if (!this.inventory[id]) return;
+    if (!isMelee(id) && !this.inventory[id].owned) {
+      while (this.firearms.length >= 2) {
+        const drop = this.firearms.includes(this.weapon) ? this.weapon
+          : this.firearms.includes(this.lastFirearm) ? this.lastFirearm : this.firearms[0];
+        this.inventory[drop] = {owned:false, mag:0, reserve:0};
+        this.upgrades[drop] = false;
+        delete this.relics[drop];
+      }
+    }
+    if (isMelee(id) && !isMelee(this.weapon)) this.lastFirearm = this.weapon;
+    this.inventory[id] = {owned:true, mag:this.capacity(id), reserve:WEAPONS[id].reserve};
+    this.weapon = id;
+    if (!isMelee(id)) this.lastFirearm = id;
+    this.holdingChips = false; this.aimHeld = false; this.reloadRemaining = 0;
+    this.meleeRemaining = 0; this.meleeWeapon = null; this.bloom = 0;
+    this.fireCooldown = Math.max(this.fireCooldown, .2);
+  }
+  get mysteryOffer() { return this.mystery?.resolved && !this.mystery.claimed && (this.mystery.offerRemaining ?? 0) > 0 ? this.mystery.reward : null; }
+  declineMystery() {
+    if (this.phase !== "playing" || !this.mysteryOffer || dist(this.player, CASINO_SECRET_ANCHORS.mystery) > 2.2) return false;
+    this.mystery = null; this.notify("Weapon declined · loadout unchanged"); return true;
+  }
   switchWeapon(w: WeaponId) {
     if (this.phase === "playing") this.stowChips();
     if (
@@ -786,7 +810,9 @@ export class Simulation {
     this.fireCooldown = Math.max(this.fireCooldown, 0.2);
   }
   cycleWeapon(direction: number) {
-    const owned = WEAPON_ORDER.filter(id => this.inventory[id].owned);
+    const owned = this.firearms;
+    if (!owned.length) return;
+    if (!owned.includes(this.weapon)) { this.switchWeapon(owned[0]); return; }
     this.switchWeapon(owned[(owned.indexOf(this.weapon) + direction + owned.length) % owned.length]);
   }
   reload() {
@@ -915,7 +941,7 @@ export class Simulation {
     }
     if (id === "painting" && (!this.cashier || this.paintingOpen)) reason = this.paintingOpen ? "Follow the four cards. Shoot suit, then number." : "Open the cashier first";
     if (id === "mystery") {
-      price = PRICES.mystery;
+      price = this.mysteryOffer ? 0 : PRICES.mystery;
       if (!this.speakeasy) reason = "Find the hidden room";
       else if (this.mystery && !this.mystery.resolved) reason = "Reels are spinning";
     }
@@ -934,6 +960,14 @@ export class Simulation {
     const p = PURCHASES.find((p) => p.id === id);
     if (!p || dist(this.player, p) > 2.2 || !hasSight(this.player, p, this.rects))
       return false;
+    if (id === "mystery" && this.mysteryOffer) {
+      const reward = this.mysteryOffer;
+      this.acquireWeapon(reward);
+      this.mystery!.claimed = true;
+      this.mystery!.message = `${this.weaponName(reward)} equipped`;
+      this.events.push({type:"pickup", weapon:reward});
+      this.notify(this.mystery!.message); return true;
+    }
     const { price, reason } = this.purchaseInfo(id);
     if (reason) {
       this.notify(reason);
@@ -1081,13 +1115,7 @@ export class Simulation {
     if (id === "shotgun" || id === "smg" || id === "rifle") {
       const cfg = WEAPONS[id];
       if (!this.inventory[id].owned) {
-        this.inventory[id] = {
-          owned: true,
-          mag: this.capacity(id),
-          reserve: cfg.reserve,
-        };
-        this.weapon = id;
-        this.reloadRemaining = 0;
+        this.acquireWeapon(id);
       } else this.inventory[id].reserve = cfg.reserve;
     }
     if (id === "upgrade") this.applyUpgrade();
@@ -1487,11 +1515,8 @@ export class Simulation {
     }
     if (challenge.remaining === 0 && challenge.pending === 0 && this.hotelChallengeAlive === 0) {
       challenge.phase = "complete";
-      this.inventory.tommy = { owned: true, mag: this.capacity("tommy"), reserve: WEAPONS.tommy.reserve };
-      this.weapon = "tommy";
-      this.reloadRemaining = 0;
-      this.fireCooldown = Math.max(this.fireCooldown, 0.2);
-      this.notify("LAST SERVICE COMPLETE · THE CHICAGO TYPEWRITER unlocked · weapon 6");
+      this.acquireWeapon("tommy");
+      this.notify("LAST SERVICE COMPLETE · THE CHICAGO TYPEWRITER equipped");
       this.events.push({ type: "hotelComplete", weapon: "tommy" });
     }
   }
@@ -1568,14 +1593,19 @@ export class Simulation {
         this.mystery.resolved = true;
         const reward=this.mystery.reward;
         if (reward) {
-          const repeat=this.inventory[reward].owned;
-          this.inventory[reward]={owned:true,mag:this.capacity(reward),reserve:WEAPONS[reward].reserve};
-          this.weapon=reward;this.holdingChips=false;this.reloadRemaining=0;this.meleeRemaining=0;this.meleeWeapon=null;
-          this.fireCooldown=Math.max(this.fireCooldown,.45);
-          this.mystery.message=`${this.weaponName(reward)} · ${WEAPONS[reward].label.toLowerCase()} · ${repeat ? "ammunition restocked" : "equipped"}`;
-          this.events.push({type:"pickup",weapon:reward});
+          this.mystery.offerRemaining = 15;
+          const replacement = this.firearms.length >= 2 && !this.inventory[reward].owned;
+          const drop = !isMelee(this.weapon) ? this.weapon : this.lastFirearm;
+          this.mystery.message=`${this.weaponName(reward)} · F take${replacement ? ` / replace ${this.weaponName(drop)}` : ""} · X decline · 15 seconds`;
         } else {this.mystery.message="The house keeps the chips. No weapon this time.";this.events.push({type:"deny"});}
         this.notify(this.mystery.message);
+      }
+    }
+    if (this.mysteryOffer && this.mystery) {
+      this.mystery.offerRemaining = Math.max(0, this.mystery.offerRemaining! - dt);
+      if (!this.mystery.offerRemaining) {
+        this.mystery.claimed = true;
+        this.mystery.message = "Offer expired · loadout unchanged";
       }
     }
     this.roundCueRemaining = Math.max(0, this.roundCueRemaining - dt);

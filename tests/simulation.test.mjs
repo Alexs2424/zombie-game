@@ -522,7 +522,9 @@ test("new weapons require their rooms, keep separate ammo, and refill reserve on
   buy(s, "hotel");
   buy(s, "supply");
   assert.equal(buy(s, "rifle"), true);
-  for (const id of ["smg", "rifle"]) {
+  assert.equal(s.inventory.smg.owned, false, "third gun replaces the held SMG");
+  assert.deepEqual(s.firearms, ["pistol", "rifle"]);
+  for (const id of ["rifle"]) {
     s.switchWeapon(id);
     const before = s.points;
     assert.equal(buy(s, id), false);
@@ -640,7 +642,7 @@ test("bar and workshop share per-weapon upgrades without replenishing reserve", 
   s.points = 30000;
   for (const id of ["lounge", "vip", "hotel", "supply", "shotgun", "smg", "rifle"]) buy(s, id);
   for (const id of ["pistol", "shotgun", "smg", "rifle"]) {
-    s.switchWeapon(id);
+    s.acquireWeapon(id);
     s.inventory[id].mag = 0;
     s.inventory[id].reserve = 3;
     s.reload();

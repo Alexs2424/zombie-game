@@ -85,8 +85,8 @@ Development playtests include **Service overview**, **Service truck**, and
 | Throw grenade       | G                                          |
 | Sprint              | Space (hold; uses stamina)                 |
 | Reload              | R; an empty trigger also starts a reload   |
-| Buy/interact        | E when close to a purchase; also puts chips away |
-| Switch weapons      | 1–5 house guns, 6–0 Mystery Box finds; wheel or Q cycles |
+| Buy/interact        | F when close to a purchase; also puts chips away |
+| Switch weapons      | 1–2 gun slots; Q/E or wheel switches guns |
 | Hold casino chips   | C (then aim at a craps number and fire)    |
 | Cash out table bets | X near the craps table                     |
 | Pause/release mouse | Escape                                     |
@@ -115,7 +115,7 @@ Zombies use three original Blender designs: Pit Boss, Crooked Dealer, and Last S
 - Dealer’s Choice SMG: 1,100 chips in the lounge; 400-chip reserve refill.
 - Pit Boss rifle: 1,600 chips in the northwest supply room; 500-chip reserve refill.
 - The Dead Man’s Hand revolver: complete a five-card flush at either the starting casino or High Roller card table. One free chosen-card exchange per table, per round; hands persist between visits. The first flush grants and equips the six-shot revolver in slot 5; the other table’s flush refills it.
-- Marlowe, the lounge bartender: **E** from the customer side of the bar opens the menu and pauses the solo run. House Reserve costs 1,500 (+50 maximum health); Quick Pour costs 1,000 (reload time ×0.7); Night Shift costs 900 (sprint speed ×1.15). Perks are one-time purchases for the current run.
+- Marlowe, the lounge bartender: **F** from the customer side of the bar opens the menu and pauses the solo run. House Reserve costs 1,500 (+50 maximum health); Quick Pour costs 1,000 (reload time ×0.7); Night Shift costs 900 (sprint speed ×1.15). Perks are one-time purchases for the current run.
 - Double Down: 2,000 chips per owned weapon, at Marlowe’s menu or the VIP workshop. Increases magazine capacity by 50%, damage by approximately 35%, and fills the magazine once. The revolver retains six chambers and gets a 25% faster reload instead of extra magazine capacity. Select the gun to upgrade in the bar menu; the workshop upgrades your equipped gun. Both locations share upgrade state.
 
 Extra guns, separately purchased escape routes, and perks are competing build choices; buying everything is a longer-run goal. Door prices and the economy with two starting craps tables are initial playtest tuning. Rounds continue after five with bounded enemy speed and health.
@@ -221,7 +221,7 @@ for tone and humor.
 
 ## Roulette rewards
 
-Interact with the customer side of either starting-casino roulette table using **E**. Each spin costs 200 chips. The number is chosen once at the start, with all 37 pockets equally likely, and the wheel and ball settle on that number. The four lucky pockets give a combined win chance of 4/37 (about 10.8%). Spins continue while you move and fight; each table can run one independent spin at a time.
+Interact with the customer side of either starting-casino roulette table using **F**. Each spin costs 200 chips. The number is chosen once at the start, with all 37 pockets equally likely, and the wheel and ball settle on that number. The four lucky pockets give a combined win chance of 4/37 (about 10.8%). Spins continue while you move and fight; each table can run one independent spin at a time.
 
 Ammo rewards fill both magazine and reserve, respect upgraded magazine sizes, and cancel an active reload. The 4/24 reward uses the weapon equipped when the ball lands. Unowned weapons stay unowned. A second zero refreshes the 30-second double-damage timer instead of stacking its multiplier; the bonus also applies to upgraded weapons. Spin, result-display, and damage-bonus timers freeze during pause and the bartender/card menus. Starting a new run clears all roulette state and bonuses.
 
@@ -229,9 +229,9 @@ Ammo rewards fill both magazine and reserve, respect upgraded magazine sizes, an
 
 The Grand Casino and High Roller poker islands use a detailed shared GLB with stitched oxblood rails, inlaid walnut, brass trim, recessed cupholders, printed emerald felt, a pedestal base, dealer tray, and detailed chip stacks. Five live cards sit on each felt surface and match that table’s hand. Editable Blender source, previews, regeneration instructions, and geometry checks are in `docs/poker-assets/` and `tools/poker-assets/`.
 
-Approach the south/customer side and press **E**. The solo game pauses while you select a card and confirm a free swap. Keep matching suits: a flush means five of the same suit, regardless of rank or order. Each table has its own hand, 52-card deck, and one-swap-per-round limit. Leaving, reopening, or entering intermission does not refresh that limit. A new actual round does. Previously discarded cards are shuffled back only when the draw pile runs out; cards still in the hand cannot be drawn again.
+Approach the south/customer side and press **F**. The solo game pauses while you select a card and confirm a free swap. Keep matching suits: a flush means five of the same suit, regardless of rank or order. Each table has its own hand, 52-card deck, and one-swap-per-round limit. Leaving, reopening, or entering intermission does not refresh that limit. A new actual round does. Previously discarded cards are shuffled back only when the draw pile runs out; cards still in the hand cannot be drawn again.
 
-The first flush unlocks **THE DEAD MAN’S HAND** for this run: a six-shot, 110-damage revolver with 48 reserve rounds. It equips automatically and uses weapon key **5**. Completing the other table refills it once. Completed tables retain their flush without granting repeated rewards. Roulette’s ammo rewards include the revolver once owned; Marlowe and the workshop can upgrade it to **ACE OF SPADES**. New runs reset both hands and the reward. Flush completion is represented separately from weapon ownership, ready for a future map-unlock reward; this pass adds no new room.
+The first flush unlocks **THE DEAD MAN’S HAND** for this run: a six-shot, 110-damage revolver with 48 reserve rounds. It equips automatically and uses one of the two firearm slots (replacing the held gun if full). Completing the other table refills it once. Completed tables retain their flush without granting repeated rewards. Roulette’s ammo rewards include the revolver once owned; Marlowe and the workshop can upgrade it to **ACE OF SPADES**. New runs reset both hands and the reward. Flush completion is represented separately from weapon ownership, ready for a future map-unlock reward; this pass adds no new room.
 
 ## Grand Hotel and Last Service
 
@@ -241,7 +241,7 @@ continuous guards prevent dropping between levels. Five hotel service entrances
 become active after a three-second opening grace period, with modestly tougher
 hotel enemies.
 
-At the upstairs host stand, press **E** to ring the **Last Service** bell. Stay in
+At the upstairs host stand, press **F** to ring the **Last Service** bell. Stay in
 the restaurant for **35 seconds** and clear all **12 ambushers**. Up to six
 ambushers can be active within the normal 14-enemy cap. Existing round enemies
 keep pursuing, while the normal spawn budget and intermission timer pause.
@@ -257,7 +257,7 @@ per run and resets with a new game.
 
 Eleven original Blender furniture assets replace the lobby and restaurant
 placeholders. Marble, woodwork, Art Deco rails, chandeliers, wall art, clocks,
-service doors, and contact shading complete this hotel pass. Press **E** beside
+service doors, and contact shading complete this hotel pass. Press **F** beside
 the lobby jukebox to start or stop an original, distance-panned lounge instrumental.
 Music and hotel cues follow the volume control and pause with the game.
 
@@ -293,3 +293,5 @@ The slot status names the emitting cabinet and sound. See
 The couch beside the flush card games now uses an original Blender-built oxblood leather banquette with sculpted diamond tufting, five shaped cushions, stitched piping, rolled arms, walnut joinery, and brass feet. The existing footprint and cover height remain unchanged. The editable source is `assets/source/vip-couch.blend`; the game loads `public/models/vip-couch.glb`. See `docs/couch-assets/` for previews, regeneration instructions, and validation. Development playtest controls include a **VIP couch** viewpoint.
 
 Sprint stamina lasts five seconds, recovers after a one-second delay, and requires 30% recovery after exhaustion. Settings → Show tips & explanation cards controls optional help overlays and remembers your choice on this browser. Essential gameplay status remains visible.
+
+Current inventory, round-health and damage tuning is documented in [Combat balance](docs/combat-balance.md). Mystery-box wins now require F to accept; X declines. Revealing a weapon never changes the loadout.
