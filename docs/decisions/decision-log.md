@@ -121,3 +121,27 @@ exports; updated the dynamic purchase plaque and loading fallback colors.
 Reduced ornamental bevel/profile tessellation to keep each export within the
 existing asset budgets. The owning [entrance documentation](../hotel-assets/entry/README.md)
 records material choices, coordinates, reproduction and visual verification.
+
+
+## 2026-09-30 — Cohesive casino perimeter and room gates
+
+**Established direction:** the user rejected an isolated upgraded wall next to
+unchanged main-room wallpaper. Extend the smoky oxblood, ornate Art Deco work
+around the complete casino, thoughtfully position the models, and create gates
+for its other room entrances. Playtest and inspect the actual game.
+
+**Working execution:** share the north facade's material, relief and moulding
+family across all remaining wall spans. Use fan/chevron lounge grilles, diamond
+High Roller grilles and a finer Cashier security weave. Lower these five clear
+door heads to 4 m while preserving their 4 m widths, positions, independent
+unlocks and prices. This makes room for finished reverse signs below adjoining
+ceilings; fixed transoms close the main room up to 6.8 m. No new narrative or
+quest significance is assigned to the motifs.
+
+**Implemented:** original editable Blender architecture and fourteen new exports,
+complete wall cladding, five fitted entrances with reverse faces, coordinated
+sconces/coves, an architectural casino nameboard and adjusted wall-display depth.
+The collision transoms follow the new heights. Geometry audits verify perimeter
+closure and doorway clearance; browser checks exercise purchases and traversal.
+The owning [casino architecture document](../casino-architecture/README.md)
+records the current scope, asset budgets, rebuild process and playtest evidence.

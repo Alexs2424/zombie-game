@@ -1,5 +1,9 @@
 # Hotel facade verification — September 30, 2026
 
+This records the initial north-facade pass. The subsequent
+[full-casino playtest](../../casino-architecture/playtest.md) supersedes its
+limited perimeter scope and adds the shared sconces/coves.
+
 Verified on the isolated `codex/hotel-gate-walls` worktree at
 `http://127.0.0.1:5176/?playtest=1`, using desktop Chrome's Metal WebGL renderer
 at 1600 × 1000. Screenshots were visually inspected after the final oxblood asset rebuild.
@@ -21,7 +25,8 @@ The previous jade preview is superseded by the user-selected oxblood palette.
   underside. The previously coincident underside faces were separated, removing
   visible horizontal banding. Pier reveals also avoid coincident foyer faces.
 - East corner at X=22, Z=7: new wall meets the existing perpendicular casino
-  wall, with no exterior gap. Unaffected walls retain their existing finish.
+  wall, with no exterior gap. That earlier mixed-finish state is superseded by
+  the subsequent full-casino Art Deco treatment.
 - Actual `purchase('hotel')` succeeds and charges exactly 2,000 chips. Gate and
   price label disappear; portal remains visible. Focused gameplay tests also
   verify movement through the purchased gate and correct collision before purchase.

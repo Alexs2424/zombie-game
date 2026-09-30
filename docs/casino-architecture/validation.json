@@ -1,0 +1,141 @@
+{
+  "status": "passed",
+  "samples": 4249,
+  "checks": [
+    "complete four-wall perimeter",
+    "four-metre clear room portals",
+    "front and rear opening clearance",
+    "fixed transoms and ceiling contact",
+    "closed/open gate geometry",
+    "embedded textures and finite geometry",
+    "per-export budgets"
+  ],
+  "assets": [
+    {
+      "asset": "casino-deco-casino-wall-sw",
+      "triangles": 12340,
+      "meshes": 8,
+      "bytes": 1085568
+    },
+    {
+      "asset": "casino-deco-casino-wall-sm",
+      "triangles": 9296,
+      "meshes": 8,
+      "bytes": 915324
+    },
+    {
+      "asset": "casino-deco-casino-wall-se",
+      "triangles": 48200,
+      "meshes": 8,
+      "bytes": 2829144
+    },
+    {
+      "asset": "casino-deco-casino-wall-ws",
+      "triangles": 4936,
+      "meshes": 8,
+      "bytes": 653560
+    },
+    {
+      "asset": "casino-deco-casino-wall-wm",
+      "triangles": 9296,
+      "meshes": 8,
+      "bytes": 915324
+    },
+    {
+      "asset": "casino-deco-casino-wall-wn",
+      "triangles": 15384,
+      "meshes": 8,
+      "bytes": 1258196
+    },
+    {
+      "asset": "casino-deco-casino-wall-es",
+      "triangles": 4936,
+      "meshes": 8,
+      "bytes": 651172
+    },
+    {
+      "asset": "casino-deco-casino-wall-en",
+      "triangles": 30192,
+      "meshes": 8,
+      "bytes": 2126996
+    },
+    {
+      "asset": "casino-deco-portal-lounge",
+      "triangles": 25124,
+      "meshes": 6,
+      "bytes": 1648640
+    },
+    {
+      "asset": "casino-deco-gate-lounge",
+      "triangles": 12076,
+      "meshes": 3,
+      "bytes": 540636
+    },
+    {
+      "asset": "casino-deco-portal-lounge",
+      "triangles": 25124,
+      "meshes": 6,
+      "bytes": 1648640
+    },
+    {
+      "asset": "casino-deco-gate-lounge",
+      "triangles": 12076,
+      "meshes": 3,
+      "bytes": 540636
+    },
+    {
+      "asset": "casino-deco-portal-vip",
+      "triangles": 28004,
+      "meshes": 6,
+      "bytes": 1721968
+    },
+    {
+      "asset": "casino-deco-gate-vip",
+      "triangles": 9844,
+      "meshes": 3,
+      "bytes": 435144
+    },
+    {
+      "asset": "casino-deco-portal-vip",
+      "triangles": 28004,
+      "meshes": 6,
+      "bytes": 1721968
+    },
+    {
+      "asset": "casino-deco-gate-vip",
+      "triangles": 9844,
+      "meshes": 3,
+      "bytes": 435144
+    },
+    {
+      "asset": "casino-deco-portal-cashier",
+      "triangles": 24900,
+      "meshes": 6,
+      "bytes": 1641284
+    },
+    {
+      "asset": "casino-deco-gate-cashier",
+      "triangles": 16292,
+      "meshes": 3,
+      "bytes": 775868
+    },
+    {
+      "asset": "hotel-entry-portal",
+      "triangles": 25528,
+      "meshes": 7,
+      "bytes": 1686732
+    },
+    {
+      "asset": "hotel-entry-wall-west",
+      "triangles": 33236,
+      "meshes": 8,
+      "bytes": 2297412
+    },
+    {
+      "asset": "hotel-entry-wall-east",
+      "triangles": 33236,
+      "meshes": 8,
+      "bytes": 2297432
+    }
+  ]
+}

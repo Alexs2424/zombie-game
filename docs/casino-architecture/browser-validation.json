@@ -1,0 +1,316 @@
+{
+  "loaded": {
+    "roots": [
+      {
+        "name": "casino architecture casino-wall-sw",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture casino-wall-sm",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture casino-wall-se",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture casino-wall-ws",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture casino-wall-wm",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture casino-wall-wn",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture casino-wall-es",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture casino-wall-en",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture lounge portal",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture lounge gate",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture shortcut portal",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture shortcut gate",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture vip portal",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture vip gate",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture vipExit portal",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture vipExit gate",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture cashier portal",
+        "enabled": true
+      },
+      {
+        "name": "casino architecture cashier gate",
+        "enabled": true
+      }
+    ],
+    "fallbacks": [
+      {
+        "name": "casino-wall-sw architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-wall-sm architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-wall-se architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-wall-ws architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-wall-wm architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-wall-wn architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-wall-es architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-wall-en architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-lintel-lounge architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-lintel-shortcut architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-lintel-vip architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-lintel-vipExit architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "casino-lintel-cashier architecture fallback",
+        "enabled": false
+      },
+      {
+        "name": "lounge portal fallback",
+        "enabled": false
+      },
+      {
+        "name": "shortcut portal fallback",
+        "enabled": false
+      },
+      {
+        "name": "vip portal fallback",
+        "enabled": false
+      },
+      {
+        "name": "vipExit portal fallback",
+        "enabled": false
+      },
+      {
+        "name": "cashier portal fallback",
+        "enabled": false
+      }
+    ]
+  },
+  "doors": [
+    {
+      "id": "lounge",
+      "cost": 900,
+      "expected": 900,
+      "blocked": {
+        "x": -32.400000000000006,
+        "z": -2,
+        "y": 0,
+        "surfaceId": "ground"
+      },
+      "returned": {
+        "x": -31.699999999999996,
+        "z": -2,
+        "y": 0,
+        "surfaceId": "ground"
+      },
+      "visibility": {
+        "gate": false,
+        "portal": true,
+        "front": false,
+        "rear": false
+      }
+    },
+    {
+      "id": "shortcut",
+      "cost": 600,
+      "expected": 600,
+      "blocked": {
+        "x": -32.400000000000006,
+        "z": -14,
+        "y": 0,
+        "surfaceId": "ground"
+      },
+      "returned": {
+        "x": -31.699999999999996,
+        "z": -14,
+        "y": 0,
+        "surfaceId": "ground"
+      },
+      "visibility": {
+        "gate": false,
+        "portal": true,
+        "front": false,
+        "rear": false
+      }
+    },
+    {
+      "id": "vip",
+      "cost": 1300,
+      "expected": 1300,
+      "blocked": {
+        "x": -23,
+        "z": -19.40000000000001,
+        "y": 0,
+        "surfaceId": "ground"
+      },
+      "returned": {
+        "x": -23,
+        "z": -18.7,
+        "y": 0,
+        "surfaceId": "ground"
+      },
+      "visibility": {
+        "gate": false,
+        "portal": true,
+        "front": false,
+        "rear": false
+      }
+    },
+    {
+      "id": "vipExit",
+      "cost": 800,
+      "expected": 800,
+      "blocked": {
+        "x": -11,
+        "z": -19.40000000000001,
+        "y": 0,
+        "surfaceId": "ground"
+      },
+      "returned": {
+        "x": -11,
+        "z": -18.7,
+        "y": 0,
+        "surfaceId": "ground"
+      },
+      "visibility": {
+        "gate": false,
+        "portal": true,
+        "front": false,
+        "rear": false
+      }
+    },
+    {
+      "id": "cashier",
+      "cost": 600,
+      "expected": 600,
+      "blocked": {
+        "x": 26.40000000000001,
+        "z": -16,
+        "y": 0,
+        "surfaceId": "ground"
+      },
+      "returned": {
+        "x": 25.7,
+        "z": -16,
+        "y": 0,
+        "surfaceId": "ground"
+      },
+      "visibility": {
+        "gate": false,
+        "portal": true,
+        "front": false,
+        "rear": false
+      }
+    }
+  ],
+  "perimeter": [
+    {
+      "x": 26.000000000000274,
+      "z": -17,
+      "y": 0,
+      "surfaceId": "ground"
+    },
+    {
+      "x": 26.000000000000274,
+      "z": 8.49999999999996,
+      "y": 0,
+      "surfaceId": "ground"
+    },
+    {
+      "x": -30.999999999999755,
+      "z": 8.49999999999996,
+      "y": 0,
+      "surfaceId": "ground"
+    },
+    {
+      "x": -30.999999999999755,
+      "z": -16.999999999999975,
+      "y": 0,
+      "surfaceId": "ground"
+    }
+  ],
+  "keyboard": {
+    "z": -6.159999999999997
+  },
+  "fallback": {
+    "partial": 0,
+    "walls": true,
+    "purchase": true,
+    "frontPriceClear": true,
+    "rearPriceClear": true
+  },
+  "errors": [],
+  "status": "passed",
+  "combatObservation": {
+    "input": "pointer-locked mouse input, then R",
+    "pistolMagazineBefore": 12,
+    "pistolMagazineAfterFiring": 8,
+    "remainingEnemies": 0,
+    "pistolMagazineAfterReload": 12,
+    "reserveBefore": 84,
+    "reserveAfterReload": 80
+  }
+}

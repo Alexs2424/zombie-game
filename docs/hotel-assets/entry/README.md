@@ -29,7 +29,7 @@ If any export fails, partial assets are disposed and the fallbacks remain.
 
 ## Selected palette
 
-The user selected smoky oxblood for this facade, superseding the initial jade
+The user selected smoky oxblood for the casino architecture, superseding the initial jade
 working palette. The wall lacquer and nameplates use **#5B3038**, paired with
 champagne brass **#C2A574**, dark walnut **#3B2923**, warm ivory marble and darker
 oxblood reveals **#40252A**. Color swatches are sRGB; the generator explicitly
@@ -54,8 +54,10 @@ and `preview.png`. All textures are original, generated locally and embedded.
 The audit imports the actual exports with Babylon's left-handed loader and checks
 clear passage, jambs, lintel, full-height closure, wing seams, rear faces, ceiling
 contact, opened gate visibility, finite geometry and bounded asset costs.
-`runtime-validation.json` records its results. Each export has at most seven
-material meshes and fewer than 30,000 triangles; the four total about 6.4 MB.
+`runtime-validation.json` records its results. Each export has at most eight
+material meshes and fewer than 40,000 triangles; the four total about 7.1 MB.
+The shared sconces and recessed cove now match the rest of the
+[main casino architecture](../../casino-architecture/README.md).
 
 `preview.png` is a Blender architectural study; game lighting is deliberately
 darker. Browser verification and screenshots are recorded in `playtest.md`.

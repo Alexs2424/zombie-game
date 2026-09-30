@@ -1,0 +1,149 @@
+{
+  "walls": [
+    {
+      "id": "casino-wall-sw",
+      "x": -29,
+      "z": -20,
+      "yaw": 3.141592653589793,
+      "length": 8,
+      "height": 6.8,
+      "trimStart": 0.42,
+      "trimEnd": 0,
+      "featureX": null
+    },
+    {
+      "id": "casino-wall-sm",
+      "x": -17,
+      "z": -20,
+      "yaw": 3.141592653589793,
+      "length": 8,
+      "height": 6.8,
+      "trimStart": 0.42,
+      "trimEnd": 0.42,
+      "featureX": null
+    },
+    {
+      "id": "casino-wall-se",
+      "x": 9,
+      "z": -20,
+      "yaw": 3.141592653589793,
+      "length": 36,
+      "height": 6.8,
+      "trimStart": 0,
+      "trimEnd": 0.42,
+      "featureX": 12
+    },
+    {
+      "id": "casino-wall-ws",
+      "x": -33,
+      "z": -18,
+      "yaw": -1.5707963267948966,
+      "length": 4,
+      "height": 6.8,
+      "trimStart": 0,
+      "trimEnd": 0.42,
+      "featureX": null
+    },
+    {
+      "id": "casino-wall-wm",
+      "x": -33,
+      "z": -8,
+      "yaw": -1.5707963267948966,
+      "length": 8,
+      "height": 6.8,
+      "trimStart": 0.42,
+      "trimEnd": 0.42,
+      "featureX": null
+    },
+    {
+      "id": "casino-wall-wn",
+      "x": -33,
+      "z": 6,
+      "yaw": -1.5707963267948966,
+      "length": 12,
+      "height": 6.8,
+      "trimStart": 0.42,
+      "trimEnd": 0,
+      "featureX": null
+    },
+    {
+      "id": "casino-wall-es",
+      "x": 27,
+      "z": -19,
+      "yaw": 1.5707963267948966,
+      "length": 2,
+      "height": 6.8,
+      "trimStart": 0.42,
+      "trimEnd": 0,
+      "featureX": null
+    },
+    {
+      "id": "casino-wall-en",
+      "x": 27,
+      "z": -1,
+      "yaw": 1.5707963267948966,
+      "length": 26,
+      "height": 6.8,
+      "trimStart": 0,
+      "trimEnd": 0.42,
+      "featureX": null
+    }
+  ],
+  "portals": [
+    {
+      "id": "lounge",
+      "x": -33,
+      "z": -2,
+      "w": 0.45,
+      "d": 4,
+      "h": 4,
+      "style": "lounge",
+      "title": "THE LAST CALL",
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "shortcut",
+      "x": -33,
+      "z": -14,
+      "w": 0.45,
+      "d": 4,
+      "h": 4,
+      "style": "lounge",
+      "title": "THE LAST CALL",
+      "yaw": -1.5707963267948966
+    },
+    {
+      "id": "vip",
+      "x": -23,
+      "z": -20,
+      "w": 4,
+      "d": 0.45,
+      "h": 4,
+      "style": "vip",
+      "title": "HIGH ROLLER CLUB",
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "vipExit",
+      "x": -11,
+      "z": -20,
+      "w": 4,
+      "d": 0.45,
+      "h": 4,
+      "style": "vip",
+      "title": "HIGH ROLLER CLUB",
+      "yaw": 3.141592653589793
+    },
+    {
+      "id": "cashier",
+      "x": 27,
+      "z": -16,
+      "w": 0.45,
+      "d": 4,
+      "h": 4,
+      "style": "cashier",
+      "title": "CASHIER",
+      "yaw": 1.5707963267948966
+    }
+  ]
+}

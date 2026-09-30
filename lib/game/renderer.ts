@@ -67,6 +67,8 @@ import {
   type GameEvent,
 } from "./simulation";
 import "@babylonjs/core/Culling/ray";
+import { CASINO_CLADDING, CASINO_PORTALS } from "./casino-architecture-layout";
+import { loadCasinoArchitecture } from "./casino-architecture-assets";
 import { buildHotel } from "./hotel-scene";
 import { intersectsShadowFrustum } from "./shadow-culling";
 
@@ -86,6 +88,8 @@ export class GameRenderer {
   private weaponAssets: AssetContainer[] = [];
   private ammoDisplayFallback?: TransformNode;
   private hotelFacadeFallback?: TransformNode;
+  private casinoArchitectureFallbacks: TransformNode[] = [];
+  private casinoArchitecture?: Awaited<ReturnType<typeof loadCasinoArchitecture>>;
   private planterFallbacks = new Map<string, { root: TransformNode; footprint: Rect }>();
   private hotel: ReturnType<typeof buildHotel>;
   private couchFallbacks = new Map<string, {
@@ -279,6 +283,8 @@ export class GameRenderer {
       shadow.setDarkness(0.16);
       this.shadows.push(shadow);
     }
+    // Fine cast reliefs and grille bars need coverage sampling before post effects.
+    const architectureSamples = Math.max(1, Math.min(4, this.engine.getCaps().maxMSAASamples));
     if (SSAO2RenderingPipeline.IsSupported) {
       const ao = new SSAO2RenderingPipeline(
         "contact shadows",
@@ -287,6 +293,7 @@ export class GameRenderer {
         [this.camera],
         false,
       );
+      ao.textureSamples = architectureSamples;
       ao.radius = 0.35;
       ao.totalStrength = 0.45;
       ao.base = 0.05;
@@ -299,6 +306,7 @@ export class GameRenderer {
       this.scene,
       [this.camera],
     );
+    pipeline.samples = architectureSamples;
     pipeline.fxaaEnabled = true;
     pipeline.bloomEnabled = true;
     pipeline.bloomThreshold = 0.9;
@@ -376,6 +384,7 @@ export class GameRenderer {
     this.ready = Promise.all([
       this.casino.ready,
       this.hotel.ready,
+      this.loadCasinoArchitecture(),
       this.loadWeaponAssets(),
       this.loadTableAssets(),
       this.loadSlotAssets(),
@@ -458,6 +467,7 @@ export class GameRenderer {
     h: number,
     color = "#d9bd77",
     rotation = 0,
+    background = "#111d19",
   ) {
     const textureHeight = Math.max(96, Math.round((1024 * h) / w));
     const t = new DynamicTexture(
@@ -467,7 +477,7 @@ export class GameRenderer {
       false,
     );
     const ctx = t.getContext() as CanvasRenderingContext2D;
-    ctx.fillStyle = "#111d19";
+    ctx.fillStyle = background;
     ctx.fillRect(0, 0, 1024, textureHeight);
     ctx.strokeStyle = color;
     ctx.lineWidth = 5;
@@ -636,6 +646,13 @@ export class GameRenderer {
         this.box(r.id, r.x, (r.baseY ?? 0) + r.h / 2, r.z, r.w, r.h, r.d, this.mat("hotel facade oxblood fallback", "#40252a"), this.hotelFacadeFallback);
         continue;
       }
+      if (CASINO_CLADDING.some(w => w.id === r.id) || CASINO_PORTALS.some(p => `casino-lintel-${p.id}` === r.id)) {
+        const fallback = new TransformNode(`${r.id} architecture fallback`, this.scene);
+        this.casinoArchitectureFallbacks.push(fallback);
+        this.box(r.id, r.x, (r.baseY ?? 0) + r.h / 2, r.z, r.w, r.h, r.d,
+          this.mat("casino oxblood wall fallback", "#40252a"), fallback);
+        continue;
+      }
       this.box(r.id, r.x, (r.baseY ?? 0) + r.h / 2, r.z, r.w, r.h, r.d, wall);
       // The supply room has its own continuous utility cladding. Casino trim
       // would otherwise protrude through it and leave overlapping wall details.
@@ -665,6 +682,30 @@ export class GameRenderer {
     };
     for (const [id, r] of Object.entries(DOORS)) {
       if (id === "hotel") continue;
+      const portal = CASINO_PORTALS.find(p => p.id === id);
+      if (portal) {
+        const fixed = new TransformNode(`${id} portal fallback`, this.scene);
+        this.casinoArchitectureFallbacks.push(fixed);
+        const acrossX = r.w > r.d;
+        for (const side of [-1,1]) this.box(`${id} fallback jamb`,
+          r.x + (acrossX ? side*2.21 : 0),2,r.z + (acrossX ? 0 : side*2.21),
+          acrossX ? .42 : .66,4,acrossX ? .66 : .42,cream,fixed);
+        // Keep the loading panel behind the same inset price planes as the grille.
+        this.gates[id] = this.box(`${id} gate fallback`,r.x,2,r.z,acrossX ? r.w : .18,4,acrossX ? .18 : r.d,
+          this.mat("casino oxblood gate fallback", "#5B3038"));
+        for (const side of [-1,1]) {
+          const rotation=portal.yaw+(side>0?Math.PI:0);
+          const name=this.label(`${id} fallback title`,side<0?portal.title:"GRAND CASINO",
+            r.x+Math.sin(portal.yaw)*side*.37,4.48,r.z+Math.cos(portal.yaw)*side*.37,
+            3.7,.38,"#C2A574",rotation,"#5B3038");
+          name.parent=fixed;
+          this.gateSigns[id+(side>0?"Back":"")]=this.label(`${id} ${side} price`,
+            `E • OPEN ${PRICES[id as keyof typeof PRICES]} CHIPS`,
+            r.x+Math.sin(portal.yaw)*side*.147,1.65,r.z+Math.cos(portal.yaw)*side*.147,
+            2.72,.35,"#e5c881",rotation,"#5B3038");
+        }
+        continue;
+      }
       const acrossX = r.w > r.d, span = acrossX ? r.w : r.d;
       const gate = this.box(`${id} shutter`, r.x, r.h / 2, r.z, r.w, r.h, r.d,
         this.mat("shutter", "#50493a"));
@@ -691,8 +732,7 @@ export class GameRenderer {
     const casino = CASINO_ROOMS.casino;
     const centerX = (casino.minX + casino.maxX) / 2;
     const centerZ = (casino.minZ + casino.maxZ) / 2;
-    this.label("main sign", "LAST JACKPOT", centerX, 4.65, casino.minZ + 0.2, 10, 1.2, "#e1c789", Math.PI);
-    this.label("main subtitle", "THE GRAND CASINO", centerX, 3.78, casino.minZ + 0.21, 7, 0.36, "#adbdac", Math.PI);
+    // The original Blender south-wall feature bay owns casino name and subtitle.
     // The hotel supplies the single entrance plaque on its marble lintel.
     // Repeated carpet borders and coffers tie the much larger floor together.
     // These flat inlays leave all combat routes and table approaches unobstructed.
@@ -742,18 +782,7 @@ export class GameRenderer {
     }
     chandelier(-17, -29, CASINO_ROOMS.vip.ceilingY, 0.9);
     chandelier(-39, 0, CASINO_ROOMS.lounge.ceilingY, 0.7);
-    // Perimeter sconces have no collision and sit fully against the new walls.
-    for (const x of [casino.minX + 0.18, casino.maxX - 0.18]) {
-      // The west wall has doors centered on -14 and -2. Keep sconces on
-      // the solid wall bays, clear of both shutter openings.
-      for (const z of x < centerX ? [-18, -6, 10.5] : [-11, -3, 8]) {
-        this.box("sconce backing", x, 3.4, z, 0.08, 1.15, 0.5, trim);
-        this.box("sconce opal glass", x + (x < centerX ? 0.07 : -0.07), 3.45, z,
-          0.14, 0.8, 0.27, luminous);
-      }
-      this.box("grand casino cove", x, casino.ceilingY - 0.42, centerZ, 0.045, 0.045,
-        casino.maxZ - casino.minZ - 0.5, luminous);
-    }
+    // Perimeter sconces and coves are part of the fitted Blender wall assemblies.
     this.cashierDecor();
     this.purchaseDisplays();
     this.bartender = createCharacter(this.scene, 0, true);
@@ -807,7 +836,7 @@ export class GameRenderer {
       dark = this.mat("charcoal", "#15221e");
     for (const purchase of PURCHASES) {
       if (purchase.id === "pistolAmmo") {
-        const z = CASINO_ROOMS.casino.minZ + 0.29;
+        const z = CASINO_ROOMS.casino.minZ + 0.42;
         const fallback = new TransformNode("ammo display loading fallback", this.scene);
         this.ammoDisplayFallback = fallback;
         this.box("ammo plaque", purchase.x, 1.5, z + 0.06, 2.5, 1.6, 0.12, wood, fallback);
@@ -822,7 +851,7 @@ export class GameRenderer {
         const id = purchase.id;
         // Anchors sit at the standing approach; the display is fixed on the
         // nearest room wall, always facing the accessible side of that room.
-        const x = id === "shotgun" ? CASINO_ROOMS.casino.maxX - 0.25 :
+        const x = id === "shotgun" ? CASINO_ROOMS.casino.maxX - 0.42 :
           id === "smg" ? CASINO_ROOMS.lounge.minX + 0.25 : CASINO_ROOMS.supply.minX + 0.42;
         // The rifle hangs on the west wall so the preserved north storage
         // shelving cannot obscure it from its purchase approach.
@@ -1188,6 +1217,18 @@ export class GameRenderer {
       }
     }
   }
+  private async loadCasinoArchitecture() {
+    try {
+      const loaded=await loadCasinoArchitecture(this.scene);
+      if(this.scene.isDisposed){loaded.dispose();return;}
+      this.casinoArchitecture=loaded;
+      this.casinoArchitectureFallbacks.forEach(root=>root.setEnabled(false));
+      for(const id of loaded.gateIds) this.gates[id]?.setEnabled(false);
+      for(const mesh of loaded.meshes) if(mesh.getTotalVertices()>0) this.addStaticShadowCaster(mesh);
+    } catch(error) {
+      if(!this.scene.isDisposed) console.warn("Casino architecture unavailable; keeping complete wall and gate fallbacks.",error);
+    }
+  }
   private async loadAmmoDisplay() {
     let asset: AssetContainer | undefined;
     let placement: TransformNode | undefined;
@@ -1199,7 +1240,7 @@ export class GameRenderer {
       }
       const purchase = PURCHASES.find((item) => item.id === "pistolAmmo")!;
       placement = new TransformNode("pistol ammo cabinet placement", this.scene);
-      placement.position.set(purchase.x, 1.5, CASINO_ROOMS.casino.minZ + 0.29);
+      placement.position.set(purchase.x, 1.5, CASINO_ROOMS.casino.minZ + 0.42);
       // The authored front faces Babylon +Z with the loader root retained.
       asset.addAllToScene();
       for (const node of [...asset.meshes, ...asset.transformNodes].filter((node) => !node.parent))
@@ -2044,7 +2085,8 @@ export class GameRenderer {
     this.gun.setEnabled(sim.phase !== "ready");
     for (const [id, gate] of Object.entries(this.gates)) {
       const open = sim.doorsOpen[id as keyof typeof sim.doorsOpen];
-      gate.setEnabled(!open);
+      gate.setEnabled(!open && !this.casinoArchitecture?.gateIds.has(id));
+      this.casinoArchitecture?.setOpen(id,open);
       this.gateSigns[id]?.setEnabled(!open);
       this.gateSigns[id + "Back"]?.setEnabled(!open);
     }
@@ -2123,6 +2165,7 @@ export class GameRenderer {
   dispose() {
     this.casino.dispose();
     this.hotel.dispose();
+    this.casinoArchitecture?.dispose();
     for (const asset of this.weaponAssets) asset.dispose();
     this.scene.dispose();
     this.engine.dispose();
