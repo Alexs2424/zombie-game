@@ -1,0 +1,17 @@
+[
+  {
+    "action": "new"
+  },
+  {
+    "action": "hotel-lobby"
+  },
+  {
+    "wait": 2000
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.renderer.scene;const floor=s.meshes.filter(m=>m.name.startsWith('hotel-grand-floor')&&m.getTotalVertices());if(floor.length!==7||floor.some(m=>m.material.lightmapTexture))throw Error('Floor did not retain unbaked fallback');const windowLight=s.lights.find(l=>l.name==='hotel window fill 1');if(windowLight.projectionTexture||windowLight.intensity<=0)throw Error('Window fallback unavailable');return {floorMeshes:floor.length,liveDaylight:windowLight.intensity,bakedMapsAssigned:0};})()"
+  },
+  {
+    "shot": "lighting-fallback"
+  }
+]

@@ -56,6 +56,11 @@ try {
   });
   await send("Runtime.enable");
   await send("Page.enable");
+  // Optional asset-failure verification; normal captures leave networking untouched.
+  if (process.env.CAPTURE_BLOCK_URLS) {
+    await send("Network.enable");
+    await send("Network.setBlockedURLs", { urls: JSON.parse(process.env.CAPTURE_BLOCK_URLS) });
+  }
   await send("Emulation.setDeviceMetricsOverride", { width: 1600, height: 900, deviceScaleFactor: 1, mobile: false });
   await send("Page.navigate", { url });
   for (let i = 0; i < 240; i++) {
