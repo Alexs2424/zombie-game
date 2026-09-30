@@ -233,3 +233,7 @@ The user approved all roadmap improvements, requested a methodical PR stack, and
 ## 2026-09-30 — Fitted marble floor
 
 **Implemented working design:** warm ivory marble slabs with fine joints and original mineral/polish maps, narrow forest-green borders, and a fitted stone compass replace the visually flat floor finish. The finish preserves the simulation floor and sits below existing contact shadows. Sources and game-view validation are recorded in the [fidelity asset record](../hotel-assets/lobby/README.md).
+
+## 2026-09-30 — Hotel light hierarchy and wall relief review
+
+**Implemented working design:** warm architectural lighting with cooler window fill and restrained plaster bounce, plus static room reflections and architectural shadows. Preserve readable paths and the casino's existing exposure. Close wall review confirms the modeled plaster bevels and green panel profiles project from the backing; no flat printed substitute was introduced. Moving quest panels are omitted from frozen captures. Current verification and limits live in the [fidelity asset record](../hotel-assets/lobby/README.md).

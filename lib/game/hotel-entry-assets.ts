@@ -28,7 +28,7 @@ export async function loadHotelEntry(scene: Scene) {
       for (const node of [...container.meshes,...container.transformNodes].filter(node => !node.parent)) node.parent=root;
       for (const material of container.materials) {
         const lit=material as typeof material & { maxSimultaneousLights?: number };
-        if ("maxSimultaneousLights" in lit) lit.maxSimultaneousLights=8;
+        if ("maxSimultaneousLights" in lit) lit.maxSimultaneousLights=10;
       }
       for (const mesh of root.getChildMeshes()) {
         mesh.isPickable=false;mesh.receiveShadows=true;mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();

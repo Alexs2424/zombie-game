@@ -19,7 +19,7 @@ The finished wall assembly contains six merged material meshes, 15,032 vertices,
 - TypeScript and ESLint pass for the changed code.
 - All 20 focused hotel layout/navigation and light-membership tests pass.
 - In-game Chrome screenshots inspected at the lobby approach, a close oblique wall, the mezzanine, reception, and an east service door. Paneling clears the service-door leaf and retained window and artwork faces.
-- Browser geometry audit reports six finite wall meshes, all included in the four existing hotel lights. Constructing and disposing a second wall assembly restores the scene's original mesh, material, texture, and geometry counts.
+- The initial browser geometry audit reports six finite wall meshes included in the existing hotel point lights. The later lighting pass adds hotel-only fill; see the [current fidelity record](lobby/README.md). Constructing and disposing a second wall assembly restores the scene's original mesh, material, texture, and geometry counts.
 - No Blender audit is needed because this pass changes runtime geometry only. No sustained combat performance benchmark was run.
 
 Reproduce the visual review against an isolated development server:

@@ -31,3 +31,9 @@ Rebuild with `build_ceiling.py`; pass `hotel-grand-ceiling` to the GLB validator
 `hotel-grand-floor.blend` / `.glb` add individually fitted, beveled marble slabs, thin joints, embedded original mineral-color and polish maps, an inset green perimeter border, and a flush stone compass. The visible finish is 1–25 mm above the unchanged simulation floor and remains below furniture contact-shadow planes. Previous compass overlays are hidden after successful loading.
 
 Rebuild with `build_floor.py`. The validator checks top-facing floor samples and a maximum finish height below 27 mm, in addition to the common GLB checks. TypeScript, targeted lint, Blender source audit, actual GLB validation, and Chrome entrance/close-floor review pass. This layer changes surface detail; reflection and light tuning follow in the lighting PR.
+
+## Lighting and finish response — implemented
+
+`hotel-finish-lighting.ts` adds hotel-only plaster bounce, cooler window fill, a 1024 px static architectural shadow map, and a 128 px box-projected static room capture for floor materials. Warm fixtures retain their existing positions. Hotel materials support ten simultaneous lights so the local sources do not displace one another. The casino's global exposure is unchanged.
+
+Static captures refresh after model replacement, not every frame. Moving concealed gallery panels and the supply lid are omitted to avoid frozen movable-object shadows; the probe is an architectural approximation, not a live mirror of characters. Disposal clears material references and destroys both render targets. Chrome verified zero shadow-map or reflection-face renders during a two-second idle sample after loading. The three light-membership tests pass. TypeScript and focused lint pass; entrance, reception, close floor, and wall relief views were inspected. The wall frame bevels visibly project at close range.
