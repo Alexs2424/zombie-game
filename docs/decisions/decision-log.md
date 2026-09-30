@@ -201,3 +201,10 @@ Prepared `/audio/dialogue/casting.html` with four original provider preview URLs
 **Working preparation:** retain Chuck Miller for Frankie; screen Charmion for Eve, Kathie for Vivian, and Monty for Voss. These three are new unreviewed candidates selected from character-oriented catalog descriptions. Softness, insufficient huskiness and age mismatch are explicitly flagged for rejection, not hidden by declaring a cast. Leon and Marlowe remain open. Dean, Tatiana and Rosie stay rejected.
 
 Prepared three-beat scripts per candidate (pleasure, anger, quiet admission) in [round 03](../voice-auditions/round-03.json), with exact contexts and delivery notes. New Vivian and Voss lines remain unrecorded proposals grounded in existing biographies. Added `/audio/dialogue/casting-round-03.html` with original remote previews and expandable scripts. No voice generation, downloaded library audio, runtime recasting or account change occurred.
+## 2026-09-29 — Hotel lobby walls, isolated first art pass
+
+**User direction:** create a second worktree and branch for hotel-lobby model improvements, upgrading the walls first; artistic references can be supplied if needed.
+
+**Working decision:** build on the established Belle Époque ivory, forest-green, and aged-brass palette with raised plaster profiles, recessed lower panels, and layered moldings. Preserve the recently operating hotel setting. Initially selected by the agent, this wall finish was subsequently approved by the user after reviewing the preview (“much better”) and requesting a commit. It does not change the narrative setting or move toward a long-abandoned ruin.
+
+**Implemented and verified on `codex/hotel-lobby-walls`:** procedural perimeter-wall geometry replaces the plain wall boxes/trim. Six merged PBR material meshes receive existing hotel lighting. TypeScript, focused lint, 20 hotel tests, browser views, finite-geometry/light-membership checks, and scene-resource disposal checks pass. No quest, collision, or furniture changes. The [wall asset document](../hotel-assets/lobby-walls.md) owns current detail, reproduction steps, and verification limits.
