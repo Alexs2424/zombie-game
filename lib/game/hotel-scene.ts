@@ -77,6 +77,8 @@ export function buildHotel(scene: Scene) {
   const batches = new Map<StandardMaterial, Mesh[]>();
   const stairFallback: Mesh[] = [];
   const ceilingFallback: Mesh[] = [];
+  const floorFallback: Mesh[] = [];
+  let floorDetail = false;
   let ceilingDetail = false;
   const ownedMeshes: Mesh[] = [];
   const materials: StandardMaterial[] = [];
@@ -171,6 +173,7 @@ export function buildHotel(scene: Scene) {
     mesh.material = m;
     mesh.receiveShadows = true;
     mesh.isPickable = false;
+    if (floorDetail) { floorFallback.push(mesh); ownedMeshes.push(mesh); return mesh; }
     if (ceilingDetail) { ceilingFallback.push(mesh); ownedMeshes.push(mesh); return mesh; }
     const list = batches.get(m) ?? [];
     list.push(mesh);
@@ -613,6 +616,7 @@ export function buildHotel(scene: Scene) {
     Math.PI,
   );
 
+  floorDetail = true;
   // A flush central medallion defines the open lobby training space.
   for (const [radius, width, m] of [
     [3.3, 0.055, brass],
@@ -640,6 +644,8 @@ export function buildHotel(scene: Scene) {
     }
   }
 
+  floorDetail = false;
+  floorFallback.forEach(mesh => mesh.freezeWorldMatrix());
   ceilingDetail = true;
   // Suspended stepped chandeliers and coffered ceilings replace office strips.
   const chandelier = (x: number, z: number, y: number, radius: number) => {
@@ -1168,6 +1174,7 @@ export function buildHotel(scene: Scene) {
   const walls = buildHotelWalls(scene);
   const renovation = buildHotelRenovation(scene);
   let propMeshes = buildHotelProps(scene);
+  let floorAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
   let ceilingAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
   let stairAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
   let furniture: Awaited<ReturnType<typeof loadHotelFurniture>> | undefined;
@@ -1188,12 +1195,22 @@ export function buildHotel(scene: Scene) {
       ...walls.meshes,
       ...(stairAsset?.meshes ?? []),
       ...(ceilingAsset?.meshes ?? []),
+      ...(floorAsset?.meshes ?? []),
       ...propMeshes,
       ...(furniture?.lightMeshes ?? []),
       ...(entry?.meshes ?? []),
     ]);
   };
   refreshLights();
+  const floorReady = loadHotelLobbyAsset(scene, "floor").then(loaded => {
+    if (disposed || scene.isDisposed) { loaded.dispose(); return; }
+    floorAsset = loaded;
+    floorFallback.forEach(mesh => mesh.setEnabled(false));
+    renovation.replaceFloor();
+    refreshLights();
+  }).catch(error => {
+    if (!disposed) console.warn("Hotel marble unavailable; using existing floor.", error);
+  });
   const ceilingReady = loadHotelLobbyAsset(scene, "ceiling").then(loaded => {
     if (disposed || scene.isDisposed) { loaded.dispose(); return; }
     ceilingAsset = loaded;
@@ -1233,7 +1250,7 @@ export function buildHotel(scene: Scene) {
     entry=loaded;entryFallback.forEach(mesh=>mesh.setEnabled(false));gate.setEnabled(false);
     loaded.setOpen(gateWasOpen);refreshLights();
   }).catch(error=>{if(!disposed && !scene.isDisposed) console.warn("Hotel entrance model unavailable; keeping its surround.",error);});
-  const ready=Promise.all([ceilingReady, stairsReady, furnitureReady,entryReady]).then(()=>undefined);
+  const ready=Promise.all([floorReady, ceilingReady, stairsReady, furnitureReady,entryReady]).then(()=>undefined);
   let bellCaption = "";
   let jukeWasOn = false;
   let gateWasOpen = false;
@@ -1306,6 +1323,7 @@ export function buildHotel(scene: Scene) {
       if (disposed) return;
       disposed = true;
       lightMembership.dispose();
+      floorAsset?.dispose();
       ceilingAsset?.dispose();
       stairAsset?.dispose();
       furniture?.dispose();

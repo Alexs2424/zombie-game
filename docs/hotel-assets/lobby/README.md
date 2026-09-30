@@ -25,3 +25,9 @@ Verification: TypeScript, focused ESLint, 20 hotel/navigation/light tests, Blend
 `hotel-grand-ceiling.blend` / `.glb` add one signature chandelier and two smaller matching fixtures with swept brass arms, socketed opal lamps, faceted pear drops, crystal festoons, stepped crowns, and turned suspension. Plaster ceiling roses and stepped coffer outlines share the wall palette; clipped perimeter cells follow the octagonal room. Four matching low salon bowls replace the simple discs. The original ceiling slab stays in place.
 
 Rebuild with `build_ceiling.py`; pass `hotel-grand-ceiling` to the GLB validator and source auditor. Old fixtures/rose remain as loading fallbacks and are hidden only after successful import. TypeScript, focused lint, Blender source/GLB audits, and Chrome entrance, chandelier-upward, and dining-ceiling reviews pass. No extra runtime lights are introduced in this layer.
+
+## Marble floor — implemented
+
+`hotel-grand-floor.blend` / `.glb` add individually fitted, beveled marble slabs, thin joints, embedded original mineral-color and polish maps, an inset green perimeter border, and a flush stone compass. The visible finish is 1–25 mm above the unchanged simulation floor and remains below furniture contact-shadow planes. Previous compass overlays are hidden after successful loading.
+
+Rebuild with `build_floor.py`. The validator checks top-facing floor samples and a maximum finish height below 27 mm, in addition to the common GLB checks. TypeScript, targeted lint, Blender source audit, actual GLB validation, and Chrome entrance/close-floor review pass. This layer changes surface detail; reflection and light tuning follow in the lighting PR.
