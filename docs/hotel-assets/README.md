@@ -1,5 +1,7 @@
 # Grand Hotel original assets
 
+The [lobby design roadmap](lobby-design.md) records proposed next Blender and visual upgrades.
+
 The runtime-authored architectural wall pass is documented in [Lobby wall upgrade](lobby-walls.md), including art direction, source, and visual verification.
 
 Thirteen self-contained GLBs were authored for this project in Blender: eleven furniture types, the drum-fed Tommy reward weapon, and its fitted hands. The furniture and weapon use original geometry and seeded procedural walnut, velvet-weave, and green-marble textures. Hands adapt this project's existing original `hands-rifle.glb`; no external art was downloaded.

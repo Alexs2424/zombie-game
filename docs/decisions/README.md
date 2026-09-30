@@ -20,6 +20,7 @@ This folder is the current source of truth for the game's narrative direction. I
 | [Voice audition pack](../voice-auditions/README.md) | First complete comic-line batch, generation prompts, preview scripts and access status |
 | [Arsenal reference](../arsenal.md) | Current weapon roster, stats, acquisition, handling and sound direction |
 | [Gun sound direction](../gun-audio/README.md) | Selected B sound bank, source provenance, previews and playback |
+| [Lobby design roadmap](../hotel-assets/lobby-design.md) | Approved Blender asset priorities, visual improvements, and implementation status |
 | [Lobby wall art direction](../hotel-assets/lobby-walls.md) | Current perimeter-wall finish, working visual choices, and verified wall implementation |
 | [Decision log](decision-log.md) | Dated choices, their status and changes in direction |
 

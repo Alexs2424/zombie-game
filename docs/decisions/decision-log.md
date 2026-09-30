@@ -208,3 +208,15 @@ Prepared three-beat scripts per candidate (pleasure, anger, quiet admission) in 
 **Working decision:** build on the established Belle Époque ivory, forest-green, and aged-brass palette with raised plaster profiles, recessed lower panels, and layered moldings. Preserve the recently operating hotel setting. Initially selected by the agent, this wall finish was subsequently approved by the user after reviewing the preview (“much better”) and requesting a commit. It does not change the narrative setting or move toward a long-abandoned ruin.
 
 **Implemented and verified on `codex/hotel-lobby-walls`:** procedural perimeter-wall geometry replaces the plain wall boxes/trim. Six merged PBR material meshes receive existing hotel lighting. TypeScript, focused lint, 20 hotel tests, browser views, finite-geometry/light-membership checks, and scene-resource disposal checks pass. No quest, collision, or furniture changes. The [wall asset document](../hotel-assets/lobby-walls.md) owns current detail, reproduction steps, and verification limits.
+
+
+## 2026-09-29 — Proposed lobby fidelity roadmap
+
+**User direction:** continue improving the hotel lobby design with higher-fidelity Blender models.
+
+**Recommendations, not implemented:** prioritize staircase/balcony architecture, then a coordinated chandelier/ceiling pass and marble floor/lighting, followed by seating textiles and close-range fixtures. Preserve the approved wall palette and recently deserted luxury setting. The [lobby design roadmap](../hotel-assets/lobby-design.md) owns these proposals and distinguishes the existing runtime wall geometry from future Blender assets. No new models, lighting, or gameplay changes accompany this design review.
+
+
+## 2026-09-29 — Lobby fidelity stack authorized
+
+The user approved all roadmap improvements, requested a methodical PR stack, and specifically required in-game checks that wall panels project from their backing and the room reads coherently. Work will preserve the approved palette, collision layout, and gameplay. Editable Blender source and runtime exports accompany new models. Each completed layer records its checks in the owning asset documentation.
