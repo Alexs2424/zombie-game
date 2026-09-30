@@ -1,0 +1,22 @@
+{
+  "engine": "Cycles CPU",
+  "samples": 48,
+  "resolution": [
+    1024,
+    1024
+  ],
+  "bounces": 5,
+  "linearRange": [
+    0.5199999809265137,
+    1.0
+  ],
+  "irradianceP95": 1.9097813557565213,
+  "bytes": 960482,
+  "bounds": {
+    "minX": -23,
+    "maxX": 15,
+    "minZ": 15,
+    "maxZ": 51
+  },
+  "movingObjectsIncluded": false
+}

@@ -243,3 +243,11 @@ The user approved all roadmap improvements, requested a methodical PR stack, and
 **Implemented working design:** rounded forest upholstery with individual cushions, piping and walnut supports; gathered velvet drapes with warm lining; fitted tread/riser runners; bordered rugs in existing seating groups; and a matching bronze/opal sconce and service-door hardware family. These complete the approved visual scope without moving collision footprints or adding narrative content. Close game review prompted fixes for seating supports and coplanar runner risers. Sources, actual wall-projection measurements, and validation live in the [fidelity asset record](../hotel-assets/lobby/README.md).
 
 **Final integration verification:** rebased the complete lobby stack onto main `73e44aa`, retaining the separate voice/audio decisions. All 292 tests and the production build pass. Browser traversal completes in 44.7 seconds; actual wall projections measure 5.8 cm and 3.3 cm. Seven Blender sources and their exports pass asset audits. Consolidated overlapping rear fill to preserve the eight-light material budget; static room captures update on model replacement and purchase-gate changes. The local short chase sample averages about 55 FPS, not a verified steady 60. Screenshots and exact results are in the [fidelity asset record](../hotel-assets/lobby/README.md).
+
+## 2026-09-30 — Lobby lighting depth and material finish extension
+
+**Established:** user selected the proposed lighting-depth and manufactured/use-worn material passes and requested two additional PRs above the completed lobby stack.
+
+**Working direction:** asymmetrical cool window daylight, localized warm fixtures, soft static architectural floor shading, directional walnut grain, close-range fabric weave, handled brass, and restrained traffic scuffs. Keep the recently maintained hotel; no ruin treatment or narrative changes.
+
+**Implemented in lighting layer:** Cycles floor irradiance modulation, soft window-mullion projection, and retuned hotel light hierarchy, preserving eight sources and casino exposure. Blender source, TypeScript, focused lint, 36 tests, browser lightmap/UV2 checks, and static-capture lifecycle checks pass. Material changes remain pending until the following layer. The [asset record](../hotel-assets/lobby/README.md) owns bake assumptions and verification limits.
