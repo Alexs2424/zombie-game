@@ -1,5 +1,8 @@
 # Character appearance and performance bible
 
+**Latest direction (2026-09-30):** the user rejected the first voice pilot. [Round 02](voice-direction-round-02.md) owns the stronger sexy, raspy, exaggerated performance targets and replacement writing proposals; these supersede the prior pilot’s artistic direction. Final casting is pending custom-voice access.
+
+
 Status: **working production designs**, not finished models or cast voices. [Characters](characters.md) owns the concise cast; [individual backstories](character-backstories/README.md) own biography. This document expands the visual and audible execution without changing those histories. All six are original people; genre references establish intensity and readability rather than an actor likeness or imitation.
 
 ## Ensemble design
@@ -36,7 +39,7 @@ Their exaggeration lives in priorities and performance: Frankie is offended on b
 
 **Personality:** ambitious, exacting, funny at other people's expense, embarrassed by her need for approval. Her friendship with Art was damaged by her willingness to take the spotlight. Her growth is sharing credit and admitting what she cannot control. She can lose at dominoes to her mother without becoming less formidable.
 
-**Voice:** rich, clear middle register; educated London delivery, warmer south London edges in private. Precise setups, brief strategic pauses and a hard final word. Big theatrical indignation should be occasional and earned. Real fear removes ornament: short requests, less air, no stage wink. Avoid copying a famous British performer or equating polish with emotional coldness.
+**Voice:** rich, low smoky contralto; educated London delivery, warmer south London edges in private. Precise setups, brief strategic pauses and a hard final word. Big theatrical indignation should be occasional and earned. Real fear removes ornament: short requests, less air, no stage wink. Avoid copying a famous British performer or equating polish with emotional coldness.
 
 **Audition contrast:** grand “For my next trick, a much smaller audience.” against nearly whispered “Play it again. And nobody speak.” Both should sound like the same woman protecting herself differently.
 

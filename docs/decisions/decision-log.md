@@ -165,3 +165,12 @@ Created [arsenal reference](../arsenal.md) from current weapon definitions with 
 **Established:** user chose B as best, rejected C as dog-like, and requested distinct sounds for all weapons. Authentic/cool remains the foundation, with at most two humorous exceptions.
 
 **Implemented production direction:** reuse approved B revolver/shotgun/Thompson sources; generate separate B sources for remaining firearms including flare, plus cane impact, axe impact and axe swing. Keep selected cane swipes and existing handling choreography. Current bank has 16 firearm report sets plus melee updates; the flare now has dedicated shot playback but acquisition/presentation remain partial. First takes preserve B-style minimal mastering; subsequent takes vary subtly. Humor stays confined to take three of Thompson/launcher. No new gameplay stats. Current sources, outputs and limitations are owned by [gun audio](../gun-audio/README.md); [arsenal](../arsenal.md) is updated.
+
+
+## 2026-09-30 — User rejects first voice pilot; heightened recasting
+
+**Established:** the user rejected the first Frankie voice and taglines, requesting much more unique, sexy, raspy voices with cartoonish depth.
+
+**Working correction:** mark the six stock Adam takes as rejected artistic direction; define distinct vocal textures and extreme emotional contrasts for all six characters. Lower Eve to a smoky contralto; write new performance-led tests instead of defaulting to tidy punchlines. First custom casting comparison targets Frankie and Eve. Existing runtime clips remain technically installed, not artistically approved.
+
+**Verified blocker:** a fresh ElevenLabs Voice Design request returned 403 `feature_unavailable`, requiring a paid plan. Stopped after that rejection, with no Eve request, new audio or stock fallback. Saved precise prompts/scripts and access status. [Round 02 direction](voice-direction-round-02.md) supersedes the first pilot's voice/writing target; no account upgrade or game audio replacement occurred.

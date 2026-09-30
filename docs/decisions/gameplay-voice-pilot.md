@@ -1,5 +1,8 @@
 # First playable character voice pilot
 
+**Rejected artistic pilot — 2026-09-30:** the user rejected both the voice and writing. Retained below as implementation history. It remains installed pending replacement, but is not the accepted creative target. See [round 02](voice-direction-round-02.md).
+
+
 ## Scope and status
 
 **Established request:** generate actual speech and put character reactions in the game, particularly after acquiring an exciting gun or killing a group of zombies. Reuse suitable earlier writing.
@@ -10,7 +13,7 @@
 
 ## Recorded script and exact triggers
 
-Runtime IDs below correspond to filenames in `public/audio/dialogue/frankie-pilot/`. Each adjacent JSON records exact request text including performance tags, subtitle, provider, voice/model/settings, generation timestamp, request ID, byte count and SHA-256. These are working takes awaiting the user's subjective listening feedback.
+Runtime IDs below correspond to filenames in `public/audio/dialogue/frankie-pilot/`. Each adjacent JSON records exact request text including performance tags, subtitle, provider, voice/model/settings, generation timestamp, request ID, byte count and SHA-256. These takes were rejected by the user on 2026-09-30.
 
 | Runtime ID | Line | Trigger / performance |
 | --- | --- | --- |

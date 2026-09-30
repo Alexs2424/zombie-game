@@ -11,6 +11,7 @@ This folder is the current source of truth for the game's narrative direction. I
 | [Character production design](character-production-design.md) | Detailed silhouettes, faces, clothing, first-person cues, gestures and voice performance |
 | [Characters](characters.md) | Concise cast, appearance and performance direction |
 | [Character backstory bible](character-backstories/README.md) | Detailed biographies, supporting people, human contradictions, relationships and reveal pacing |
+| [Voice direction round 02](voice-direction-round-02.md) | Latest user correction, heightened cast voices, replacement script proposals and access blocker |
 | [Gameplay voice pilot](gameplay-voice-pilot.md) | Six recorded Frankie reactions, implemented triggers, provisional casting and listening instructions |
 | [Voice and dialogue](voice-and-dialogue.md) | AI voice production, auditions, writing and playback rules |
 | [Quests and Easter eggs](quests-and-easter-eggs.md) | Map integration, quest progression, secrets and co-op interaction rules |

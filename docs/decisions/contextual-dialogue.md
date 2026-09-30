@@ -1,5 +1,8 @@
 # Contextual dialogue — noir revision
 
+**Latest direction (2026-09-30):** the user rejected the first voice pilot. [Round 02](voice-direction-round-02.md) owns the stronger sexy, raspy, exaggerated performance targets and replacement writing proposals; these supersede the prior pilot’s artistic direction. Final casting is pending custom-voice access.
+
+
 Status: working writing pass responding to user feedback; not implemented, recorded, or approved final dialogue. This document owns the current dialogue direction. Round 01 is retained as an earlier audition, not the current production script.
 
 ## Recorded pilot exception
