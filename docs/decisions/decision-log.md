@@ -174,3 +174,14 @@ Created [arsenal reference](../arsenal.md) from current weapon definitions with 
 **Working correction:** mark the six stock Adam takes as rejected artistic direction; define distinct vocal textures and extreme emotional contrasts for all six characters. Lower Eve to a smoky contralto; write new performance-led tests instead of defaulting to tidy punchlines. First custom casting comparison targets Frankie and Eve. Existing runtime clips remain technically installed, not artistically approved.
 
 **Verified blocker:** a fresh ElevenLabs Voice Design request returned 403 `feature_unavailable`, requiring a paid plan. Stopped after that rejection, with no Eve request, new audio or stock fallback. Saved precise prompts/scripts and access status. [Round 02 direction](voice-direction-round-02.md) supersedes the first pilot's voice/writing target; no account upgrade or game audio replacement occurred.
+
+
+## 2026-09-30 — Voice quality takes priority over expanding the script
+
+**Established:** user reiterated that the one-liners need improvement and that voice is more important; open-source writing models are an optional aid, not a required dependency.
+
+**Working response:** prioritize casting with short contrasting acting tests before a larger dialogue bank. New unrecorded Frankie test: after a first firearm acquisition, “Oh, I missed this. Being understood.” After five confirmed kills following recent damage from enemies, “Five of you. Not one fucking apology.” These are audition proposals, not replacements for the installed trigger text or accepted final lines.
+
+**Verified access:** library metadata search succeeds. A bounded test using Chuck Miller with eleven_v3 returned HTTP 402 `payment_required`: free users cannot use library voices through the API. The second planned candidate, Dean, was not submitted. Catalog `free_users_allowed` is not proof of API entitlement. No new audio was generated.
+
+Prepared `/audio/dialogue/casting.html` with four original provider preview URLs: Chuck Miller, Dean, Tatiana and Rosie. Catalog descriptions motivated these candidates; there is no claim of listening approval or accent match. These are casting references, not a return to approved stock casting. Previews remain remote; no library audio was downloaded or shipped as a game asset. Exact candidate metadata is in [library texture candidates](../voice-auditions/library-texture-candidates.json).

@@ -57,3 +57,14 @@ Working approach: request one custom Voice Design batch for Frankie, then one fo
 On 2026-09-30 a fresh request to ElevenLabs `/v1/text-to-voice/design` with model `eleven_ttv_v3` returned HTTP 403, `feature_unavailable`: “Creating a voice through the API is only available on a paid plan.” The batch stopped after that rejection; Eve was not submitted, and no round-02 audio was generated. The local sanitized diagnostic is under `outputs/voice-auditions/round-02/frankie/`. That output directory is not a committed voice asset.
 
 Custom API voice design therefore needs a key backed by an eligible paid plan. No subscription was purchased and no upgrade is authorized by this decision. No additional stock-voice fallback was generated. The scripts and direction are ready even though the new sound remains unverified. A future successful audition should update this status and preserve its request/manifests.
+
+
+## Follow-up priority and library access
+
+The user explicitly prioritizes voice quality over further script expansion. Optional use of open-source writing models is permitted but not a requirement; no external writing model was used for this revision. Cast a distinctive voice with emotional range before generating a large bank of lines.
+
+Library search succeeded, but a test synthesis request for Chuck Miller returned HTTP 402 `payment_required`: free users cannot use library voices via the API. Dean was not submitted after this rejection. This is separate from the earlier custom Voice Design 403. Both production routes need eligible account access; the catalog's free-user flag is not sufficient evidence of API availability.
+
+A comparison page at `/audio/dialogue/casting.html` contains existing remote previews for Chuck Miller, Dean, Tatiana and Rosie. These are unreviewed texture references chosen from catalog descriptions, not newly generated speech or selected characters. No canonical accents change. [Candidate metadata](../voice-auditions/library-texture-candidates.json) preserves the source descriptions and preview URLs. No remote preview is downloaded into gameplay assets.
+
+Two fresh Frankie acting proposals are “Oh, I missed this. Being understood.” for a first firearm acquisition, and “Five of you. Not one fucking apology.” after five confirmed kills following recent enemy damage. The latter requires a new five-kill/damage predicate and must not be installed on the current four-kill rule. These are unrecorded tests, not proof of improved quality.
