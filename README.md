@@ -128,6 +128,7 @@ Extra guns, separately purchased escape routes, and perks are competing build ch
 - `lib/game/casino-layout.ts`: shared room footprints, individual doors, table and slot placements, weapon anchors, and room spawn points.
 - `lib/game/poker.ts`: persistent five-card hands, finite shuffled decks, suit matching, and discarded-card recycling. `card-art.ts` draws the live tabletop card prints.
 - `lib/game/renderer.ts`: casino environment, local GLB weapon loading, animation, lighting, and frame sampling.
+- `lib/game/casino-architecture-assets.ts`: original Blender wall spans and room gates; [architecture and playtest notes](docs/casino-architecture/README.md).
 - `lib/game/characters.ts`: articulated casino guests and Marlowe, with clothing and facial details.
 - `lib/game/runtime.ts`: fixed-step updates, input, pointer lock, pause/resume, restart, and HUD snapshots.
 - `lib/game/audio.ts`: synthesized weapons/interaction cues, round stingers, and local AI-generated positional zombie voices.

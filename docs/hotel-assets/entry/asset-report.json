@@ -1,14 +1,26 @@
 [
   {
     "asset": "hotel-entry-portal.glb",
-    "triangles": 20296,
-    "meshes": 6,
-    "bytes": 1363280
+    "triangles": 25528,
+    "meshes": 7,
+    "bytes": 1686732
   },
   {
     "asset": "hotel-entry-gate.glb",
-    "triangles": 22888,
+    "triangles": 24956,
     "meshes": 3,
-    "bytes": 707920
+    "bytes": 769424
+  },
+  {
+    "asset": "hotel-entry-wall-west.glb",
+    "triangles": 33236,
+    "meshes": 8,
+    "bytes": 2297412
+  },
+  {
+    "asset": "hotel-entry-wall-east.glb",
+    "triangles": 33236,
+    "meshes": 8,
+    "bytes": 2297432
   }
 ]
