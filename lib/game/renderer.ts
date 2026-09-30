@@ -633,7 +633,7 @@ export class GameRenderer {
       // Parent the fallback so static batching cannot absorb and retain it.
       if (["casino-wall-nw", "casino-wall-ne", "casino-lintel-hotel"].includes(r.id)) {
         this.hotelFacadeFallback ??= new TransformNode("hotel facade loading fallback", this.scene);
-        this.box(r.id, r.x, (r.baseY ?? 0) + r.h / 2, r.z, r.w, r.h, r.d, wall, this.hotelFacadeFallback);
+        this.box(r.id, r.x, (r.baseY ?? 0) + r.h / 2, r.z, r.w, r.h, r.d, this.mat("hotel facade oxblood fallback", "#40252a"), this.hotelFacadeFallback);
         continue;
       }
       this.box(r.id, r.x, (r.baseY ?? 0) + r.h / 2, r.z, r.w, r.h, r.d, wall);

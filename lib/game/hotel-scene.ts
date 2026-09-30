@@ -319,6 +319,7 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
     width: number,
     height: number,
     yaw = 0,
+    background = "#233834",
   ) => {
     const texHeight = Math.round((768 * height) / width);
     const texture = new DynamicTexture(
@@ -328,7 +329,7 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
       false,
     );
     const ctx = texture.getContext() as CanvasRenderingContext2D;
-    ctx.fillStyle = "#233834";
+    ctx.fillStyle = background;
     ctx.fillRect(0, 0, 768, texHeight);
     ctx.strokeStyle = "#c9b17a";
     ctx.lineWidth = 3;
@@ -669,6 +670,7 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
 
   // A single coherent entrance replaces overlapping lintels and wall labels.
   // Keep a simple matching surround only while the original GLB is loading.
+  const entryLacquer = material("entry smoky oxblood", "#5B3038");
   const entryFallback: Mesh[] = [];
   for (const [x,y,w,h] of [[HOTEL.entrance.x-2.67,1.535,.54,3.07],
     [HOTEL.entrance.x+2.67,1.535,.54,3.07],[HOTEL.entrance.x,3.865,5.88,1.59]]) {
@@ -677,7 +679,7 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
     ownedMeshes.push(mesh);entryFallback.push(mesh);
   }
   entryFallback.push(sign("entry loading title",["GRAND HOTEL"],HOTEL.entrance.x,3.9,
-    HOTEL_GATE.z-.56,4.3,.47));
+    HOTEL_GATE.z-.56,4.3,.47,0,"#5B3038"));
   box(
     "restaurant sign mounting board",
     HOTEL.center.x,
@@ -1092,7 +1094,7 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
       0.1,
       brass,
     );
-  gateBox("hotel purchase plaque backing",HOTEL_GATE.x,1.86,3.2,.46,.035,teal).position.z-=.105;
+  gateBox("hotel purchase plaque backing",HOTEL_GATE.x,1.86,3.2,.46,.035,entryLacquer).position.z-=.105;
   const gate = Mesh.MergeMeshes(gateParts, true, true, undefined, false, true)!;
   gate.name = "hotel purchase gate";
   gate.isPickable = false;
@@ -1105,6 +1107,8 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
     HOTEL_GATE.z - 0.126,
     2.95,
     0.32,
+    0,
+    "#5B3038",
   );
 
   const bellMaterial = material("service bell status", "#d0a55b", 0.12);
@@ -1250,6 +1254,8 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
   }
 
   for (const [m, meshes] of batches) {
+    // Gate-only materials have no static pieces after their meshes are extracted.
+    if (!meshes.length) continue;
     const merged = Mesh.MergeMeshes(
       meshes,
       true,

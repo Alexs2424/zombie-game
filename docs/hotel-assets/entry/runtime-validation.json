@@ -3,9 +3,9 @@
   "assets": [
     {
       "kind": "portal",
-      "bytes": 1676404,
+      "bytes": 1673288,
       "meshes": 7,
-      "triangles": 26144,
+      "triangles": 25340,
       "bounds": {
         "min": [
           -6.069999933242798,
@@ -21,14 +21,14 @@
     },
     {
       "kind": "gate",
-      "bytes": 783344,
+      "bytes": 769424,
       "meshes": 3,
-      "triangles": 25464,
+      "triangles": 24956,
       "bounds": {
         "min": [
           -5.406999826431274,
           0.04499995708465576,
-          12.092662304639816
+          12.094315230846405
         ],
         "max": [
           -0.5930001735687256,
@@ -39,9 +39,9 @@
     },
     {
       "kind": "wall-west",
-      "bytes": 1404832,
+      "bytes": 2001132,
       "meshes": 7,
-      "triangles": 20424,
+      "triangles": 29100,
       "bounds": {
         "min": [
           -33.22500038146973,
@@ -57,9 +57,9 @@
     },
     {
       "kind": "wall-east",
-      "bytes": 1404852,
+      "bytes": 2001148,
       "meshes": 7,
-      "triangles": 20424,
+      "triangles": 29100,
       "bounds": {
         "min": [
           -0.05999946594238281,

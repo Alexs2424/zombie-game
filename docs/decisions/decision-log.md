@@ -92,7 +92,8 @@ models with carefully aligned placement.
 
 **Working art direction:** extend the entrance into a full-height Art Deco facade
 with jade wall panels, walnut dado panels, limestone crowns, restrained marble
-veining and bronze fan/sunburst reliefs. Treat those reliefs as architectural
+veining and bronze fan/sunburst reliefs. The jade palette was superseded by the
+user-selected smoky oxblood direction below. Treat those reliefs as architectural
 ornaments, without introducing new lore, clues or interaction requirements.
 The owning asset document is [the entrance README](../hotel-assets/entry/README.md).
 
@@ -100,3 +101,23 @@ The owning asset document is [the entrance README](../hotel-assets/entry/README.
 exports with a shared origin. Geometry audits verify the unchanged 4.8 m passage,
 full-height closure and wall joints. The existing 2,000-chip unlock and gate
 removal behavior remain; no opening animation or new quest is claimed.
+
+
+## 2026-09-30 — Smoky oxblood Art Deco facade
+
+**Established direction:** the user selected the proposed smoky oxblood palette
+and requested ornate Art Deco models and walls with professional game polish.
+This supersedes the initial jade color direction for the hotel entrance and
+its north casino wall wings.
+
+**Working execution:** smoky oxblood lacquer (#5B3038), champagne brass
+(#C2A574), dark walnut (#3B2923), warm ivory stone and deeper oxblood reveals.
+Use beveled fan castings, stepped geometric frames, pendants, corner inlays
+and gate escutcheons. Preserve visual hierarchy with quieter fields between
+ornaments. All motifs are architectural, without adding narrative significance.
+
+**Implemented:** regenerated the editable Blender source and all four runtime
+exports; updated the dynamic purchase plaque and loading fallback colors.
+Reduced ornamental bevel/profile tessellation to keep each export within the
+existing asset budgets. The owning [entrance documentation](../hotel-assets/entry/README.md)
+records material choices, coordinates, reproduction and visual verification.
