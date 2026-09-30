@@ -155,6 +155,7 @@ export class GameAudio {
     if (this.context.state === "suspended") await this.context.resume();
     // Loading never blocks mouse capture or entry. Failed files retain the
     // synthesized fallback, and all in-game playback remains local.
+    void this.weapons.preload("pistol");
     if (!this.zombieLoading) this.zombieLoading = this.loadZombieSounds(this.context);
     if (!this.hotelBellLoading) this.hotelBellLoading = this.loadHotelBell(this.context);
     if (!this.mysterySlotLoading) this.mysterySlotLoading = this.loadMysterySlot(this.context);

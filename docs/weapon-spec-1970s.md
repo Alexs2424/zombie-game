@@ -2,6 +2,8 @@
 
 > Current damage, round progression and two-gun inventory rules are owned by [combat-balance.md](combat-balance.md). Its tuning supersedes numerical damage and inventory assumptions in this original art/design spec; period models and sound direction remain unchanged.
 
+The [arsenal reference](arsenal.md) consolidates current IDs, stats and status. [Gun audio](gun-audio/README.md) owns the selected B sound direction, superseding earlier sound targets here. High Roller uses `magnum`; `revolver` is the distinct poker reward.
+
 ## Purpose and visual rule
 
 This document is the handoff specification for the next weapon-art and gameplay pass. The setting is a privately owned casino in the late 1970s. Every weapon should look like something that could have been bought, inherited, confiscated, or hidden in that building between roughly 1968 and 1979. The names below are fictional in-game names; do not copy a real manufacturer's logo, serial-marking system, or distinctive trade dress.
@@ -16,7 +18,7 @@ The box may award the ten firearms below. The **Stickman** is a separate special
 
 | ID | House name | Period basis | Combat identity |
 | --- | --- | --- | --- |
-| `revolver` | High Roller | Large-frame double-action magnum revolver | Six precise, high-damage shots; punishing recoil and reload |
+| `magnum` | High Roller | Large-frame double-action magnum revolver | Six precise, high-damage shots; punishing recoil and reload |
 | `tommy` | Chicago Typewriter | 1920s drum SMG still plausible as mob or collector stock in the 70s | Large-volume crowd control; heavy and slow to replenish |
 | `doublebarrel` | Double or Nothing | Short side-by-side coach shotgun | Two close-range blasts; alternate fire discharges both barrels |
 | `dual` | Snake Eyes | Pair of compact .25/.32-style pocket pistols | Very mobile alternating fire; poor range and paired reload |
@@ -29,7 +31,7 @@ The box may award the ten firearms below. The **Stickman** is a separate special
 
 ## Detailed firearm specifications
 
-### High Roller (`revolver`)
+### High Roller (`magnum`)
 
 Large, six-shot double-action revolver with a 6-inch heavy barrel, exposed hammer, checkered walnut or ivory-colored grip panels, and a blued or deep nickel finish. The cylinder should visibly swing out for reloads. Engrave a tiny four-suit mark on the side plate and a worn brass house plaque on the grip frame. It should read as an expensive private sidearm, not a police service pistol.
 

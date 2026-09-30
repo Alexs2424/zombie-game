@@ -974,3 +974,51 @@ test("disposing during poker cues closes their context and prevents further sche
     assert.doesNotThrow(() => audio.dispose());
   });
 });
+
+test("all firearms use mastered reports with per-weapon variation and dual-hand placement", async () => {
+  await fixture(async audio => {
+    audio.setActive(true);
+    for (const weapon of ['pistol','shotgun','smg','rifle','revolver','magnum','tommy','doublebarrel','dual','machinepistol','lever','autoshotgun','sniper','lmg','launcher','flare']) {
+      await audio.weapons.preload(weapon);
+      audio.play({type:'shot', weapon, side:0});
+      const first = audio.context.nodes.findLast(n => n.buffer?.name?.includes(`/${weapon}/report-`));
+      assert.ok(first, weapon);
+      audio.play({type:'shot', weapon, side:1});
+      const second = audio.context.nodes.findLast(n => n.buffer?.name?.includes(`/${weapon}/report-`));
+      assert.notEqual(first.buffer.name, second.buffer.name, `${weapon} repeats its last report`);
+      assert.equal(first.startTime, audio.context.currentTime, 'no scheduled trigger latency');
+      if (weapon === 'dual') {
+        assert.equal(first.outputs[0].outputs[0].pan.value, .3);
+        assert.equal(second.outputs[0].outputs[0].pan.value, -.3);
+      }
+    }
+    audio.play({type:'shot', weapon:'doublebarrel', alternate:true});
+    assert.match(audio.weapons.lastPlayback, /^doublebarrel\/report-double-/);
+  }, true);
+});
+
+test("partial report banks play available takes, while starter reloads retain their original foley", async () => {
+  await fixture(async audio => {
+    audio.setActive(true);
+    await audio.weapons.preload('pistol');
+    audio.play({type:'shot', weapon:'pistol'});
+    assert.equal(audio.weapons.lastPlayback, 'pistol/report-2');
+    assert.equal(audio.weapons.event({type:'reload',weapon:'pistol'}, {x:0,z:0}, 0), false);
+    const source = audio.context.nodes.findLast(n=>n.buffer?.name?.endsWith('/pistol/report-2.wav'));
+    audio.setActive(false);
+    assert.equal(source.stopped, true);
+  }, url => url.endsWith('/pistol/report-2.wav'));
+});
+
+test("failed new reports retain the legacy gunshot, and starter guns still synthesize", async () => {
+  await fixture(async audio => {
+    audio.setActive(true);
+    await audio.weapons.preload('magnum');
+    audio.play({type:'shot', weapon:'magnum'});
+    assert.equal(audio.weapons.lastPlayback, 'magnum/fire');
+    await audio.weapons.preload('pistol');
+    const before = audio.context.nodes.length;
+    audio.play({type:'shot', weapon:'pistol'});
+    assert.ok(audio.context.nodes.slice(before).some(n=>n.kind==='oscillator'));
+  }, url => !url.includes('/report-'));
+});
