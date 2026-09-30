@@ -7,6 +7,8 @@ This folder is the current source of truth for the game's narrative direction. I
 | Document | Owns |
 | --- | --- |
 | [Story and plot](story-and-plot.md) | Premise, tone, chronology, reveals, supernatural rules, ending |
+| [Playable story scenes](story-scenes.md) | Full playable scene treatment, dialogue, staging, recovery and provisional finale dependencies |
+| [Character production design](character-production-design.md) | Detailed silhouettes, faces, clothing, first-person cues, gestures and voice performance |
 | [Characters](characters.md) | Concise cast, appearance and performance direction |
 | [Character backstory bible](character-backstories/README.md) | Detailed biographies, supporting people, human contradictions, relationships and reveal pacing |
 | [Voice and dialogue](voice-and-dialogue.md) | AI voice production, auditions, writing and playback rules |

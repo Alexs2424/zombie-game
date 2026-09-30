@@ -8,6 +8,8 @@ All four playable characters initially share gameplay capabilities. Identity com
 
 Detailed personal histories, supporting people, emotional arcs and reveal pacing live in the [character backstory bible](character-backstories/README.md). Those dossiers own biographical specifics; this overview owns visual and voice direction. The latest brief calls for human, badass personalities, with Sin City emphasized for noir intensity and personal codes, and Fallout retained as a secondary reference for eccentricity and contradiction. See the backstory bible’s noir emphasis; the casino setting and cast remain original.
 
+Detailed clothing, faces, first-person cues, movement, personality and vocal performance are in the [character production design bible](character-production-design.md). The dossiers remain the biography source of truth.
+
 ## Frankie “Chips” Caruso
 
 - **Identity:** 47, Italian-American, raised in Newark; former casino enforcer.

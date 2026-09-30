@@ -83,3 +83,14 @@ Documentation only; no gameplay, voice generation, or visual assets changed.
 **User clarification:** “or sin city characters,” following the request for extensive human, badass character histories.
 
 **Working interpretation:** make Sin City the stronger reference for noir character stakes—dangerous loyalties, costly personal codes, wounded pride, obsessive choices, and flashes of tenderness. Retain Fallout as a secondary reference for eccentricity and contradiction. Added a per-character noir emphasis to the ensemble bible, preserving the authored histories, surviving families, ordinary speech and distinct voices. No copied characters, plotlines, compulsory inner narration, or new gameplay mechanics.
+
+
+## 2026-09-29 — Detailed narrative production documentation
+
+**Established request:** record the developed characters and provide detailed scenario-specific one-liners, storyline/scenes, and character looks, designs, personalities and voices.
+
+**Working additions:** twelve playable scene treatments with original dialogue, staging, evidence, absent-speaker/recovery rules and explicit provisional finale dependencies; a six-character production design bible covering faces, silhouettes, clothing/materials, first-person identity, gestures, human contradictions and emotional voice range; 48 additional action-specific lines, bringing the contextual bank to 84 individually identified lines plus its three exchanges. Optional Easter egg staging is included without turning deferred guest rooms into committed scope.
+
+The existing biographies remain authoritative. No required cinematics, character-exclusive gameplay roles, final voice selections or new supernatural contract rules were introduced. The existing cashier portrait remains an unnamed proprietor, not a confirmed Voss likeness. Final contract wording, signature eligibility, counter-wager, Collector design, Voss's fate and post-ending session flow remain open. New scripts and visual directions are unimplemented and unrecorded.
+
+Updated the index and owning documents so current narrative sources are linked. Documentation-only verification covers links, unique line/scene IDs, scope and whitespace; no gameplay tests or paid generation were needed. Publication follows the user's standing instruction to put creative Markdown decisions on main and push.

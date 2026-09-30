@@ -115,6 +115,77 @@ Trigger: Vivian and Leon enter the opened gallery together for the first time, a
 
 Vivian's callousness should produce friction, not make Leon the designated fool. Do not use this exchange during a personal-loss revelation.
 
+## Everyday gameplay — extended scenario bank
+
+These 48 additional lines cover recurring play as well as rare combinations above. They remain **working, unrecorded, unimplemented text**. A listed action is a proposed trigger contract, not proof the current game emits it. All down/revive/team events depend on future co-op implementation. Item names and damage claims must match actual inventory and outcomes.
+
+Delivery defaults: Frankie gives offended or protective commands; Eve uses poised precision until real danger strips it away; Leon gives useful information before frustration; Vivian tries to retain bargaining power. The urgent first clause must remain intelligible. Do not force a joke into a critical warning.
+
+| ID | Speaker | Exact proposed context | Spoken line |
+| --- | --- | --- | --- |
+| frankie.play.01 | Frankie | Starts a reload with reserves available and an approaching enemy; needs team cover. | “Reloading. Keep his hands off me.” |
+| eve.play.01 | Eve | Starts a reload while a nearby ally is engaging the same threat. | “Cover me. I'll take the applause later.” |
+| leon.play.01 | Leon | Starts a reload with an ally nearby during combat. | “Changing the magazine. Hold them there.” |
+| vivian.play.01 | Vivian | Starts a reload near a teammate while pursued. | “Cover me. Consider it an investment.” |
+| frankie.play.02 | Frankie | Finishes reloading and has no reserve ammunition left for that firearm. | “Last magazine. Nobody waste my time.” |
+| eve.play.02 | Eve | Same last-magazine condition. | “One magazine left. Do try to bunch together.” |
+| leon.play.02 | Leon | Same last-magazine condition. | “Last magazine. Keep an eye out for ammunition.” |
+| vivian.play.02 | Vivian | Same last-magazine condition. | “Last magazine. Suddenly I'm very selective.” |
+| frankie.play.03 | Frankie | Dry-fire attempt; all carried firearms have zero usable ammunition. | “I'm empty. Someone lend me an argument.” |
+| eve.play.03 | Eve | Same all-firearms-empty condition. | “No ammunition. This is becoming embarrassingly physical.” |
+| leon.play.03 | Leon | Same all-firearms-empty condition. | “No rounds left. I need a clear path.” |
+| vivian.play.03 | Vivian | Same all-firearms-empty condition. | “I'm out. Anybody feeling generous?” |
+| frankie.play.04 | Frankie | Confirmed headshot kill of a zombie wearing formal clothing. | “All dressed up. Nowhere to put the hat.” |
+| eve.play.04 | Eve | Confirmed headshot kill after that enemy survived her prior body hit. | “There. Found the part worth addressing.” |
+| leon.play.04 | Leon | Confirmed headshot kill of an enemy blocking the only currently safe passage. | “That'll do. Through the gap.” |
+| vivian.play.04 | Vivian | Confirmed headshot kill at close range before that enemy damages her. | “You should've opened with a compliment.” |
+| frankie.play.05 | Frankie | Door purchase denied for insufficient chips; no chips deducted. | “I used to get paid to keep this door shut.” |
+| eve.play.05 | Eve | Same failed purchase. | “A locked door with financial aspirations. How vulgar.” |
+| leon.play.05 | Leon | Same failed purchase. | “Can't afford it. Find chips before they find us.” |
+| vivian.play.05 | Vivian | Same failed purchase. | “I have the money. It's just with several other people.” |
+| frankie.play.06 | Frankie | First successful perk purchase from Marlowe, after transaction completes. | “If this kills me, you're explaining it to Ruth.” |
+| eve.play.06 | Eve | Same first successful perk purchase. | “I've swallowed fire with a less suspicious aftertaste.” |
+| leon.play.06 | Leon | Same first successful perk purchase. | “Put the bottle down. I want to remember which one did this.” |
+| vivian.play.06 | Vivian | Same first successful perk purchase. | “For that price, I should wake up married to the owner.” |
+| frankie.play.07 | Frankie | Enters future downed-but-revivable state; allies remain active. | “I'm down. Come get me before I get sentimental.” |
+| eve.play.07 | Eve | Same downed state. | “Down. This part is not rehearsed.” |
+| leon.play.07 | Leon | Same downed state. | “I'm down. Clear it before you come in.” |
+| vivian.play.07 | Vivian | Same downed state. | “I'm down. Don't make me beg. I'm very good at it.” |
+| frankie.play.08 | Frankie | Starts reviving an ally while no immediate attack is landing; cancel if interrupted. | “Stay with me. You can complain standing up.” |
+| eve.play.08 | Eve | Same revive start. | “Eyes on me. Ignore the rest of this dreadful room.” |
+| leon.play.08 | Leon | Same revive start. | “I'm here. Take a breath. We're doing this slowly.” |
+| vivian.play.08 | Vivian | Same revive start. | “Come on. I haven't decided what you owe me.” |
+| frankie.play.09 | Frankie | Successfully revived by any ally; first quiet moment afterward. | “All right. You saw that. We don't have to discuss it.” |
+| eve.play.09 | Eve | Same revival completion. | “Thank you. That is the official account of what happened.” |
+| leon.play.09 | Leon | Same revival completion. | “Appreciate it. Let me get my feet under me.” |
+| vivian.play.09 | Vivian | Same revival completion; more specific Frankie response takes precedence. | “You came back. That's a terrible habit. Keep it.” |
+| frankie.play.10 | Frankie | Personally kills the final enemy of a round, then gets a safe window. | “Anybody else got a grievance?” |
+| eve.play.10 | Eve | Same round-ending kill. | “An appalling audience. Very committed, though.” |
+| leon.play.10 | Leon | Same round-ending kill. | “Count your rounds. Then enjoy the quiet.” |
+| vivian.play.10 | Vivian | Same round-ending kill; final-bullet special line takes precedence. | “Lovely. A room full of people who can't collect.” |
+| frankie.play.11 | Frankie | Reaches safety at low health after recent damage, still upright; danger has receded. | “Ruth said I'd die somewhere tacky. Can't give her that.” |
+| eve.play.11 | Eve | Same low-health retreat. | “Give me a moment. I'm finding a dignified way to be terrified.” |
+| leon.play.11 | Leon | Same low-health retreat. | “Della's going to ask why I didn't leave earlier. Fair question.” |
+| vivian.play.11 | Vivian | Same low-health retreat. | “Still breathing. Let's keep the standards there.” |
+| frankie.play.12 | Frankie | Another player kills an enemy attacking Frankie while he reloads. | “Good timing. I was about to take that personally.” |
+| eve.play.12 | Eve | Same teammate rescue during reload. | “Excellent interruption. Do that whenever you like.” |
+| leon.play.12 | Leon | Same teammate rescue during reload. | “Good shot. I owe you a clear lane.” |
+| vivian.play.12 | Vivian | Same teammate rescue during reload. | “You ruined his evening. I'm beginning to like you.” |
+
+Headshot wardrobe and safe-passage predicates require actual tags/context; if unavailable, defer those lines rather than guessing. Last-magazine dialogue is firearm-specific, while empty dialogue checks all carried firearms. “Down” never fires on ordinary low health. A revive-start line never announces completion; abandon the exchange if the action is interrupted. Leon's “slowly” is reassurance, not a promise about a new revive duration.
+
+Frankie's Ruth is his former wife, not Leon's daughter Ruthie. These family mentions do not assume reconciliation or that the characters have explained their entire histories to each other. Eve's fire-swallowing remark is performer bravado, not a selected new biography fact.
+
+### Metadata defaults for this bank
+
+- **Speaker / audience:** the named local actor speaks; tactical calls reach nearby teammates according to the eventual communication design. Shared discoveries use team delivery. Do not let all clients independently select different lines for the same event.
+- **Knowledge:** everyday rows need no quest revelations. Family names are personal remarks, not quest unlocks. Story-specific rows above retain their explicit prerequisites.
+- **Priority:** incoming tactical need (down, empty, requested cover) outranks ordinary jokes; essential story gets a recoverable delivery slot. A funny reload line must yield to immediate gameplay information.
+- **Replay:** ordinary rows inherit the proposed eight-second team spacing, three-minute per-line cooldown and two-use cap. Urgent information may need a short neutral fallback after its comic variant is exhausted. Do not suppress critical information to preserve a joke cooldown.
+- **Interruptions:** cancel stale kill/reload jokes when state changes. A downed or dead speaker must not finish an irrelevant victory line. Never delay actual gameplay until speech ends.
+- **Selection:** narrow combinations beat generic rows; e.g. Vivian's last-bullet round-ending line suppresses her generic round-ending line. Revive pairs beat generic thanks. Probability and tuning remain open pending in-game listening.
+
+
 ## Trigger implementation boundaries
 
 Inspected source: `lib/game/simulation.ts` currently emits hit, kill, hurt, purchase, reload, dry and other gameplay events. Kill events include a headshot flag and position, but do not yet carry the full actor/enemy/attack history required here. Limb state exists; reliable severance dialogue needs a new transition event rather than firing on every hit to an already missing limb. Revives, the full quest and restored surveillance are planned content.

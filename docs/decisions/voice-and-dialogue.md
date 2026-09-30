@@ -2,6 +2,8 @@
 
 Status: AI character voices are established direction. ElevenLabs Voice Design v3 remains the intended custom audition route, but the configured account is blocked by its paid-plan requirement. One existing-voice Voss/Callum pilot has been generated with Eleven v3; no final character voice has been selected. The [round 01 audition pack](../voice-auditions/README.md) contains the scripts, prompts and generation status.
 
+Use the [character production design bible](character-production-design.md) for detailed vocal contrast and the [playable scene treatment](story-scenes.md) for dramatic context. Both are working direction; final casting and recording remain pending.
+
 ## Production approach
 
 Generate authored dialogue ahead of time, audition and edit the takes, then ship audio assets with the game. Runtime generative conversation is not in scope for the first story implementation. AI-led creation does not require live generation during gameplay.

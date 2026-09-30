@@ -2,6 +2,8 @@
 
 Status: working narrative direction under the [established brief](README.md). Quest mechanics live in [quests and Easter eggs](quests-and-easter-eggs.md).
 
+Detailed playable staging and working scene dialogue are in [Playable story scenes](story-scenes.md). Scenes preserve player control; contract-dependent beats remain provisional.
+
 ## Premise and tone
 
 **The House Always Wins:** Vincent Voss made a bargain to keep his casino alive. Guests whose debts never closed cannot leave, even after death. Voss owns the business; the House is the supernatural counterparty, not another name for Voss.
