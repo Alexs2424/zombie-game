@@ -466,6 +466,10 @@ builders=[
  ('coffee-table',coffee,[2.4,1.2,.58]),('tommy',tommy,None),
 ]
 for name,build,bounds in builders:
+    if name in {'sofa','armchair','booth'}:
+        if args.only!='all' and name in args.only.split(','):
+            raise SystemExit('Seating moved to tools/hotel-lobby/build_seating.py -- --only '+name)
+        continue
     if args.only!='all' and name not in args.only.split(','):continue
     reset(name);build();export_asset(name,bounds,name=='tommy')
 if args.only=='all' or 'hands' in args.only.split(','):hands()

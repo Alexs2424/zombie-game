@@ -91,7 +91,7 @@ export function buildHotel(scene: Scene) {
     m.diffuseColor = Color3.FromHexString(hex);
     m.emissiveColor = m.diffuseColor.scale(glow);
     m.specularColor = new Color3(0.09, 0.085, 0.075);
-    m.maxSimultaneousLights = 10;
+    m.maxSimultaneousLights = 8;
     materials.push(m);
     return m;
   };
@@ -167,7 +167,7 @@ export function buildHotel(scene: Scene) {
   marbleFloor.metallic = 0;
   marbleFloor.roughness = 0.3;
   marbleFloor.environmentIntensity = 0.65;
-  marbleFloor.maxSimultaneousLights = 10;
+  marbleFloor.maxSimultaneousLights = 8;
   brass.specularColor = new Color3(0.45, 0.36, 0.2);
   brass.specularPower = 48;
 
@@ -1128,10 +1128,9 @@ export function buildHotel(scene: Scene) {
   for (const [x, y, z, intensity, range] of [
     [HOTEL.center.x, 6.6, HOTEL.center.z - 2, 3.1, 24],
     [HOTEL.center.x, 7.4, upperCenterZ + 0.8, 1.8, 23],
-    [HOTEL.center.x, 2.9, upperCenterZ + 1.5, 0.65, 19],
+    [HOTEL.center.x, 2.9, 44.5, 0.75, 19],
     [HOTEL.entrance.x, 3.5, 14, 0.48, 8],
     [-12, 3.15, 20.4, 0.9, 11],
-    [-4, 2.8, 48.5, 0.45, 15],
   ]) {
     const light =
       lights.length < 2
@@ -1179,6 +1178,7 @@ export function buildHotel(scene: Scene) {
   const walls = buildHotelWalls(scene);
   const renovation = buildHotelRenovation(scene);
   let propMeshes = buildHotelProps(scene);
+  let detailAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
   let floorAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
   let ceilingAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
   let stairAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
@@ -1201,6 +1201,7 @@ export function buildHotel(scene: Scene) {
       ...(stairAsset?.meshes ?? []),
       ...(ceilingAsset?.meshes ?? []),
       ...(floorAsset?.meshes ?? []),
+      ...(detailAsset?.meshes ?? []),
       ...propMeshes,
       ...(furniture?.lightMeshes ?? []),
       ...(entry?.meshes ?? []),
@@ -1209,6 +1210,14 @@ export function buildHotel(scene: Scene) {
     finishLighting.refresh(staticMeshes);
   };
   refreshLights();
+  const detailsReady = loadHotelLobbyAsset(scene, "details").then(loaded => {
+    if (disposed || scene.isDisposed) { loaded.dispose(); return; }
+    detailAsset = loaded;
+    renovation.replaceDetails();
+    refreshLights();
+  }).catch(error => {
+    if (!disposed) console.warn("Hotel textiles unavailable; using existing details.", error);
+  });
   const floorReady = loadHotelLobbyAsset(scene, "floor").then(loaded => {
     if (disposed || scene.isDisposed) { loaded.dispose(); return; }
     floorAsset = loaded;
@@ -1257,7 +1266,7 @@ export function buildHotel(scene: Scene) {
     entry=loaded;entryFallback.forEach(mesh=>mesh.setEnabled(false));gate.setEnabled(false);
     loaded.setOpen(gateWasOpen);refreshLights();
   }).catch(error=>{if(!disposed && !scene.isDisposed) console.warn("Hotel entrance model unavailable; keeping its surround.",error);});
-  const ready=Promise.all([floorReady, ceilingReady, stairsReady, furnitureReady,entryReady]).then(()=>undefined);
+  const ready=Promise.all([detailsReady, floorReady, ceilingReady, stairsReady, furnitureReady,entryReady]).then(()=>undefined);
   let bellCaption = "";
   let jukeWasOn = false;
   let gateWasOpen = false;
@@ -1331,6 +1340,7 @@ export function buildHotel(scene: Scene) {
       disposed = true;
       lightMembership.dispose();
       finishLighting.dispose();
+      detailAsset?.dispose();
       floorAsset?.dispose();
       ceilingAsset?.dispose();
       stairAsset?.dispose();

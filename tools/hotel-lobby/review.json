@@ -1,0 +1,104 @@
+[
+  {
+    "action": "new"
+  },
+  {
+    "action": "hotel-lobby"
+  },
+  {
+    "eval": "document.querySelectorAll(\".dev-panel,.dev-launcher\").forEach(e=>e.style.display=\"none\")"
+  },
+  {
+    "wait": 1800
+  },
+  {
+    "shot": "entrance"
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.sim;s.player={\"x\": -12, \"y\": 0, \"z\": 23};s.yaw=-0.35;s.pitch=-0.12;})()"
+  },
+  {
+    "wait": 600
+  },
+  {
+    "shot": "stairs"
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.sim;s.player={\"x\": 12, \"y\": 0, \"z\": 22};s.yaw=2.85;s.pitch=-0.12;})()"
+  },
+  {
+    "wait": 600
+  },
+  {
+    "shot": "wall-grazing"
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.sim;s.player={\"x\": 5.4, \"y\": 0, \"z\": 21};s.yaw=3.14159265359;s.pitch=0.35;})()"
+  },
+  {
+    "wait": 600
+  },
+  {
+    "shot": "sofa"
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.sim;s.player={\"x\": 9, \"y\": 0, \"z\": 24};s.yaw=1.1;s.pitch=-0.7;})()"
+  },
+  {
+    "wait": 600
+  },
+  {
+    "shot": "curtains"
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.sim;s.player={\"x\": 6.3, \"y\": 4, \"z\": 40};s.yaw=1.2;s.pitch=0.27;})()"
+  },
+  {
+    "wait": 600
+  },
+  {
+    "shot": "booth"
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.sim;s.player={\"x\": 11, \"y\": 0, \"z\": 34.5};s.yaw=1.9;s.pitch=-0.1;})()"
+  },
+  {
+    "wait": 600
+  },
+  {
+    "shot": "service-door"
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.sim;s.player={\"x\": -8.65, \"y\": 0, \"z\": 43.5};s.yaw=0;s.pitch=-0.12;})()"
+  },
+  {
+    "wait": 600
+  },
+  {
+    "shot": "sconces"
+  },
+  {
+    "eval": "(async()=>{\n const r=window.__lastJackpot,scene=r.renderer.scene;\n const {HOTEL_RECTS}=await import('/lib/game/world.ts');\n const {Ray}=await import('/node_modules/@babylonjs/core/Culling/ray.js');\n const V=r.renderer.camera.position.constructor;\n const wall=HOTEL_RECTS.find(w=>w.id==='hotel-wall-1');\n const tx=Math.cos(wall.yaw),tz=Math.sin(wall.yaw),nx=-tz,nz=tx;\n const ray=(along,y,name)=>{const origin=new V(wall.x+tx*along+nx, y,wall.z+tz*along+nz);const hit=scene.pickWithRay(new Ray(origin,new V(-nx,0,-nz),1.3),m=>m.name===name);if(!hit?.hit)throw Error('Missing wall surface '+name);return 1-hit.distance;};\n const bare=ray(0,2,'hotel walls lime plaster architecture');\n const lowerCount=Math.round((wall.w-.03)/1.35),lowerWidth=(wall.w-.03)/lowerCount;\n const lowerAt=-wall.w/2+.015+lowerWidth*(Math.floor(lowerCount/2)+.5);\n const lower=ray(lowerAt,1.285,'hotel walls forest lacquer architecture');\n const upperCount=Math.round((wall.w-.03)/2.8),upperWidth=(wall.w-.03)/upperCount;\n const upperAt=-wall.w/2+.015+upperWidth*1.5;\n const upper=ray(upperAt,8.075,'hotel walls ivory molded plaster architecture');\n if(lower-bare<.04||upper-bare<.02)throw Error('Wall relief does not project far enough');\n const loaded=['stairs','ceiling','floor','details'].map(kind=>({kind,meshes:scene.meshes.filter(m=>m.name.startsWith('hotel-grand-'+kind)&&m.getTotalVertices()).length}));\n if(loaded.some(a=>a.meshes<1))throw Error('Missing Blender architecture');\n if(scene.meshes.some(m=>/hotel fitted stair carpet runner/.test(m.name)&&m.isEnabled()))throw Error('Old runner remains visible');\n return {wallReliefMetres:{backing:bare,lowerProjection:lower-bare,plasterProjection:upper-bare},loaded,totalVertices:scene.getTotalVertices()};\n})()"
+  },
+  {
+    "action": "hotel-tour"
+  },
+  {
+    "eval": "(async()=>{const r=window.__lastJackpot;const started=performance.now();let highest=0;await new Promise((resolve,reject)=>{const tick=()=>{highest=Math.max(highest,r.sim.player.y??0);if(r.hotelTourCompleted)return resolve();if(performance.now()-started>110000)return reject(Error('Hotel walking loop timed out with '+r.hotelTour.length+' waypoints remaining'));setTimeout(tick,250);};tick();});return {walkLoopComplete:true,seconds:(performance.now()-started)/1000,highestFloor:highest,finalPosition:r.sim.player,galleryOpen:r.sim.hotelMystery.passageOpen};})()"
+  },
+  {
+    "shot": "walk-complete"
+  },
+  {
+    "action": "hotel-chase"
+  },
+  {
+    "wait": 2000
+  },
+  {
+    "eval": "(async()=>{const r=window.__lastJackpot,scene=r.renderer.scene;const samples=[];let last=performance.now();const observer=scene.onAfterRenderObservable.add(()=>{const now=performance.now();samples.push(now-last);last=now;});await new Promise(resolve=>setTimeout(resolve,12000));scene.onAfterRenderObservable.remove(observer);samples.shift();samples.sort((a,b)=>a-b);return {scenario:'hotel chase, three enemies, 12 seconds',frames:samples.length,meanFrameMs:samples.reduce((a,b)=>a+b,0)/samples.length,p95FrameMs:samples[Math.floor(samples.length*.95)],enemies:r.sim.enemies.length};})()"
+  },
+  {
+    "shot": "chase"
+  }
+]

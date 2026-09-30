@@ -7,6 +7,7 @@ import { LoadAssetContainerAsync } from '@babylonjs/core/Loading/sceneLoader.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js';
 import { Ray } from '@babylonjs/core/Culling/ray.js';
 import '@babylonjs/loaders/glTF/index.js';
+import { HOTEL_FIXTURES } from '../../lib/game/hotel-fixtures.ts';
 import { HOTEL, stairPoint } from '../../lib/game/world.ts';
 const names=process.argv.slice(2); if(!names.length) names.push('hotel-grand-stairs');
 const engine=new NullEngine();
@@ -27,6 +28,13 @@ try {
         min.minimizeInPlace(mesh.getBoundingInfo().boundingBox.minimumWorld);max.maximizeInPlace(mesh.getBoundingInfo().boundingBox.maximumWorld);
       }
       assert.ok(meshes.length<=10&&triangles<400000&&bytes.length<16*1024*1024,'asset budget');
+      const fixture=HOTEL_FIXTURES.find(f=>`hotel-${f.kind}`===name);
+      if(fixture){
+        assert.ok(Math.abs(min.y)<.001,'furniture rests at floor origin');
+        assert.ok(Math.max(Math.abs(min.x),Math.abs(max.x))<=fixture.w/2+.002,'fixture width');
+        assert.ok(Math.max(Math.abs(min.z),Math.abs(max.z))<=fixture.d/2+.002,'fixture depth');
+        assert.ok(max.y<=fixture.h+.002&&max.y>=fixture.h*.85,'fixture height');
+      }
       if(name==='hotel-grand-floor'){
         assert.ok(min.y>=0&&max.y<.027,'floor below furniture contact shadows');
         for(const [x,z] of [[-4,30],[-4,32],[0,26],[-12,21],[8,40]]){

@@ -237,3 +237,7 @@ The user approved all roadmap improvements, requested a methodical PR stack, and
 ## 2026-09-30 — Hotel light hierarchy and wall relief review
 
 **Implemented working design:** warm architectural lighting with cooler window fill and restrained plaster bounce, plus static room reflections and architectural shadows. Preserve readable paths and the casino's existing exposure. Close wall review confirms the modeled plaster bevels and green panel profiles project from the backing; no flat printed substitute was introduced. Moving quest panels are omitted from frozen captures. Current verification and limits live in the [fidelity asset record](../hotel-assets/lobby/README.md).
+
+## 2026-09-30 — Lobby upholstery, textiles, and fittings
+
+**Implemented working design:** rounded forest upholstery with individual cushions, piping and walnut supports; gathered velvet drapes with warm lining; fitted tread/riser runners; bordered rugs in existing seating groups; and a matching bronze/opal sconce and service-door hardware family. These complete the approved visual scope without moving collision footprints or adding narrative content. Close game review prompted fixes for seating supports and coplanar runner risers. Sources, actual wall-projection measurements, and validation live in the [fidelity asset record](../hotel-assets/lobby/README.md).
