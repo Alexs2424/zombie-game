@@ -40,7 +40,7 @@ export const SECRET_RECTS = [
   {id:'secret-wall-east',x:53,z:-12,w:.45,d:24.45,h:4.8},
   {id:'secret-wall-south',x:48,z:-24,w:10.45,d:.45,h:4.8},
   {id:'secret-wall-north',x:48,z:0,w:10.45,d:.45,h:4.8},
-  {id:'mystery-cabinet',...CASINO_SECRET_ANCHORS.mysteryCabinet,w:1.6,d:1.1,h:2.6},
+  {id:'mystery-cabinet',...CASINO_SECRET_ANCHORS.mysteryCabinet,w:1.6,d:1.1,h:1.25},
   {id:'secret-bar',x:44.2,z:-9,w:1.4,d:8,h:1.2},
 ];
 export const RELIC_NAMES = {pistol:"MIDNIGHT SPECIAL",shotgun:"GILDED RECKONING",smg:"VELVET VENGEANCE",rifle:"THE HOUSE ALWAYS WINS"};

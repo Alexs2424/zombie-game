@@ -40,8 +40,9 @@ class AudioNode {
   disconnect() {
     this.outputs = [];
   }
-  start(time) {
+  start(time, offset = 0) {
     this.startTime = time;
+    this.startOffset = offset;
   }
   stop(time) {
     this.stopTime = time;
@@ -401,21 +402,21 @@ const slotSources = (audio) => audio.context.nodes.filter(
 const westCabinet = SLOT_MACHINE_SOURCES.find(source => source.id === 'slots-a:west:0');
 const westAisle = { x: westCabinet.x - 1.4, z: westCabinet.z };
 
-test("selected slot D plays only for mystery handle pulls, preserving dice rolls and cabinet pass-bys", async () => {
+test("original case music is separate from dice rolls and casino cabinet pass-bys", async () => {
   const requests = [];
   await fixture(audio => {
-    assert.deepEqual(requests.filter(url => url.includes("slot-attract-elevenlabs")),
-      ["/audio/casino/slot-attract-elevenlabs-04.wav"]);
+    assert.deepEqual(requests.filter(url => url.includes("/audio/velvet-case/")),
+      ["opening", "offer", "closing", "take"].map(cue => `/audio/velvet-case/${cue}.wav`));
     audio.update(0.1, true, westAisle, 0, true, false);
     assert.equal(slotSources(audio).length, 1, "ordinary cabinets retain their original recipe");
     assert.equal(sampledSources(audio).length, 0);
     audio.play({ type: "diceRoll" });
     assert.equal(sampledSources(audio).length, 0, "craps never plays the mystery cabinet sample");
     const cabinet = slotSources(audio)[0];
-    audio.play({ type: "mysterySpin", position: { x: 38, z: 17 } });
+    audio.updateMystery({remaining:2.8,resolved:false,reward:"magnum"},true,{x:49,z:-19},0);
     const source = sampledSources(audio).at(-1);
-    assert.equal(source.buffer.name, "/audio/casino/slot-attract-elevenlabs-04.wav");
-    assert.deepEqual(source.outputs[0].outputs, [audio.world]);
+    assert.equal(source.buffer.name, "/audio/velvet-case/opening.wav");
+    assert.deepEqual(source.outputs[0].outputs[0].outputs, [audio.world]);
     assert.equal(cabinet.stopped, true);
     audio.play({ type: "diceRoll" });
     assert.equal(sampledSources(audio).length, 1);
@@ -424,17 +425,17 @@ test("selected slot D plays only for mystery handle pulls, preserving dice rolls
   }, url => { requests.push(url); return true; });
 });
 
-test("mystery handle sample and original fallback stop on pause, reset, disposal and retrigger", async () => {
+test("case opening sample and original fallback stop on pause, reset, disposal and retrigger", async () => {
   for (const samples of [true, false]) await fixture(audio => {
     audio.setActive(true);
     for (const action of ["retrigger", "pause", "reset", "dispose"]) {
       const context = audio.context;
       const before = context.nodes.length;
-      audio.play({ type: "mysterySpin" });
+      audio.updateMystery({remaining:2.8,resolved:false,reward:"magnum"},true,{x:49,z:-19},0);
       const created = context.nodes.slice(before);
       const sources = created.filter(node => node.kind === "source" || node.kind === "oscillator");
       assert.equal(sources.length, samples ? 1 : 6);
-      if (action === "retrigger") audio.play({ type: "mysterySpin" });
+      if (action === "retrigger") audio.updateMystery({remaining:2.8,resolved:false,reward:"magnum"},true,{x:49,z:-19},0);
       else if (action === "pause") audio.setActive(false);
       else if (action === "reset") audio.resetSlots();
       else audio.dispose();
@@ -452,7 +453,7 @@ test("mystery handle sample and original fallback stop on pause, reset, disposal
       }
       audio.setActive(false);
       const pausedCount = context.nodes.length;
-      audio.play({ type: "mysterySpin" });
+      audio.updateMystery({remaining:2.8,resolved:false,reward:"magnum"},true,{x:49,z:-19},0);
       assert.equal(context.nodes.length, pausedCount);
       audio.setActive(true);
       assert.equal(audio.mysterySlotVoice, null);
@@ -1021,4 +1022,37 @@ test("failed new reports retain the legacy gunshot, and starter guns still synth
     audio.play({type:'shot', weapon:'pistol'});
     assert.ok(audio.context.nodes.slice(before).some(n=>n.kind==='oscillator'));
   }, url => !url.includes('/report-'));
+});
+
+
+test("case offer music reuses a single loop, resumes its offset and closes without lingering", async () => {
+  await fixture(audio => {
+    audio.setActive(true);
+    const state = { remaining:0, resolved:true, reward:"lmg", offerRemaining:17 };
+    const player = {x:49,z:-19};
+    audio.updateMystery(state,true,player,0);
+    const source = sampledSources(audio).at(-1);
+    assert.equal(source.buffer.name,"/audio/velvet-case/offer.wav");
+    assert.equal(source.loop,true);
+    const nodeCount = audio.context.nodes.length;
+    for(let i=0;i<120;i++) audio.updateMystery(state,true,player,0);
+    assert.equal(audio.context.nodes.length,nodeCount,"no render-frame audio allocations");
+    audio.setActive(false);
+    assert.equal(source.stopped,true);
+    state.offerRemaining=15;
+    audio.setActive(true);
+    audio.updateMystery(state,true,player,0);
+    const resumed = sampledSources(audio).at(-1);
+    assert.equal(resumed.startOffset,5 % resumed.buffer.duration);
+    state.claimed=true;state.closingRemaining=1.2;
+    audio.updateMystery(state,true,player,0);
+    assert.equal(resumed.stopped,true);
+    const close = sampledSources(audio).at(-1);
+    assert.equal(close.buffer.name,"/audio/velvet-case/closing.wav");
+    assert.equal(close.loop,false);
+    state.closingRemaining=0;
+    audio.updateMystery(state,true,player,0);
+    assert.equal(close.stopped,true);
+    assert.equal(audio.mysterySlotVoice,null);
+  },true);
 });

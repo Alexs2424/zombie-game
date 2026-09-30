@@ -104,34 +104,7 @@ function Controls() {
     </div>
   );
 }
-const MYSTERY_REEL = [
-  "magnum",
-  "tommy",
-  "doublebarrel",
-  "dual",
-  "machinepistol",
-  "lever",
-  "autoshotgun",
-  "sniper",
-  "lmg",
-  "launcher",
-] as const;
-/** Cycles the ten Blender renders while the cabinet spins, then shows the payout. */
-function MysteryReel({ reel }: { reel: GameView["mysteryReel"] }) {
-  const [tick, setTick] = useState(0);
-  useEffect(() => {
-    if (!reel.spinning) return;
-    const timer = window.setInterval(() => setTick((n) => n + 1), 95);
-    return () => window.clearInterval(timer);
-  }, [reel.spinning]);
-  const id = reel.spinning ? MYSTERY_REEL[tick % MYSTERY_REEL.length] : reel.id;
-  if (!id) return null;
-  return (
-    <div className={`mystery-reel ${reel.spinning ? "spinning" : "paid"}`}>
-      <img src={`/ui/weapons/${id}-side.webp`} alt="" />
-    </div>
-  );
-}
+
 function HotelDocument({
   document: clue,
   onReturn,
@@ -629,11 +602,10 @@ export default function Home() {
               {view.casino.nearPainting && view.casino.paintingOpen && !view.casino.speakeasy && <div className="secret-status">THE LOCK · {view.casino.codeProgress} / 8<br/><small>Read the pinned cards left to right. Shoot suit, then number.</small></div>}
               {view.casino.nearMystery && (
                 <div className="secret-status mystery-status">
-                  <strong>THE VELVET FORTUNE</strong>
-                  <MysteryReel reel={view.mysteryReel} />
+                  <strong>THE VELVET CASE</strong>
                   <p>
                     {view.casino.mystery ||
-                      "400 chips · 50% one of ten 1970s house guns / 50% nothing · F spin"}
+                      "400 chips · random firearm · F open · 20 seconds to choose"}
                   </p>
                 </div>
               )}
