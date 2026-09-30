@@ -12,6 +12,7 @@ import { SpotLight } from "@babylonjs/core/Lights/spotLight";
 import { HOTEL, HOTEL_RECTS, stairPoint } from "./world";
 import { buildHotelProps } from "./hotel-props";
 import { loadHotelFurniture } from "./hotel-assets";
+import { loadHotelLobbyAsset } from "./hotel-lobby-assets";
 import { loadHotelEntry } from "./hotel-entry-assets";
 import { buildHotelWalls } from "./hotel-wall-scene";
 import { buildHotelRenovation } from "./hotel-renovation-scene";
@@ -74,6 +75,7 @@ function triangulate(outline: readonly Point[]) {
  */
 export function buildHotel(scene: Scene) {
   const batches = new Map<StandardMaterial, Mesh[]>();
+  const stairFallback: Mesh[] = [];
   const ownedMeshes: Mesh[] = [];
   const materials: StandardMaterial[] = [];
   const textures: DynamicTexture[] = [];
@@ -436,83 +438,14 @@ export function buildHotel(scene: Scene) {
     const base = rect.baseY ?? 0;
     const yaw = -(rect.yaw ?? 0);
     if (rect.id.includes("rail")) {
-      box(
-        `${rect.id} guard`,
-        rect.x,
-        base + rect.h / 2,
-        rect.z,
-        rect.w,
-        rect.h,
-        rect.d,
-        teal,
-        yaw,
-      );
-      box(
-        `${rect.id} handrail`,
-        rect.x,
-        base + rect.h - 0.005,
-        rect.z,
-        rect.w + 0.025,
-        0.085,
-        rect.d + 0.045,
-        brass,
-        yaw,
-      );
-      box(
-        `${rect.id} base`,
-        rect.x,
-        base + 0.07,
-        rect.z,
-        rect.w + 0.01,
-        0.14,
-        rect.d + 0.025,
-        dark,
-        yaw,
-      );
-      const axis = rect.yaw ?? 0;
-      const c = Math.cos(axis),
-        s = Math.sin(axis);
-      const count = Math.max(1, Math.round(rect.w / 0.65));
-      for (let i = 0; i < count; i++) {
-        const offset = ((i + 0.5) * rect.w) / count - rect.w / 2;
-        const x = rect.x + c * offset,
-          z = rect.z + s * offset;
-        box(
-          "deco rail baluster",
-          x,
-          base + rect.h / 2,
-          z,
-          0.045,
-          rect.h - 0.09,
-          rect.d + 0.04,
-          brass,
-          yaw,
-        );
-        box(
-          "deco rail collar",
-          x,
-          base + rect.h * 0.63,
-          z,
-          0.17,
-          0.12,
-          rect.d + 0.055,
-          brass,
-          yaw,
-        );
-      }
-      box(
-        "deco rail middle ribbon",
-        rect.x,
-        base + rect.h * 0.35,
-        rect.z,
-        rect.w,
-        0.027,
-        rect.d + 0.025,
-        brass,
-        yaw,
-      );
+      const guard = box(`${rect.id} loading guard`, rect.x, base + rect.h / 2,
+        rect.z, rect.w, rect.h, rect.d, teal, yaw);
+      batches.get(teal)!.splice(batches.get(teal)!.indexOf(guard), 1);
+      guard.freezeWorldMatrix();
+      stairFallback.push(guard); ownedMeshes.push(guard);
       continue;
     }
+
     box(
       rect.id,
       rect.x,
@@ -1229,6 +1162,7 @@ export function buildHotel(scene: Scene) {
   const walls = buildHotelWalls(scene);
   const renovation = buildHotelRenovation(scene);
   let propMeshes = buildHotelProps(scene);
+  let stairAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
   let furniture: Awaited<ReturnType<typeof loadHotelFurniture>> | undefined;
   let entry: Awaited<ReturnType<typeof loadHotelEntry>> | undefined;
   let disposed = false;
@@ -1245,12 +1179,22 @@ export function buildHotel(scene: Scene) {
       ...ownedMeshes,
       ...renovation.meshes,
       ...walls.meshes,
+      ...(stairAsset?.meshes ?? []),
       ...propMeshes,
       ...(furniture?.lightMeshes ?? []),
       ...(entry?.meshes ?? []),
     ]);
   };
   refreshLights();
+  const stairsReady = loadHotelLobbyAsset(scene, "stairs").then(loaded => {
+    if (disposed || scene.isDisposed) { loaded.dispose(); return; }
+    stairAsset = loaded;
+    stairFallback.forEach(mesh => mesh.setEnabled(false));
+    renovation.replaceStairs();
+    refreshLights();
+  }).catch(error => {
+    if (!disposed) console.warn("Hotel stairs unavailable; using solid guards.", error);
+  });
   const furnitureReady = loadHotelFurniture(scene).then((loaded) => {
     if (disposed || scene.isDisposed) {
       loaded.dispose();
@@ -1272,7 +1216,7 @@ export function buildHotel(scene: Scene) {
     entry=loaded;entryFallback.forEach(mesh=>mesh.setEnabled(false));gate.setEnabled(false);
     loaded.setOpen(gateWasOpen);refreshLights();
   }).catch(error=>{if(!disposed && !scene.isDisposed) console.warn("Hotel entrance model unavailable; keeping its surround.",error);});
-  const ready=Promise.all([furnitureReady,entryReady]).then(()=>undefined);
+  const ready=Promise.all([stairsReady, furnitureReady,entryReady]).then(()=>undefined);
   let bellCaption = "";
   let jukeWasOn = false;
   let gateWasOpen = false;
@@ -1345,6 +1289,7 @@ export function buildHotel(scene: Scene) {
       if (disposed) return;
       disposed = true;
       lightMembership.dispose();
+      stairAsset?.dispose();
       furniture?.dispose();
       entry?.dispose();
       renovation.dispose();

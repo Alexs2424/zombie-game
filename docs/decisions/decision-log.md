@@ -220,3 +220,8 @@ Prepared three-beat scripts per candidate (pleasure, anger, quiet admission) in 
 ## 2026-09-29 — Lobby fidelity stack authorized
 
 The user approved all roadmap improvements, requested a methodical PR stack, and specifically required in-game checks that wall panels project from their backing and the room reads coherently. Work will preserve the approved palette, collision layout, and gameplay. Editable Blender source and runtime exports accompany new models. Each completed layer records its checks in the owning asset documentation.
+
+
+## 2026-09-30 — Stair and balcony architectural treatment
+
+**Implemented working design:** original Blender curved walnut handrails, closed green guard panels with applied brass ornament, turned newels, curved stone spandrels, balcony fascia, and fluted leaf-capital columns. Preserve solid guard behavior and existing route geometry. Closed panels deliberately avoid decorative openings with invisible bullet barriers. The [asset record](../hotel-assets/lobby/README.md) owns source, exports, and validation.
