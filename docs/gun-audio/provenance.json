@@ -1,0 +1,505 @@
+{
+  "provider": "ElevenLabs",
+  "model": "eleven_text_to_sound_v2",
+  "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+  "sourceFormat": "mp3_44100_128",
+  "outputFormat": "44100 Hz mono PCM16 WAV",
+  "processing": "natural pass: fresh sources, onset trim, mild 35 Hz high-pass and treble rolloff, subtle time variation, late-tail control and fades; no synthesized bass, resonant EQ or saturation; -1.51 dBFS peak ceiling",
+  "oddballAccents": {
+    "tommy": "brief mechanical typewriter carriage zip after the report",
+    "launcher": "oversized champagne-cork pop with a breathy pressure release"
+  },
+  "oddballMix": "only take 3 of Thompson and launcher; other takes and all other guns have no comic layer",
+  "requests": {
+    "pistol": {
+      "text": "Dry authentic recording: a compact 9mm pistol: sharp dry pop, solid midrange punch, tiny steel slide clack. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "shotgun": {
+      "text": "Dry authentic recording: a pump action 12 gauge shotgun: massive short chesty boom, ripping air blast, gritty low end. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "smg": {
+      "text": "Dry authentic recording: a compact 9mm submachine gun firing ONE round in single fire mode: very tight pap, short bright snap and small metal bolt. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "rifle": {
+      "text": "Dry authentic recording: a battle rifle firing ONE round: fierce whip crack, hard midrange bark, tight low punch. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "revolver": {
+      "text": "Dry authentic recording: an old heavy .45 revolver: thunderous dry bark, deep punch and brief ringing steel. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "magnum": {
+      "text": "Dry authentic recording: a .357 magnum revolver: exceptionally sharp explosive crack and heavy concussive body. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "tommy": {
+      "text": "Dry authentic recording: a vintage Thompson .45 submachine gun firing ONE round only: chunky low barking report, heavy receiver clack. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "doublebarrel": {
+      "text": "Dry authentic recording: a short double barrel 12 gauge shotgun firing ONE barrel: immense rough ripping blast with deep wooden chest resonance. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "dual": {
+      "text": "Dry authentic recording: a small vintage pocket pistol: snappy dry bright crack, tiny slide tick, lean body. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "machinepistol": {
+      "text": "Dry authentic recording: a stamped steel 9mm machine pistol firing ONE round only: aggressive short metallic snap, buzzing bolt clack. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "lever": {
+      "text": "Dry authentic recording: a vintage lever action rifle: hard dry whip crack, hollow walnut stock knock and warm body. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "autoshotgun": {
+      "text": "Dry authentic recording: a semi automatic 12 gauge shotgun firing ONE round only: broad crunchy blast, tight bass, short gas bolt clack. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sniper": {
+      "text": "Dry authentic recording: a powerful bolt action military rifle: piercing explosive crack, long heavy body fading naturally. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "lmg": {
+      "text": "Dry authentic recording: a belt fed 7.62 machine gun firing ONE round only: deep brutal bark, metallic carrier clank and belt link tick. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "launcher": {
+      "text": "Dry authentic recording: a vintage 40mm grenade launcher discharge: hollow wooden THOOMP, low air puff, heavy breech knock; no explosion. ONE shot immediately, natural powder crack, real action noise, decay to silence. Close shooter perspective. No cinematic bass, tones, comedy, reload, voices or ambience.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.8,
+      "model_id": "eleven_text_to_sound_v2"
+    }
+  },
+  "sources": {
+    "pistol": "c697438ff27d5a99c1a6459c648ca7d0e90e5fe4d5a2481833b46a583e78efd6",
+    "shotgun": "936edf5b9e3e9adf92bdbc8d239e85220024b5d6e0eb9c75b1c634df875a75ad",
+    "smg": "ecf417fcae6dd9f04e71f1044ffb7c784509d9a1062de72970e252e9690d4d95",
+    "rifle": "c1800cafe660aff386613bc43431657f2e4bed6f888d087204a45dc1bf436324",
+    "revolver": "d2424eb79cb7c104a4d07b5d44b0fa2520cb3012427382a665a6ccc071bf3991",
+    "magnum": "79a4e663a2446efbd2413e9946beaf4e0e502526f9f0507080908ea402c12bb3",
+    "tommy": "71ecf8d395caf1cd6eeaff453e493d034cdee728b6eb7f88e14c67cd9f75b2aa",
+    "doublebarrel": "4c9ee72d1c9e02592162a86dd8b5921f669b77fe7a228e139135851709dd7644",
+    "dual": "368ccd1b69133f1dddce1b23118e30a03dadb568139ab9c3d9c5e7b2fc2d62fd",
+    "machinepistol": "6027af0ce47e9bb714bed6cce943dd0faf4fee884a0b7d4334bfca546ae15c5e",
+    "lever": "5306f85378579329324c3d632a9cba4cacd11faf1d1cda395f06bc36d2d92483",
+    "autoshotgun": "a4c2240604630a43e1d322c1c5f34a431e08d0dd22121ad2ee56575ad556dc34",
+    "sniper": "5a39a0e1abc357854b5bf2f308214fca9b5d93d03266598a0bf6453b699e6683",
+    "lmg": "4b0d67aff704f07915304820682acd2e6be844d971ab6b1444df4c7a1e2b9565",
+    "launcher": "6cfdcc08d5f5b8a0304e8239b01876a1e9a5f0f4d9ede4da08c3dfb8cb2c1a58"
+  },
+  "files": [
+    {
+      "file": "pistol/report-1.wav",
+      "duration": 0.42,
+      "sourceTrimSeconds": 0.0508843537414966,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "fdc0d147cc87c086d8f9cc1a966a8c24bde430041c0e3184e5115e45b49f3b42"
+    },
+    {
+      "file": "pistol/report-2.wav",
+      "duration": 0.42,
+      "sourceTrimSeconds": 0.0508843537414966,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "23d952a4f90b9bfe98d1819b6f87c89bb50754e1cf87e582532c98b7736f938a"
+    },
+    {
+      "file": "pistol/report-3.wav",
+      "duration": 0.42,
+      "sourceTrimSeconds": 0.0508843537414966,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "38da1e91d59a1d8d602f96cc3ab31d658c820a64ace9b821bd0c2257740f4c04"
+    },
+    {
+      "file": "shotgun/report-1.wav",
+      "duration": 0.85,
+      "sourceTrimSeconds": 0.23945578231292516,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "3443d0f6aaab34a1c3dff892e653a14a051b514d27b9d25105c5d8011247568e"
+    },
+    {
+      "file": "shotgun/report-2.wav",
+      "duration": 0.85,
+      "sourceTrimSeconds": 0.23945578231292516,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "b5ffe0c34d09806e70626cacc1f354c9555707dde16a16669e96e0aa29a8a08c"
+    },
+    {
+      "file": "shotgun/report-3.wav",
+      "duration": 0.85,
+      "sourceTrimSeconds": 0.23945578231292516,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "5f2093404896d12eb28fd1be6ddacbe1df24245b1abf1c7a9b9cd59ae80e6673"
+    },
+    {
+      "file": "smg/report-1.wav",
+      "duration": 0.24,
+      "sourceTrimSeconds": 0.04589569160997732,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "feaa8dbc5a142c5fffebd82cc11264e42d647f7c8e519586583676b72b622bbd"
+    },
+    {
+      "file": "smg/report-2.wav",
+      "duration": 0.24,
+      "sourceTrimSeconds": 0.04589569160997732,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "8487d0ef9d5dafc24408dd8abe8dcc2983bdd63cc5fa1d802c0a4abdc8740259"
+    },
+    {
+      "file": "smg/report-3.wav",
+      "duration": 0.24,
+      "sourceTrimSeconds": 0.04589569160997732,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "c6a49ee281f37fe77a56e646c6d2431c3739f6451e069762ca285c58afc7b68d"
+    },
+    {
+      "file": "rifle/report-1.wav",
+      "duration": 0.44,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "9f3629637a8acdb9e0e7a9537cda6773c64e2fc017fb62c6c6fa7ac2ccc3a17a"
+    },
+    {
+      "file": "rifle/report-2.wav",
+      "duration": 0.44,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "14f67a08dfff78b35b7d424e155b7636a6fe993786017282eb69915a8dec5f1d"
+    },
+    {
+      "file": "rifle/report-3.wav",
+      "duration": 0.44,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "17ef6208a8e24643a7f357d27000c16d7b560f143a9b51f4e066b29e121031d2"
+    },
+    {
+      "file": "revolver/report-1.wav",
+      "duration": 0.6999773242630386,
+      "sourceTrimSeconds": 0.03691609977324263,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "b8a6385276bb04de50b56fde256030c44b0fe0355f0d51e615bfbebc941a6db9"
+    },
+    {
+      "file": "revolver/report-2.wav",
+      "duration": 0.6999773242630386,
+      "sourceTrimSeconds": 0.03691609977324263,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "63e318003232cd65577b860b0a1b14ee69b74415b80e4dbf9162c4c3cd4f9117"
+    },
+    {
+      "file": "revolver/report-3.wav",
+      "duration": 0.6999773242630386,
+      "sourceTrimSeconds": 0.03691609977324263,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "66264e9f46b3128a67a2d2871b4255f4fee3813115140349b1da2fcfcf2d8ce3"
+    },
+    {
+      "file": "magnum/report-1.wav",
+      "duration": 0.75,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "b07f0a926ed601859debf748e3e2b9bb10e965f2c09822f6c0d58425cbfcca89"
+    },
+    {
+      "file": "magnum/report-2.wav",
+      "duration": 0.75,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "1b9763a56e6c797ddceb818ceae611a9870f3d392d905ae14728d86dbf99a23b"
+    },
+    {
+      "file": "magnum/report-3.wav",
+      "duration": 0.75,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "ca3e8d9bea26bc30ae1829b823378928a01a1c1666b688f390b3e2c8cf4815cd"
+    },
+    {
+      "file": "tommy/report-1.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 0.13868480725623583,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "040acb8e93dad3fdc5f617f49991077cf732fb3d1c801b80a7ffcbcf5a998ab2"
+    },
+    {
+      "file": "tommy/report-2.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 0.13868480725623583,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "c154951a46a986b7d7053abaee789d07643197451799d52fd5d6a81ca969e18b"
+    },
+    {
+      "file": "tommy/report-3.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 0.13868480725623583,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "ffec57fb8b940741794e32a40fe96d1303a7967b6456486fabfd3ac8e63462d4"
+    },
+    {
+      "file": "doublebarrel/report-1.wav",
+      "duration": 0.95,
+      "sourceTrimSeconds": 0.2813605442176871,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "16685b5f41b6ab09557f8c9503e4ea252feb1ed80393939e5ea45e490c69a677"
+    },
+    {
+      "file": "doublebarrel/report-double-1.wav",
+      "duration": 0.9589795918367346,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "b1df4ce05efdaa012fbbdf90b1b4d81d3d6bb4cbe58ae17aad691924440dce1e"
+    },
+    {
+      "file": "doublebarrel/report-2.wav",
+      "duration": 0.95,
+      "sourceTrimSeconds": 0.2813605442176871,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "f366f7988ab010d63d4bf26137bbcbfe06899b0612042dd9c2941592834e6935"
+    },
+    {
+      "file": "doublebarrel/report-double-2.wav",
+      "duration": 0.9589795918367346,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "b485271fbd4bbfa9367bee43826ec98d88081b685adff48d576680d84eb36fb8"
+    },
+    {
+      "file": "doublebarrel/report-3.wav",
+      "duration": 0.95,
+      "sourceTrimSeconds": 0.2813605442176871,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "ea452d4bc6948abf904028361ead8c5f1c1859e82afb510c8184b87ef9473888"
+    },
+    {
+      "file": "doublebarrel/report-double-3.wav",
+      "duration": 0.9589795918367346,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "4070fe69d0d7a8e8e38fea339f6a988c90ce6c3e52ed5d2256f995bdd30e8f79"
+    },
+    {
+      "file": "dual/report-1.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 0.6954195011337868,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "2019ede1fdb92473056ae3eb00b4bd8c32c7b89c2c54e1d48c74bdfc35f70ec6"
+    },
+    {
+      "file": "dual/report-2.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 0.6954195011337868,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "abeb1a44eb49184e14bdff16cb81a1ccb4aca74d2d6820f9ffe79559fb42fa60"
+    },
+    {
+      "file": "dual/report-3.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 0.6954195011337868,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "ca816712a26eed305401de17e0595d9f8d68267e6ad927dc6b48f1dcc8fb69d0"
+    },
+    {
+      "file": "machinepistol/report-1.wav",
+      "duration": 0.22,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "1ec80bef582e6a60d5559d37572ca97a797f5a7e47d676ee67ac3111f9f24d15"
+    },
+    {
+      "file": "machinepistol/report-2.wav",
+      "duration": 0.22,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "90a347abee7f010392522e46931f7c2dfde7e95cbd82f1b0fcb432dc87467533"
+    },
+    {
+      "file": "machinepistol/report-3.wav",
+      "duration": 0.22,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "fb77e765ed7121c834dd7bf8efc9ab74419123d781688e3c9d87992356879631"
+    },
+    {
+      "file": "lever/report-1.wav",
+      "duration": 0.62,
+      "sourceTrimSeconds": 0.7133786848072562,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "14da50e73d016f4c1d04093bb96a418745de7b2f712c7150370c786b9459ffea"
+    },
+    {
+      "file": "lever/report-2.wav",
+      "duration": 0.62,
+      "sourceTrimSeconds": 0.7133786848072562,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "16e2e46b6d5bd7e664d3a53dbfa6307f4b01202135abb5d3be5f8a1cddd46bdc"
+    },
+    {
+      "file": "lever/report-3.wav",
+      "duration": 0.62,
+      "sourceTrimSeconds": 0.7133786848072562,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "684d17bf314f953fcbc66bf52d8cf50c3a6fc344ee7b0dce33b879470253e1a9"
+    },
+    {
+      "file": "autoshotgun/report-1.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 1.601360544217687,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "e137605b7ba16531b07878ec9196c3bc0b46daa10b47a8a0b9f45aaa4f847673"
+    },
+    {
+      "file": "autoshotgun/report-2.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 1.601360544217687,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "a1f5ff0904beabb2ffa6fc9536ae357993b272470e1cc92860b6e8bf5b551892"
+    },
+    {
+      "file": "autoshotgun/report-3.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 1.601360544217687,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "86c244344600969a30821207af932af6413e2cdb258d4708f3d74044a1756f0f"
+    },
+    {
+      "file": "sniper/report-1.wav",
+      "duration": 1.05,
+      "sourceTrimSeconds": 0.6515192743764172,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "242ad5c44350ab3d29953c1aaf07959007fbae9ec6176f5bb8a7cb3b6866ade6"
+    },
+    {
+      "file": "sniper/report-2.wav",
+      "duration": 1.05,
+      "sourceTrimSeconds": 0.6515192743764172,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "ba4a3e8717b0632ad766cb44412fb627944c8b7ddf010d65fec8c3809a174044"
+    },
+    {
+      "file": "sniper/report-3.wav",
+      "duration": 1.05,
+      "sourceTrimSeconds": 0.6515192743764172,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "5523122e672a5a510338059f44cef9fe42596f27a7da5a86f39c3e70f4ab89e2"
+    },
+    {
+      "file": "lmg/report-1.wav",
+      "duration": 0.4,
+      "sourceTrimSeconds": 0.012970521541950114,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "46fe5c35cedd1dae29324f10b5a26625df44b563ec2c8cfcb6712b9763398ca0"
+    },
+    {
+      "file": "lmg/report-2.wav",
+      "duration": 0.4,
+      "sourceTrimSeconds": 0.012970521541950114,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "360e0ca08d1ecf6dc7fc28251cd4751b0e4feea675cb5d3e35d3776417012d8f"
+    },
+    {
+      "file": "lmg/report-3.wav",
+      "duration": 0.4,
+      "sourceTrimSeconds": 0.012970521541950114,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "da6f182a7f44f0574858c39e432d7837e9646224b6439c2e035bddf86962e1ae"
+    },
+    {
+      "file": "launcher/report-1.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 0.03392290249433107,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "c4969f5e16019be84ec3d2e24dfbd460a1f36fe3a3caa3bea073eda5f86f12b2"
+    },
+    {
+      "file": "launcher/report-2.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 0.03392290249433107,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "7c18353c98ef1398e0a7ecc9587c0ce90c9e35b33c95828bb112ff9051806823"
+    },
+    {
+      "file": "launcher/report-3.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 0.03392290249433107,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "9bd551930df660c78d5cd755323d3f70770c65712413ab472c17953ee974222b"
+    }
+  ]
+}

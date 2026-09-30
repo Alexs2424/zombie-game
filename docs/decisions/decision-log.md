@@ -113,3 +113,55 @@ Updated the index and owning documents so current narrative sources are linked. 
 **Working casting:** Frankie only for this solo pilot; six ElevenLabs Adam / eleven_v3 takes, explicitly provisional rather than final North Jersey casting. Reused the earlier shotgun line and wrote five firearm/multi-kill reactions. Voss's earlier voice is not assigned to the player.
 
 **Implemented:** local speech assets and request manifests; ownership-based firearm reactions; four-kills-in-four-seconds reactions; 12-second overall spacing, 180-second per-line cooldown, two uses per run, one active voice, subtitles and lifecycle cleanup. Reacquisition under the new two-gun loadout does not repeat first-acquisition dialogue. Added a listening page and range link. No runtime API calls or new co-op attribution claims. Exact scripts, limitations and verification are owned by [gameplay voice pilot](gameplay-voice-pilot.md). Subjective voice and combat-mix approval remain open.
+
+
+## 2026-09-28 — Distinct firearm report palette
+
+**Established:** user requested innovation on gun sounds and authorized the configured ElevenLabs key or alternative sourcing.
+
+**Working decision:** grounded, gritty crime-film firearm identities; heavy revolver and shotgun bodies, tight automatic reports, brief mechanical texture and restrained room send. These are aesthetic choices rather than new narrative canon or verified firearm recordings.
+
+**Implemented:** 15 generated source clips, 48 mastered report assets including three double-barrel alternate reports; per-weapon variation, existing dual-hand panning, local sample playback, loading fallback and starter preloading. Existing reload choreography, melee and explosions remain. Sources, processing, test scope and a listening reel are owned by [gun audio](../gun-audio/README.md). Subjective in-game listening remains open.
+
+
+## 2026-09-28 — Stronger gun personalities
+
+**Established:** user asked for more variation and personality after the first report pass.
+
+**Working decision:** distinguish guns by material and timbre: smoky iron revolver, bright ringing magnum, hollow Thompson drum, woody lever action, rough shotgun pressure and cavity-like launcher thump. The full 15-gun direction is owned by [gun audio](../gun-audio/README.md).
+
+**Implemented:** remastered the existing 48 reports with per-weapon EQ, saturation, decay and original seeded material accents; broadened take differences in timing, color, bass and accent tuning. Reused accepted ElevenLabs sources without another paid generation batch. Updated the full three-take reel and added a compact six-gun sampler. Supersedes pass 1’s brightness/body-only mastering. Runtime routing and reload choreography are unchanged; subjective listening remains open.
+
+
+## 2026-09-28 — A few deliberately outlandish gun sounds
+
+**Established:** user said it would be funny if some guns were a bit outlandish.
+
+**Working selection:** High Roller cash-register ding, Chicago Typewriter literal keys/carriage chirp, Silver Dollar bouncing coin and Debt Collector cork-pop/boing. These are sound-design jokes, not gameplay reward cues or new supernatural canon. The remaining eleven guns keep their grounded sound direction.
+
+**Implemented:** original synthesized comic accents baked into the four weapons’ existing three report takes, subtle on takes one/two and strongest on take three. Gunshot onset, runtime selection and reload choreography remain unchanged. Rebuilt previews and provenance, including a dedicated comic sampler. All 48 asset checks and 41 focused audio tests passed; subjective listening is open. [Gun audio](../gun-audio/README.md) owns the updated palette and replaces the exclusively grounded descriptions for these four guns. No new API spend.
+
+
+## 2026-09-29 — Return to authentic gun texture; two comic exceptions
+
+**Established:** user disliked the prior sounds and requested other options, mostly authentic/cool reports and only one or two humorous exceptions, plus detailed gun documentation.
+
+**Working selection:** Thompson and launcher, only on take three; remove register bells, coin bounces and pitched boings.
+
+**Implemented:** fresh 15-clip ElevenLabs batch mastered into the existing 48 report filenames. Removed synthetic bass, resonant coloring, heavy saturation and pitched material layers. Retained natural source texture, modest take differences and brief unpitched comic accents for the two exceptions. Prior source assets and a sampler remain as historical comparison. Current choices supersede the four-oddball pass; subjective approval remains open.
+
+Created [arsenal reference](../arsenal.md) from current weapon definitions with stats, upgrade names, acquisition, roles, handling and audio status. Corrected High Roller’s ID in the art spec and separated design targets from verified behavior. Flagged the flare pistol as partial integration rather than claiming it is obtainable. [Gun audio](../gun-audio/README.md) owns production details and auditions.
+
+
+## 2026-09-29 — Compare sound directions before another arsenal replacement
+
+**Established:** user requested more sound designs; authentic/cool reports and a maximum of two humorous exceptions remain the brief.
+
+**Working proposals:** nine fresh clips grouped into three auditions across revolver, shotgun and Thompson: dry/mechanical, heavy action and gritty vintage. Same minimal mastering and weapon order make comparison practical. These auditions do not install another unapproved aesthetic across the game. Current runtime sounds remain unchanged; no new humorous weapon is introduced. [Audition pack](../gun-audio/auditions-01/README.md) owns source provenance and listening artifacts. Selection and subjective listening are open.
+
+
+## 2026-09-29 — B chosen for the full arsenal
+
+**Established:** user chose B as best, rejected C as dog-like, and requested distinct sounds for all weapons. Authentic/cool remains the foundation, with at most two humorous exceptions.
+
+**Implemented production direction:** reuse approved B revolver/shotgun/Thompson sources; generate separate B sources for remaining firearms including flare, plus cane impact, axe impact and axe swing. Keep selected cane swipes and existing handling choreography. Current bank has 16 firearm report sets plus melee updates; the flare now has dedicated shot playback but acquisition/presentation remain partial. First takes preserve B-style minimal mastering; subsequent takes vary subtly. Humor stays confined to take three of Thompson/launcher. No new gameplay stats. Current sources, outputs and limitations are owned by [gun audio](../gun-audio/README.md); [arsenal](../arsenal.md) is updated.

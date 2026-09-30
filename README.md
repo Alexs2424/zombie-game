@@ -2,6 +2,8 @@
 
 A solo first-person zombie survival game set in an original abandoned Las Vegas casino. Built with Babylon.js, TypeScript, React, and Vinext. All gameplay runs locally in the browser. No accounts, networked gameplay, or paid assets are required for local play.
 
+See the [arsenal reference](docs/arsenal.md) for weapon stats, handling, upgrades, acquisition and sound direction.
+
 ## Grand casino reconfiguration
 
 Start in a **60 × 32 metre Grand Casino** with eight slot banks (48 cabinets),

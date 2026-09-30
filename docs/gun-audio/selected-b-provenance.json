@@ -1,0 +1,579 @@
+{
+  "direction": "B heavy action, selected by user",
+  "model": "eleven_text_to_sound_v2",
+  "processing": "B audition mastering: onset trim, DC removal, tiny start fade, 25ms end fade, 0.8 peak; first take unchanged, later takes slight time variation. Existing brief unpitched jokes only on Thompson/launcher take 3.",
+  "sources": {
+    "pistol": {
+      "sha256": "efc72d03d876b9fa771a0a86e89d6001aa14e115f4a4e0cef8f32895a7652e56",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a compact steel 9mm pistol: taut sharp pop and crisp slide snap, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "shotgun": {
+      "sha256": "2fa83c905ea0b992a3d3c38374dd7060844280338e1ab4788a0d538d7f7dabc8",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated gunshot from a 12 gauge pump shotgun, immediately at the start, then decay to silence. No multiple shots, reload, voices, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "smg": {
+      "sha256": "0a2295e4a8ccd0f58b6391e05c1102309075697425edab00749adc32958caf9f",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a compact 9mm SMG in single fire: short cutting pap and light steel bolt, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "rifle": {
+      "sha256": "bdaff1840f53533690f55cf2d0d47a0f1268f2a4296385f8ad4f93f72b698046",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a full-power battle rifle: explosive whip crack and hard broad bark, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "revolver": {
+      "sha256": "f261bfe73b4d792a2cb6f9dbafd66d004a541428d2803851b32fcc30adb79ef2",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated gunshot from a heavy six-shot .357 revolver, immediately at the start, then decay to silence. No multiple shots, reload, voices, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "magnum": {
+      "sha256": "44257951c0c36ca2275ca7af40146e9856b1908554a43cbddf033a0d7405bbb1",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a long-barrel large-frame magnum: bright concussive crack, thick pressure body, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "tommy": {
+      "sha256": "02cfaf74d5b5774cb9c21455e8e75369c0505805698a5d637826b7ea622a35f1",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated gunshot from a vintage .45 Thompson submachine gun firing ONE round in single shot mode, immediately at the start, then decay to silence. No multiple shots, reload, voices, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "doublebarrel": {
+      "sha256": "a27e1106b21302b7f70f60c44951f688290b80da69aae54b7792965b2ed97c01",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a short side-by-side 12 gauge firing one barrel: ragged wide blast and deep chest punch, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "dual": {
+      "sha256": "ed8cb5e05c9dffd2dca8f118003bbd0a47710d37363da91c23608c4db107db22",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a tiny vintage pocket pistol: lean biting snap and small quick slide clack, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "machinepistol": {
+      "sha256": "1a99e0aae73dd4ff40147d06d8e305140cf48ec83e88b32c6444a035581fca1f",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a stamped 9mm machine pistol in single fire: aggressive tight crack and dry bolt rasp, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "lever": {
+      "sha256": "aeff5f822e2d1e869edc7b83b4ca6c8065533ce4386ba2e3f282141d5e32c273",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a walnut lever rifle: crisp frontier crack, firm middle body, subtle stock knock, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "autoshotgun": {
+      "sha256": "0f0d2724c6059f3c9c3070d1ad833455c69dc4b554d4f306b017587bd2d8883a",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a gas-operated 12 gauge: broad dense blast and quick cycling bolt, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "sniper": {
+      "sha256": "1cf4d943490f70c88afb14ed0017bbacda336873978587b76fae2d2c3aec5f65",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a long military bolt rifle: piercing sharp crack, powerful long powder body, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "lmg": {
+      "sha256": "a68c1717e5581c5fa01913ae12319e470840688b1ae2d4469f422262940dc3a0",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a belt-fed 7.62 machine gun in single fire: heavy chesty bark, carrier clank and link tick, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "launcher": {
+      "sha256": "bd86622adbcbdcef489ba2cc4caba289cf2fcc1df1e25ef8396d66c62f5a1b0b",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a break-open 40mm launcher: forceful hollow low THOOMP with brief pressurized air; no explosion, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "flare": {
+      "sha256": "22f8b9a0316f2652a1b542d8b3f5d84a7e1c02625db4c99124b1094c722909e7",
+      "request": {
+        "text": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth. One isolated shot from a vintage flare pistol: sharp primer pop, hollow soft launch puff and short sizzling hiss; no explosion, immediately then silence. No repeated shots, reload, voices, animals, music or comedy.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "stick-impact": {
+      "sha256": "2c84ad9cf4d9cc8db1d628352a59270f0e12689e1e87e17f42422544c77432ec",
+      "request": {
+        "text": "One hard impact of a long wooden casino craps rake hitting a padded heavy target. Dry woody whack, sharp cane flex, solid body thud. Close detailed game foley. No voices, animal sounds, music, gunshots or repeated impacts.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "axe-impact": {
+      "sha256": "1889fa80336296fc84d1f47381e895697bd56fa25685ce9990893434f2a6bc0d",
+      "request": {
+        "text": "One heavy fire axe chopping into dense wet timber. Deep physical impact, hard crunchy split, short dull steel vibration. Forceful close game foley. No voices, animal sounds, music, gunshots or repeated impacts.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    },
+    "axe-swing": {
+      "sha256": "9799a7a1ad51b04ba2299060ace9053cf703d8fd2089af6de8808b6670a1740f",
+      "request": {
+        "text": "One fast heavy fire axe swinging through air. Broad low rushing whoosh, weighty handle movement, no impact. Close isolated game foley. No voices, animal sounds, music or repeated swings.",
+        "duration_seconds": 2.0,
+        "prompt_influence": 0.8,
+        "model_id": "eleven_text_to_sound_v2"
+      }
+    }
+  },
+  "files": [
+    {
+      "file": "pistol/report-1.wav",
+      "source": "pistol",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "1b95d41536074711c8a38b6000164091d4e7727aa308b64ee1faa725552fcc75"
+    },
+    {
+      "file": "pistol/report-2.wav",
+      "source": "pistol",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "228d4986808f53f7a580d95cd5343825aa1d1752ffece3785b90072cce16b1b6"
+    },
+    {
+      "file": "pistol/report-3.wav",
+      "source": "pistol",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "ff593ffde968aba03a847efb4bc8f6e92e6802d540940f3207e11ce089969a7d"
+    },
+    {
+      "file": "shotgun/report-1.wav",
+      "source": "shotgun",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "a4bea02e31eb795cf50f4d68cbcf1feae6e362a24caf50dedc3da742bf8b56a2"
+    },
+    {
+      "file": "shotgun/report-2.wav",
+      "source": "shotgun",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "3de44953ecc37b6ee36ed27623696d7ea271ee9d09dabaa96bb8871d32fe66e2"
+    },
+    {
+      "file": "shotgun/report-3.wav",
+      "source": "shotgun",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "0f3198d22708ce390ca0a27cb0e3c1d5ab249dae94a373ff20ef86ef231ec972"
+    },
+    {
+      "file": "smg/report-1.wav",
+      "source": "smg",
+      "duration": 0.65,
+      "trimSeconds": 0.20952380952380953,
+      "sha256": "c045eef012933a67c567fab0d1e73e5da01efbd42f372ddaf2886aae6982aff9"
+    },
+    {
+      "file": "smg/report-2.wav",
+      "source": "smg",
+      "duration": 0.65,
+      "trimSeconds": 0.20952380952380953,
+      "sha256": "0420de3593b915fc1005fd5a43ef8d1be829f1e4f111526c94aeecd89f958d26"
+    },
+    {
+      "file": "smg/report-3.wav",
+      "source": "smg",
+      "duration": 0.65,
+      "trimSeconds": 0.20952380952380953,
+      "sha256": "917edb6fbf1c0fc548790f9dddda80e906b668e746f60fbbbed5331c21537827"
+    },
+    {
+      "file": "rifle/report-1.wav",
+      "source": "rifle",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "fa98b785316f7c6fed4638ded07aa28dd44a0bff57f260ec984bd1660b9eea8d"
+    },
+    {
+      "file": "rifle/report-2.wav",
+      "source": "rifle",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "adffffa58071b31eb3ddb482c78f1aaf3bcd89d7d277b6d38cdeba6a6f82c393"
+    },
+    {
+      "file": "rifle/report-3.wav",
+      "source": "rifle",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "28036c55b18f5100ae54e2984553ba3c3f420c2a082ed00ece63357b615fe004"
+    },
+    {
+      "file": "revolver/report-1.wav",
+      "source": "revolver",
+      "duration": 1.25,
+      "trimSeconds": 0.17959183673469387,
+      "sha256": "3dfe9eb6faf288efb719d3860fd485962739c4e93306b258817b10de5c2dc267"
+    },
+    {
+      "file": "revolver/report-2.wav",
+      "source": "revolver",
+      "duration": 1.25,
+      "trimSeconds": 0.17959183673469387,
+      "sha256": "a3518896fa4f6702208bebc4b16be31bdcc2ef552b5ff7d32885219567bef4f3"
+    },
+    {
+      "file": "revolver/report-3.wav",
+      "source": "revolver",
+      "duration": 1.25,
+      "trimSeconds": 0.17959183673469387,
+      "sha256": "209b8c4be1a74a3cb3f6b8013837b321b804254475653ab15298427124cc67fc"
+    },
+    {
+      "file": "magnum/report-1.wav",
+      "source": "magnum",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "59233e2af91b697374cdd51457d5ebb4ad9ffbe2c809a9b58314c91c292a471e"
+    },
+    {
+      "file": "magnum/report-2.wav",
+      "source": "magnum",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "721ffaffc89c29ff7da2aff40d668cd02fa0b876af945565341ebf78f88d5bdf"
+    },
+    {
+      "file": "magnum/report-3.wav",
+      "source": "magnum",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "cd8984f5985a5b4d6aeae2f6625be680f25bd0c2f12194c62e59514b8dc7d15a"
+    },
+    {
+      "file": "tommy/report-1.wav",
+      "source": "tommy",
+      "duration": 0.65,
+      "trimSeconds": 0.014965986394557823,
+      "sha256": "26f2af1c84cad3f2ad14b9a780a6d27430e0558c44e40caf32e91aa4da79cedc"
+    },
+    {
+      "file": "tommy/report-2.wav",
+      "source": "tommy",
+      "duration": 0.65,
+      "trimSeconds": 0.014965986394557823,
+      "sha256": "9dea5bd088a798ab0109b676f5f3b053a54f7dbd166e5d1bfa0caebedf2ba9a6"
+    },
+    {
+      "file": "tommy/report-3.wav",
+      "source": "tommy",
+      "duration": 0.65,
+      "trimSeconds": 0.014965986394557823,
+      "sha256": "62bf2bf143312c747087b243e6e5a5d5cf8e36d57a933bcdbdf74f9aed435f5d"
+    },
+    {
+      "file": "doublebarrel/report-1.wav",
+      "source": "doublebarrel",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "288ab46cd4787145b7fa321f9646c2b32720d21dd0d668917070165c11a7aab3"
+    },
+    {
+      "file": "doublebarrel/report-double-1.wav",
+      "source": "doublebarrel",
+      "duration": 1.2589795918367348,
+      "trimSeconds": 0.0,
+      "sha256": "3e2c00a088c24f3f1392cf9544ac7087dc639c61e8fa243570c0653d69c701e1"
+    },
+    {
+      "file": "doublebarrel/report-2.wav",
+      "source": "doublebarrel",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "ea574eb7219d2f6db8a87c82ac534dbbbff4b543b041c9e3f245ca274709a08a"
+    },
+    {
+      "file": "doublebarrel/report-double-2.wav",
+      "source": "doublebarrel",
+      "duration": 1.2589795918367348,
+      "trimSeconds": 0.0,
+      "sha256": "dfd10dbeac79b5b452f9ec64c6cbda31425111f43d50c9d062f61f697b04d04c"
+    },
+    {
+      "file": "doublebarrel/report-3.wav",
+      "source": "doublebarrel",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "8026a74b8712b8d2d611d088f73fdec6545a01295c64e71c1e8680570224aa46"
+    },
+    {
+      "file": "doublebarrel/report-double-3.wav",
+      "source": "doublebarrel",
+      "duration": 1.2589795918367348,
+      "trimSeconds": 0.0,
+      "sha256": "aa7cafc20ed775ff562bf430e072ccd2f250bbec2896072e917325ae5436d140"
+    },
+    {
+      "file": "dual/report-1.wav",
+      "source": "dual",
+      "duration": 0.8486167800453515,
+      "trimSeconds": 1.1513832199546485,
+      "sha256": "4595dad19ac769087ed4798d4ffef65c0055249463a3bc2cf3ed39cf3e8254b0"
+    },
+    {
+      "file": "dual/report-2.wav",
+      "source": "dual",
+      "duration": 0.8486167800453515,
+      "trimSeconds": 1.1513832199546485,
+      "sha256": "e1455ac1a0ecd013c39b9077caf37e6a96059d05a37775bc504ca013ffb5eb62"
+    },
+    {
+      "file": "dual/report-3.wav",
+      "source": "dual",
+      "duration": 0.8486167800453515,
+      "trimSeconds": 1.1513832199546485,
+      "sha256": "32eaf338e53df90d3135e4a50f8eec76547424a527f41e034ac3586d2d0aa70f"
+    },
+    {
+      "file": "machinepistol/report-1.wav",
+      "source": "machinepistol",
+      "duration": 0.65,
+      "trimSeconds": 0.02893424036281179,
+      "sha256": "efb9b80652741062c50c3ad127032a1c62a6729ac5bb819b5e5edf4508e5e009"
+    },
+    {
+      "file": "machinepistol/report-2.wav",
+      "source": "machinepistol",
+      "duration": 0.65,
+      "trimSeconds": 0.02893424036281179,
+      "sha256": "469853ab1e1e0171351301bff1dc3de88fc0b5ef266b102a4ed39ac78f308598"
+    },
+    {
+      "file": "machinepistol/report-3.wav",
+      "source": "machinepistol",
+      "duration": 0.65,
+      "trimSeconds": 0.02893424036281179,
+      "sha256": "6ad5a2b54071b41c51af8c59d4dc17bd60db9f193f03533a4392892295bf0268"
+    },
+    {
+      "file": "lever/report-1.wav",
+      "source": "lever",
+      "duration": 1.25,
+      "trimSeconds": 0.00798185941043084,
+      "sha256": "031dc470d2a64ec61908fc5bbfbc276754cd2d169189403ce6f6e2ceb8d0b321"
+    },
+    {
+      "file": "lever/report-2.wav",
+      "source": "lever",
+      "duration": 1.25,
+      "trimSeconds": 0.00798185941043084,
+      "sha256": "e93e03115646c6c2809e19f3ea093a9d9f303208e1653512865744e953105230"
+    },
+    {
+      "file": "lever/report-3.wav",
+      "source": "lever",
+      "duration": 1.25,
+      "trimSeconds": 0.00798185941043084,
+      "sha256": "88d184eec88270b163132d1bc68b73dddde059c85a1276cfa262fd42767c734a"
+    },
+    {
+      "file": "autoshotgun/report-1.wav",
+      "source": "autoshotgun",
+      "duration": 1.25,
+      "trimSeconds": 0.0728344671201814,
+      "sha256": "5de10d2f41cb96efabded8d41007e244ed76173417bee289b8479475e827cd6a"
+    },
+    {
+      "file": "autoshotgun/report-2.wav",
+      "source": "autoshotgun",
+      "duration": 1.25,
+      "trimSeconds": 0.0728344671201814,
+      "sha256": "08fb38eb2bbc5242719a3446dbab673bf6118bef90a9e0132ac8d8d93e391bd0"
+    },
+    {
+      "file": "autoshotgun/report-3.wav",
+      "source": "autoshotgun",
+      "duration": 1.25,
+      "trimSeconds": 0.0728344671201814,
+      "sha256": "906e1fe864e3b580abd225b3261689024a5c283f21a5fe9575bd2a778a63f521"
+    },
+    {
+      "file": "sniper/report-1.wav",
+      "source": "sniper",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "02a25a35eea61fb9b8a64460065b413eca757f8825840c4d2c7c5bf164970516"
+    },
+    {
+      "file": "sniper/report-2.wav",
+      "source": "sniper",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "34339ac457d310a086207f5aa9f35540c4a0b5757a8e7b91fc96ef05e6c6d543"
+    },
+    {
+      "file": "sniper/report-3.wav",
+      "source": "sniper",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "418a611cb7c58d38f2fda418d2a8a81f54c1297c92bc9de877915d354d842d52"
+    },
+    {
+      "file": "lmg/report-1.wav",
+      "source": "lmg",
+      "duration": 0.65,
+      "trimSeconds": 0.0419047619047619,
+      "sha256": "a3b7914435abf65fc6368b79b1ff6c5b0106f68aefae66c98cd6f71f792ebdd7"
+    },
+    {
+      "file": "lmg/report-2.wav",
+      "source": "lmg",
+      "duration": 0.65,
+      "trimSeconds": 0.0419047619047619,
+      "sha256": "bc9816c073c9f201f4946bab4efde29ecbfce09e3f46f8ee3f9ad317f368595a"
+    },
+    {
+      "file": "lmg/report-3.wav",
+      "source": "lmg",
+      "duration": 0.65,
+      "trimSeconds": 0.0419047619047619,
+      "sha256": "71bc84c15b4d4351fc2566728a736657568a883dfcb12a2026c0639cf45ff8a0"
+    },
+    {
+      "file": "launcher/report-1.wav",
+      "source": "launcher",
+      "duration": 1.25,
+      "trimSeconds": 0.24444444444444444,
+      "sha256": "51bff5b191afbadbb2b976b2df888bf194e77df18aebc62fee18520f7f3bfc22"
+    },
+    {
+      "file": "launcher/report-2.wav",
+      "source": "launcher",
+      "duration": 1.25,
+      "trimSeconds": 0.24444444444444444,
+      "sha256": "a745288a3f26070b7ce71260be92429821958dfce6154b08102e428a06316b5e"
+    },
+    {
+      "file": "launcher/report-3.wav",
+      "source": "launcher",
+      "duration": 1.25,
+      "trimSeconds": 0.24444444444444444,
+      "sha256": "d44b3ea5df45cc4080ca35dadf57b0de8c87db85c77ba7327c86090be3c46fcc"
+    },
+    {
+      "file": "flare/report-1.wav",
+      "source": "flare",
+      "duration": 1.25,
+      "trimSeconds": 0.19655328798185942,
+      "sha256": "8b58f76d6cd6edabf0280979072c3028e30dbe6f0f47acac35a045340feee5ad"
+    },
+    {
+      "file": "flare/report-2.wav",
+      "source": "flare",
+      "duration": 1.25,
+      "trimSeconds": 0.19655328798185942,
+      "sha256": "3efdc71ce9a1d52954d0313dc6cc0c1c30a441a33366727bb84c356a03cca5c0"
+    },
+    {
+      "file": "flare/report-3.wav",
+      "source": "flare",
+      "duration": 1.25,
+      "trimSeconds": 0.19655328798185942,
+      "sha256": "6b79a671d5ea357e08ae51ffea43839dad3dad5ec340c4aa352daee8d1204010"
+    },
+    {
+      "file": "stick/impact-1.wav",
+      "source": "stick-impact",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "4bcddec816b845fa9cd0ed1e8b5059598362beb7380af654c43dfadba4b80871"
+    },
+    {
+      "file": "stick/impact-2.wav",
+      "source": "stick-impact",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "359e2bbe116e4575e2b7772d4df4d78e3cf8ff4b97ca1cbe0a5c80b1e1ca174c"
+    },
+    {
+      "file": "stick/impact-3.wav",
+      "source": "stick-impact",
+      "duration": 1.25,
+      "trimSeconds": 0.0,
+      "sha256": "44faff64017e6351a271784254dd175cba7813b374e557648201ca286abc29d4"
+    },
+    {
+      "file": "axe/impact-1.wav",
+      "source": "axe-impact",
+      "duration": 1.25,
+      "trimSeconds": 0.013968253968253968,
+      "sha256": "0e127a0f590ca37bf1fd6042d5de7a197040adccb104f71694d047a73d314245"
+    },
+    {
+      "file": "axe/impact-2.wav",
+      "source": "axe-impact",
+      "duration": 1.25,
+      "trimSeconds": 0.013968253968253968,
+      "sha256": "34480e825d09f560b5563c0fa664f0a88e2499e5452e340b660ddd857b0c1e35"
+    },
+    {
+      "file": "axe/swing.wav",
+      "source": "axe-swing",
+      "duration": 1.1590022675736962,
+      "trimSeconds": 0.8409977324263038,
+      "sha256": "a1d04664c8d3b203e3dfe7c3561df0a5d18ce976706eb38966331662534f73c9"
+    }
+  ]
+}
