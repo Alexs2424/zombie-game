@@ -5,7 +5,7 @@ import {moveActor, collides, hasSight} from '../lib/game/world.ts';
 
 test('range resets real loadout and damage state without automatic waves',()=>{
  const s=createRange(); assert.equal(s.invulnerable,0); assert.equal(s.enemies.length,3);
- assert.ok(Object.values(s.inventory).every(w=>w.owned));
+ assert.deepEqual(s.firearms,["pistol","shotgun"]);
  s.health=12;s.grenades=0;refillRange(s);assert.equal(s.health,100);assert.equal(s.grenades,20);
  const fresh=createRange();assert.deepEqual(fresh.enemies,createRange().enemies);assert.equal(fresh.intermission,Infinity);
 });

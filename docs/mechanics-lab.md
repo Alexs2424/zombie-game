@@ -12,10 +12,10 @@ scenario without resetting position, health, ammo or pause state. Spawn placemen
 favors free space ahead of the player, avoids cover and other enemies, and keeps
 a four-metre buffer around the player. The lab allows up to 60 living enemies.
 Changing a weapon or using other inspector utilities pauses the simulation. Click Play
-to continue. Reset restores damage, health, all weapons and twenty grenades.
+to continue. Reset restores damage, health, a pistol/shotgun loadout and twenty grenades.
 Invulnerability is opt-in. There are no automatic waves or automatic ammo refills.
 
-- Weapon range: three stationary, 100 HP zombies at marked 5, 10 and 20 metre
+- Weapon range: three stationary zombies at the selected round’s health at marked 5, 10 and 20 metre
   depth lines. Test sights, reloads, spread, hit reactions and death. Targets still
   attack if approached; they use actual enemies rather than invulnerable props.
 - Combat: three pursuing zombies for movement, aiming under pressure and melee.
@@ -47,3 +47,9 @@ Hold Space to sprint; hold Shift (or RMB) to aim down sights. Sprint stamina is
 shown under health. Restore supplies also restores stamina. The inspector’s
 Show tips & explanation cards checkbox hides optional explanations and saves
 your preference across reloads; the same setting is in the game Settings panel.
+
+Q/E switch the two carried firearms; F interacts. The loadout selector can grant
+any weapon but replaces the held firearm when both slots are occupied. The test
+round field updates all current targets to that round’s full health, and newly
+spawned targets use the same round. Use this to compare the damage shown in the
+weapon selector against tougher enemies. Melee tools are separate from gun slots.

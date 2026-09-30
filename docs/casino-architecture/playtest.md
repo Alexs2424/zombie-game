@@ -73,3 +73,11 @@ walkthrough. Approach either lounge gate, either High Roller gate, or Cashier an
 press E. Look back from the adjoining room to inspect the return frame. Use a
 normal new run for combat. The remote supply-room architecture is outside this
 main-casino pass; room furniture and gameplay economy retain their existing roles.
+
+## PR integration with current main
+
+Merged `origin/main` at `73e44aa` before opening the PR. The only conflict was an
+append-only section of the decision log; both sets of entries were retained.
+The combined branch passed **293 gameplay tests**, TypeScript, focused ESLint,
+and another browser gate/perimeter/fallback check with no uncaught page errors.
+The original 278-test result above records the earlier architecture pass.

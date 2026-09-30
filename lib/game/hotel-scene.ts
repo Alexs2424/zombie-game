@@ -1101,7 +1101,7 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
   ownedMeshes.push(gate);
   const gatePrice = sign(
     "hotel price",
-    [`E · OPEN ${HOTEL_RULES.price.toLocaleString()}`],
+    [`F · OPEN ${HOTEL_RULES.price.toLocaleString()}`],
     HOTEL_GATE.x,
     1.86,
     HOTEL_GATE.z - 0.126,

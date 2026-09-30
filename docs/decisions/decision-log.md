@@ -1,5 +1,15 @@
 # Decision log
 
+## 2026-09-29 — Two-gun loadouts and optional Mystery Box rewards
+
+**User direction:** Q/E switch guns, carry only two guns, explicitly choose whether
+to take Mystery Box rewards, and differentiate gun power against scaling zombie
+health. **Working choices:** F interacts; third-gun pickups replace the active gun;
+melee tools are separate; Mystery Box offers last 15 seconds and pause with the
+run. Poker/hotel rewards use the same two-gun grant path. Round/damage tuning is
+owned by `docs/combat-balance.md`, and reward behavior by `quests-and-easter-eggs.md`.
+These are implemented mechanics in this change, without new story canon.
+
 ## 2026-09-28 — Cashier portrait map polish
 
 **User direction:** improve the cashier portrait's artwork. **Working choice:** an original period proprietor painting with a walnut/bronze frame. The sitter remains unnamed; this visual replacement does not establish Voss's appearance, a new character identity, or a change to the 1976 setting. Recorded in `characters.md`, with the exact generation prompt in `docs/portrait-art/README.md`.
@@ -145,3 +155,110 @@ The collision transoms follow the new heights. Geometry audits verify perimeter
 closure and doorway clearance; browser checks exercise purchases and traversal.
 The owning [casino architecture document](../casino-architecture/README.md)
 records the current scope, asset budgets, rebuild process and playtest evidence.
+
+## 2026-09-29 — Detailed narrative production documentation
+
+**Established request:** record the developed characters and provide detailed scenario-specific one-liners, storyline/scenes, and character looks, designs, personalities and voices.
+
+**Working additions:** twelve playable scene treatments with original dialogue, staging, evidence, absent-speaker/recovery rules and explicit provisional finale dependencies; a six-character production design bible covering faces, silhouettes, clothing/materials, first-person identity, gestures, human contradictions and emotional voice range; 48 additional action-specific lines, bringing the contextual bank to 84 individually identified lines plus its three exchanges. Optional Easter egg staging is included without turning deferred guest rooms into committed scope.
+
+The existing biographies remain authoritative. No required cinematics, character-exclusive gameplay roles, final voice selections or new supernatural contract rules were introduced. The existing cashier portrait remains an unnamed proprietor, not a confirmed Voss likeness. Final contract wording, signature eligibility, counter-wager, Collector design, Voss's fate and post-ending session flow remain open. New scripts and visual directions are unimplemented and unrecorded.
+
+Updated the index and owning documents so current narrative sources are linked. Documentation-only verification covers links, unique line/scene IDs, scope and whitespace; no gameplay tests or paid generation were needed. Publication follows the user's standing instruction to put creative Markdown decisions on main and push.
+
+
+## 2026-09-29 — First in-game voiced reactions
+
+**Established:** user requested actual generated speech in the game for exciting weapon acquisitions and killing groups of zombies, reusing suitable earlier lines.
+
+**Working casting:** Frankie only for this solo pilot; six ElevenLabs Adam / eleven_v3 takes, explicitly provisional rather than final North Jersey casting. Reused the earlier shotgun line and wrote five firearm/multi-kill reactions. Voss's earlier voice is not assigned to the player.
+
+**Implemented:** local speech assets and request manifests; ownership-based firearm reactions; four-kills-in-four-seconds reactions; 12-second overall spacing, 180-second per-line cooldown, two uses per run, one active voice, subtitles and lifecycle cleanup. Reacquisition under the new two-gun loadout does not repeat first-acquisition dialogue. Added a listening page and range link. No runtime API calls or new co-op attribution claims. Exact scripts, limitations and verification are owned by [gameplay voice pilot](gameplay-voice-pilot.md). Subjective voice and combat-mix approval remain open.
+
+
+## 2026-09-28 — Distinct firearm report palette
+
+**Established:** user requested innovation on gun sounds and authorized the configured ElevenLabs key or alternative sourcing.
+
+**Working decision:** grounded, gritty crime-film firearm identities; heavy revolver and shotgun bodies, tight automatic reports, brief mechanical texture and restrained room send. These are aesthetic choices rather than new narrative canon or verified firearm recordings.
+
+**Implemented:** 15 generated source clips, 48 mastered report assets including three double-barrel alternate reports; per-weapon variation, existing dual-hand panning, local sample playback, loading fallback and starter preloading. Existing reload choreography, melee and explosions remain. Sources, processing, test scope and a listening reel are owned by [gun audio](../gun-audio/README.md). Subjective in-game listening remains open.
+
+
+## 2026-09-28 — Stronger gun personalities
+
+**Established:** user asked for more variation and personality after the first report pass.
+
+**Working decision:** distinguish guns by material and timbre: smoky iron revolver, bright ringing magnum, hollow Thompson drum, woody lever action, rough shotgun pressure and cavity-like launcher thump. The full 15-gun direction is owned by [gun audio](../gun-audio/README.md).
+
+**Implemented:** remastered the existing 48 reports with per-weapon EQ, saturation, decay and original seeded material accents; broadened take differences in timing, color, bass and accent tuning. Reused accepted ElevenLabs sources without another paid generation batch. Updated the full three-take reel and added a compact six-gun sampler. Supersedes pass 1’s brightness/body-only mastering. Runtime routing and reload choreography are unchanged; subjective listening remains open.
+
+
+## 2026-09-28 — A few deliberately outlandish gun sounds
+
+**Established:** user said it would be funny if some guns were a bit outlandish.
+
+**Working selection:** High Roller cash-register ding, Chicago Typewriter literal keys/carriage chirp, Silver Dollar bouncing coin and Debt Collector cork-pop/boing. These are sound-design jokes, not gameplay reward cues or new supernatural canon. The remaining eleven guns keep their grounded sound direction.
+
+**Implemented:** original synthesized comic accents baked into the four weapons’ existing three report takes, subtle on takes one/two and strongest on take three. Gunshot onset, runtime selection and reload choreography remain unchanged. Rebuilt previews and provenance, including a dedicated comic sampler. All 48 asset checks and 41 focused audio tests passed; subjective listening is open. [Gun audio](../gun-audio/README.md) owns the updated palette and replaces the exclusively grounded descriptions for these four guns. No new API spend.
+
+
+## 2026-09-29 — Return to authentic gun texture; two comic exceptions
+
+**Established:** user disliked the prior sounds and requested other options, mostly authentic/cool reports and only one or two humorous exceptions, plus detailed gun documentation.
+
+**Working selection:** Thompson and launcher, only on take three; remove register bells, coin bounces and pitched boings.
+
+**Implemented:** fresh 15-clip ElevenLabs batch mastered into the existing 48 report filenames. Removed synthetic bass, resonant coloring, heavy saturation and pitched material layers. Retained natural source texture, modest take differences and brief unpitched comic accents for the two exceptions. Prior source assets and a sampler remain as historical comparison. Current choices supersede the four-oddball pass; subjective approval remains open.
+
+Created [arsenal reference](../arsenal.md) from current weapon definitions with stats, upgrade names, acquisition, roles, handling and audio status. Corrected High Roller’s ID in the art spec and separated design targets from verified behavior. Flagged the flare pistol as partial integration rather than claiming it is obtainable. [Gun audio](../gun-audio/README.md) owns production details and auditions.
+
+
+## 2026-09-29 — Compare sound directions before another arsenal replacement
+
+**Established:** user requested more sound designs; authentic/cool reports and a maximum of two humorous exceptions remain the brief.
+
+**Working proposals:** nine fresh clips grouped into three auditions across revolver, shotgun and Thompson: dry/mechanical, heavy action and gritty vintage. Same minimal mastering and weapon order make comparison practical. These auditions do not install another unapproved aesthetic across the game. Current runtime sounds remain unchanged; no new humorous weapon is introduced. [Audition pack](../gun-audio/auditions-01/README.md) owns source provenance and listening artifacts. Selection and subjective listening are open.
+
+
+## 2026-09-29 — B chosen for the full arsenal
+
+**Established:** user chose B as best, rejected C as dog-like, and requested distinct sounds for all weapons. Authentic/cool remains the foundation, with at most two humorous exceptions.
+
+**Implemented production direction:** reuse approved B revolver/shotgun/Thompson sources; generate separate B sources for remaining firearms including flare, plus cane impact, axe impact and axe swing. Keep selected cane swipes and existing handling choreography. Current bank has 16 firearm report sets plus melee updates; the flare now has dedicated shot playback but acquisition/presentation remain partial. First takes preserve B-style minimal mastering; subsequent takes vary subtly. Humor stays confined to take three of Thompson/launcher. No new gameplay stats. Current sources, outputs and limitations are owned by [gun audio](../gun-audio/README.md); [arsenal](../arsenal.md) is updated.
+
+
+## 2026-09-30 — User rejects first voice pilot; heightened recasting
+
+**Established:** the user rejected the first Frankie voice and taglines, requesting much more unique, sexy, raspy voices with cartoonish depth.
+
+**Working correction:** mark the six stock Adam takes as rejected artistic direction; define distinct vocal textures and extreme emotional contrasts for all six characters. Lower Eve to a smoky contralto; write new performance-led tests instead of defaulting to tidy punchlines. First custom casting comparison targets Frankie and Eve. Existing runtime clips remain technically installed, not artistically approved.
+
+**Verified blocker:** a fresh ElevenLabs Voice Design request returned 403 `feature_unavailable`, requiring a paid plan. Stopped after that rejection, with no Eve request, new audio or stock fallback. Saved precise prompts/scripts and access status. [Round 02 direction](voice-direction-round-02.md) supersedes the first pilot's voice/writing target; no account upgrade or game audio replacement occurred.
+
+
+## 2026-09-30 — Voice quality takes priority over expanding the script
+
+**Established:** user reiterated that the one-liners need improvement and that voice is more important; open-source writing models are an optional aid, not a required dependency.
+
+**Working response:** prioritize casting with short contrasting acting tests before a larger dialogue bank. New unrecorded Frankie test: after a first firearm acquisition, “Oh, I missed this. Being understood.” After five confirmed kills following recent damage from enemies, “Five of you. Not one fucking apology.” These are audition proposals, not replacements for the installed trigger text or accepted final lines.
+
+**Verified access:** library metadata search succeeds. A bounded test using Chuck Miller with eleven_v3 returned HTTP 402 `payment_required`: free users cannot use library voices through the API. The second planned candidate, Dean, was not submitted. Catalog `free_users_allowed` is not proof of API entitlement. No new audio was generated.
+
+Prepared `/audio/dialogue/casting.html` with four original provider preview URLs: Chuck Miller, Dean, Tatiana and Rosie. Catalog descriptions motivated these candidates; there is no claim of listening approval or accent match. These are casting references, not a return to approved stock casting. Previews remain remote; no library audio was downloaded or shipped as a game asset. Exact candidate metadata is in [library texture candidates](../voice-auditions/library-texture-candidates.json).
+
+
+## 2026-09-30 — Chuck Miller preferred; other texture candidates rejected
+
+**Established:** the user likes only Chuck Miller from the four previews; rejects Dean, Tatiana and Rosie as boring, nerdy, radio-like, lacking character and monotone. Voice quality remains the priority.
+
+**Recorded:** Chuck is the preferred voice reference and next Frankie audition candidate, not yet a verified final character performance. Updated the casting page and candidate metadata with the actual listening verdict. Future selection requires audible character and emotional contrast, not catalog adjectives. [Round 02](voice-direction-round-02.md) owns this correction. No new generation or runtime change; API access remains blocked as previously verified.
+
+
+## 2026-09-30 — Prepare Chuck-led acting auditions while account access is enabled
+
+**Established:** user authorized proceeding and answered that they will enable API access and notify us. Wait for that confirmation before another paid generation attempt.
+
+**Working preparation:** retain Chuck Miller for Frankie; screen Charmion for Eve, Kathie for Vivian, and Monty for Voss. These three are new unreviewed candidates selected from character-oriented catalog descriptions. Softness, insufficient huskiness and age mismatch are explicitly flagged for rejection, not hidden by declaring a cast. Leon and Marlowe remain open. Dean, Tatiana and Rosie stay rejected.
+
+Prepared three-beat scripts per candidate (pleasure, anger, quiet admission) in [round 03](../voice-auditions/round-03.json), with exact contexts and delivery notes. New Vivian and Voss lines remain unrecorded proposals grounded in existing biographies. Added `/audio/dialogue/casting-round-03.html` with original remote previews and expandable scripts. No voice generation, downloaded library audio, runtime recasting or account change occurred.

@@ -90,17 +90,17 @@ function Controls() {
       <br />
       <kbd>MOUSE</kbd> LOOK <kbd>LEFT CLICK</kbd> FIRE
       <br />
-      <kbd>R</kbd> RELOAD <kbd>E</kbd> INTERACT
+      <kbd>R</kbd> RELOAD <kbd>F</kbd> INTERACT
       <br />
       <kbd>G</kbd> GRENADE <kbd>V</kbd> KNIFE
       <br />
       <kbd>C</kbd> HOLD CHIPS · AIM + CLICK TO BET
       <br />
-      CHIPS: <kbd>R</kbd> VALUE <kbd>X</kbd> TAKE BETS <kbd>E</kbd> PUT AWAY / ROLL
+      CHIPS: <kbd>R</kbd> VALUE <kbd>X</kbd> TAKE BETS <kbd>F</kbd> PUT AWAY / ROLL
       <br />
       <kbd>SHIFT / RMB</kbd> HOLD AIM <kbd>B</kbd> BOTH BARRELS
       <br />
-      <kbd>1–0</kbd> <kbd>Q</kbd> <kbd>WHEEL</kbd> SWITCH <kbd>ESC</kbd> PAUSE
+      <kbd>1–2</kbd> <kbd>Q / E</kbd> <kbd>WHEEL</kbd> SWITCH <kbd>ESC</kbd> PAUSE
     </div>
   );
 }
@@ -620,7 +620,7 @@ export default function Home() {
                   <small>CRAPS {view.casino.tableId === "craps-b" ? "2" : "1"} · PLACE BETS</small>
                   <strong>{view.casino.holding ? `HOLDING ${view.casino.chip} CHIPS` : "C · TAKE CHIPS IN HAND"}</strong>
                   <div className="bet-number-row">{[4,5,6,8,9,10].map(n=><div key={n}><b>{n}</b><span>{view.casino.bets[n]??0} ON</span><small>+{Math.ceil(view.casino.chip/(n===6||n===8?6:5))*(n===6||n===8?6:5)} CHIPS</small></div>)}</div>
-                  <p>Aim at a printed number + click · R chip value<br/>E put away / roll · X return bets · weapon keys put chips away</p>
+                  <p>Aim at a printed number + click · R chip value<br/>F put away / roll · X return bets · weapon keys put chips away</p>
                   {view.casino.hover && <p className="bet-hover-hint">{view.casino.hover.affordable ? `CLICK · ${view.casino.hover.amount} CHIPS ON ${view.casino.hover.number}` : `NEED ${view.casino.hover.amount} CHIPS`}</p>}
                   <small>4/10 pay 9:5 · 5/9 pay 7:5 · 6/8 pay 7:6<br/>One roll per table each round. Seven clears this table’s bets.</small>
                   {tableDice && <p role="status">{tableDice.resolved ? `${tableDice.values[0]} + ${tableDice.values[1]} · ${view.casino.result}` : "⚄ ⚂ Rolling… bets locked"}</p>}
@@ -633,7 +633,7 @@ export default function Home() {
                   <MysteryReel reel={view.mysteryReel} />
                   <p>
                     {view.casino.mystery ||
-                      "400 chips · 50% one of ten 1970s house guns / 50% nothing · E spin"}
+                      "400 chips · 50% one of ten 1970s house guns / 50% nothing · F spin"}
                   </p>
                 </div>
               )}
@@ -838,6 +838,7 @@ export default function Home() {
                   style={{ opacity: view.damage / 0.4 }}
                 />
               )}
+              {view.dialogue && <div className="character-subtitle" role="status">{view.dialogue}</div>}
               {view.message && (
                 <div className="game-message" role="status">
                   {view.message}
@@ -847,7 +848,7 @@ export default function Home() {
                 <div
                   className={`purchase-prompt ${view.prompt.reason ? "unavailable" : ""}`}
                 >
-                  <kbd>E</kbd>
+                  <kbd>F</kbd>
                   <div>
                     <strong>{view.prompt.name}</strong>
                     <span>{view.prompt.reason || view.prompt.detail}</span>
@@ -969,7 +970,7 @@ export default function Home() {
               </div>
               {view.casino.holding && (
                 <span className="hud-hint">
-                  CHIPS IN HAND · {view.casino.chip} · E / WEAPON KEY TO EQUIP
+                  CHIPS IN HAND · {view.casino.chip} · F / WEAPON KEY TO EQUIP
                 </span>
               )}
               <span className="hud-hint">
@@ -994,7 +995,7 @@ export default function Home() {
               <span className="hud-hint">
                 {view.mag === 0
                   ? "R TO RELOAD"
-                  : "R RELOAD · E INTERACT · ESC PAUSE"}
+                  : "R RELOAD · F INTERACT · ESC PAUSE"}
               </span>
             </div>
           </div>
@@ -1246,6 +1247,7 @@ export default function Home() {
         onPlay={()=>{setDevOpen(false);setSettings(false);void runtime.current?.enter();}}
         onPause={()=>runtime.current?.pause()} onClose={()=>setDevOpen(false)} />}
       {rangeMode && <aside className="range-panel" aria-label="Mechanics test range">
+        <a href="/audio/dialogue/index.html" target="_blank" rel="noreferrer">Listen to Frankie’s voice pilot ↗</a>
         <p className="range-kicker">DEVELOPMENT / SANDBOX</p>
         <h1>Mechanics lab</h1>
         <p>Move freely. Test one variable. Reset and repeat.</p>
@@ -1259,7 +1261,8 @@ export default function Home() {
           <option value="blast">Explosions · cover and self damage</option>
           <option value="empty">Movement · empty greybox</option>
         </select>
-        <p>{scenario === "targets" ? "Three stationary 100 HP zombies. Compare sights, spread, reloads and hit reactions. They can still attack at close range." : scenario === "pursuit" ? "Three active zombies, no automatic waves. Test movement and close combat." : scenario === "blast" ? "G throws a grenade. Compare exposed distance with the tall cover wall. Damage is enabled; nearby blasts can kill." : "Clear floor, low obstacles and full-height cover for movement checks."}</p>
+        <p>{scenario === "targets" ? "Three stationary zombies at the selected round’s health. Compare sights, spread, reloads and hit reactions. They can still attack at close range." : scenario === "pursuit" ? "Three active zombies, no automatic waves. Test movement and close combat." : scenario === "blast" ? "G throws a grenade. Compare exposed distance with the tall cover wall. Damage is enabled; nearby blasts can kill." : "Clear floor, low obstacles and full-height cover for movement checks."}</p>
+        <label>Test round <input type="number" min={1} max={100} value={view.round} onChange={e => rangeAction(`round-health:${e.target.value}`)} /></label>
         <button disabled={!ready} onClick={() => rangeAction("reset")}>Reset this scenario</button>
         <h2>Add enemies</h2>
         <select aria-label="Spawn behavior" value={spawnBehavior} onChange={e => setSpawnBehavior(e.target.value)}>
@@ -1270,9 +1273,10 @@ export default function Home() {
           {[1,5,10].map(count => <button key={count} disabled={!ready || view.phase === "dead" || view.enemies >= 60} onClick={() => rangeAction(`spawn:${count}:${spawnBehavior}`)}>+{count}</button>)}
         </div>
         <p>Add to this run without resetting. Spawns favor space ahead of you. Limit: 60 enemies.</p>
-        <h2>Loadout</h2>
+        <h2>Loadout · 2 guns</h2>
+        <output>{view.owned.filter(w => w.id !== "axe" && w.id !== "stick").map(w => `${w.key} · ${w.label}`).join(" / ")}</output>
         <select aria-label="Range weapon" value={view.weapon} disabled={!ready} onChange={e => rangeAction(`equip:${e.target.value}`)}>
-          {Object.entries(WEAPONS).map(([id,w]) => <option key={id} value={id}>{w.label}</option>)}
+          {Object.entries(WEAPONS).map(([id,w]) => <option key={id} value={id}>{w.label} · {w.damage * w.pellets} damage{w.pellets > 1 ? " (all pellets)" : ""}</option>)}
         </select>
         <button disabled={!ready} onClick={() => rangeAction("refill")}>Restore health, ammo & grenades</button>
         <button disabled={!ready} onClick={() => rangeAction("clear")}>Clear enemies & live grenades</button>
@@ -1280,7 +1284,7 @@ export default function Home() {
         <h2>Live readout</h2>
         <output>{view.phase.toUpperCase()} · {Math.ceil(view.health)} HP<br />{view.enemies} enemies · {view.grenades} grenades<br />{Math.round(view.fps)} FPS · {view.p95.toFixed(1)} ms p95</output>
         <h2>Controls</h2>
-        <p>WASD move · Space sprint · Mouse look<br />LMB fire · Shift / RMB sights · R reload<br />G grenade · V melee · Q next weapon</p>
+        <p>WASD move · Space sprint · Mouse look<br />LMB fire · Shift / RMB sights · R reload<br />G grenade · V melee · Q / E switch · F interact</p>
         <p>Embedded preview: if mouse capture is unavailable, hold RMB and drag to look. Click the scene before moving.</p>
         <button onClick={()=>window.location.assign(new URL("/?playtest=1", window.location.origin))}>Casino integration tests →</button>
       </aside>}

@@ -1,6 +1,7 @@
 import { createRange, refillRange, addRangeEnemies, type RangeScenario } from './test-range';
 import {
   Simulation,
+  waveStats,
   RULES,
   WEAPONS,
   WEAPON_ORDER,
@@ -14,6 +15,7 @@ import { GameRenderer } from "./renderer";
 import { SERVICE_VIEWS } from "./service-layout";
 import { CASINO_ANCHORS, CRAPS_TABLES, ROULETTE_TABLES } from "./casino-layout";
 import { GameAudio } from "./audio";
+import { CharacterDialogueDirector, CharacterSpeech } from "./character-dialogue";
 import { ZombieAudioDirector } from "./zombie-audio-director";
 import { HOTEL, stairPoint } from "./world";
 import {
@@ -32,17 +34,10 @@ import {
 import { PLACE_NUMBERS, KEYPAD_TARGETS, CASINO_SECRET_ANCHORS, placeAmount } from "./casino";
 import { WEAPON_FLAVOR, isMelee, weaponSpeed } from "./weapon-expansion";
 
-const BASE_SLOTS: WeaponId[] = ["pistol", "shotgun", "smg", "rifle", "revolver"];
-const EXTRA_KEYS = ["6", "7", "8", "9", "0"];
-/** Owned weapons in slot order: house guns keep 1-5, Mystery Box finds take 6-0 in the order owned. */
+/** Two firearm slots, followed by separately carried melee tools. */
 export function ownedSlots(s: Simulation) {
-  const owned = WEAPON_ORDER.filter((id) => s.inventory[id].owned);
-  const extras = owned.filter((id) => !BASE_SLOTS.includes(id));
-  return owned.map((id) => ({
-    id,
-    label: WEAPONS[id].label,
-    key: BASE_SLOTS.includes(id) ? String(BASE_SLOTS.indexOf(id) + 1) : EXTRA_KEYS[extras.indexOf(id)] ?? "Q",
-  }));
+  const owned = [...s.firearms, ...WEAPON_ORDER.filter(id => isMelee(id) && s.inventory[id].owned)];
+  return owned.map((id,index) => ({id,label:WEAPONS[id].label,key:String(index+1)}));
 }
 function weaponCard(id: WeaponId, s: Simulation, at: number): WeaponCard {
   const w = WEAPONS[id];
@@ -81,6 +76,7 @@ export type WeaponCard = {
   at: number;
 };
 export type GameView = {
+  dialogue?: string;
   previewControls?: boolean;
   aiming?: boolean;
   scoped?: boolean;
@@ -246,6 +242,9 @@ export class GameRuntime {
   sim = new Simulation();
   renderer: GameRenderer;
   audio = new GameAudio();
+  private dialogue = new CharacterDialogueDirector();
+  private speech = new CharacterSpeech();
+  private dialogueSimulation: Simulation | null = null;
   sensitivity = 1;
   private keys = new Set<string>();
   private firing = false;
@@ -338,6 +337,7 @@ export class GameRuntime {
         "ShiftRight",
         "KeyR",
         "KeyE",
+        "KeyF",
         "KeyG",
         "KeyV",
         "KeyC",
@@ -363,7 +363,7 @@ export class GameRuntime {
     if (e.code === "ShiftLeft" || e.code === "ShiftRight") this.sim.aimHeld = true;
     if (e.repeat) return;
     if (e.code === "KeyC") {this.sim.toggleChips();this.firing=false;}
-    if (e.code === "KeyX") this.sim.takeBets();
+    if (e.code === "KeyX" && !this.sim.declineMystery()) this.sim.takeBets();
     if (this.sim.holdingChips) {
       if (e.code === "KeyR") {this.sim.chipValue = this.sim.chipValue === 25 ? 50 : this.sim.chipValue === 50 ? 100 : 25;return;}
     }
@@ -371,19 +371,14 @@ export class GameRuntime {
     if (e.code === "KeyG") this.sim.throwGrenade();
     if (e.code === "KeyV") this.sim.knife();
     if (e.code === "KeyB" && !this.sim.holdingChips) this.sim.fire(true);
-    if (e.code.startsWith("Digit") || e.code === "KeyQ") this.sim.stowChips();
-    if (e.code === "Digit1") this.sim.switchWeapon("pistol");
-    if (e.code === "Digit2") this.sim.switchWeapon("shotgun");
-    if (e.code === "Digit3") this.sim.switchWeapon("smg");
-    if (e.code === "Digit4") this.sim.switchWeapon("rifle");
-    if (e.code === "Digit5") this.sim.switchWeapon("revolver");
-    const extraKey = EXTRA_KEYS.indexOf(e.code.replace("Digit", ""));
-    if (e.code.startsWith("Digit") && extraKey >= 0) {
-      const slot = ownedSlots(this.sim).find((o) => o.key === EXTRA_KEYS[extraKey]);
+    if (e.code.startsWith("Digit") || e.code === "KeyQ" || e.code === "KeyE") this.sim.stowChips();
+    if (e.code.startsWith("Digit")) {
+      const slot = ownedSlots(this.sim).find(o => o.key === e.code.slice(5));
       if (slot) this.sim.switchWeapon(slot.id);
     }
-    if (e.code === "KeyQ") this.sim.cycleWeapon(1);
-    if (e.code === "KeyE") this.interact();
+    if (e.code === "KeyQ") this.sim.cycleWeapon(-1);
+    if (e.code === "KeyE") this.sim.cycleWeapon(1);
+    if (e.code === "KeyF") this.interact();
     if (e.code === "Escape") this.pause();
   };
   private interact() {
@@ -527,6 +522,7 @@ export class GameRuntime {
     this.clearInput();
     void this.audio
       .unlock()
+      .then(() => { if (this.audio.context) return this.speech.preload(this.audio.context); })
       .catch(() =>
         this.onError(
           "Audio is unavailable. You can still play; check your browser sound settings.",
@@ -581,10 +577,14 @@ export class GameRuntime {
       this.zombieAudio.reset(); this.audio.resetZombies(); this.audio.resetSlots(); this.audio.resetHotel();
       this.sim.pause();
     } else if (action === "refill") refillRange(this.sim);
+    else if (action.startsWith("round-health:")) {
+      const round = Number(action.slice(13));
+      if (Number.isInteger(round) && round >= 1 && round <= 100) { this.sim.round = round; for (const e of this.sim.enemies) e.health = e.maxHealth = waveStats(round).health; }
+    }
     else if (action === "clear") { this.sim.enemies = []; this.sim.projectiles = []; }
     else if (action === "god") this.sim.invulnerable = this.sim.invulnerable > 1 ? 0 : 99999;
     else if (action.startsWith("equip:")) {
-      this.sim.resume(); this.sim.switchWeapon(action.slice(6) as WeaponId); this.sim.pause();
+      this.sim.resume(); this.sim.acquireWeapon(action.slice(6) as WeaponId); this.sim.pause();
     }
     this.publish();
   }
@@ -728,8 +728,8 @@ export class GameRuntime {
         s.player = { x: -4, y: HOTEL.floorY, z: 33.8, surfaceId: "hotel-upper" };
         s.yaw = 0;
         s.pitch = 0.24;
-        s.inventory.shotgun = { owned: true, mag: 6, reserve: 30 };
-        s.inventory.smg = { owned: true, mag: 30, reserve: 180 };
+        s.acquireWeapon("shotgun");
+        s.acquireWeapon("smg");
         s.weapon = "smg";
       }
       if (action === "hotel-chase") {
@@ -869,7 +869,7 @@ export class GameRuntime {
     if (action in rouletteOutcomes && s.purchase("roulette") && s.roulette) {
       s.roulette.number = rouletteOutcomes[action];
       // Visible development controls provide repeatable reward checks using a paid spin.
-      for (const weapon of WEAPON_ORDER)
+      for (const weapon of s.firearms)
         s.inventory[weapon] = { owned: true, mag: 1, reserve: 2 };
       s.reloadRemaining = 0;
     }
@@ -955,7 +955,7 @@ export class GameRuntime {
     if (action.startsWith("give-")) {
       const id = action.slice(5) as WeaponId;
       if (s.inventory[id]) {
-        s.inventory[id] = { owned: true, mag: s.capacity(id), reserve: WEAPONS[id].reserve };
+        s.acquireWeapon(id);
         if (id === "stick") s.stickTaken = true;
         s.switchWeapon(id);
         s.events.push({ type: "pickup", weapon: id });
@@ -1085,6 +1085,15 @@ export class GameRuntime {
       }
     }
     this.audio.setActive(this.sim.phase === "playing");
+    const ownedWeapons = WEAPON_ORDER.filter(id => this.sim.inventory[id].owned);
+    if (this.dialogueSimulation !== this.sim) {
+      this.dialogueSimulation = this.sim;
+      this.dialogue.reset(ownedWeapons);
+      this.speech.stop();
+    }
+    const line = this.dialogue.update(performance.now() / 1000, this.sim.phase === "playing", this.sim.events, ownedWeapons, this.speech.busy);
+    if (this.sim.phase !== "playing") this.speech.stop();
+    else if (line && this.audio.context && this.audio.master) this.speech.play(line, this.audio.context, this.audio.master);
     for (const event of this.sim.events) {
       this.audio.play(event);
       this.renderer.weaponEvent(event);
@@ -1170,7 +1179,9 @@ export class GameRuntime {
     this.renderer.engine.maxFPS = s.phase === "playing" ? 60 : 15;
     this.audio.setActive(s.phase === "playing");
     const card = !s.aiming && !s.holdingChips && this.pickupCard && performance.now() - this.pickupCard.at < 4200 ? this.pickupCard : null;
+    if (s.phase !== "playing") this.speech.stop();
     this.onView({
+      dialogue: this.speech.caption,
       aiming: this.renderer.aimBlend > .85,
       scoped: this.renderer.aimBlend > .95 && s.weapon === "sniper",
       owned: ownedSlots(s),
@@ -1195,7 +1206,7 @@ export class GameRuntime {
         nearPainting: s.cashier && Math.hypot(s.player.x - CASINO_SECRET_ANCHORS.painting.x, s.player.z - CASINO_SECRET_ANCHORS.painting.z) < 4,
         paintingOpen: s.paintingOpen,
         codeProgress: s.codeProgress,
-        mystery: s.mystery?.message ?? "",
+        mystery: s.mysteryOffer ? `${s.weaponName(s.mysteryOffer)} · F take${s.firearms.length >= 2 && !s.inventory[s.mysteryOffer].owned ? ` / replace ${s.weaponName(isMelee(s.weapon) ? s.lastFirearm : s.weapon)}` : ""} · X decline · ${Math.ceil(s.mystery?.offerRemaining ?? 0)}s` : s.mystery?.message ?? "",
         nearMystery: s.speakeasy && Math.hypot(s.player.x - CASINO_SECRET_ANCHORS.mystery.x, s.player.z - CASINO_SECRET_ANCHORS.mystery.z) < 4,
       },
       grenades: s.grenades,
@@ -1304,19 +1315,24 @@ export class GameRuntime {
         p && info
           ? {
               name:
+                p.id === "mystery" && s.mysteryOffer ? `Take ${s.weaponName(s.mysteryOffer)}` :
                 (p.id === "shotgun" || p.id === "smg" || p.id === "rifle") &&
                 s.inventory[p.id].owned
                   ? `${WEAPONS[p.id].label} ammunition`
                   : (p.id === "craps" || p.id === "craps-b") && info.price === 0
                     ? `Craps place bets · ${p.id === "craps" ? "Table I" : "Table II"}`
                     : p.name,
-              detail: p.id === "craps" || p.id === "craps-b"
+              detail: (p.id === "shotgun" || p.id === "smg" || p.id === "rifle") && !s.inventory[p.id].owned && s.firearms.length >= 2
+                ? `Replaces ${s.weaponName(isMelee(s.weapon) ? s.lastFirearm : s.weapon)} · two-gun limit`
+                : p.id === "mystery" && s.mysteryOffer ? "F take · X decline · no extra cost"
+                : p.id === "craps" || p.id === "craps-b"
                 ? info.price === 0
                   ? "Roll placed bets · no extra fee · one roll per table each round"
                   : `7 slows you 20% ${s.intermission > 0 ? "next round" : "this round"} · other rolls pay 500 · C for place bets`
                 : p.id === "jukebox" ? (s.jukeboxOn ? "Stop the lobby record" : "Play The Lucky Note · original lounge instrumental") : p.detail,
               ...info,
               actionLabel:
+                p.id === "mystery" && s.mysteryOffer ? "TAKE · F" :
                 p.id === "poker-a" || p.id === "poker-b"
                   ? "OPEN HAND"
                   : p.id === "stick" || p.id === "axe"
@@ -1355,6 +1371,7 @@ export class GameRuntime {
     window.removeEventListener("resize", this.resize);
     this.canvas.removeEventListener("contextmenu", this.contextMenu);
     this.canvas.removeEventListener("webglcontextlost", this.contextLost);
+    this.speech.dispose();
     this.audio.dispose();
     this.renderer.dispose();
   }

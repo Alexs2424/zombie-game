@@ -58,3 +58,14 @@ Side secrets can reward curiosity with dialogue, atmosphere, or useful supplies.
 Build a small, shared investigation: Voss's welcome → Marlowe's counterpoint → Varga's ledger and suitcase → gallery opening → voiced register reveal. Validate it first with two players, including subtitles, shared discoveries, and a reconnect. Two players are an initial integration test, not a reduction of the four-player target.
 
 Follow with four-player validation before treating the co-op foundation as complete. Final character facial polish, Collector production, additional rooms, and the full main quest are later milestones.
+
+## Implemented reward inventory rules — 2026-09-29
+
+The player carries at most two firearms; melee tools remain separate. Existing
+poker and Last Service rewards still grant their named guns, replacing the held
+firearm (or the last held firearm when using a melee tool) if both slots are full.
+The Mystery Box instead reveals a 15-second offer: F accepts, X declines, walking
+away lets it expire. Reveal/decline/expiry never grant ammo or replace a gun.
+The user's explicit direction establishes two guns and optional Mystery Box
+pickup; the timer and replacement convention are working implementation choices.
+See [combat balance](../combat-balance.md) for current mechanics and tuning.

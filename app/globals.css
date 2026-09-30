@@ -2382,3 +2382,14 @@ h1 i {
 .hide-explanations .range-panel > p:not(.range-kicker),
 .hide-explanations .dev-tool-list section > p,
 .hide-explanations .settings-note { display: none; }
+
+.range-panel input[type="number"] { width: 72px; margin-left: 8px; padding: 6px 8px; border: 1px solid #526264; border-radius: 4px; background: #263438; color: #e2e8e5; font: inherit; }
+
+/* Spoken character reactions remain separate from rewards and interaction hints. */
+.character-subtitle {
+  position: absolute; bottom: 24%; left: 50%; transform: translateX(-50%);
+  max-width: min(660px, 85vw); width: max-content; padding: 10px 16px;
+  color: #fff3db; background: rgba(10, 8, 7, .85); border-left: 3px solid #c39753;
+  font-size: clamp(14px, 1.5vw, 18px); line-height: 1.4; text-align: center;
+  text-shadow: 0 1px 2px #000; pointer-events: none;
+}

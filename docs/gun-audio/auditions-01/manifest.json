@@ -1,0 +1,88 @@
+{
+  "status": "auditions only; not installed in game",
+  "designs": {
+    "a-dry": "Dry documentary recording. Sharp pressure snap, lean body, detailed steel mechanism, very short decay. Unembellished, close and tactile.",
+    "b-heavy": "Premium action game recording. Violent crack, dense chesty powder blast, forceful midrange punch, short room slap. Powerful but believable, never a bass synth.",
+    "c-vintage": "Gritty 1970s crime thriller recording. Coarse explosive bark, warm rough-edged body, rattling old steel, slight analog tape compression. Dangerous and worn, not muffled."
+  },
+  "weaponOrder": [
+    "revolver",
+    "shotgun",
+    "tommy"
+  ],
+  "processing": "same onset trim, DC removal, tiny start fade, 25ms end fade, -1.94 dBFS sample ceiling; no added layers, EQ, saturation or pitch change",
+  "files": [
+    {
+      "id": "a-dry-revolver",
+      "sourceSha256": "f7de2070ba9fa22b832d5975ea3a80d32d04b51d90df4536690e2516755214ff",
+      "outputSha256": "d2cda122eb3443d6e6cbd35ab8f94f25300b92610a1aacf02cccd371546c0ca9",
+      "trimSeconds": 0.4449886621315193,
+      "duration": 1.25,
+      "peakDbfs": -1.938200260161128
+    },
+    {
+      "id": "a-dry-shotgun",
+      "sourceSha256": "6c43d32c982f5fe7e98db8900218514e26dd26dbbffe9538a3b5ef7debe7d56d",
+      "outputSha256": "8fc0b2f6926877767d6b0bed6c397fadda6a7ecc6a380a41dfe9582fa22c1f29",
+      "trimSeconds": 1.2441723356009071,
+      "duration": 0.755827664399093,
+      "peakDbfs": -1.938200260161128
+    },
+    {
+      "id": "a-dry-tommy",
+      "sourceSha256": "3413b5aab7b98e5817a657213ac2650f1042946e0c4f38e8ca70ad3903501941",
+      "outputSha256": "3b8b31e6bb2ce571c7a9e2c5c2db490f1d538f69f8d63fddb99c82df50a08615",
+      "trimSeconds": 0.0,
+      "duration": 0.65,
+      "peakDbfs": -1.938200260161128
+    },
+    {
+      "id": "b-heavy-revolver",
+      "sourceSha256": "f261bfe73b4d792a2cb6f9dbafd66d004a541428d2803851b32fcc30adb79ef2",
+      "outputSha256": "3dfe9eb6faf288efb719d3860fd485962739c4e93306b258817b10de5c2dc267",
+      "trimSeconds": 0.17959183673469387,
+      "duration": 1.25,
+      "peakDbfs": -1.938200260161128
+    },
+    {
+      "id": "b-heavy-shotgun",
+      "sourceSha256": "2fa83c905ea0b992a3d3c38374dd7060844280338e1ab4788a0d538d7f7dabc8",
+      "outputSha256": "a4bea02e31eb795cf50f4d68cbcf1feae6e362a24caf50dedc3da742bf8b56a2",
+      "trimSeconds": 0.0,
+      "duration": 1.25,
+      "peakDbfs": -1.938200260161128
+    },
+    {
+      "id": "b-heavy-tommy",
+      "sourceSha256": "02cfaf74d5b5774cb9c21455e8e75369c0505805698a5d637826b7ea622a35f1",
+      "outputSha256": "26f2af1c84cad3f2ad14b9a780a6d27430e0558c44e40caf32e91aa4da79cedc",
+      "trimSeconds": 0.014965986394557823,
+      "duration": 0.65,
+      "peakDbfs": -1.938200260161128
+    },
+    {
+      "id": "c-vintage-revolver",
+      "sourceSha256": "2844664056e8bc93449a1cf3ef2d4791a3a796ea0c22b06fd1e92e2f0044921c",
+      "outputSha256": "71924830bee47e1d5bcb7e3dd715f2cf067895f320fcece6bc47c0f32b756294",
+      "trimSeconds": 0.05986394557823129,
+      "duration": 1.25,
+      "peakDbfs": -1.938200260161128
+    },
+    {
+      "id": "c-vintage-shotgun",
+      "sourceSha256": "a9cf59b0d1e59b051bdad5a119bdc315e643b87b33f63bceb0c92761233f0d23",
+      "outputSha256": "2968ce61eb9a32a1bfe906fc65f45bd52532df82c73af2bf7e35d2a726281fe7",
+      "trimSeconds": 0.021950113378684806,
+      "duration": 1.25,
+      "peakDbfs": -1.938200260161128
+    },
+    {
+      "id": "c-vintage-tommy",
+      "sourceSha256": "337aa2c3267e529f5caf3185ebd776daa799a0a6ac1cd16a177f768e686bed23",
+      "outputSha256": "8675069a6080c78fdd324bd17827c8e0b8af7332f39daf32ce09d94f72ccf1bb",
+      "trimSeconds": 0.03292517006802721,
+      "duration": 0.65,
+      "peakDbfs": -1.938200260161128
+    }
+  ]
+}

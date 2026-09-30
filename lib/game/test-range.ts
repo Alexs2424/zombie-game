@@ -1,4 +1,4 @@
-import { Simulation, WEAPON_ORDER, WEAPONS } from './simulation.ts';
+import { Simulation, WEAPON_ORDER, WEAPONS, waveStats } from './simulation.ts';
 import { collides, hasSight } from './world.ts';
 import { RANGE_SPAWN } from './test-range-layout.ts';
 export type RangeScenario = 'targets' | 'pursuit' | 'blast' | 'empty';
@@ -6,7 +6,7 @@ export function refillRange(s: Simulation) {
   s.health = s.maxHealth;
   s.stamina = 100; s.staminaDelay = 0; s.sprintExhausted = false;
   s.grenades = 20;
-  for (const id of WEAPON_ORDER) s.inventory[id] = {owned:true,mag:s.capacity(id),reserve:WEAPONS[id].reserve};
+  for (const id of WEAPON_ORDER) if (s.inventory[id].owned) s.inventory[id] = {owned:true,mag:s.capacity(id),reserve:WEAPONS[id].reserve};
 }
 /** Fresh deterministic state; uses production movement, weapons, hits and damage. */
 export function createRange(scenario: RangeScenario = 'targets') {
@@ -18,10 +18,12 @@ export function createRange(scenario: RangeScenario = 'targets') {
   s.points = 10000;
   s.intermission = Infinity;
   s.round = 1;
+  s.acquireWeapon("shotgun");
+  s.switchWeapon("pistol");
   refillRange(s);
   if (scenario === 'blast') s.player = {x:111,y:0,z:6,surfaceId:'ground'};
   const targets = scenario === 'targets' ? [[96,5],[98,10],[102,20]] : scenario === 'pursuit' ? [[95,16],[98,19],[101,22]] : [];
-  s.enemies = targets.map(([x,z],i) => ({id:i+1,x,z,y:0,surfaceId:'ground',health:100,maxHealth:100,speed:scenario === 'targets'?0:1.7,yaw:Math.PI,attack:0,cooldown:0,stuck:0,flash:0,age:0}));
+  s.enemies = targets.map(([x,z],i) => ({id:i+1,x,z,y:0,surfaceId:'ground',health:waveStats(s.round).health,maxHealth:waveStats(s.round).health,speed:scenario === 'targets'?0:1.7,yaw:Math.PI,attack:0,cooldown:0,stuck:0,flash:0,age:0}));
   s.nextId = 10;
   s.refreshMap();
   return s;
@@ -47,7 +49,7 @@ export function addRangeEnemies(s: Simulation, count: number, stationary = false
   for (const {p} of candidates) {
     if (added >= wanted) break;
     if (s.enemies.some(e => Math.hypot(e.x-p.x, e.z-p.z) < 1.2)) continue;
-    s.enemies.push({...p, id:s.nextId++, health:100, maxHealth:100,
+    s.enemies.push({...p, id:s.nextId++, health:waveStats(s.round).health, maxHealth:waveStats(s.round).health,
       speed:stationary ? 0 : 1.7, yaw:Math.atan2(s.player.x-p.x,s.player.z-p.z),
       attack:0, cooldown:0, stuck:0, flash:0, age:0});
     added++;

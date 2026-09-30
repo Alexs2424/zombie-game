@@ -1,5 +1,8 @@
 # Characters
 
+**Latest direction (2026-09-30):** the user rejected the first voice pilot. [Round 02](voice-direction-round-02.md) owns the stronger sexy, raspy, exaggerated performance targets and replacement writing proposals; these supersede the prior pilot’s artistic direction. Final casting is pending custom-voice access.
+
+
 Status: agent-selected working cast. The user has delegated character preferences. Names and details below are production defaults until revised, not final recorded performances.
 
 Review stage: the user has requested a more exaggerated, outlandish, dramatic cast. The heightened characterization below is the current working direction. Earlier audition lines remain exploratory; see dialogue-samples.md for the first revised tone samples. Voice exploration follows character/dialogue feedback.
@@ -7,6 +10,8 @@ Review stage: the user has requested a more exaggerated, outlandish, dramatic ca
 All four playable characters initially share gameplay capabilities. Identity comes through voice, relationships, silhouette, and matching first-person clothing. An occupation never grants exclusive access to a required quest interaction.
 
 Detailed personal histories, supporting people, emotional arcs and reveal pacing live in the [character backstory bible](character-backstories/README.md). Those dossiers own biographical specifics; this overview owns visual and voice direction. The latest brief calls for human, badass personalities, with Sin City emphasized for noir intensity and personal codes, and Fallout retained as a secondary reference for eccentricity and contradiction. See the backstory bible’s noir emphasis; the casino setting and cast remain original.
+
+Detailed clothing, faces, first-person cues, movement, personality and vocal performance are in the [character production design bible](character-production-design.md). The dossiers remain the biography source of truth.
 
 ## Frankie “Chips” Caruso
 
@@ -33,7 +38,7 @@ His weakness is confusing obedience with honor. He is dangerous, capable of kind
 - **Reason for coming:** retrieve her missing stage partner's effects from Voss's custody.
 - **Inner conflict:** treating danger as a trick gives her control until she must admit there are stakes she cannot misdirect away.
 - **Working personal connection:** her stage partner and friend Arthur “Art” Bell noticed that an apparent stage passage did not match the building plan and disappeared after investigating. His exact fate remains open. Eve had allowed him to lose public credit before their final argument; see the [Eve dossier](character-backstories/eve.md).
-- **Voice:** clear middle register; educated London English with a softer south London edge in private speech. Precise setups, deliberate pauses, dry final words. Fear makes her unusually direct, not more theatrical.
+- **Voice:** low smoky contralto; educated London English with a softer south London edge in private speech. Precise setups, deliberate pauses, dry final words. Fear makes her unusually direct, not more theatrical.
 - **Humor:** exposing pretension and bad misdirection.
 - **Appearance:** tailored stage trousers; asymmetrical ivory-and-black jacket with oxblood lining; repaired cuffs and concealed practical tools. Avoid a costume consisting only of a top hat and cape.
 - **Audition line:** “A false wall, a borrowed key, an audience looking the wrong way. That part I understand.”

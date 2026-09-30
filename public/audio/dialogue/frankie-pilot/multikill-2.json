@@ -1,0 +1,19 @@
+{
+  "speaker": "Frankie Caruso",
+  "casting": "Adam stock voice; provisional gameplay audition, not final North Jersey casting",
+  "provider": "ElevenLabs",
+  "voice_id": "pNInz6obpgDQGcFmaJgB",
+  "request": {
+    "text": "[annoyed] Look at this mess. I used to get overtime for this.",
+    "model_id": "eleven_v3",
+    "voice_settings": {
+      "stability": 0.5
+    }
+  },
+  "subtitle": "Look at this mess. I used to get overtime for this.",
+  "generated_at": "2026-09-30T06:48:43.219592+00:00",
+  "request_id": "JMBMnwJ2S5xM12nHVsR3",
+  "bytes": 51035,
+  "sha256": "9b18f5da90b32f4f1d3fbb43e3907d3089fd88ea6ece8fbf4e0f5b88b5704a40",
+  "processing": "Unprocessed provider MP3; gain controlled at runtime."
+}

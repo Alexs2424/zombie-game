@@ -1,0 +1,19 @@
+{
+  "speaker": "Frankie Caruso",
+  "casting": "Adam stock voice; provisional gameplay audition, not final North Jersey casting",
+  "provider": "ElevenLabs",
+  "voice_id": "pNInz6obpgDQGcFmaJgB",
+  "request": {
+    "text": "[sarcastic] You all came together? Saves me making calls.",
+    "model_id": "eleven_v3",
+    "voice_settings": {
+      "stability": 0.5
+    }
+  },
+  "subtitle": "You all came together? Saves me making calls.",
+  "generated_at": "2026-09-30T06:48:39.029390+00:00",
+  "request_id": "HepKpleZVTNTzD7zCaPm",
+  "bytes": 52288,
+  "sha256": "8509ef72b002a6a0d294df467b8beba4383989f402bf32d4fe8936d4b2e2c9c2",
+  "processing": "Unprocessed provider MP3; gain controlled at runtime."
+}
