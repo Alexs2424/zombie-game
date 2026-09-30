@@ -4,7 +4,7 @@ import { LoadAssetContainerAsync } from "@babylonjs/core/Loading/sceneLoader";
 import "@babylonjs/loaders/glTF";
 
 /** World-space architectural exports compensate for Babylon's glTF X reflection. */
-export async function loadHotelLobbyAsset(scene: Scene, kind: "stairs" | "ceiling") {
+export async function loadHotelLobbyAsset(scene: Scene, kind: "stairs" | "ceiling" | "floor") {
   const container = await LoadAssetContainerAsync(`/models/hotel-grand-${kind}.glb`, scene);
   if (scene.isDisposed) { container.dispose(); throw new Error("Hotel disposed during model loading"); }
   container.addAllToScene();

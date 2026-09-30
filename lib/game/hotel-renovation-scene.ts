@@ -20,6 +20,8 @@ export function buildHotelRenovation(scene: Scene) {
   const loose: Mesh[] = [];
   const stairFallback: Mesh[] = [];
   const ceilingFallback: Mesh[] = [];
+  const floorFallback: Mesh[] = [];
+  let floorDetail = false;
   let ceilingDetail = false;
   let stairDetail = false;
   const doors: Mesh[] = [];
@@ -56,7 +58,8 @@ export function buildHotelRenovation(scene: Scene) {
     mesh.material = m;
     mesh.isPickable = false;
     mesh.receiveShadows = true;
-    if (ceilingDetail) { ceilingFallback.push(mesh); loose.push(mesh); }
+    if (floorDetail) { floorFallback.push(mesh); loose.push(mesh); }
+    else if (ceilingDetail) { ceilingFallback.push(mesh); loose.push(mesh); }
     else if (stairDetail) { stairFallback.push(mesh); loose.push(mesh); }
     else if (dynamic) loose.push(mesh);
     else { const list = batches.get(m) ?? []; list.push(mesh); batches.set(m, list); }
@@ -181,6 +184,7 @@ export function buildHotelRenovation(scene: Scene) {
   }
 
   // A clear central vista; border marquetry and a reception rug anchor the furniture.
+  floorDetail = true;
   for (let i=0;i<16;i++) {
     const a=i*Math.PI/8,b=(i+1)*Math.PI/8;
     const r1=i%2?1.18:2.7,r2=i%2?2.7:1.18;
@@ -189,6 +193,7 @@ export function buildHotelRenovation(scene: Scene) {
     data.indices=[0,2,1];data.normals=[0,1,0,0,1,0,0,1,0];data.uvs=[.5,.5,0,0,1,1];data.applyToMesh(mesh);
     add(mesh,i%2?gold:green);
   }
+  floorDetail = false;
   box("reception woven rug",-12,.035,22.65,8.9,.015,2.7,green);
   for (const dx of [-4.22,4.22]) box("rug border",-12+dx,.047,22.65,.045,.006,2.32,gold);
   for (const dz of [-1.16,1.16]) box("rug border",-12,.047,22.65+dz,8.47,.006,.045,gold);
@@ -301,6 +306,7 @@ export function buildHotelRenovation(scene: Scene) {
   let passageOpen=false,cacheClaimed=false;
   return {
     meshes,
+    replaceFloor() { floorFallback.forEach(mesh => mesh.setEnabled(false)); },
     replaceCeiling() { ceilingFallback.forEach(mesh => mesh.setEnabled(false)); },
     replaceStairs() { stairFallback.forEach(mesh => mesh.setEnabled(false)); },
     update(sim:Simulation) {
