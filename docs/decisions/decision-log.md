@@ -251,3 +251,9 @@ The user approved all roadmap improvements, requested a methodical PR stack, and
 **Working direction:** asymmetrical cool window daylight, localized warm fixtures, soft static architectural floor shading, directional walnut grain, close-range fabric weave, handled brass, and restrained traffic scuffs. Keep the recently maintained hotel; no ruin treatment or narrative changes.
 
 **Implemented in lighting layer:** Cycles floor irradiance modulation, soft window-mullion projection, and retuned hotel light hierarchy, preserving eight sources and casino exposure. Blender source, TypeScript, focused lint, 36 tests, browser lightmap/UV2 checks, and static-capture lifecycle checks pass. Material changes remain pending until the following layer. The [asset record](../hotel-assets/lobby/README.md) owns bake assumptions and verification limits.
+
+## 2026-09-30 — Implement the approved lobby material finish
+
+**Implemented:** original walnut grain/roughness/normal maps aligned to construction pieces and curved handrails; fine upholstery weave; restrained handled-brass patina; and room-space marble polish/scuffs concentrated on traffic routes. Six existing Blender models are updated within their asset budgets. The hotel remains recently maintained, with no debris, new story implications, or collision/layout changes.
+
+**Verified:** six converted GLB audits, seven editable-model source audits, 36 focused hotel/light/gameplay tests, TypeScript, focused lint, production build, close in-game views, 44.75-second traversal, missing-lightmap fallbacks, and lighting resource disposal. The short final chase sample averages about 51 FPS versus about 55 in the prior recorded sample; it is not a steady-60 claim. This completes both approved extension layers. The [asset record](../hotel-assets/lobby/README.md) owns maps, rebuild commands, screenshots, and exact limits.

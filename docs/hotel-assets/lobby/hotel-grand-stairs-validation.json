@@ -1,10 +1,10 @@
 {
   "status": "passed",
   "asset": "hotel-grand-stairs",
-  "bytes": 11747468,
+  "bytes": 12195316,
   "meshes": 5,
-  "vertices": 252042,
-  "triangles": 314864,
+  "vertices": 259738,
+  "triangles": 330640,
   "bounds": {
     "min": [
       -20.664499282836914,
