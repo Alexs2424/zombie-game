@@ -192,3 +192,12 @@ Prepared `/audio/dialogue/casting.html` with four original provider preview URLs
 **Established:** the user likes only Chuck Miller from the four previews; rejects Dean, Tatiana and Rosie as boring, nerdy, radio-like, lacking character and monotone. Voice quality remains the priority.
 
 **Recorded:** Chuck is the preferred voice reference and next Frankie audition candidate, not yet a verified final character performance. Updated the casting page and candidate metadata with the actual listening verdict. Future selection requires audible character and emotional contrast, not catalog adjectives. [Round 02](voice-direction-round-02.md) owns this correction. No new generation or runtime change; API access remains blocked as previously verified.
+
+
+## 2026-09-30 — Prepare Chuck-led acting auditions while account access is enabled
+
+**Established:** user authorized proceeding and answered that they will enable API access and notify us. Wait for that confirmation before another paid generation attempt.
+
+**Working preparation:** retain Chuck Miller for Frankie; screen Charmion for Eve, Kathie for Vivian, and Monty for Voss. These three are new unreviewed candidates selected from character-oriented catalog descriptions. Softness, insufficient huskiness and age mismatch are explicitly flagged for rejection, not hidden by declaring a cast. Leon and Marlowe remain open. Dean, Tatiana and Rosie stay rejected.
+
+Prepared three-beat scripts per candidate (pleasure, anger, quiet admission) in [round 03](../voice-auditions/round-03.json), with exact contexts and delivery notes. New Vivian and Voss lines remain unrecorded proposals grounded in existing biographies. Added `/audio/dialogue/casting-round-03.html` with original remote previews and expandable scripts. No voice generation, downloaded library audio, runtime recasting or account change occurred.

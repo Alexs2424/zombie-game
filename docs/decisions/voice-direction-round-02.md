@@ -79,3 +79,14 @@ Two fresh Frankie acting proposals are “Oh, I missed this. Being understood.�
 Keep Chuck first for the next Frankie acting test once generation access is available. Seek the same degree of distinctive texture for the others while preserving their different genders, accents, rhythms and personalities; do not make them all sound like Chuck or silently replace their biographies. Do not re-present Dean, Tatiana or Rosie as viable candidates without an explicit reason and new evidence.
 
 The live casting page now features Chuck as the preferred reference and labels the other candidates rejected. Existing remote previews are retained only as historical comparison. No new paid request, voice cloning, game recasting or replacement audio occurred. The previously verified library API paywall remains unresolved; no redundant request was made this turn.
+
+
+## Next audition batch — prepared, awaiting access confirmation
+
+The user said they will enable paid API access and let us know. This is not confirmation that access is already enabled. Do not repeat blocked requests in the meantime.
+
+[Round 03 scripts and candidates](../voice-auditions/round-03.json) own the next prepared acting tests: Chuck Miller / Frankie, Charmion / Eve, Kathie / Vivian, Monty / Voss. Chuck's preview remains the only positive user selection. The other three are unreviewed screening options; their catalog descriptions are not evidence of performance quality. Charmion may be too soft, Kathie insufficiently husky, and Monty older or more caricatured than Voss. No character biography or accent is changed to fit a sample. Leon and Marlowe remain uncast.
+
+The next batch tests pleasure, anger and quiet vulnerability on each character's own words, rather than a generic narration paragraph. Exact text and matching context are in the JSON, superseding earlier audition text for that batch only. All are unrecorded proposals. Test Chuck first once access is confirmed; stop on any provider rejection. No automatic retries or permanent voice creation are planned.
+
+`/audio/dialogue/casting-round-03.html` provides existing remote previews and the prepared scripts. It excludes the three rejected candidates. Do not claim these previews are performances of our dialogue or that this page replaces in-game speech.

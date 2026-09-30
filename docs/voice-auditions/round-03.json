@@ -1,0 +1,118 @@
+{
+  "status": "Prepared; user will enable API access and notify us. Do not submit generation before that confirmation.",
+  "generation_plan": "One three-beat audition per candidate, Chuck first; no automatic retries or permanent voice creation. Character scripts are proposed and have not been approved.",
+  "candidates": [
+    {
+      "voice_id": "HIGUfNOdjuWQwwapnTRW",
+      "name": "Chuck Miller - Deep, Raspy, American",
+      "preview_url": "https://storage.googleapis.com/eleven-public-prod/database/user/QLeoIFNQuWZCsHPkmGfqE1ZH3NA2/voices/HIGUfNOdjuWQwwapnTRW/KmCIshV3FvIyhIDQPsUp.mp3",
+      "accent": "american",
+      "gender": "male",
+      "age": "middle_aged",
+      "role_to_test": "Frankie",
+      "status": "Preferred reference",
+      "reason_and_rejection_test": "User likes the existing preview. Test whether its roughness survives pleasure, anger and quiet guilt. North Jersey specificity is still unverified.",
+      "script": [
+        {
+          "context": "first firearm acquisition",
+          "text": "Oh, I missed this. Being understood.",
+          "delivery": "Warm, greedy pleasure; breathe before the second sentence."
+        },
+        {
+          "context": "recent enemy damage, after reaching a brief safe window",
+          "text": "You little shit. This was my good side.",
+          "delivery": "A startled bark, then offended vanity; not a growled slogan."
+        },
+        {
+          "context": "quiet Keene confession after the cage evidence",
+          "text": "He asked me to wait. I heard him. I left anyway.",
+          "delivery": "No menace. No clever finish. Plain admission."
+        }
+      ]
+    },
+    {
+      "voice_id": "lUCNYQh2kqW2wiie85Qk",
+      "name": "Charmion - Soft and husky",
+      "preview_url": "https://storage.googleapis.com/eleven-public-prod/RimHwwF9RLXKyDFWJaBLpWiGSr93/voices/lUCNYQh2kqW2wiie85Qk/89c6cfb4-9665-46c2-b665-037be403172b.mp3",
+      "accent": "british",
+      "gender": "female",
+      "age": "middle_aged",
+      "role_to_test": "Eve",
+      "status": "New candidate \u2014 unreviewed",
+      "reason_and_rejection_test": "British character voice with a husky description. Reject if it stays soft or breathy through anger; the preview must earn a script audition.",
+      "script": [
+        {
+          "context": "first firearm acquisition",
+          "text": "Oh, that's indecent. Give it here.",
+          "delivery": "Private delight followed by sudden possession."
+        },
+        {
+          "context": "costume-damage acting exercise only; no gameplay feature implied",
+          "text": "You tore my sleeve. I made that. I MADE that!",
+          "delivery": "Disbelief rising to disproportionate fury; let the voice become untidy."
+        },
+        {
+          "context": "future authenticated Art recording",
+          "text": "Play it again. Please. I need to hear if it's him.",
+          "delivery": "Drop the stage voice; the request is hard to make."
+        }
+      ]
+    },
+    {
+      "voice_id": "o9B86nZP8mMLaT5FBEzP",
+      "name": "Kathie - Sassy & Playful",
+      "preview_url": "https://storage.googleapis.com/eleven-public-prod/database/workspace/e9486322f4fb4aea8fbcacbba9198b78/voices/o9B86nZP8mMLaT5FBEzP/HheEkH8t28lTgDiT1dUw.mp3",
+      "accent": "american",
+      "gender": "female",
+      "age": "young",
+      "role_to_test": "Vivian",
+      "status": "New candidate \u2014 unreviewed",
+      "reason_and_rejection_test": "American character voice described as sarcastic with comedic timing and spoiled attitude. Reject if it only supplies a bright commercial or generic brat voice; huskiness remains unverified.",
+      "script": [
+        {
+          "context": "first acquisition from a known private stash, not a purchase",
+          "text": "Oh, he was saving this. That's adorable.",
+          "delivery": "Enjoy the theft; let the affection be outrageous but sincere."
+        },
+        {
+          "context": "a failed attempt to negotiate with Voss in an authored exchange",
+          "text": "Don't sweetheart me. I'm the one who does that.",
+          "delivery": "Immediate offended interruption; warmth snaps off."
+        },
+        {
+          "context": "quiet admission about Tomas after the relevant backstory is revealed",
+          "text": "I keep sending money. He keeps sending it back. I don't know what else to send.",
+          "delivery": "Lose the sales rhythm; she cannot buy an easy ending."
+        }
+      ]
+    },
+    {
+      "voice_id": "tUVMjP56ZNYXlKLsRXbo",
+      "name": "Monty - Theatrical Aristocratic Villain",
+      "preview_url": "https://storage.googleapis.com/eleven-public-prod/database/user/r5b3Ge1eQJZE8pYIL0tWrukvfgY2/voices/tUVMjP56ZNYXlKLsRXbo/XN5dSJfRYzDHDV4mDzER.mp3",
+      "accent": "american",
+      "gender": "male",
+      "age": "old",
+      "role_to_test": "Voss",
+      "status": "New candidate \u2014 unreviewed",
+      "reason_and_rejection_test": "Older East Coast American theatrical villain. Test authority and pleasure; reject a frail caricature, a constant sneer or a radio monologue. The catalog age is older than Voss\u2019s target.",
+      "script": [
+        {
+          "context": "welcome, before the crew knows the transfer scheme",
+          "text": "There you are. I was beginning to feel stood up. And after all this trouble.",
+          "delivery": "Delighted host; final phrase carries a personal grievance."
+        },
+        {
+          "context": "a crew member refuses him after an authored bargain confrontation",
+          "text": "No? You came into my house to say no to me? ... How refreshing.",
+          "delivery": "First real crack of disbelief, then hospitality forcibly restored."
+        },
+        {
+          "context": "optional quiet admission about Helena after that history is introduced",
+          "text": "I knew everything she liked. Apparently that was not the same as listening.",
+          "delivery": "A little wounded and annoyed at the truth; no villain laugh."
+        }
+      ]
+    }
+  ]
+}
