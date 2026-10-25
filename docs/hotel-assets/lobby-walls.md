@@ -30,3 +30,9 @@ node tools/weapon-1970s/shoot.mjs outputs/hotel-walls @tools/hotel-assets/review
 ```
 
 The existing screenshot driver requires local Google Chrome. Screenshots and `audit.log` from this pass live in ignored `outputs/hotel-walls/` in the worktree.
+
+## Main integration — 2026-10-25
+
+Merged current `main` (`636e330`) into the wall branch. The only conflict was concurrent additions to `docs/decisions/decision-log.md`; both the approved hotel decisions and the newer Velvet Case and voice-audition decisions are retained. No wall geometry, materials, or gameplay code required conflict edits.
+
+Post-merge validation: all 295 tests pass, TypeScript passes, focused ESLint for both wall integration files passes, and the production build passes. The build retains dynamic-import/chunk-size and route-classification notices. The earlier visual/resource audit above remains the visual evidence; it was not repeated for this documentation-only conflict resolution.

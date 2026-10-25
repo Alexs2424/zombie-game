@@ -588,45 +588,6 @@ h1 i {
     width: 0;
   }
 }
-.mystery-reel {
-  height: 84px;
-  margin: 8px 0 4px;
-  display: grid;
-  place-items: center;
-  border-top: 1px solid #d6b76d44;
-  border-bottom: 1px solid #d6b76d44;
-  background: radial-gradient(60% 90% at 50% 50%, #d6b76d1c, transparent);
-}
-.mystery-reel img {
-  max-height: 76px;
-  max-width: 100%;
-  object-fit: contain;
-}
-.mystery-reel.spinning img {
-  filter: blur(0.6px) brightness(1.1);
-  animation: reel-shake 0.095s linear infinite;
-}
-.mystery-reel.paid img {
-  animation: reel-pay 1.2s ease-out both;
-}
-@keyframes reel-shake {
-  from {
-    transform: translateY(-5px);
-  }
-  to {
-    transform: translateY(5px);
-  }
-}
-@keyframes reel-pay {
-  0% {
-    transform: scale(1.18);
-    filter: brightness(1.8) drop-shadow(0 0 18px #f5d98a);
-  }
-  100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 10px #d6b76d66);
-  }
-}
 .mystery-status {
   width: 320px;
 }

@@ -1,5 +1,8 @@
 # Voice and dialogue correction — round 02
 
+**Historical round:** [Round 04](voice-direction-round-04.md) now owns the all-cast original redesign. The user confirmed adding credits and six custom requests succeeded. Access-blocked and wait-for-confirmation notes below record earlier attempts, not current blockers.
+
+
 ## Established feedback
 
 On 2026-09-30 the user rejected both the Adam voice and the six-line Frankie pilot as lame. They want much more unique, sexy, raspy voices with cartoonish depth. This rejects the pilot's artistic result; passing technical playback tests was not evidence of a successful performance.
