@@ -1,6 +1,6 @@
 # Character appearance and performance bible
 
-**Latest direction (2026-09-30):** the user rejected the first voice pilot. [Round 02](voice-direction-round-02.md) owns the stronger sexy, raspy, exaggerated performance targets and replacement writing proposals; these supersede the prior pilot’s artistic direction. Final casting is pending custom-voice access.
+**Latest direction (2026-09-30):** [Round 04](voice-direction-round-04.md) owns the requested original redesign of all six voices and more theatrical scripts. Custom API access now works; 18 original previews are generated. Casting is awaiting listening and selection, not blocked by the prior account plan.
 
 
 Status: **working production designs**, not finished models or cast voices. [Characters](characters.md) owns the concise cast; [individual backstories](character-backstories/README.md) own biography. This document expands the visual and audible execution without changing those histories. All six are original people; genre references establish intensity and readability rather than an actor likeness or imitation.
@@ -105,7 +105,7 @@ Their exaggeration lives in priorities and performance: Frankie is offended on b
 
 **Personality:** remembers preferences and discrepancies, avoids decisions by remaining useful. Small acts of protection coexist with years of smoothing over suspicious departures. His sister Elsie's invitation home is ordinary and unresolved. Crosswords, biscuits and unashamed bad singing give him a life beyond hint delivery. He is not secretly a master assassin or all-knowing supernatural guide by default.
 
-**Voice:** airy, dry middle-low register; light northern English / softened Yorkshire vowels. Plain phrasing, patient space, understatement without signaling the joke. Serious care sounds blunt, not mysteriously cryptic. His confession should contain shame and irritation with himself. Avoid making him whisper every line.
+**Voice:** weathered middle-register tenor with papery rasp and a faint reedy breath; light northern English / softened Yorkshire vowels. Plain phrasing, patient space, understatement without signaling the joke. Serious care sounds blunt, not mysteriously cryptic. His confession should contain shame and irritation with himself. Avoid making him whisper every line.
 
 **Audition contrast:** “You've brought most of yourself back. That's a start.” against “Because I hoped you'd find a way out that didn't involve me.”
 

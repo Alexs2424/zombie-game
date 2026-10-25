@@ -61,7 +61,7 @@ const groups: Record<string, string[][]> = {
     ["craps", "Craps table"],
     ["clue", "Clue table"],
     ["portrait", "Secret portrait"],
-    ["mystery-view", "Mystery machine"],
+    ["mystery-view", "Velvet Case"],
     ["roulette", "Roulette table"],
     ["rouletteClose", "Wheel close-up"],
     ["use", "Interact F"],
