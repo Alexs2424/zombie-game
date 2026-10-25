@@ -1,0 +1,62 @@
+[
+  {
+    "action": "new"
+  },
+  {
+    "action": "hotel-lobby"
+  },
+  {
+    "eval": "document.querySelectorAll(\".dev-panel,.dev-launcher\").forEach(e=>e.style.display=\"none\")"
+  },
+  {
+    "wait": 1200
+  },
+  {
+    "shot": "lobby"
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.sim;s.player={\"x\": 10, \"y\": 0, \"z\": 24};s.yaw=1.8;s.pitch=-0.25;})()"
+  },
+  {
+    "wait": 800
+  },
+  {
+    "shot": "wall-detail"
+  },
+  {
+    "action": "hotel-upper"
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.sim;s.yaw=1.0;s.pitch=-0.1;})()"
+  },
+  {
+    "wait": 800
+  },
+  {
+    "shot": "upper"
+  },
+  {
+    "action": "hotel-reception"
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.sim;s.pitch=-0.1;})()"
+  },
+  {
+    "wait": 800
+  },
+  {
+    "shot": "reception"
+  },
+  {
+    "eval": "(()=>{const s=window.__lastJackpot.sim;s.player={\"x\": 11, \"y\": 0, \"z\": 34.5};s.yaw=1.9;s.pitch=-0.1;})()"
+  },
+  {
+    "wait": 800
+  },
+  {
+    "shot": "service-door"
+  },
+  {
+    "eval": "(async () => {\n  const scene = window.__lastJackpot.renderer.scene;\n  const walls = scene.meshes.filter(m => m.name.startsWith('hotel walls'));\n  const report = walls.map(m => ({name:m.name, vertices:m.getTotalVertices(), triangles:m.getTotalIndices()/3, finite:m.getVerticesData('position').every(Number.isFinite), lit:scene.lights.filter(l=>l.name.startsWith('hotel light')&&l.includedOnlyMeshes.includes(m)).length}));\n  if(report.length!==6||report.some(m=>!m.finite||!m.lit)) throw Error('Wall geometry or lighting invalid');\n  const count=()=>[scene.meshes.length,scene.materials.length,scene.textures.length,scene.geometries.length];\n  const before=count();\n  const {buildHotelWalls}=await import('/lib/game/hotel-wall-scene.ts');\n  const temporary=buildHotelWalls(scene);\n  temporary.dispose();\n  const after=count();\n  if(before.some((n,i)=>n!==after[i])) throw Error('Wall disposal leaked scene resources');\n  return {walls:report,disposeRestoresScene:true};\n})()"
+  }
+]

@@ -13,6 +13,7 @@ import { HOTEL, HOTEL_RECTS, stairPoint } from "./world";
 import { buildHotelProps } from "./hotel-props";
 import { loadHotelFurniture } from "./hotel-assets";
 import { loadHotelEntry } from "./hotel-entry-assets";
+import { buildHotelWalls } from "./hotel-wall-scene";
 import { buildHotelRenovation } from "./hotel-renovation-scene";
 import { createHotelLightMembership } from "./hotel-light-membership";
 import { HOTEL_FIXTURES } from "./hotel-fixtures";
@@ -423,8 +424,9 @@ export function buildHotel(scene: Scene) {
   }
 
   for (const rect of HOTEL_RECTS) {
-    // These footprints are rendered by buildHotelProps, not as architecture.
+    // Perimeter walls, props, entry assets, and renovation solids have dedicated builders.
     if (
+      rect.id.startsWith("hotel-wall-") ||
       rect.id.startsWith("hotel-prop-") ||
       rect.id === "hotel-entry-lintel" ||
       rect.id === HOTEL_AMMO_CRATE.id ||
@@ -556,49 +558,6 @@ export function buildHotel(scene: Scene) {
       stone,
       yaw,
     );
-    if (rect.id.startsWith("hotel-wall-")) {
-      box(
-        `${rect.id} upper belt`,
-        rect.x,
-        HOTEL.floorY + 0.16,
-        rect.z,
-        rect.w + 0.05,
-        0.23,
-        rect.d + 0.085,
-        dark,
-        yaw,
-      );
-      box(
-        `${rect.id} upper molding`,
-        rect.x,
-        HOTEL.floorY + 0.31,
-        rect.z,
-        rect.w + 0.065,
-        0.05,
-        rect.d + 0.1,
-        brass,
-        yaw,
-      );
-      const c = Math.cos(rect.yaw ?? 0),
-        s = Math.sin(rect.yaw ?? 0);
-      for (
-        let offset = -rect.w / 2 + 1.3;
-        offset < rect.w / 2 - 0.9;
-        offset += 4
-      ) {
-        box(
-          `${rect.id} upper pilaster`,
-          rect.x + c * offset,
-          HOTEL.floorY + 2.4,
-          rect.z + s * offset,
-          0.18,
-          3.8,
-          rect.d + 0.12,
-          stone,
-          yaw,
-        );
-      }
-    }
   }
 
   for (const stairs of HOTEL.stairs) {
@@ -1267,6 +1226,7 @@ export function buildHotel(scene: Scene) {
     merged.freezeWorldMatrix();
     ownedMeshes.push(merged);
   }
+  const walls = buildHotelWalls(scene);
   const renovation = buildHotelRenovation(scene);
   let propMeshes = buildHotelProps(scene);
   let furniture: Awaited<ReturnType<typeof loadHotelFurniture>> | undefined;
@@ -1284,6 +1244,7 @@ export function buildHotel(scene: Scene) {
     lightMembership.setStaticMeshes([
       ...ownedMeshes,
       ...renovation.meshes,
+      ...walls.meshes,
       ...propMeshes,
       ...(furniture?.lightMeshes ?? []),
       ...(entry?.meshes ?? []),
@@ -1387,6 +1348,7 @@ export function buildHotel(scene: Scene) {
       furniture?.dispose();
       entry?.dispose();
       renovation.dispose();
+      walls.dispose();
       disposeFallback();
       gate.material?.dispose();
       lights.forEach((light) => light.dispose());
