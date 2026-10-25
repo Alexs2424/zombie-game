@@ -19,3 +19,9 @@ node --experimental-strip-types tools/hotel-lobby/validate.mjs hotel-grand-stair
 `layout.json` snapshots `HOTEL.stairs`, upper rail rectangles, and the lobby polygon from `world.ts`; regenerate it when the shared layout changes. The geometry validator tests the actual converted GLB for finite geometry, valid UVs/indices, embedded images, bounds, stair body clearance, and solid visible guards on both stairs. Manifests and validation reports contain measured counts.
 
 Verification: TypeScript, focused ESLint, 20 hotel/navigation/light tests, Blender source audit, and Babylon GLB validation pass. Chrome entrance, stair-detail, and balcony views were inspected. Images remain in ignored `outputs/hotel-stack/`. Sustained performance is checked at the completed stack rather than inferred from a Blender render.
+
+## Main integration — 2026-10-25
+
+After #27 merged, integrated `main` (`c2de5b7`) into the stairs branch. The only conflict was concurrent decision-log additions; retained both the stair treatment and newer gameplay/voice decisions. No runtime or model conflict edits were needed.
+
+Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, and the actual Babylon GLB geometry/bounds/UV/index/stair-clearance/guard audit pass. Existing build notices remain. Prior Chrome views and Blender-source audit above remain the visual/source evidence; those checks were not repeated for this documentation-only conflict resolution.

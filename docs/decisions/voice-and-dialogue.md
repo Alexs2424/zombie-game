@@ -1,19 +1,19 @@
 # Voice and dialogue
 
-**Latest direction (2026-09-30):** the user rejected the first voice pilot. [Round 02](voice-direction-round-02.md) owns the stronger sexy, raspy, exaggerated performance targets and replacement writing proposals; these supersede the prior pilot’s artistic direction. Final casting is pending custom-voice access.
+**Latest direction (2026-09-30):** [Round 04](voice-direction-round-04.md) owns the requested original redesign of all six voices and more theatrical scripts. Custom API access now works; 18 original previews are generated. Casting is awaiting listening and selection, not blocked by the prior account plan.
 
 
-Status: AI character voices are established direction. ElevenLabs Voice Design v3 remains the intended custom audition route, but the configured account is blocked by its paid-plan requirement. One existing-voice Voss/Callum pilot has been generated with Eleven v3; no final character voice has been selected. The [round 01 audition pack](../voice-auditions/README.md) contains the scripts, prompts and generation status.
+Status: AI character voices are established direction. Six successful custom Voice Design v3 requests now provide 18 original audition previews. No final character voice has been selected. Earlier Voss/Callum and rejected Frankie/Adam recordings remain historical tests.
 
 Use the [character production design bible](character-production-design.md) for detailed vocal contrast and the [playable scene treatment](story-scenes.md) for dramatic context. Both are working direction; final casting and recording remain pending.
 
 ## Current listening choice
 
-The user prefers Chuck Miller and rejects Dean, Tatiana and Rosie. Chuck is the reference for texture and the next Frankie audition candidate; his performance of our script remains untested because library API generation is plan-blocked. [Round 02](voice-direction-round-02.md) records the precise verdict and casting criteria.
+The user prefers Chuck Miller and rejects Dean, Tatiana and Rosie. Chuck remains the reference for texture. The newer user request redesigns Frankie along with all five others; round 04 uses original custom designs, not Chuck/library synthesis. His performance of our script remains untested, but custom Voice Design access is now verified. [Round 02](voice-direction-round-02.md) records the precise verdict and casting criteria.
 
 ## Implemented gameplay pilot
 
-The [six-line Frankie pilot](gameplay-voice-pilot.md) now supplies local prerecorded reactions to first firearm acquisition and rapid multi-kills, with subtitles and cooldowns. Adam is provisional casting, not the final voice. This bounded implementation supersedes the earlier “no additional audio generated” status for these six takes only. The broader scene script and four-character casting remain pending.
+The [six-line Frankie pilot](gameplay-voice-pilot.md) now supplies local prerecorded reactions to first firearm acquisition and rapid multi-kills, with subtitles and cooldowns. Adam was rejected by the user; its installed pilot remains only until a replacement performance is selected and integrated. This bounded implementation supersedes the earlier “no additional audio generated” status for these six takes only. The broader scene script and four-character casting remain pending.
 
 ## Production approach
 
@@ -23,7 +23,7 @@ Use original designed voices, not recognizable actor impersonations. Keep one st
 
 ## Audition plan
 
-1. Generate three distinct voice candidates per character from the performance brief.
+1. Generate three distinct voice candidates per character from the performance brief. Round 04 completes this first comparison with three acting beats per candidate; the wider tests below remain next-stage validation.
 2. Test each on the same five situations: restrained introduction, dry joke, frightened whisper, urgent combat call, and honest confession. Audition Voss in both PA-host and private-threat registers.
 3. Test short paired exchanges, especially Frankie/Voss, Eve/Leon, and Voss/Marlowe.
 4. Listen without visuals. Check character recognition, natural delivery, accent consistency, intelligibility under combat sound, and fatigue after repetition.
