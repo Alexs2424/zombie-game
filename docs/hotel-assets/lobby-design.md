@@ -17,6 +17,10 @@ The user requested all of the following improvements as a methodical PR stack, w
 5. **Seating groups and textiles.** Improve the existing seating assets with rounded upholstery, seams, piping, cushion compression, varied fabric roughness, and manufactured wood edges. Arrange coherent small groups around rugs and tables while preserving the central route. This is an arrangement proposal, not a new collision layout.
 6. **Close-range finish.** Upgrade door casings, hardware, sconces, curtain folds, and selected existing reception objects. Concentrate fine geometry where the player can approach. Avoid uniformly increasing polygon counts across the room.
 
+## Implementation record
+
+The [fidelity asset record](lobby/README.md) owns completed models, rebuild instructions, and measured validation. Items above remain planned until that record marks them implemented.
+
 ## Recommended starting scope
 
 A coordinated staircase/balcony Blender pass, followed by the chandelier/ceiling and floor/lighting, would improve the entrance view most. Retain the approved palette and recently maintained appearance, with restrained use wear. The user can supply references if a different style is desired; references are not required to continue this direction.

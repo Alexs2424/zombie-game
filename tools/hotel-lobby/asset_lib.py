@@ -1,0 +1,104 @@
+"""Original hotel model authoring helpers. Inputs use the game's X/Y-up/Z frame."""
+import bpy, bmesh, math, json
+from pathlib import Path
+from mathutils import Vector, Matrix
+import numpy as np
+ROOT=Path(__file__).resolve().parents[2]
+DOC=ROOT/'docs/hotel-assets/lobby';DOC.mkdir(parents=True,exist_ok=True)
+PARTS=[]
+def xyz(p):return (p[0],-p[2],p[1])
+def reset():
+    PARTS.clear();bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
+    bpy.context.preferences.filepaths.save_version=0
+    bpy.context.scene.unit_settings.system='METRIC'
+def material(name,hex,rough=.5,metal=0,emission=0):
+    m=bpy.data.materials.new(name);m.use_nodes=True;p=m.node_tree.nodes.get('Principled BSDF')
+    rgb=[int(hex[i:i+2],16)/255 for i in (1,3,5)]
+    rgb=[v/12.92 if v<=.04045 else ((v+.055)/1.055)**2.4 for v in rgb]
+    p.inputs['Base Color'].default_value=(*rgb,1);p.inputs['Roughness'].default_value=rough;p.inputs['Metallic'].default_value=metal
+    if emission:p.inputs['Emission Color'].default_value=(*rgb,1);p.inputs['Emission Strength'].default_value=emission
+    return m
+
+def palette():
+    return dict(ivory=material('Hotel carved ivory','#ded1b6',.62),stone=material('Hotel honed limestone','#c8bea6',.49),green=material('Hotel forest enamel','#304a3f',.34),wood=material('Hotel satin walnut','#65452f',.32),gold=material('Hotel satin champagne brass','#b8a277',.34,.72),dark=material('Hotel dark bronze','#514638',.42,.6),opal=material('Hotel warm opal','#ffe2ad',.24,0,1.6),crystal=material('Hotel faceted crystal','#c6d5ce',.12,.25),fabric=material('Hotel forest velvet','#35584a',.8))
+def texture(m,kind):
+    n=512;y,x=np.mgrid[0:n,0:n];rng=np.random.default_rng(1896)
+    if kind=='wood':
+        grain=np.sin(x*.19+np.sin(y*.019)*2)*.04+np.sin(x*.8+np.sin(y*.03))*.018
+        value=.82+grain+rng.normal(0,.008,(n,n))
+        rgb=np.stack([value*.49,value*.32,value*.20],axis=2)
+    else:
+        value=.82+.025*np.sin(x*math.pi/2)*np.sin(y*math.pi/2)+rng.normal(0,.007,(n,n))
+        rgb=np.stack([value*.24,value*.36,value*.29],axis=2)
+    pixels=np.ones((n,n,4),np.float32);pixels[:,:,:3]=np.clip(rgb,0,1)
+    im=bpy.data.images.new(m.name+' original weave' if kind!='wood' else m.name+' original grain',n,n);im.pixels.foreach_set(pixels.ravel());im.pack()
+    node=m.node_tree.nodes.new('ShaderNodeTexImage');node.image=im
+    m.node_tree.links.new(node.outputs['Color'],m.node_tree.nodes.get('Principled BSDF').inputs['Base Color'])
+    m.node_tree.nodes.get('Principled BSDF').inputs['Base Color'].default_value=(1,1,1,1)
+def add(o,name,m,bevel=0,smooth=False):
+    o.name=name;o.data.materials.append(m);PARTS.append(o)
+    if o.type=='MESH':
+        if bevel:
+            mod=o.modifiers.new('Manufactured edge radius','BEVEL');mod.width=bevel;mod.segments=3
+            mod=o.modifiers.new('Weighted corner normals','WEIGHTED_NORMAL');mod.keep_sharp=True
+        for f in o.data.polygons:f.use_smooth=smooth
+        uv=o.data.uv_layers.active or o.data.uv_layers.new(name='UVMap')
+        for f in o.data.polygons:
+            axes=[i for i in range(3) if i!=max(range(3),key=lambda i:abs(f.normal[i]))]
+            for li in f.loop_indices:
+                v=o.data.vertices[o.data.loops[li].vertex_index].co;uv.data[li].uv=(v[axes[0]],v[axes[1]])
+    return o
+
+def box(name,p,size,m,bevel=.008):
+    bpy.ops.mesh.primitive_cube_add(size=1,location=xyz(p));o=bpy.context.object;o.scale=(size[0],size[2],size[1]);bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
+    return add(o,name,m,min(bevel,min(size)*.24))
+def mesh(name,vertices,faces,m,bevel=0,smooth=False):
+    me=bpy.data.meshes.new(name);me.from_pydata([xyz(p) for p in vertices],[],faces);me.update()
+    bm=bmesh.new();bm.from_mesh(me);bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.to_mesh(me);bm.free()
+    o=bpy.data.objects.new(name,me);bpy.context.collection.objects.link(o);return add(o,name,m,bevel,smooth)
+def line(name,points,r,m,res=2):
+    c=bpy.data.curves.new(name,'CURVE');c.dimensions='3D';c.bevel_depth=r;c.bevel_resolution=res;c.use_fill_caps=True
+    s=c.splines.new('POLY');s.points.add(len(points)-1)
+    for p,v in zip(s.points,points):p.co=(*xyz(v),1)
+    o=bpy.data.objects.new(name,c);bpy.context.collection.objects.link(o);return add(o,name,m)
+def rod(name,a,b,r,m,n=16,r2=None):
+    a,b=Vector(xyz(a)),Vector(xyz(b));bpy.ops.mesh.primitive_cone_add(vertices=n,radius1=r,radius2=r if r2 is None else r2,depth=(b-a).length,location=(a+b)/2)
+    o=bpy.context.object;o.rotation_euler=(b-a).to_track_quat('Z','Y').to_euler();return add(o,name,m,0,True)
+def sphere(name,p,size,m,segments=20,rings=12):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=segments,ring_count=rings,radius=1,location=xyz(p));o=bpy.context.object;o.scale=(size[0]/2,size[2]/2,size[1]/2);bpy.ops.object.transform_apply(location=False,rotation=False,scale=True);return add(o,name,m,0,True)
+def lathe(name,x,z,profile,m,n=32,flutes=0):
+    vertices=[]
+    for y,r in profile:
+        for i in range(n):
+            a=i*math.tau/n;rr=r+flutes*math.cos(a*16);vertices.append((x+math.cos(a)*rr,y,z+math.sin(a)*rr))
+    faces=[]
+    for j in range(len(profile)-1):
+        for i in range(n):faces.append((j*n+i,j*n+(i+1)%n,(j+1)*n+(i+1)%n,(j+1)*n+i))
+    faces.extend([tuple(reversed(range(n))),tuple((len(profile)-1)*n+i for i in range(n))])
+    return mesh(name,vertices,faces,m,smooth=True)
+def export(name):
+    source=ROOT/'assets/source'/f'{name}.blend';source.parent.mkdir(parents=True,exist_ok=True)
+    bpy.context.scene['authorship']='Original Grand Hotel assets; editable named parts; metre scale'
+    bpy.ops.wm.save_as_mainfile(filepath=str(source))
+    bpy.context.view_layer.update();deps=bpy.context.evaluated_depsgraph_get();groups={};reflection=Matrix.Diagonal((-1.,1.,1.,1.))
+    for original in PARTS:
+        me=bpy.data.meshes.new_from_object(original.evaluated_get(deps),depsgraph=deps);me.transform(reflection@original.matrix_world)
+        bm=bmesh.new();bm.from_mesh(me);bmesh.ops.reverse_faces(bm,faces=list(bm.faces));bm.to_mesh(me);bm.free()
+        o=bpy.data.objects.new(original.name+' export',me);bpy.context.collection.objects.link(o);groups.setdefault(original.data.materials[0].name,[]).append(o)
+    exported=[]
+    for name_,objects in groups.items():
+        bpy.ops.object.select_all(action='DESELECT')
+        for o in objects:o.select_set(True)
+        bpy.context.view_layer.objects.active=objects[0]
+        if len(objects)>1:bpy.ops.object.join()
+        o=bpy.context.object;o.name=name+' / '+name_;exported.append(o)
+    bpy.ops.object.select_all(action='DESELECT')
+    for o in exported:o.select_set(True)
+    path=ROOT/'public/models'/f'{name}.glb'
+    bpy.ops.export_scene.gltf(filepath=str(path),export_format='GLB',use_selection=True,export_yup=True,export_apply=True,export_cameras=False,export_lights=False)
+    triangles=0
+    for o in exported:o.data.calc_loop_triangles();triangles+=len(o.data.loop_triangles)
+    report={'asset':path.name,'editableParts':len(PARTS),'materialMeshes':len(exported),'triangles':triangles,'bytes':path.stat().st_size}
+    (DOC/f'{name}-manifest.json').write_text(json.dumps(report,indent=2)+'\n');print('LOBBY_ASSET',json.dumps(report),flush=True)
+    for o in exported:bpy.data.objects.remove(o,do_unlink=True)
+    return report
