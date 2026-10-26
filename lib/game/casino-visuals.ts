@@ -1,3 +1,4 @@
+import { casePose } from "./mystery-case";
 import { Scene } from "@babylonjs/core/scene";
 import { FreeCamera } from "@babylonjs/core/Cameras/freeCamera";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
@@ -29,7 +30,7 @@ export class CasinoVisuals {
   private betHighlight?: ReturnType<typeof MeshBuilder.CreateBox>;
   private ghostChip?: TransformNode;
   private highlightMaterial?: StandardMaterial;
-  private reels: TransformNode[]=[];
+  private caseHinge?: TransformNode;
   private door: ReturnType<typeof MeshBuilder.CreateBox>;
   private lockLight: PointLight;
   private cabinetLight: PointLight;
@@ -39,15 +40,22 @@ export class CasinoVisuals {
     this.door=MeshBuilder.CreateBox('concealed speakeasy door',{width:SECRET_DOOR.w,height:SECRET_DOOR.h,depth:SECRET_DOOR.d},scene);
     this.door.position.set(SECRET_DOOR.x,SECRET_DOOR.h/2,SECRET_DOOR.z);this.door.material=wall;
     this.lockLight=new PointLight('lock indicator',new Vector3(SECRET_DOOR.x-1,2,SECRET_DOOR.z),scene);this.lockLight.range=3;this.lockLight.intensity=.25;this.lockLight.diffuse=new Color3(1,.68,.25);
-    this.cabinetLight=new PointLight('mystery marquee bounce',new Vector3(CASINO_SECRET_ANCHORS.mysteryCabinet.x,2.9,CASINO_SECRET_ANCHORS.mysteryCabinet.z+.9),scene);this.cabinetLight.diffuse=new Color3(.7,1,.6);this.cabinetLight.range=9;this.cabinetLight.intensity=1.4;
+    this.cabinetLight=new PointLight('case velvet bounce',new Vector3(CASINO_SECRET_ANCHORS.mysteryCabinet.x,2.5,CASINO_SECRET_ANCHORS.mysteryCabinet.z+1.2),scene);this.cabinetLight.diffuse=new Color3(1,.7,.35);this.cabinetLight.range=3;this.cabinetLight.intensity=.3;this.cabinetLight.renderPriority=3;
     for (const z of [-6,4,10]) {
       const light=new PointLight('speakeasy amber lamp',new Vector3(47+SECRET_OFFSET.x,3.2,z+SECRET_OFFSET.z),scene);
       light.diffuse=new Color3(1,.67,.31);light.intensity=1.3;light.range=10;
     }
     this.ready=this.load();
   }
+  lightCaseDisplay(root: TransformNode) {
+    const meshes = root.getChildMeshes();
+    this.cabinetLight.includedOnlyMeshes.push(...meshes);
+    // Babylon appends lights when membership changes; keep the local key within
+    // the material’s eight-light budget instead of behind distant casino lamps.
+    for (const mesh of meshes) mesh.lightSources.sort((a, b) => b.renderPriority - a.renderPriority);
+  }
   private async load() {
-    const names=['casino-chip','crooked-cards','secret-keypad','mystery-slot','speakeasy-decor'];
+    const names=['casino-chip','crooked-cards','secret-keypad','velvet-case','speakeasy-decor'];
     const assets=await Promise.all(names.map(name=>LoadAssetContainerAsync(`/models/${name}.glb`,this.scene)));
     if(this.scene.isDisposed) {assets.forEach(a=>a.dispose());return;}
     this.assets=assets;
@@ -87,8 +95,10 @@ export class CasinoVisuals {
     this.ghostChip=spawn(0,'chip placement preview',new Vector3(0,0,0));
     for(const mesh of this.ghostChip.getChildMeshes()) mesh.visibility=.48;
     this.ghostChip.setEnabled(false);
-    const cabinet=spawn(3,'velvet fortune',new Vector3(CASINO_SECRET_ANCHORS.mysteryCabinet.x,0,CASINO_SECRET_ANCHORS.mysteryCabinet.z));
-    this.reels=cabinet.getChildTransformNodes().filter(n=>/Reel face/.test(n.name));
+    const cabinet=spawn(3,'velvet case',new Vector3(CASINO_SECRET_ANCHORS.mysteryCabinet.x,0,CASINO_SECRET_ANCHORS.mysteryCabinet.z));
+    this.lightCaseDisplay(cabinet);
+    this.caseHinge=cabinet.getChildTransformNodes().find(n=>n.name.endsWith("CaseHinge"));
+    if(this.caseHinge) this.caseHinge.rotationQuaternion=null;
     spawn(4,'speakeasy furniture',new Vector3(47+SECRET_OFFSET.x,0,SECRET_OFFSET.z));
     this.held=new TransformNode('held casino chips',this.scene);this.held.parent=this.camera;
     this.held.position.set(.27,-.23,.53);this.held.rotation.set(.65,0,-.18);
@@ -139,9 +149,9 @@ export class CasinoVisuals {
       });
       pile.bank=bank;pile.count=count;
     }
-    const spinning=!!sim.mystery&&!sim.mystery.resolved;
-    this.cabinetLight.intensity=spinning?1.7+Math.sin(sim.time*19)*.5:1.4;
-    for(let i=0;i<this.reels.length;i++) this.reels[i].rotation.x=spinning?Math.sin(sim.time*20+i)*.12:0;
+    const pose=casePose(sim.mystery);
+    this.cabinetLight.intensity=.3+pose.lid*8;
+    if(this.caseHinge) this.caseHinge.rotation.x=-pose.lid*1.8;
     this.lockLight.diffuse=sim.speakeasy?new Color3(.2,1,.5):sim.codeFlash<0?new Color3(1,.08,.025):sim.codeFlash>0?new Color3(.3,1,.4):new Color3(1,.68,.25);
   }
   dispose(){

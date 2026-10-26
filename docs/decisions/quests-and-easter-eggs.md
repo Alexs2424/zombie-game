@@ -64,8 +64,18 @@ Follow with four-player validation before treating the co-op foundation as compl
 The player carries at most two firearms; melee tools remain separate. Existing
 poker and Last Service rewards still grant their named guns, replacing the held
 firearm (or the last held firearm when using a melee tool) if both slots are full.
-The Mystery Box instead reveals a 15-second offer: F accepts, X declines, walking
+The Mystery Box instead reveals a 20-second offer: F accepts, X declines, walking
 away lets it expire. Reveal/decline/expiry never grant ammo or replace a gun.
 The user's explicit direction establishes two guns and optional Mystery Box
-pickup; the timer and replacement convention are working implementation choices.
+pickup. The latest user direction establishes a 20-second offer, an opening case,
+visible weapon and music/sounds; replacement behavior remains a working choice.
+
+**Working design, implemented 2026-09-30:** The Velvet Case replaces the gambling
+slot cabinet with a walnut, brass and burgundy velvet presentation case on legs,
+matching a 1970s private casino lounge. Each 400-chip opening guarantees one
+random firearm offer; the previous 50% empty result is superseded. The gun rises
+while a short original chime melody plays, waits above the tray, then lowers and
+the lid shuts if declined or abandoned. This prop establishes no new character,
+quest or backstory. Native Blender source, sound provenance and timing are
+recorded in [The Velvet Case](../velvet-case.md).
 See [combat balance](../combat-balance.md) for current mechanics and tuning.

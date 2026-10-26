@@ -47,9 +47,9 @@ test('the hidden door is solid until the actual shot sequence unlocks it',()=>{
   assert.equal(hasSight({x:41,z:-16.1},{x:47,z:-16.1},s.rects),true);
   s.navigation.update(CASINO_SECRET_ANCHORS.mystery);assert.ok(s.navigation.distance[s.navigation.index(primary)]>=0);
 });
-test('mystery slot costs exactly 400, blocks duplicate spins, pauses and awards a special gun once',()=>{
+test('mystery case costs 400, blocks duplicate opens, pauses and offers a firearm once',()=>{
   const s=setup();s.player={...CASINO_SECRET_ANCHORS.mystery};assert.equal(s.purchase('mystery'),false);
-  s.speakeasy=true;s.refreshMap();let i=0;s.random=()=>[.49999,.99][i++];
+  s.speakeasy=true;s.refreshMap();s.random=()=>.99;
   assert.equal(s.purchase('mystery'),true);assert.equal(s.points,1600);assert.equal(s.purchase('mystery'),false);
   assert.deepEqual(s.events.filter(event=>event.type==='mysterySpin'),
     [{type:'mysterySpin',position:CASINO_SECRET_ANCHORS.mysteryCabinet}]);
@@ -61,12 +61,12 @@ test('mystery slot costs exactly 400, blocks duplicate spins, pauses and awards 
   assert.equal(s.weapon,'launcher');assert.equal(s.inventory.launcher.owned,true);assert.equal(s.weaponDamage(),WEAPONS.launcher.damage);
   assert.equal(s.inventory.launcher.mag,s.capacity('launcher'));s.inventory.launcher.mag=0;tick(s,4);assert.equal(s.inventory.launcher.mag,0);
 });
-test('50% boundary loses without a weapon or refund, and insufficient funds never roll',()=>{
+test('every paid case opening offers a weapon, while insufficient funds never open',()=>{
   const s=setup();s.speakeasy=true;s.refreshMap();s.player={...CASINO_SECRET_ANCHORS.mystery};s.random=()=>.5;
   s.points=399;assert.equal(s.purchase('mystery'),false);assert.equal(s.mystery,null);
   assert.equal(s.events.some(event=>event.type==='mysterySpin'),false,'Rejected pulls must be silent');
   s.points=400;assert.equal(s.purchase('mystery'),true);tick(s,3);
-  assert.equal(s.points,0);assert.equal(s.mystery.reward,null);assert.deepEqual(s.relics,{});
+  assert.equal(s.points,0);assert.ok(MYSTERY_WEAPONS.includes(s.mystery.reward));assert.deepEqual(s.relics,{});
   assert.ok(MYSTERY_WEAPONS.every(id=>!s.inventory[id].owned));
 });
 
