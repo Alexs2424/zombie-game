@@ -1,0 +1,26 @@
+{
+  "name": "Casino feather palm in glazed ceramic and brass urn",
+  "authoring": "Original procedural Blender geometry and blade texture; no downloaded assets",
+  "blender": "5.2.2 LTS",
+  "source_objects": 506,
+  "fronds": 11,
+  "individual_leaflets": 223,
+  "native": "assets/source/casino-planter.blend",
+  "runtime": "public/models/casino-planter.glb",
+  "coordinates": "Blender Z-up to glTF Y-up; floor-centered origin; rotational planting variation allowed",
+  "target_height": 2.35,
+  "maximum_horizontal_extent_from_origin": 0.6,
+  "casino_scaling": {
+    "horizontal": 0.8333333333333334,
+    "vertical": 0.7659574468085106
+  },
+  "features": [
+    "Closed curved individual feather leaflets",
+    "Modeled midribs and embedded vein image",
+    "Staggered leaf insertions and varied arching rachises",
+    "Individual petioles and basal sheaths",
+    "Fluted hollow glazed ceramic urn",
+    "Aged brass foot and rolled rim bands",
+    "Recessed soil and individual drainage pebbles"
+  ]
+}

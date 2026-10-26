@@ -270,3 +270,16 @@ test("every actor sees shared corpse collapse on its original floor, aged once p
   step(game, 1.55);
   assert.equal(game.snapshot("1").self.corpses.length, 0, "expired bodies disappear for everyone");
 });
+
+test("round cues count down once per world tick with four actors", () => {
+  const { game, sims } = room(4);
+  sims[0].roundCue = "start";
+  sims[0].roundCueRemaining = 1;
+  game.step(.05, new Map());
+  for (const sim of sims) assert.ok(Math.abs(sim.roundCueRemaining - .95) < 1e-9);
+  step(game, .95);
+  for (const sim of sims) {
+    assert.equal(sim.roundCueRemaining, 0);
+    assert.equal(sim.roundCue, null);
+  }
+});

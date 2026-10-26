@@ -69,3 +69,14 @@ test('navigation reaches every relocated interaction and spawn without placing t
     assert.ok(nav.distance[nav.index(point)] >= 0, `reachable point ${JSON.stringify(point)}`);
   }
 });
+
+test('main casino room transoms stop shots above the new clear opening after purchase', () => {
+  for (const id of ['lounge','shortcut','vip','vipExit','cashier']) {
+    const door=CASINO_DOORS[id];
+    const nx=door.w<door.d ? (door.x<0?-1:1) : 0;
+    const nz=door.w>door.d ? -1 : 0;
+    const origin={x:door.x-nx,y:4.2,z:door.z-nz};
+    assert.ok(raycastWorld(origin,{x:nx,y:0,z:nz},solids,2),`${id} transom blocks bullets`);
+    assert.equal(raycastWorld({...origin,y:3.85},{x:nx,y:0,z:nz},solids,2),null,`${id} clear headroom`);
+  }
+});

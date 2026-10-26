@@ -1,0 +1,16 @@
+{
+  "status": "audition direction; unselected",
+  "model_id": "eleven_ttv_v3",
+  "characters": [
+    {
+      "id": "frankie",
+      "prompt": "An original 47-year-old male Newark character voice. Thick, seductive, chesty baritone with a battered, grainy rasp and a slightly nasal, crooked grin. Strong musical North Jersey phrasing: vowels stretch when delighted, consonants bite when insulted. A dangerous former enforcer who loves people and violence with alarming enthusiasm. Huge animated-film acting range: intimate warm purr, incredulous high cracked laugh, sudden barking indignation, then a tiny cold threat. Tangible breath and rough edges, surprising pitch changes, conversational interruptions. Charismatic and grotesquely charming, never a polished announcer or a monotonous deep growl. Natural studio speech, no effects or music.",
+      "text": "Ohhh, look at you. Look at those barrels. Ruth would've hated you. Everybody gets a turn. I'm a gentleman. Hey! Hey, look at me. You're not dying on this carpet. It's disgusting. ... Martin asked me to wait. I didn't."
+    },
+    {
+      "id": "eve",
+      "prompt": "An original 34-year-old Black British female character voice, south London roots beneath cultivated stage diction. Low, dark, sensuous contralto with a dry smoky rasp, resonant chest and bright razor-edged consonants. Enormous theatrical range: a languid private invitation becomes a gloriously outraged public command; an involuntary low chuckle breaks the immaculate poise. Playful, imperious, dangerous, extravagantly alive. Stretch a delicious word, snap the next phrase, then let vulnerable speech come out plain and small. Character animation intensity with human breath and imperfections. Not a posh narrator, breathy ASMR whisper, or permanently sultry monotone. Clean dry studio speech, no music.",
+      "text": "Oh, that's indecent. Give it here. No, darling. Eyes on me. The gun is the surprise. ... You tore my sleeve. I made that. I MADE that! ... Play it again. Please. I need to hear if it's him."
+    }
+  ]
+}

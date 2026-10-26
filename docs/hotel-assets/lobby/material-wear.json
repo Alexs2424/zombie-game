@@ -1,0 +1,15 @@
+{
+  "floorRoughnessRange": [
+    0.2980000000319261,
+    0.4469980915864077
+  ],
+  "wearFollowsTraffic": true,
+  "scuffMarks": 95,
+  "textureResolution": [
+    1024,
+    1024
+  ],
+  "woodGrain": "long axis on straight pieces; arc length on curved rails",
+  "fabricWeaveRepeatMetres": 0.16,
+  "brassWear": "door pulls, escutcheons and kickplates only"
+}

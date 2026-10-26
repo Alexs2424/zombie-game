@@ -1,0 +1,14 @@
+[
+  {
+    "weapon": "revolver",
+    "atSeconds": 0.0
+  },
+  {
+    "weapon": "shotgun",
+    "atSeconds": 3.25
+  },
+  {
+    "weapon": "tommy",
+    "atSeconds": 6.5
+  }
+]

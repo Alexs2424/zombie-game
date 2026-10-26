@@ -1,0 +1,19 @@
+{
+  "speaker": "Frankie Caruso",
+  "casting": "Adam stock voice; provisional gameplay audition, not final North Jersey casting",
+  "provider": "ElevenLabs",
+  "voice_id": "pNInz6obpgDQGcFmaJgB",
+  "request": {
+    "text": "[confident] Nice weight. Somebody's about to have a very bad evening.",
+    "model_id": "eleven_v3",
+    "voice_settings": {
+      "stability": 0.5
+    }
+  },
+  "subtitle": "Nice weight. Somebody's about to have a very bad evening.",
+  "generated_at": "2026-09-30T06:48:36.459829+00:00",
+  "request_id": "3XhcgwsFw8CBex0SPHKU",
+  "bytes": 65245,
+  "sha256": "0a36ecd76b83672cac59ad99476cbc4298b4af9667531e885b4159bd8824ffc3",
+  "processing": "Unprocessed provider MP3; gain controlled at runtime."
+}

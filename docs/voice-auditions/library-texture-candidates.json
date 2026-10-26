@@ -1,0 +1,53 @@
+{
+  "status": "User reviewed: Chuck Miller preferred; Dean, Tatiana and Rosie rejected. No new synthesis.",
+  "candidates": [
+    {
+      "voice_id": "HIGUfNOdjuWQwwapnTRW",
+      "name": "Chuck Miller - Deep, Raspy, American",
+      "description": "A warm, weathered and authentic American voice with deep gravel and heart. Perfect for gritty storytelling, old-timer commercials, historical documentaries, and character roles that need wisdom and texture.",
+      "preview_url": "https://storage.googleapis.com/eleven-public-prod/database/user/QLeoIFNQuWZCsHPkmGfqE1ZH3NA2/voices/HIGUfNOdjuWQwwapnTRW/KmCIshV3FvIyhIDQPsUp.mp3",
+      "accent": "american",
+      "gender": "male",
+      "age": "middle_aged",
+      "free_users_allowed": true,
+      "search": "raspy",
+      "user_verdict": "preferred preview; final character performance untested"
+    },
+    {
+      "voice_id": "5OIl3MClvHTQsNIdLybn",
+      "name": "Dean \u2013 Low, Raspy, Dark",
+      "description": "A deep male voice with a raspy texture and dark tone suited for cinematic storytelling and immersive narration. Ideal for audiobooks, fiction, thrillers, mysteries, horror, documentaries, YouTube narration, podcasts, gaming content, character voices, and dramatic storytelling. Steady pacing and clear delivery create a strong presence while maintaining smooth flow for long-form listening and high-character voice generation.",
+      "preview_url": "https://api.us.elevenlabs.io/v1/voices/5OIl3MClvHTQsNIdLybn/previews/audio?payload=eyJ2b2ljZV9zb3VyY2UiOiJjdXN0b20iLCJ3b3Jrc3BhY2VfaWQiOiJkMjZkMTE0YWNmZmY0ZGYwOGJiZDI2ZTMwNTExNDRiNiIsImZpbGVuYW1lIjoiZXpsZ3U4c1RiR2ptMEpoUHQwMFoubXAzIiwidGltZXN0YW1wIjoxNzkwNzUxNjAwMDAwMDAwfQ%3D%3D",
+      "accent": "american",
+      "gender": "male",
+      "age": "middle_aged",
+      "free_users_allowed": true,
+      "search": "raspy",
+      "user_verdict": "rejected: boring, nerdy, radio-like, lacking character, monotone"
+    },
+    {
+      "voice_id": "F59Bv0jP18ftxRfYvYo5",
+      "name": "Tatiana - Smoky, Husky and Intriguing",
+      "description": "A smoky, husky female voice, with a bright emotion. Perfect for Conversations.",
+      "preview_url": "https://storage.googleapis.com/eleven-public-prod/database/user/sfD0vJRDCzSAcaljJH3LfFeLfZx2/voices/F59Bv0jP18ftxRfYvYo5/avEbFFYI8ZxQmNmxCULh.mp3",
+      "accent": "american",
+      "gender": "female",
+      "age": "middle_aged",
+      "free_users_allowed": true,
+      "search": "smoky",
+      "user_verdict": "rejected: boring, nerdy, radio-like, lacking character, monotone"
+    },
+    {
+      "voice_id": "V1sMnmZsNBJuEOA7aVqB",
+      "name": "Rosie - Smoky, Warm, and Subtle",
+      "description": "Rose is a captivating female narrator with the rich, smoky resonance of a bygone era. Her tone is velvety and low, laced with a subtle mystery that draws listeners into the past. Whether she's recounting tales of lost love, unraveling noir mysteries, or delivering monologues that echo from an old radio, Rose embodies timeless elegance. Her voice is slow, sultry, and deliberate \u2014 the kind that belongs in a dimly lit jazz lounge or a vintage newsreel.",
+      "preview_url": "https://storage.googleapis.com/eleven-public-prod/database/user/Yt1v6yNON1PREl6tRfD7UirCqhk1/voices/V1sMnmZsNBJuEOA7aVqB/0ef74199-cbd8-4e2a-8b01-509f1f99fc73.mp3",
+      "accent": "american",
+      "gender": "female",
+      "age": "young",
+      "free_users_allowed": true,
+      "search": "smoky",
+      "user_verdict": "rejected: boring, nerdy, radio-like, lacking character, monotone"
+    }
+  ]
+}

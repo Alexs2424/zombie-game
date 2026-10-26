@@ -27,16 +27,17 @@ From the repository root, with Blender and Node 22.13+ installed:
 blender --background --factory-startup --python tools/service-assets/build_truck.py
 blender --background --factory-startup --python tools/service-assets/build_props.py
 node --experimental-strip-types tools/service-assets/validate_runtime.mjs
-npm test
 npm run typecheck
-npm run lint
-npm run build
+node --experimental-strip-types --test tests/service-corridor.test.mjs
 ```
 
 On macOS the Blender executable may be
 `/Applications/Blender.app/Contents/MacOS/Blender`. Blender background rendering
 needs normal access to the graphics service. Each generator saves editable
 source, writes the game export, and renders its asset preview.
+The props generator reads the room's shared wall mount coordinates from
+`lib/game/service-layout.ts`; set `NODE_BINARY` when a compatible Node executable
+is not the default on PATH.
 
 ## Placement and gameplay
 
@@ -48,9 +49,14 @@ Text receives a local orientation correction for the game camera.
 `lib/game/service-layout.ts` owns the five solid assembly footprints. The same
 rectangles drive player collision, zombie navigation and bullet/grenade cover.
 Small fixtures on walls, overhead pipes and floor paint are decorative.
-The truck faces west inside the south loading bay. The cross-room lane at
-Z=8.6 connects the staff shortcut and VIP exit; the lounge passage at X=11.7
-remains clear. Closed-room gates continue to control progression.
+The assets are translated by `SERVICE_OFFSET` into the northwest 14 × 14 m
+supply room. The truck faces west inside the south loading bay. The cross-room
+lane at local Z=8.6 and the truck's east aisle at local X=11.7 remain clear;
+access is through the purchased hotel doorway. The extinguisher is mounted on
+the south wall, while the switchgear and receiving sign meet the north wall.
+Overhead pipes enter the west and east walls, and their hangers touch the ceiling.
+Wall-mounted assemblies follow the same interior faces as the runtime cladding;
+the five solid furnishing footprints retain their existing positions.
 
 The truck is parked scenery. The pallet jack and cartons are static props.
 Simplified solid collision volumes intentionally include the open spaces
@@ -59,8 +65,8 @@ remain visible if a model fails to load.
 
 The independent runtime audit loads the actual GLBs through Babylon, checks
 finite geometry/normals, embedded textures, room placement, material/geometry
-budgets and geometry in every solid footprint, then casts rays through the
-walking lanes and against the new cover. Its results and asset hashes are in
+budgets and geometry in every relocated solid footprint, then casts rays through
+the walking lanes, against cover, and at the wall/ceiling mounting surfaces. Its results and asset hashes are in
 `runtime-validation.json`. Development previews at `/?playtest=1` expose
 **Service overview**, **Service truck**, and **Service storage** viewpoints.
 

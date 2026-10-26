@@ -1,0 +1,181 @@
+{
+  "status": "passed",
+  "file": "casino-planter.glb",
+  "sha256": "63da133bbf7b6e3b0a76d4def1a5c921f702af2858e4ad09d1c922609bea5a5f",
+  "bytes": 1185808,
+  "triangles": 46716,
+  "materials": 7,
+  "material_draw_calls": 7,
+  "bounds_min": [
+    -0.5825807452201843,
+    0.0,
+    -0.5536636114120483
+  ],
+  "bounds_max": [
+    0.5864743590354919,
+    2.3499999046325684,
+    0.6000000238418579
+  ],
+  "dimensions_XYZ": [
+    1.1690551042556763,
+    2.3499999046325684,
+    1.1536636352539062
+  ],
+  "origin": "Y-up, floor contact Y=0, planting centered at X=Z=0",
+  "opaque_leaf_geometry": true,
+  "finite_arrays": true,
+  "unit_normals": true,
+  "indices_valid": true,
+  "degenerate_triangles": 0,
+  "winding_mismatches": 0,
+  "embedded_images": [
+    {
+      "name": "05 Mature green palm blade \u2014 original 512 square blade image",
+      "size": [
+        512,
+        512
+      ],
+      "embedded": true
+    },
+    {
+      "name": "06 Younger olive green blade \u2014 original 512 square blade image",
+      "size": [
+        512,
+        512
+      ],
+      "embedded": true
+    }
+  ],
+  "material_geometry": [
+    {
+      "name": "01 Deep green glazed ceramic",
+      "triangles": 3072,
+      "bounds_min": [
+        -0.30478280782699585,
+        0.0,
+        -0.30478280782699585
+      ],
+      "bounds_max": [
+        0.30478280782699585,
+        0.6399999856948853,
+        0.30478280782699585
+      ],
+      "base_color": [
+        0.054999999701976776,
+        0.10499999672174454,
+        0.0860000029206276,
+        1
+      ]
+    },
+    {
+      "name": "02 Aged brushed brass bands",
+      "triangles": 2496,
+      "bounds_min": [
+        -0.30799999833106995,
+        0.017999999225139618,
+        -0.30799999833106995
+      ],
+      "bounds_max": [
+        0.30799999833106995,
+        0.6460000276565552,
+        0.30799999833106995
+      ],
+      "base_color": [
+        0.49000000953674316,
+        0.3100000023841858,
+        0.10000000149011612,
+        1
+      ]
+    },
+    {
+      "name": "03 Earth and mineral drainage",
+      "triangles": 1200,
+      "bounds_min": [
+        -0.24699999392032623,
+        0.574999988079071,
+        -0.24699999392032623
+      ],
+      "bounds_max": [
+        0.24699999392032623,
+        0.6135300993919373,
+        0.24699999392032623
+      ],
+      "base_color": [
+        0.07500000298023224,
+        0.04899999871850014,
+        0.026000000536441803,
+        1
+      ]
+    },
+    {
+      "name": "04 Fibrous olive palm stems",
+      "triangles": 6944,
+      "bounds_min": [
+        -0.49894240498542786,
+        0.5794598460197449,
+        -0.4602779746055603
+      ],
+      "bounds_max": [
+        0.514003574848175,
+        2.3382906913757324,
+        0.5352016091346741
+      ],
+      "base_color": [
+        0.2199999988079071,
+        0.25,
+        0.07400000095367432,
+        1
+      ]
+    },
+    {
+      "name": "05 Mature green palm blade",
+      "triangles": 13200,
+      "bounds_min": [
+        -0.5825807452201843,
+        1.4100948572158813,
+        -0.5536636114120483
+      ],
+      "bounds_max": [
+        0.5864743590354919,
+        2.1352529525756836,
+        0.6000000238418579
+      ],
+      "base_color": null
+    },
+    {
+      "name": "06 Younger olive green blade",
+      "triangles": 6424,
+      "bounds_min": [
+        -0.5738607048988342,
+        1.4453563690185547,
+        -0.5205798149108887
+      ],
+      "bounds_max": [
+        0.5717506408691406,
+        2.34836745262146,
+        0.5957797169685364
+      ],
+      "base_color": null
+    },
+    {
+      "name": "07 Raised leaf midrib",
+      "triangles": 13380,
+      "bounds_min": [
+        -0.5782482624053955,
+        1.4188357591629028,
+        -0.5490169525146484
+      ],
+      "bounds_max": [
+        0.5828313231468201,
+        2.3499999046325684,
+        0.5962665677070618
+      ],
+      "base_color": [
+        0.27000001072883606,
+        0.36000001430511475,
+        0.10999999940395355,
+        1
+      ]
+    }
+  ]
+}

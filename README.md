@@ -2,6 +2,8 @@
 
 A solo first-person zombie survival game set in an original abandoned Las Vegas casino. Built with Babylon.js, TypeScript, React, and Vinext. All gameplay runs locally in the browser. No accounts, networked gameplay, or paid assets are required for local play.
 
+See the [arsenal reference](docs/arsenal.md) for weapon stats, handling, upgrades, acquisition and sound direction.
+
 ## Grand casino reconfiguration
 
 Start in a **60 × 32 metre Grand Casino** with eight slot banks (48 cabinets),
@@ -79,14 +81,14 @@ Development playtests include **Service overview**, **Service truck**, and
 | Move                | W A S D                                    |
 | Look                | Mouse                                      |
 | Fire                | Left mouse button, hold for repeated shots |
-| Aim                 | Hold right mouse button                    |
+| Aim                 | Hold Shift or right mouse button           |
 | Both barrels        | B (Double or Nothing)                      |
 | Knife slash         | V                                          |
 | Throw grenade       | G                                          |
-| Sprint              | Shift                                      |
+| Sprint              | Space (hold; uses stamina)                 |
 | Reload              | R; an empty trigger also starts a reload   |
-| Buy/interact        | E when close to a purchase; also puts chips away |
-| Switch weapons      | 1–5 house guns, 6–0 Mystery Box finds; wheel or Q cycles |
+| Buy/interact        | F when close to a purchase; also puts chips away |
+| Switch weapons      | 1–2 gun slots; Q/E or wheel switches guns |
 | Hold casino chips   | C (then aim at a craps number and fire)    |
 | Cash out table bets | X near the craps table                     |
 | Pause/release mouse | Escape                                     |
@@ -107,7 +109,7 @@ Zombies use three original Blender designs: Pit Boss, Crooked Dealer, and Last S
 - Cashier: 600 chips for the east public room. Glass blocks movement and projectiles while allowing sight. The cash behind it is scenery.
 - Seven’s Curse craps wager: 250 chips, **once per table per round**. Each table owns its roll and result. Two fair six-sided dice roll while combat continues. A total of seven slows walking and sprinting by 20% for that round; other totals pay 500 chips (250 net). Two curses do not stack, and a win at the other table does not remove a curse. During intermission, the wager and any curse apply to the upcoming round.
 - Craps: hold physical 25-chip stacks with **C**, then aim/fire at 4, 5, 6, 8, 9, or 10. Standard place-bet minimums and payouts are used (6/8 in multiples of 6; 4/10 pay 9:5, 5/9 pay 7:5, and 6/8 pay 7:6). Each table has its own bets and one roll per round. With chips on the felt there is no additional roll fee. Bets stay on the felt between rounds; **X** returns the remaining principal. A seven clears the table, while a hit number pays profit automatically.
-- Speakeasy easter egg: the High Roller poker table has fixed suit/value cards. Shoot the matching suit and number sequence into the keypad hidden behind the portrait in the cashier public room to open the adjoining secret room. The room contains a Blender-built Velvet Fortune mystery slot: 400 chips per spin, 50% chance of one of the ten 1970s house guns below (an already-owned gun is restocked), otherwise no reward. The cabinet shuffles 3D models of the arsenal while it spins and the HUD reel shows the payout.
+- Speakeasy easter egg: the High Roller poker table has fixed suit/value cards. Shoot the matching suit and number sequence into the keypad hidden behind the portrait in the cashier public room to open the adjoining secret room. The room contains [The Velvet Case](docs/velvet-case.md), a Blender-built walnut and brass gun case. Each 400-chip opening reveals a random house firearm with original music and mechanical sounds. The lid opens and the weapon rises from its velvet tray. F takes it; X declines; after 20 seconds it returns and the lid shuts. Two-gun replacement rules apply; there is no automatic grant.
 - The 1970s Mystery Box arsenal ([spec](docs/weapon-spec-1970s.md), [assets](docs/weapon-1970s-assets/README.md)): High Roller magnum (the spec's `revolver`, shipped as `magnum` because the poker revolver owns that id), Chicago Typewriter drum SMG, Double or Nothing coach gun (B fires both barrels), Snake Eyes twin pocket pistols, The Enforcer machine pistol, Silver Dollar lever action (penetrates three), Last Call auto shotgun, The Eye in the Sky scoped bolt action (penetrates four), House Edge belt-fed LMG (−22% speed, staggers) and The Debt Collector 40 mm launcher (splash can hurt you). Lever and Last Call load one round at a time and can fire mid-reload; automatic guns lose accuracy under a held trigger.
 - Stickman craps rake: free, leaning on the craps table on the starting casino floor. A 2.8 m, 100° sweep that damages every zombie in the fan; it survives **3 successful sweeps** (misses are free), then splinters and returns you to your last firearm.
 - Fire Exit axe: free, in the break-glass cabinet on the northwest supply room's north wall. Slow, heavy single-target chop that never breaks; no firearm use mid-swing.
@@ -115,7 +117,7 @@ Zombies use three original Blender designs: Pit Boss, Crooked Dealer, and Last S
 - Dealer’s Choice SMG: 1,100 chips in the lounge; 400-chip reserve refill.
 - Pit Boss rifle: 1,600 chips in the northwest supply room; 500-chip reserve refill.
 - The Dead Man’s Hand revolver: complete a five-card flush at either the starting casino or High Roller card table. One free chosen-card exchange per table, per round; hands persist between visits. The first flush grants and equips the six-shot revolver in slot 5; the other table’s flush refills it.
-- Marlowe, the lounge bartender: **E** from the customer side of the bar opens the menu and pauses the solo run. House Reserve costs 1,500 (+50 maximum health); Quick Pour costs 1,000 (reload time ×0.7); Night Shift costs 900 (sprint speed ×1.15). Perks are one-time purchases for the current run.
+- Marlowe, the lounge bartender: **F** from the customer side of the bar opens the menu and pauses the solo run. House Reserve costs 1,500 (+50 maximum health); Quick Pour costs 1,000 (reload time ×0.7); Night Shift costs 900 (sprint speed ×1.15). Perks are one-time purchases for the current run.
 - Double Down: 2,000 chips per owned weapon, at Marlowe’s menu or the VIP workshop. Increases magazine capacity by 50%, damage by approximately 35%, and fills the magazine once. The revolver retains six chambers and gets a 25% faster reload instead of extra magazine capacity. Select the gun to upgrade in the bar menu; the workshop upgrades your equipped gun. Both locations share upgrade state.
 
 Extra guns, separately purchased escape routes, and perks are competing build choices; buying everything is a longer-run goal. Door prices and the economy with two starting craps tables are initial playtest tuning. Rounds continue after five with bounded enemy speed and health.
@@ -126,6 +128,7 @@ Extra guns, separately purchased escape routes, and perks are competing build ch
 - `lib/game/casino-layout.ts`: shared room footprints, individual doors, table and slot placements, weapon anchors, and room spawn points.
 - `lib/game/poker.ts`: persistent five-card hands, finite shuffled decks, suit matching, and discarded-card recycling. `card-art.ts` draws the live tabletop card prints.
 - `lib/game/renderer.ts`: casino environment, local GLB weapon loading, animation, lighting, and frame sampling.
+- `lib/game/casino-architecture-assets.ts`: original Blender wall spans and room gates; [architecture and playtest notes](docs/casino-architecture/README.md).
 - `lib/game/characters.ts`: articulated casino guests and Marlowe, with clothing and facial details.
 - `lib/game/runtime.ts`: fixed-step updates, input, pointer lock, pause/resume, restart, and HUD snapshots.
 - `lib/game/audio.ts`: synthesized weapons/interaction cues, round stingers, and local AI-generated positional zombie voices.
@@ -140,7 +143,7 @@ Extra guns, separately purchased escape routes, and perks are competing build ch
 
 Automated checks cover combat, economy, independent door purchases and table wagers, reachable room routes, glass behavior, hotel stairs and mystery progression, card rewards, audio and assets. Type checking and production build are separate checks. The initial target device is the user's M3 Max MacBook Pro with 128 GB RAM. No sustained 30-minute gameplay or real-device frame-time benchmark is claimed yet.
 
-This is a rough playable: stylized geometry and humanoids, synthesized effects plus AI-generated zombie voices, no jump, crouch, persistent records, native app, controller support, or co-op. Mouse capture needs a focused browser and a genuine user gesture. The final feel and difficulty need a hands-on mouse playtest.
+This is a rough playable: stylized geometry and humanoids, synthesized effects plus AI-generated zombie voices, no jump, crouch, persistent records, native app, or controller support. Private co-op is available as an experimental `/coop` playtest with a separate Node server; see [implementation and limitations](docs/multiplayer/implementation.md). Mouse capture needs a focused browser and a genuine user gesture. The final feel and difficulty need a hands-on mouse playtest.
 
 Press **V** for a knife slash: 100 damage to the nearest target in a forward 1.65-meter reach, with a 0.18-second windup and 0.75-second cooldown. It consumes no ammunition. Press **G** to throw a grenade: 2.2-second fuse, bouncing trajectory, and a 4.5-meter blast with damage falloff and cover checks. Nearby explosions can hurt you. Start with two grenades; each round after the first supplies two more, capped at four. Both attacks cancel reloads and award the same hit chips and 50-chip non-headshot kill bonus as gunfire. Pause freezes windups, fuses, and blast effects.
 
@@ -221,7 +224,7 @@ for tone and humor.
 
 ## Roulette rewards
 
-Interact with the customer side of either starting-casino roulette table using **E**. Each spin costs 200 chips. The number is chosen once at the start, with all 37 pockets equally likely, and the wheel and ball settle on that number. The four lucky pockets give a combined win chance of 4/37 (about 10.8%). Spins continue while you move and fight; each table can run one independent spin at a time.
+Interact with the customer side of either starting-casino roulette table using **F**. Each spin costs 200 chips. The number is chosen once at the start, with all 37 pockets equally likely, and the wheel and ball settle on that number. The four lucky pockets give a combined win chance of 4/37 (about 10.8%). Spins continue while you move and fight; each table can run one independent spin at a time.
 
 Ammo rewards fill both magazine and reserve, respect upgraded magazine sizes, and cancel an active reload. The 4/24 reward uses the weapon equipped when the ball lands. Unowned weapons stay unowned. A second zero refreshes the 30-second double-damage timer instead of stacking its multiplier; the bonus also applies to upgraded weapons. Spin, result-display, and damage-bonus timers freeze during pause and the bartender/card menus. Starting a new run clears all roulette state and bonuses.
 
@@ -229,9 +232,9 @@ Ammo rewards fill both magazine and reserve, respect upgraded magazine sizes, an
 
 The Grand Casino and High Roller poker islands use a detailed shared GLB with stitched oxblood rails, inlaid walnut, brass trim, recessed cupholders, printed emerald felt, a pedestal base, dealer tray, and detailed chip stacks. Five live cards sit on each felt surface and match that table’s hand. Editable Blender source, previews, regeneration instructions, and geometry checks are in `docs/poker-assets/` and `tools/poker-assets/`.
 
-Approach the south/customer side and press **E**. The solo game pauses while you select a card and confirm a free swap. Keep matching suits: a flush means five of the same suit, regardless of rank or order. Each table has its own hand, 52-card deck, and one-swap-per-round limit. Leaving, reopening, or entering intermission does not refresh that limit. A new actual round does. Previously discarded cards are shuffled back only when the draw pile runs out; cards still in the hand cannot be drawn again.
+Approach the south/customer side and press **F**. The solo game pauses while you select a card and confirm a free swap. Keep matching suits: a flush means five of the same suit, regardless of rank or order. Each table has its own hand, 52-card deck, and one-swap-per-round limit. Leaving, reopening, or entering intermission does not refresh that limit. A new actual round does. Previously discarded cards are shuffled back only when the draw pile runs out; cards still in the hand cannot be drawn again.
 
-The first flush unlocks **THE DEAD MAN’S HAND** for this run: a six-shot, 110-damage revolver with 48 reserve rounds. It equips automatically and uses weapon key **5**. Completing the other table refills it once. Completed tables retain their flush without granting repeated rewards. Roulette’s ammo rewards include the revolver once owned; Marlowe and the workshop can upgrade it to **ACE OF SPADES**. New runs reset both hands and the reward. Flush completion is represented separately from weapon ownership, ready for a future map-unlock reward; this pass adds no new room.
+The first flush unlocks **THE DEAD MAN’S HAND** for this run: a six-shot, 110-damage revolver with 48 reserve rounds. It equips automatically and uses one of the two firearm slots (replacing the held gun if full). Completing the other table refills it once. Completed tables retain their flush without granting repeated rewards. Roulette’s ammo rewards include the revolver once owned; Marlowe and the workshop can upgrade it to **ACE OF SPADES**. New runs reset both hands and the reward. Flush completion is represented separately from weapon ownership, ready for a future map-unlock reward; this pass adds no new room.
 
 ## Grand Hotel and Last Service
 
@@ -241,7 +244,7 @@ continuous guards prevent dropping between levels. Five hotel service entrances
 become active after a three-second opening grace period, with modestly tougher
 hotel enemies.
 
-At the upstairs host stand, press **E** to ring the **Last Service** bell. Stay in
+At the upstairs host stand, press **F** to ring the **Last Service** bell. Stay in
 the restaurant for **35 seconds** and clear all **12 ambushers**. Up to six
 ambushers can be active within the normal 14-enemy cap. Existing round enemies
 keep pursuing, while the normal spawn budget and intermission timer pause.
@@ -257,7 +260,7 @@ per run and resets with a new game.
 
 Eleven original Blender furniture assets replace the lobby and restaurant
 placeholders. Marble, woodwork, Art Deco rails, chandeliers, wall art, clocks,
-service doors, and contact shading complete this hotel pass. Press **E** beside
+service doors, and contact shading complete this hotel pass. Press **F** beside
 the lobby jukebox to start or stop an original, distance-panned lounge instrumental.
 Music and hotel cues follow the volume control and pause with the game.
 
@@ -291,3 +294,7 @@ The slot status names the emitting cabinet and sound. See
 ## Blender High Roller couch
 
 The couch beside the flush card games now uses an original Blender-built oxblood leather banquette with sculpted diamond tufting, five shaped cushions, stitched piping, rolled arms, walnut joinery, and brass feet. The existing footprint and cover height remain unchanged. The editable source is `assets/source/vip-couch.blend`; the game loads `public/models/vip-couch.glb`. See `docs/couch-assets/` for previews, regeneration instructions, and validation. Development playtest controls include a **VIP couch** viewpoint.
+
+Sprint stamina lasts five seconds, recovers after a one-second delay, and requires 30% recovery after exhaustion. Settings → Show tips & explanation cards controls optional help overlays and remembers your choice on this browser. Essential gameplay status remains visible.
+
+Current inventory, round-health and damage tuning is documented in [Combat balance](docs/combat-balance.md). Mystery-box wins now require F to accept; X declines. Revealing a weapon never changes the loadout.

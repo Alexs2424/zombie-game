@@ -1,0 +1,771 @@
+{
+  "provider": "ElevenLabs",
+  "model": "eleven_text_to_sound_v2",
+  "sourceDocumentation": "https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert",
+  "sourceFormat": "mp3_44100_128",
+  "outputFormat": "44100 Hz mono PCM16 WAV",
+  "processing": "personality pass 3 with selective comic accents: main transient trim; 45 Hz high-pass; weapon-specific resonant EQ, saturation and decay; three time/color/body variants; seeded inharmonic material accents; fades; -1.51 dBFS peak ceiling",
+  "personalities": {
+    "pistol": {
+      "label": "dry snap / compact slide",
+      "focus": 2100,
+      "color": 1.0,
+      "drive": 1.05,
+      "tail": 0.16,
+      "material": [
+        1650,
+        2910,
+        4380
+      ],
+      "decay": 0.012,
+      "level": 0.12,
+      "beats": [
+        0.023
+      ]
+    },
+    "shotgun": {
+      "label": "ragged thunder / heavy receiver",
+      "focus": 210,
+      "color": 1.8,
+      "drive": 1.65,
+      "tail": 0.3,
+      "material": [
+        190,
+        337,
+        760
+      ],
+      "decay": 0.036,
+      "level": 0.22,
+      "beats": [
+        0.033
+      ]
+    },
+    "smg": {
+      "label": "pap / clipped stamped steel",
+      "focus": 2900,
+      "color": 1.4,
+      "drive": 1.1,
+      "tail": 0.1,
+      "material": [
+        2400,
+        3810,
+        6140
+      ],
+      "decay": 0.009,
+      "level": 0.13,
+      "beats": [
+        0.014,
+        0.036
+      ]
+    },
+    "rifle": {
+      "label": "hard bark / steel bolt slap",
+      "focus": 1100,
+      "color": 1.4,
+      "drive": 1.35,
+      "tail": 0.18,
+      "material": [
+        740,
+        1590,
+        3130
+      ],
+      "decay": 0.014,
+      "level": 0.18,
+      "beats": [
+        0.029
+      ]
+    },
+    "revolver": {
+      "label": "smoky low bark / iron frame",
+      "focus": 380,
+      "color": 1.9,
+      "drive": 1.6,
+      "tail": 0.32,
+      "material": [
+        390,
+        677,
+        1190
+      ],
+      "decay": 0.048,
+      "level": 0.18,
+      "beats": [
+        0.012
+      ]
+    },
+    "magnum": {
+      "label": "bright whip crack / singing cylinder",
+      "focus": 3400,
+      "color": 1.6,
+      "drive": 1.15,
+      "tail": 0.22,
+      "material": [
+        2130,
+        3540,
+        5790
+      ],
+      "decay": 0.06,
+      "level": 0.19,
+      "beats": [
+        0.009
+      ]
+    },
+    "tommy": {
+      "label": "chunky bark / hollow drum chatter",
+      "focus": 470,
+      "color": 2.1,
+      "drive": 1.6,
+      "tail": 0.15,
+      "material": [
+        185,
+        327,
+        920
+      ],
+      "decay": 0.023,
+      "level": 0.25,
+      "beats": [
+        0.018,
+        0.05
+      ]
+    },
+    "doublebarrel": {
+      "label": "torn-air boom / walnut chest",
+      "focus": 150,
+      "color": 2.2,
+      "drive": 1.9,
+      "tail": 0.34,
+      "material": [
+        135,
+        237,
+        419
+      ],
+      "decay": 0.065,
+      "level": 0.26,
+      "beats": [
+        0.008
+      ]
+    },
+    "dual": {
+      "label": "small hot cracks / glassy slide",
+      "focus": 4300,
+      "color": 1.6,
+      "drive": 1.0,
+      "tail": 0.12,
+      "material": [
+        3100,
+        4970,
+        7190
+      ],
+      "decay": 0.01,
+      "level": 0.13,
+      "beats": [
+        0.016
+      ]
+    },
+    "machinepistol": {
+      "label": "rasping snap / tinny bolt chatter",
+      "focus": 1900,
+      "color": 2.0,
+      "drive": 1.85,
+      "tail": 0.1,
+      "material": [
+        1450,
+        2690,
+        4670
+      ],
+      "decay": 0.008,
+      "level": 0.21,
+      "beats": [
+        0.012,
+        0.026,
+        0.041
+      ]
+    },
+    "lever": {
+      "label": "frontier crack / walnut knock",
+      "focus": 720,
+      "color": 1.5,
+      "drive": 1.2,
+      "tail": 0.25,
+      "material": [
+        260,
+        437,
+        793
+      ],
+      "decay": 0.033,
+      "level": 0.24,
+      "beats": [
+        0.016
+      ]
+    },
+    "autoshotgun": {
+      "label": "compressed boom / gas-action chatter",
+      "focus": 290,
+      "color": 1.6,
+      "drive": 1.45,
+      "tail": 0.22,
+      "material": [
+        610,
+        1190,
+        2380
+      ],
+      "decay": 0.019,
+      "level": 0.22,
+      "beats": [
+        0.031,
+        0.072
+      ]
+    },
+    "sniper": {
+      "label": "needle crack / long dark aftershock",
+      "focus": 4700,
+      "color": 1.3,
+      "drive": 1.0,
+      "tail": 0.39,
+      "material": [
+        175,
+        301,
+        541
+      ],
+      "decay": 0.082,
+      "level": 0.17,
+      "beats": [
+        0.02
+      ]
+    },
+    "lmg": {
+      "label": "industrial thud / loose feed links",
+      "focus": 650,
+      "color": 1.9,
+      "drive": 1.75,
+      "tail": 0.19,
+      "material": [
+        580,
+        1370,
+        3290
+      ],
+      "decay": 0.02,
+      "level": 0.23,
+      "beats": [
+        0.021,
+        0.048,
+        0.07
+      ]
+    },
+    "launcher": {
+      "label": "hollow thoomp / barrel cavity",
+      "focus": 170,
+      "color": 2.4,
+      "drive": 1.0,
+      "tail": 0.28,
+      "material": [
+        145,
+        283,
+        467
+      ],
+      "decay": 0.085,
+      "level": 0.32,
+      "beats": [
+        0.008
+      ]
+    }
+  },
+  "oddballAccents": {
+    "magnum": "cash-register ding after the crack",
+    "tommy": "typewriter key clacks with a tiny carriage-return chirp",
+    "lever": "silver coin spinning and bouncing after the woody report",
+    "launcher": "oversized cork pop with a falling springy boing"
+  },
+  "oddballMix": "four comic guns; strongest flourish on take 3, subtler takes 1 and 2; original synthesis, no additional provider requests",
+  "requests": {
+    "pistol": {
+      "text": "One isolated close microphone gunshot of a compact 9mm pistol: sharp dry pop, solid midrange punch, tiny steel slide clack. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "shotgun": {
+      "text": "One isolated close microphone gunshot of a pump action 12 gauge shotgun: massive short chesty boom, ripping air blast, gritty low end. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "smg": {
+      "text": "One isolated close microphone gunshot of a compact 9mm submachine gun firing ONE round in single fire mode: very tight pap, short bright snap and small metal bolt. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "rifle": {
+      "text": "One isolated close microphone gunshot of a battle rifle firing ONE round: fierce whip crack, hard midrange bark, tight low punch. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "revolver": {
+      "text": "One isolated close microphone gunshot of an old heavy .45 revolver: thunderous dry bark, deep punch and brief ringing steel. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "magnum": {
+      "text": "One isolated close microphone gunshot of a .357 magnum revolver: exceptionally sharp explosive crack and heavy concussive body. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "tommy": {
+      "text": "One isolated close microphone gunshot of a vintage Thompson .45 submachine gun firing ONE round only: chunky low barking report, heavy receiver clack. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "doublebarrel": {
+      "text": "One isolated close microphone gunshot of a short double barrel 12 gauge shotgun firing ONE barrel: immense rough ripping blast with deep wooden chest resonance. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "dual": {
+      "text": "One isolated close microphone gunshot of a small vintage pocket pistol: snappy dry bright crack, tiny slide tick, lean body. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "machinepistol": {
+      "text": "One isolated close microphone gunshot of a stamped steel 9mm machine pistol firing ONE round only: aggressive short metallic snap, buzzing bolt clack. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "lever": {
+      "text": "One isolated close microphone gunshot of a vintage lever action rifle: hard dry whip crack, hollow walnut stock knock and warm body. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "autoshotgun": {
+      "text": "One isolated close microphone gunshot of a semi automatic 12 gauge shotgun firing ONE round only: broad crunchy blast, tight bass, short gas bolt clack. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "sniper": {
+      "text": "One isolated close microphone gunshot of a powerful bolt action military rifle: piercing explosive crack, long heavy body fading naturally. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "lmg": {
+      "text": "One isolated close microphone gunshot of a belt fed 7.62 machine gun firing ONE round only: deep brutal bark, metallic carrier clank and belt link tick. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    },
+    "launcher": {
+      "text": "One isolated close microphone gunshot of a vintage 40mm grenade launcher discharge: hollow wooden THOOMP, low air puff, heavy breech knock; no explosion. Exactly ONE shot immediately at the start, followed by decay into silence. Cinematic gritty 1970s crime film firearm sound effect for a first person game. Dry recording, no music, no voices, no ambience, no reload, no repeated shots, no distant echoes.",
+      "duration_seconds": 2.0,
+      "prompt_influence": 0.65,
+      "model_id": "eleven_text_to_sound_v2"
+    }
+  },
+  "sources": {
+    "pistol": "f1df15bd5dbc34529251bb4e3931fa2e491e0e7afff207bd89267aba7b368ec8",
+    "shotgun": "dcc348edf3a8979ac869f05973619822827bd382ceb40105c9827ed65ce96114",
+    "smg": "f4b3e742654f52466cd3d9b940f01c005db40028e12285be60c5846bd752d3cf",
+    "rifle": "a35f03fdc6e492722a91fd03a78f5e05724bff8b6e61558ce5225edac59d96b0",
+    "revolver": "21176f54836d866181aef9de1adb772b6d56af0d98cc100a6cb8121e5cb0730c",
+    "magnum": "d019417ec4dd0b64ca4da132b86064cdac639ddc0129085c62dbe0907831d432",
+    "tommy": "b209d8a80d12b98f64eebeb730031da7465c784417f6556a33f2ef1277d68ea7",
+    "doublebarrel": "9c260b7572594777771d5e5dce82fb686a18be5fe02cd2855745379c2cf4fcce",
+    "dual": "ccf76d94fb020263a739c98049d17d8dc291c578106d10e5fd6a0fff488fc13f",
+    "machinepistol": "576b52ed545125dcfd3d7e25a9c0684fc6892aea4337f6e0cea3731307dd3632",
+    "lever": "9995141a689a9e6dd4212135e94fd76479e7d8aa41f5472d76a11537119c079a",
+    "autoshotgun": "386d764bfaf55582f0314e6a96ec5111aa98950a83821f22462b8f74773d3a7a",
+    "sniper": "ba173407c4bb3a4ed7248877f9e77c6151b64ca5e6e8db80fe2ebde56480b2af",
+    "lmg": "74754146eafd7b23a0a4e1fe372b21d0cdc0cdab00c1634cf180525b3a865f42",
+    "launcher": "f2cef68b01c3c9115c2e7d4e6d58a3956247288100c6c699a6f61310c27fea45"
+  },
+  "files": [
+    {
+      "file": "pistol/report-1.wav",
+      "duration": 0.42,
+      "sourceTrimSeconds": 0.1456689342403628,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "95179fc887293c3536777ef0fb65668b85bd2b925d7fb7679315b737806cbd9c"
+    },
+    {
+      "file": "pistol/report-2.wav",
+      "duration": 0.42,
+      "sourceTrimSeconds": 0.1456689342403628,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "46ae87b0894de4966a033b6c75183b1ef6acb516852112757725b158edc4ae6e"
+    },
+    {
+      "file": "pistol/report-3.wav",
+      "duration": 0.42,
+      "sourceTrimSeconds": 0.1456689342403628,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "fb1741e794f614867bf04adf5935f0a18974def9ae8359e86fcb786e2120c6fe"
+    },
+    {
+      "file": "shotgun/report-1.wav",
+      "duration": 0.85,
+      "sourceTrimSeconds": 0.4140589569160998,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "390a2c41620819beb033a45c46f5ce56d251aebfe5213c4250319a7932362a3c"
+    },
+    {
+      "file": "shotgun/report-2.wav",
+      "duration": 0.85,
+      "sourceTrimSeconds": 0.4140589569160998,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "8ee16b1910b679d90a28941b723117e6a1748e41499da1c4eac6e4034597e8fa"
+    },
+    {
+      "file": "shotgun/report-3.wav",
+      "duration": 0.85,
+      "sourceTrimSeconds": 0.4140589569160998,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "a804ec4fe8a89aecbe0b8927d03c240134ccb1c814d02b5621ed7dbf9b2a33b3"
+    },
+    {
+      "file": "smg/report-1.wav",
+      "duration": 0.24,
+      "sourceTrimSeconds": 0.026938775510204082,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "f896a235c323e62a5cfbe95f3e82b1a8c5ec3f35e7929c059f41a6bf6322dfb3"
+    },
+    {
+      "file": "smg/report-2.wav",
+      "duration": 0.24,
+      "sourceTrimSeconds": 0.026938775510204082,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "f484645d49c5ab245f790c2b7d9d592d175be61a9720cca80ba212648ea14474"
+    },
+    {
+      "file": "smg/report-3.wav",
+      "duration": 0.24,
+      "sourceTrimSeconds": 0.026938775510204082,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "0161a5982a982582f2764ae4bbf8cacd55e732811c0b24ae445c6941c850274e"
+    },
+    {
+      "file": "rifle/report-1.wav",
+      "duration": 0.44,
+      "sourceTrimSeconds": 0.04090702947845805,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "879881d00003181c4d0d4fd9bef7de00efc4c85a52d4dec2f088537aa2f63f57"
+    },
+    {
+      "file": "rifle/report-2.wav",
+      "duration": 0.44,
+      "sourceTrimSeconds": 0.04090702947845805,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "5fd735304ea7d6bdc4d065e1f8f681e20a01ba6fb5430f8b2a45ffd31b7ea674"
+    },
+    {
+      "file": "rifle/report-3.wav",
+      "duration": 0.44,
+      "sourceTrimSeconds": 0.04090702947845805,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "316f5ee990cb586f80bba92caf0f0fa092ec2e11c8d151d0470f5a6dc0178861"
+    },
+    {
+      "file": "revolver/report-1.wav",
+      "duration": 0.6999773242630386,
+      "sourceTrimSeconds": 0.02893424036281179,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "887785452fd9ed2820980dba1cd311411714b30b4d80110dbf945447d55078b2"
+    },
+    {
+      "file": "revolver/report-2.wav",
+      "duration": 0.6999773242630386,
+      "sourceTrimSeconds": 0.02893424036281179,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "8cd7c6ca9b5c7f72efbc0e30d8f99a052fc00a9aaa270545df8865631a20d9f9"
+    },
+    {
+      "file": "revolver/report-3.wav",
+      "duration": 0.6999773242630386,
+      "sourceTrimSeconds": 0.02893424036281179,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "a9069f5f9993d10d977d93db2b984cf9e389441d7124193287a079212f19efc5"
+    },
+    {
+      "file": "magnum/report-1.wav",
+      "duration": 0.75,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "9dd9d09d5768340afa5f0c35d22cd71307827f2b4f151740780e102f9c4c7d78"
+    },
+    {
+      "file": "magnum/report-2.wav",
+      "duration": 0.75,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "9ed0d1fd100cc7ed00f152f03c027e968cb1d15f00eebb260d25dfde709ce7de"
+    },
+    {
+      "file": "magnum/report-3.wav",
+      "duration": 0.75,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "0f5710fd1a4b602ab071169a5f231f6c2aca6d0420f7f515744a6534b281b0ef"
+    },
+    {
+      "file": "tommy/report-1.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 0.1326984126984127,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "873330ba67d93cf8a4bf23f7cddfd8d48531209ffc09fa0651670baad71c45e7"
+    },
+    {
+      "file": "tommy/report-2.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 0.1326984126984127,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "c255f97921755b2a2aa91a56ee5ec74b59e0c4268a77bf01466fb6902803999a"
+    },
+    {
+      "file": "tommy/report-3.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 0.1326984126984127,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "8be35d3a216866ccc32f74e875311b4872c34e49ef3c3720dc74fb95134d04af"
+    },
+    {
+      "file": "doublebarrel/report-1.wav",
+      "duration": 0.95,
+      "sourceTrimSeconds": 0.00598639455782313,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "1e4d2a864bd51f988303f4afdada30e3e74968facb56daa280ac53e57f426ff0"
+    },
+    {
+      "file": "doublebarrel/report-double-1.wav",
+      "duration": 0.9589795918367346,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "cf012c9cf2a553c5b9b046ff0fcaa1b7f0820b128312997f285d34f14c2282a4"
+    },
+    {
+      "file": "doublebarrel/report-2.wav",
+      "duration": 0.95,
+      "sourceTrimSeconds": 0.00598639455782313,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "8123f41d21da0e71bdc0021be4d25c0b58824b0d055b7a40e08f73ea9a7c63b8"
+    },
+    {
+      "file": "doublebarrel/report-double-2.wav",
+      "duration": 0.9589795918367346,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "768b03910d427eddbc1535ac27f2e0b0cb68567c6a29b8ad283b72b7e8b5377b"
+    },
+    {
+      "file": "doublebarrel/report-3.wav",
+      "duration": 0.95,
+      "sourceTrimSeconds": 0.00598639455782313,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "11acacadfe87c627187d9b552ce024f0e8e968083a0e6a7b27a7e4519deddc84"
+    },
+    {
+      "file": "doublebarrel/report-double-3.wav",
+      "duration": 0.9589795918367346,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "fc4a0d68fb8b03a2ee9dd44790aef5771075ede3ae2c4aecfebe95ad123c4ea4"
+    },
+    {
+      "file": "dual/report-1.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 1.2621315192743765,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "319972aeb35a5c4c8434690eac83a04d8a94ffef4e01757043bff692a4f9fccc"
+    },
+    {
+      "file": "dual/report-2.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 1.2621315192743765,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "a748a3d3ef5ed4bd1533dd0354db7bf99c8e8fbaa8f509136454dfee63bd50d5"
+    },
+    {
+      "file": "dual/report-3.wav",
+      "duration": 0.32,
+      "sourceTrimSeconds": 1.2621315192743765,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "13f0940b492b4a4ead2bb9e69897a8792b42606f231c51cde1444d68fb2706cc"
+    },
+    {
+      "file": "machinepistol/report-1.wav",
+      "duration": 0.22,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "6c0751dfdde79ef56a854140087c4bfbb84b79bed4f83ebc3c8cdd063383e2a6"
+    },
+    {
+      "file": "machinepistol/report-2.wav",
+      "duration": 0.22,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "6f470fd6cf3eb5483305f0c7184781d398b054f28c60e813bfa724ce8267c794"
+    },
+    {
+      "file": "machinepistol/report-3.wav",
+      "duration": 0.22,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "dbb8e37ab9d20e3e2794cec12a4c21ed7f45a31bb5eb044eb594eee09f6a0c08"
+    },
+    {
+      "file": "lever/report-1.wav",
+      "duration": 0.62,
+      "sourceTrimSeconds": 0.6225850340136054,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "cb2121d040504803bbf3b87ece9ff129c8cb197254780e7a5e0340a31840c0e0"
+    },
+    {
+      "file": "lever/report-2.wav",
+      "duration": 0.62,
+      "sourceTrimSeconds": 0.6225850340136054,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "a72dd84baa2baff5baa7cf17c9503208db3fd7c9fe7b66513972df739d4751ab"
+    },
+    {
+      "file": "lever/report-3.wav",
+      "duration": 0.62,
+      "sourceTrimSeconds": 0.6225850340136054,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "685bbcee9812b1d673cf541c0d55a9bec92e7af0af15b1648f7e55b98e12228f"
+    },
+    {
+      "file": "autoshotgun/report-1.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "946bbedd7c20a3cfd79eba420db121e5935036e07932543f8e42272e74e51d99"
+    },
+    {
+      "file": "autoshotgun/report-2.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "4f50813e52179c5879697b881d210dd81f028f01a0046f4c07dd64fdfeda6137"
+    },
+    {
+      "file": "autoshotgun/report-3.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "2e5fb3017096e97b7e962270a40a341c65664499d5c14fd38463a894baeffbb0"
+    },
+    {
+      "file": "sniper/report-1.wav",
+      "duration": 1.05,
+      "sourceTrimSeconds": 0.12471655328798185,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "8285fca172f4c83ef46795b4009557a570ecc69ebf61cc92e939e125162f7feb"
+    },
+    {
+      "file": "sniper/report-2.wav",
+      "duration": 1.05,
+      "sourceTrimSeconds": 0.12471655328798185,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "af66acb572f2e1fb9b16918f353bc9b30b187b663a9cfff8e5c5386a94d2c586"
+    },
+    {
+      "file": "sniper/report-3.wav",
+      "duration": 1.05,
+      "sourceTrimSeconds": 0.12471655328798185,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "df0a67842ec55de0daad53da4991a4686db3c91b2963d803af47172fb6ae3750"
+    },
+    {
+      "file": "lmg/report-1.wav",
+      "duration": 0.4,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "ea9664db7769ebc6b4b2254ebab6b75598c12f0a6c66c12a0d9ad3e37e51f991"
+    },
+    {
+      "file": "lmg/report-2.wav",
+      "duration": 0.4,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "8a7e8ba7604bbd7eaab283084064528c958312827a4bf8261e2768b811a7a7a8"
+    },
+    {
+      "file": "lmg/report-3.wav",
+      "duration": 0.4,
+      "sourceTrimSeconds": 0.0,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "bcdd97c88ac76339687af0d48951b5a1e5488ee3322e75733396d5f46b7089c2"
+    },
+    {
+      "file": "launcher/report-1.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 0.02893424036281179,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "ef7358080dd5025844481304987184a39f20a6edad1f7c4a1b211ca5c1173717"
+    },
+    {
+      "file": "launcher/report-2.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 0.02893424036281179,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "ad08e35cf431c0c8a8c20bfca839db3e47d98e6dd9cf3500609c0cc60ddecb5b"
+    },
+    {
+      "file": "launcher/report-3.wav",
+      "duration": 0.65,
+      "sourceTrimSeconds": 0.02893424036281179,
+      "peakDbfs": -1.51,
+      "clippedSamples": 0,
+      "sha256": "8fe100a24dc85a0d5b50a51ff53d646aa1e3109108f29cbbaaae384dd666be42"
+    }
+  ]
+}

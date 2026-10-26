@@ -1,0 +1,387 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_generated",
+  "provider": "ElevenLabs Voice Design",
+  "model_id": "eleven_ttv_v3",
+  "generation_plan": "One design request per character; compare the three returned candidates on identical text. Six requests initially, no automatic rerolls or permanent voice creation.",
+  "characters": [
+    {
+      "id": "frankie",
+      "name": "Frankie “Chips” Caruso",
+      "prompt": "An original male game character, age 47, with an unmistakable natural North Jersey accent. A gravelly middle-low voice with chest resonance, blunt consonants and sudden changes of pace. A former casino enforcer who treats violence as a matter of etiquette: wounded disbelief becomes operatic indignation, then a small muttered complaint. Funny because he is absolutely sincere, not because he performs punchlines. Loud passages retain intelligible words; quiet concern is embarrassed and gruff. Period 1970s American speech. Expressive dramatic acting, close dry studio sound, no music, no imitation of any real actor.",
+      "lines": [
+        {
+          "id": "frankie.audition.01",
+          "event": "bitten",
+          "direction": "Offended disbelief, swell on funeral",
+          "text": "You BITE me? After I wore a tie to your funeral?",
+          "tone": "comic"
+        },
+        {
+          "id": "frankie.audition.02",
+          "event": "kill",
+          "direction": "Formal reprimand, outraged last word",
+          "text": "You come into a respectable establishment, you eat the STAFF?",
+          "tone": "comic"
+        },
+        {
+          "id": "frankie.audition.03",
+          "event": "revive",
+          "direction": "Furious tenderness, make look at me urgent",
+          "text": "You wanna see a bright light? Look at me. I'm furious.",
+          "tone": "comic"
+        },
+        {
+          "id": "frankie.audition.04",
+          "event": "reload",
+          "direction": "Aggrieved, as if requesting ordinary courtesy",
+          "text": "I'm reloading. Have the decency to threaten somebody else.",
+          "tone": "comic"
+        },
+        {
+          "id": "frankie.audition.05",
+          "event": "locked_door",
+          "direction": "Betrayed, injured dignity",
+          "text": "I broke three fingers for this establishment. Now it wants exact change.",
+          "tone": "comic"
+        },
+        {
+          "id": "frankie.audition.06",
+          "event": "horde",
+          "direction": "Address the room like an offended host",
+          "text": "One at a time! This is an execution, not a buffet!",
+          "tone": "comic"
+        },
+        {
+          "id": "frankie.audition.07",
+          "event": "quiet",
+          "direction": "Drop bravado, plain confession",
+          "text": "I knew where that door went. I just stopped asking who came back.",
+          "tone": "serious"
+        }
+      ],
+      "preview_line_indices": [
+        0,
+        1,
+        4,
+        6
+      ],
+      "preview_text": "You BITE me? After I wore a tie to your funeral?\n\nYou come into a respectable establishment, you eat the STAFF?\n\nI broke three fingers for this establishment. Now it wants exact change.\n\nI knew where that door went. I just stopped asking who came back."
+    },
+    {
+      "id": "eve",
+      "name": "Evelyn “Eve” Vale",
+      "prompt": "An original British female game character, age 34, a London stage illusionist. Clear rich middle register, crisp educated London diction with a subtle south London edge. A magnificent theatrical ego: lush confident announcements followed by surgically dry criticism. She regards supernatural events as a rival production with dreadful taste. Precise pauses, elegant vowels, abrupt private admissions, genuine fear briefly strips away the stage persona. Dynamic but not perpetually shouting. Period 1970s speech, no contemporary influencer cadence. Close dry studio recording, no music or effects, no imitation of a real performer.",
+      "lines": [
+        {
+          "id": "eve.audition.01",
+          "event": "resurrection",
+          "direction": "Disgusted artistic assessment; stress carpet",
+          "text": "Resurrection. On this carpet. Nobody here understands presentation.",
+          "tone": "comic"
+        },
+        {
+          "id": "eve.audition.02",
+          "event": "escape",
+          "direction": "Grand flourish, then an intimate admission",
+          "text": "An exit worthy of a standing ovation. I had absolutely nothing planned.",
+          "tone": "comic"
+        },
+        {
+          "id": "eve.audition.03",
+          "event": "headshot",
+          "direction": "Condescending encouragement",
+          "text": "Lovely commitment. You've lost the audience. And most of your face.",
+          "tone": "comic"
+        },
+        {
+          "id": "eve.audition.04",
+          "event": "revive",
+          "direction": "Brisk stage direction, barely conceal concern",
+          "text": "Up, darling. You cannot die in the supporting position.",
+          "tone": "comic"
+        },
+        {
+          "id": "eve.audition.05",
+          "event": "horde",
+          "direction": "Magnificent injured vanity",
+          "text": "Oh, NOW they rush the stage. Where was this enthusiasm on Thursday?",
+          "tone": "comic"
+        },
+        {
+          "id": "eve.audition.06",
+          "event": "invisible_ghost",
+          "direction": "Disdain, as if spotting a lazy stagehand",
+          "text": "Invisible? That's your entire act? I have a curtain that does that.",
+          "tone": "comic"
+        },
+        {
+          "id": "eve.audition.07",
+          "event": "quiet",
+          "direction": "Small honest voice without stage projection",
+          "text": "Leave the other case. That's my partner's. I'm still taking it home.",
+          "tone": "serious"
+        }
+      ],
+      "preview_line_indices": [
+        0,
+        1,
+        4,
+        6
+      ],
+      "preview_text": "Resurrection. On this carpet. Nobody here understands presentation.\n\nAn exit worthy of a standing ovation. I had absolutely nothing planned.\n\nOh, NOW they rush the stage. Where was this enthusiasm on Thursday?\n\nLeave the other case. That's my partner's. I'm still taking it home."
+    },
+    {
+      "id": "leon",
+      "name": "Leon Mercer",
+      "prompt": "An original male game character, age 39, with a natural southeast Texas American accent. Warm resonant middle-register voice, light grain, measured vowels and articulate practical speech. A gifted maintenance engineer of immense professional pride. Patient explanation builds into a thunderous, precisely enunciated verdict when machinery defies him. Speaks to haunted equipment as a disobedient colleague; absurdly offended but entirely competent. Give clear changes between satisfaction, controlled fury and exhausted honesty. Avoid cartoon drawl or generic movie-trailer bass. Period 1970s, close dry studio recording, no music, no actor impersonation.",
+      "lines": [
+        {
+          "id": "leon.audition.01",
+          "event": "haunted_machine",
+          "direction": "Measured accusation building to personally",
+          "text": "I disconnected you PERSONALLY. This is insubordination.",
+          "tone": "comic"
+        },
+        {
+          "id": "leon.audition.02",
+          "event": "power",
+          "direction": "Satisfied biblical flourish, sharply possessive warning",
+          "text": "There. Let there be light. And nobody touch a damn thing.",
+          "tone": "comic"
+        },
+        {
+          "id": "leon.audition.03",
+          "event": "strange_noise",
+          "direction": "Focused listening; horror secondary to diagnosis",
+          "text": "That's not a death rattle. That's a bearing. Somehow that's worse.",
+          "tone": "comic"
+        },
+        {
+          "id": "leon.audition.04",
+          "event": "locked_door",
+          "direction": "Almost admiring the audacity",
+          "text": "Solid brass lock. Hollow plywood door. We're being held hostage by furniture.",
+          "tone": "comic"
+        },
+        {
+          "id": "leon.audition.05",
+          "event": "horde",
+          "direction": "Raised voice of an expert with a legitimate grievance",
+          "text": "Whole building comes back from the dead. Elevator's still out.",
+          "tone": "comic"
+        },
+        {
+          "id": "leon.audition.06",
+          "event": "boss",
+          "direction": "Appraising an expensive disaster",
+          "text": "Whatever you are, somebody installed you. I'd like their name.",
+          "tone": "comic"
+        },
+        {
+          "id": "leon.audition.07",
+          "event": "quiet",
+          "direction": "Controlled shame; no comic landing",
+          "text": "I signed that work order. I should've opened the door before I signed.",
+          "tone": "serious"
+        }
+      ],
+      "preview_line_indices": [
+        0,
+        1,
+        4,
+        6
+      ],
+      "preview_text": "I disconnected you PERSONALLY. This is insubordination.\n\nThere. Let there be light. And nobody touch a damn thing.\n\nWhole building comes back from the dead. Elevator's still out.\n\nI signed that work order. I should've opened the door before I signed."
+    },
+    {
+      "id": "vivian",
+      "name": "Vivian Cross",
+      "prompt": "An original female game character, age 29, raised in Los Angeles. Bright middle register with a light husky edge and a natural American Los Angeles accent, no imposed Spanish accent. A flamboyantly confident card cheat: quick conspiratorial phrasing, shameless salesmanship, luxurious mock sincerity and sudden honest panic. Punchlines land with brisk certainty, not a constant sarcastic drawl. Let fear briefly catch her breath before she recovers authority. Distinct from a British stage actress: intimate persuasion rather than formal projection. Period 1970s vocabulary and cadence. Clean dry studio recording, no music or real-person imitation.",
+      "lines": [
+        {
+          "id": "vivian.audition.01",
+          "event": "revived",
+          "direction": "Breathless, instantly pretend to be the employer",
+          "text": "Excellent. You've passed the interview. You're my bodyguard.",
+          "tone": "comic"
+        },
+        {
+          "id": "vivian.audition.02",
+          "event": "ghost",
+          "direction": "Genuinely delighted by a business opportunity",
+          "text": "Invisible, walks through walls... sweetheart, you're wasted in hospitality.",
+          "tone": "comic"
+        },
+        {
+          "id": "vivian.audition.03",
+          "event": "low_ammo",
+          "direction": "Offer a glamorous lie, urgent whisper at end",
+          "text": "I have a very exclusive ammunition shortage. Don't tell anyone.",
+          "tone": "comic"
+        },
+        {
+          "id": "vivian.audition.04",
+          "event": "loot",
+          "direction": "Immediate defensive explanation",
+          "text": "It's not looting. I'm the executor. He appointed me just now, with his eyes.",
+          "tone": "comic"
+        },
+        {
+          "id": "vivian.audition.05",
+          "event": "failed_bluff",
+          "direction": "Offended by an unreasonable negotiating partner",
+          "text": "I offered him half. He bit me. You cannot build a relationship on that.",
+          "tone": "comic"
+        },
+        {
+          "id": "vivian.audition.06",
+          "event": "revive",
+          "direction": "Warm reassurance turning into a shameless pitch",
+          "text": "Stay with me. I've already told three people we're business partners.",
+          "tone": "comic"
+        },
+        {
+          "id": "vivian.audition.07",
+          "event": "quiet",
+          "direction": "Unadorned, unsettled by her own choice",
+          "text": "I had a way out. I came back. Please don't make me explain it.",
+          "tone": "serious"
+        }
+      ],
+      "preview_line_indices": [
+        0,
+        1,
+        4,
+        6
+      ],
+      "preview_text": "Excellent. You've passed the interview. You're my bodyguard.\n\nInvisible, walks through walls... sweetheart, you're wasted in hospitality.\n\nI offered him half. He bit me. You cannot build a relationship on that.\n\nI had a way out. I came back. Please don't make me explain it."
+    },
+    {
+      "id": "voss",
+      "name": "Vincent Voss",
+      "prompt": "An original male character, approximately 58, a theatrical American casino kingpin with a luxurious resonant baritone and cultivated mid-Atlantic stage diction. Intoxicating hospitality, extravagant ceremony, immaculate consonants, expansive vowels and a smile audible in the voice. He treats a massacre as a gala he has personally organized. Crucially, real menace becomes quieter and more intimate: one person's name, a pause, a precise instruction. Distinguish charming public spectacle from frightening personal control. No constant growl, no trailer narration, no real actor imitation. Dry close studio voice without PA filter, music, or effects.",
+      "lines": [
+        {
+          "id": "voss.audition.01",
+          "event": "cashier",
+          "direction": "Lavish welcome; delicate emphasis on paintings",
+          "text": "Everything you see is insured. Do try to die facing away from the paintings.",
+          "tone": "comic"
+        },
+        {
+          "id": "voss.audition.02",
+          "event": "defiance",
+          "direction": "Personal warmth with no actual generosity",
+          "text": "Of course you have a choice. I had both options prepared especially for you.",
+          "tone": "comic"
+        },
+        {
+          "id": "voss.audition.03",
+          "event": "horde",
+          "direction": "Delighted ceremonial announcement",
+          "text": "A warm welcome to our returning guests. Several of whom were buried at considerable expense.",
+          "tone": "comic"
+        },
+        {
+          "id": "voss.audition.04",
+          "event": "escape_attempt",
+          "direction": "Gently offended host",
+          "text": "Leaving through the service entrance? After everything I've done to make you feel important.",
+          "tone": "comic"
+        },
+        {
+          "id": "voss.audition.05",
+          "event": "round",
+          "direction": "Roll out the first sentence, intimate relish on house",
+          "text": "A moment of silence for the departed. Wonderful. Now, a round of applause for the house.",
+          "tone": "comic"
+        },
+        {
+          "id": "voss.audition.06",
+          "event": "damage",
+          "direction": "A tiny delighted laugh before the threat",
+          "text": "You've broken something irreplaceable. Fortunately, I find people much easier to replace.",
+          "tone": "comic"
+        },
+        {
+          "id": "voss.audition.07",
+          "event": "threat",
+          "direction": "Stop performing; quiet, exact, no growl",
+          "text": "Frankie. Put the key down. You know how unpleasant I become when I have to repeat myself.",
+          "tone": "serious"
+        }
+      ],
+      "preview_line_indices": [
+        0,
+        1,
+        4,
+        6
+      ],
+      "preview_text": "Everything you see is insured. Do try to die facing away from the paintings.\n\nOf course you have a choice. I had both options prepared especially for you.\n\nA moment of silence for the departed. Wonderful. Now, a round of applause for the house.\n\nFrankie. Put the key down. You know how unpleasant I become when I have to repeat myself."
+    },
+    {
+      "id": "marlowe",
+      "name": "Marlowe",
+      "prompt": "An original male game character who sounds approximately 63. Dry airy middle-low register with a light northern English accent, specifically soft Yorkshire vowels, plain diction and beautifully patient pauses. An old casino bartender maintaining unreasonable etiquette during a massacre. Outrageous judgments delivered as ordinary service information, little pitch movement, never signaling a punchline. Tiny irritation at mess, attentive warmth for staff, and a rare moment of sincere gravity. Distinct from the kingpin's rich theatrical bass. Understated vocal energy but precise comic timing. Close dry studio recording, no music or effects, no actor impersonation.",
+      "lines": [
+        {
+          "id": "marlowe.audition.01",
+          "event": "severed_hand",
+          "direction": "Practical inconvenience, unhurried verdict",
+          "text": "Whoever this belongs to, you're at your limit.",
+          "tone": "comic"
+        },
+        {
+          "id": "marlowe.audition.02",
+          "event": "blood",
+          "direction": "Patient correction, slight emphasis on upholstery",
+          "text": "The screaming is complimentary. The upholstery isn't.",
+          "tone": "comic"
+        },
+        {
+          "id": "marlowe.audition.03",
+          "event": "drink",
+          "direction": "Matter-of-fact service instruction",
+          "text": "Do take the umbrella out. We've had enough unusual deaths.",
+          "tone": "comic"
+        },
+        {
+          "id": "marlowe.audition.04",
+          "event": "bloody_customer",
+          "direction": "Appraise the mess, politely refuse",
+          "text": "I'll need a name for the tab. 'Mostly blood' isn't helping.",
+          "tone": "comic"
+        },
+        {
+          "id": "marlowe.audition.05",
+          "event": "voss_announcement",
+          "direction": "Quiet factual correction",
+          "text": "He calls everyone family. Saves a fortune on wages.",
+          "tone": "comic"
+        },
+        {
+          "id": "marlowe.audition.06",
+          "event": "haunting",
+          "direction": "As though reviewing a familiar bad customer",
+          "text": "That one haunts the west staircase. Used to haunt the bar. Better for everyone.",
+          "tone": "comic"
+        },
+        {
+          "id": "marlowe.audition.07",
+          "event": "quiet",
+          "direction": "Pause work; gentle direct concern",
+          "text": "Sit down a moment. You don't have to be useful every second you're alive.",
+          "tone": "serious"
+        }
+      ],
+      "preview_line_indices": [
+        0,
+        1,
+        4,
+        6
+      ],
+      "preview_text": "Whoever this belongs to, you're at your limit.\n\nThe screaming is complimentary. The upholstery isn't.\n\nHe calls everyone family. Saves a fortune on wages.\n\nSit down a moment. You don't have to be useful every second you're alive."
+    }
+  ]
+}

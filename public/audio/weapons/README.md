@@ -1,6 +1,12 @@
-# 1970s arsenal foley — source notes
+# Weapon audio — source notes
 
-Every file in this folder is original and **synthesized** by
+The current firearm reports are `report-*.wav`, generated with ElevenLabs and mastered by
+`tools/gun-audio/production_b.py`. See [gun audio provenance and preview](../../../docs/gun-audio/README.md).
+The notes below describe the original foley and fallback reports. Stick/axe impacts and the axe swing now use generated B-production sources; the current manifest documents those replacements.
+
+## Original synthesized bank
+
+Every retained original cue (excluding `report-*.wav`, stick/axe impacts and axe swing) is **synthesized** by
 `tools/weapon-1970s/make_sounds.py` from noise, damped partials and filters. There are no recordings,
 library samples or commercial weapon sounds. The recipe and length of each file are in `notes.json`.
 
@@ -39,4 +45,4 @@ These are synthetic approximations and have not yet been judged by ear in a play
 
 Thrown grenades and launcher impacts share the revised heavy blast cue: sharp pressure front, falling low-frequency body, irregular rumble, scattered debris and warm room reflections. It is original synthesized sound, not a live-explosive recording. Grenade throws preload the sample; the runtime retains a layered fallback when audio loading fails.
 
-All 94 game cues are packed into `assets/source/weapons-1970s/weapon-sound-audition.blend` as editable sound strips with weapon chapter markers. Open it in Blender and press Space to audition. Synthesis remains reproducible in Python; Blender is the native model authoring and sound audition workspace. A 32-second mixed preview is in `docs/weapon-1970s-assets/weapon-sound-showcase.wav`.
+The original 94 cues are packed into `assets/source/weapons-1970s/weapon-sound-audition.blend` as editable sound strips with weapon chapter markers. Open it in Blender and press Space to audition. Synthesis remains reproducible in Python; Blender is the native model authoring and sound audition workspace. A 32-second mixed preview is in `docs/weapon-1970s-assets/weapon-sound-showcase.wav`.

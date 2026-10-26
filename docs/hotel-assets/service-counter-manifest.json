@@ -1,0 +1,26 @@
+{
+  "file": "hotel-service-counter.glb",
+  "bytes": 1686056,
+  "triangles": 34856,
+  "mesh_nodes": 9,
+  "material_batches": 9,
+  "bounds": [
+    [
+      -3.200000047683716,
+      0.0,
+      -0.6499999761581421
+    ],
+    [
+      3.200000047683716,
+      1.4500000476837158,
+      0.6499999761581421
+    ]
+  ],
+  "expected_fixture": [
+    6.4,
+    1.3,
+    1.45
+  ],
+  "source": "hotel-service-counter.blend",
+  "provenance": "Original procedural Blender geometry and seeded packed PBR textures; no downloaded assets."
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "action": "new"
+  },
+  {
+    "action": "hotel-lobby"
+  },
+  {
+    "wait": 2500
+  },
+  {
+    "eval": "(async()=>{const r=window.__lastJackpot,scene=r.renderer.scene;const map=scene.lights.map(l=>l.getShadowGenerator?.()?.getShadowMap()).find(m=>m?.name.includes('hotel'));const probe=scene.reflectionProbes.find(p=>p.name==='hotel static marble reflection');if(!map||!probe)throw Error('Missing hotel capture');let shadows=0,faces=0;const so=map.onAfterRenderObservable.add(()=>shadows++),po=probe.cubeTexture.onAfterRenderObservable.add(()=>faces++);const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));await wait(600);const idle={shadows,faces};if(shadows||faces)throw Error('Static capture rendered during idle');r.sim.hotel=false;await wait(600);r.sim.hotel=true;await wait(600);const transitions={shadows,faces};if(shadows<2||faces<12)throw Error('Gate transition did not refresh captures');shadows=0;faces=0;await wait(1000);if(shadows||faces)throw Error('Capture continues rendering after transition');map.onAfterRenderObservable.remove(so);probe.cubeTexture.onAfterRenderObservable.remove(po);return {idle,transitions,settled:{shadows,faces}};})()"
+  }
+]

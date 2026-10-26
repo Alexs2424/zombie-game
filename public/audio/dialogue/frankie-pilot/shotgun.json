@@ -1,0 +1,19 @@
+{
+  "speaker": "Frankie Caruso",
+  "casting": "Adam stock voice; provisional gameplay audition, not final North Jersey casting",
+  "provider": "ElevenLabs",
+  "voice_id": "pNInz6obpgDQGcFmaJgB",
+  "request": {
+    "text": "[pleased] Good. Something they'll hear upstairs.",
+    "model_id": "eleven_v3",
+    "voice_settings": {
+      "stability": 0.5
+    }
+  },
+  "subtitle": "Good. Something they'll hear upstairs.",
+  "generated_at": "2026-09-30T06:48:29.963632+00:00",
+  "request_id": "1temY1olVIAROiOXH9tw",
+  "bytes": 40586,
+  "sha256": "a5897808aeb1e30475ece676f94e9e2f0d6cc211ee4897556002106add00857e",
+  "processing": "Unprocessed provider MP3; gain controlled at runtime."
+}

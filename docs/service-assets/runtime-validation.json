@@ -14,36 +14,36 @@
       "embeddedTextures": 3,
       "bounds": {
         "min": [
-          5.053999900817871,
+          -34.94600009918213,
           0.02500000037252903,
-          4.374999523162842
+          39.37499952316284
         ],
         "max": [
-          10.545997619628906,
+          -29.454002380371094,
           2.938499927520752,
-          6.925000190734863
+          41.92500019073486
         ]
       }
     },
     {
       "name": "service-props",
-      "sha256": "0ef13d8f6edee7b5bfff70b63513634840e57684c2133df74dffe7d6c8c01b0a",
-      "bytes": 4631112,
+      "sha256": "4846b47d13a8dc8fbc0cc211728889a4ec377ebceeae4adc638b424d6e66b281",
+      "bytes": 4634508,
       "meshes": 13,
-      "vertices": 123827,
-      "triangles": 67672,
+      "vertices": 123928,
+      "triangles": 67696,
       "materials": 13,
       "embeddedTextures": 3,
       "bounds": {
         "min": [
-          4.414999961853027,
+          -36.767499923706055,
           0,
-          3.2249999046325684
+          35.25749969482422
         ],
         "max": [
-          15.579999923706055,
-          4.6999993324279785,
-          11.886500358581543
+          -23.232500076293945,
+          4.800000190734863,
+          48.75599956512451
         ]
       }
     }
@@ -59,7 +59,7 @@
     },
     {
       "id": "service-shelf",
-      "vertices": 41767
+      "vertices": 40562
     },
     {
       "id": "service-pallet-jack",
@@ -99,45 +99,107 @@
       "name": "truck cargo side",
       "hit": true,
       "point": [
-        8.6,
+        -31.4,
         1.7,
-        6.826499938964844
+        41.826499938964844
       ]
     },
     {
       "name": "truck cab front",
       "hit": true,
       "point": [
-        5.173364245090132,
+        -34.826635754909866,
         1.35,
-        5.65
+        40.65
       ]
     },
     {
       "name": "stacked pallet cartons",
       "hit": true,
       "point": [
-        14.12,
+        -25.880000000000003,
         0.8,
-        6.289999961853027
+        41.28999996185303
       ]
     },
     {
       "name": "north shelf cartons",
       "hit": true,
       "point": [
-        6.5,
+        -33.5,
         0.6,
-        10.829999923706055
+        45.829999923706055
       ]
     },
     {
       "name": "floor paint clears concrete and joints",
       "hit": true,
       "point": [
-        4.75,
+        -35.25,
         0.021499991416931152,
-        7.59
+        42.59
+      ]
+    },
+    {
+      "name": "fire backplate touches south wall",
+      "hit": true,
+      "point": [
+        -30.97,
+        1.7,
+        35.257499933243125
+      ]
+    },
+    {
+      "name": "switchgear backplate touches north wall",
+      "hit": true,
+      "point": [
+        -31.880000000000003,
+        2,
+        48.74250030517578
+      ]
+    },
+    {
+      "name": "receiving sign touches north wall",
+      "hit": true,
+      "point": [
+        -29.9,
+        2.92,
+        48.742499351501465
+      ]
+    },
+    {
+      "name": "old fire position is clear",
+      "hit": false
+    },
+    {
+      "name": "old switchgear position is clear",
+      "hit": false
+    },
+    {
+      "name": "pipe enters west wall",
+      "hit": true,
+      "point": [
+        -36.7425,
+        4.12,
+        40.368999886522126
+      ]
+    },
+    {
+      "name": "pipe returns into east wall",
+      "hit": true,
+      "point": [
+        -23.2575,
+        3.36,
+        40.3689998974719
+      ]
+    },
+    {
+      "name": "pipe suspension touches ceiling",
+      "hit": true,
+      "point": [
+        -34.7,
+        4.800000190734863,
+        40.44
       ]
     }
   ],

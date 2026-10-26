@@ -49,8 +49,8 @@ test("gameplay targets from the spec: capacities, reserves, rates and mobility",
   assert.equal(WEAPONS.launcher.reserve, 8);
   const firearms = SPEC_IDS.filter((id) => id !== "launcher");
   const bullet = firearms.filter((id) => WEAPONS[id].pellets === 1);
-  // High Roller: highest single-shot damage among bullet firearms.
-  assert.equal(bullet.reduce((a, b) => (WEAPONS[a].damage >= WEAPONS[b].damage ? a : b)), "magnum");
+  // Bolt action: highest single-shot damage, balanced by the slowest cadence.
+  assert.equal(bullet.reduce((a, b) => (WEAPONS[a].damage >= WEAPONS[b].damage ? a : b)), "sniper");
   // The Enforcer: smallest automatic interval; Eye in the Sky: the longest shot-to-shot delay.
   assert.equal(firearms.reduce((a, b) => (WEAPONS[a].interval <= WEAPONS[b].interval ? a : b)), "machinepistol");
   assert.equal(firearms.reduce((a, b) => (WEAPONS[a].interval >= WEAPONS[b].interval ? a : b)), "sniper");

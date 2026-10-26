@@ -1,0 +1,34 @@
+{
+  "name": "Grand Casino pistol ammunition cabinet",
+  "authoring": "Original Blender geometry, text and deterministic walnut image; no third-party assets",
+  "blender": "5.2.2 LTS",
+  "source_objects": 255,
+  "native": "assets/source/pistol-ammo-display.blend",
+  "runtime": "public/models/pistol-ammo-display.glb",
+  "coordinates": "Blender Z up/front -Y/back Y=0; glTF Y up/front +Z/back Z=0; vertically centered pivot",
+  "label_mounts": {
+    "header": {
+      "x": 0,
+      "y": 0.55,
+      "z": 0.28,
+      "width": 2.08,
+      "height": 0.3
+    },
+    "price": {
+      "x": 0,
+      "y": -0.595,
+      "z": 0.28,
+      "width": 1.9,
+      "height": 0.24
+    }
+  },
+  "features": [
+    "Walnut molded carcass and packed original grain",
+    "Racing green enamel compartments",
+    "Antique brass reveals and countersunk screws",
+    "Eight folded and labeled reserve cartons",
+    "Seventy-two individually turned rimmed cartridges with copper jackets",
+    "Oxblood felt trays and engraved compartment plates",
+    "Blank header and price cartouches for live game labels"
+  ]
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "weapon": "revolver",
+    "atSeconds": 0.0
+  },
+  {
+    "weapon": "magnum",
+    "atSeconds": 1.1
+  },
+  {
+    "weapon": "tommy",
+    "atSeconds": 2.25
+  },
+  {
+    "weapon": "doublebarrel",
+    "atSeconds": 2.97
+  },
+  {
+    "weapon": "machinepistol",
+    "atSeconds": 4.32
+  },
+  {
+    "weapon": "launcher",
+    "atSeconds": 4.94
+  }
+]

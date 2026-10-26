@@ -23,7 +23,7 @@ export const HOTEL_FIXTURES: HotelFixture[] = [
   { id: "hotel-prop-east-armchair", kind: "armchair", x: 4.8, z: 42, w: 1.2, d: 1.2, h: 1.12, yaw: Math.PI / 2 },
   { id: "hotel-prop-east-coffee", kind: "coffee-table", x: 8, z: 42, w: 2.4, d: 1.2, h: 0.58 },
   { id: "hotel-prop-luggage", kind: "luggage-cart", x: -17.8, z: 44.8, w: 1.6, d: 1.0, h: 2.0 },
-  { id: "hotel-prop-west-palm", kind: "planter", x: -20.5, z: 38, w: 1.2, d: 1.2, h: 2.35 },
+  { id: "hotel-prop-west-palm", kind: "planter", x: -21.2, z: 43.2, w: 1.2, d: 1.2, h: 2.35 },
   { id: "hotel-prop-east-palm", kind: "planter", x: 12.5, z: 38, w: 1.2, d: 1.2, h: 2.35 },
   { id: "hotel-prop-rear-palm", kind: "planter", x: -4, z: 43.8, w: 1.2, d: 1.2, h: 2.35 },
   { id: "hotel-prop-dining-nw", kind: "dining-table", x: -11, z: 39.2, w: 4.2, d: 3.6, h: 1.35, baseY: 4 },

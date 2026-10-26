@@ -14,6 +14,8 @@ const initial: GameView = {
   grenades: 2,
   knifeReady: true,
   phase: "ready",
+  stamina: 100,
+  sprintExhausted: false,
   health: 100,
   maxHealth: 100,
   inventory: [
@@ -84,52 +86,25 @@ const timeString = (n: number) =>
 function Controls() {
   return (
     <div className="keys">
-      <kbd>W A S D</kbd> MOVE <kbd>SHIFT</kbd> SPRINT
+      <kbd>W A S D</kbd> MOVE <kbd>SPACE</kbd> SPRINT
       <br />
       <kbd>MOUSE</kbd> LOOK <kbd>LEFT CLICK</kbd> FIRE
       <br />
-      <kbd>R</kbd> RELOAD <kbd>E</kbd> INTERACT
+      <kbd>R</kbd> RELOAD <kbd>F</kbd> INTERACT
       <br />
       <kbd>G</kbd> GRENADE <kbd>V</kbd> KNIFE
       <br />
       <kbd>C</kbd> HOLD CHIPS · AIM + CLICK TO BET
       <br />
-      CHIPS: <kbd>R</kbd> VALUE <kbd>X</kbd> TAKE BETS <kbd>E</kbd> PUT AWAY / ROLL
+      CHIPS: <kbd>R</kbd> VALUE <kbd>X</kbd> TAKE BETS <kbd>F</kbd> PUT AWAY / ROLL
       <br />
-      <kbd>RIGHT CLICK</kbd> HOLD AIM <kbd>B</kbd> BOTH BARRELS
+      <kbd>SHIFT / RMB</kbd> HOLD AIM <kbd>B</kbd> BOTH BARRELS
       <br />
-      <kbd>1–0</kbd> <kbd>Q</kbd> <kbd>WHEEL</kbd> SWITCH <kbd>ESC</kbd> PAUSE
+      <kbd>1–2</kbd> <kbd>Q / E</kbd> <kbd>WHEEL</kbd> SWITCH <kbd>ESC</kbd> PAUSE
     </div>
   );
 }
-const MYSTERY_REEL = [
-  "magnum",
-  "tommy",
-  "doublebarrel",
-  "dual",
-  "machinepistol",
-  "lever",
-  "autoshotgun",
-  "sniper",
-  "lmg",
-  "launcher",
-] as const;
-/** Cycles the ten Blender renders while the cabinet spins, then shows the payout. */
-function MysteryReel({ reel }: { reel: GameView["mysteryReel"] }) {
-  const [tick, setTick] = useState(0);
-  useEffect(() => {
-    if (!reel.spinning) return;
-    const timer = window.setInterval(() => setTick((n) => n + 1), 95);
-    return () => window.clearInterval(timer);
-  }, [reel.spinning]);
-  const id = reel.spinning ? MYSTERY_REEL[tick % MYSTERY_REEL.length] : reel.id;
-  if (!id) return null;
-  return (
-    <div className={`mystery-reel ${reel.spinning ? "spinning" : "paid"}`}>
-      <img src={`/ui/weapons/${id}-side.webp`} alt="" />
-    </div>
-  );
-}
+
 function HotelDocument({
   document: clue,
   onReturn,
@@ -390,6 +365,12 @@ export default function Home() {
   const [rangeMode, setRangeMode] = useState(false);
   const [scenario, setScenario] = useState("targets");
   const [god, setGod] = useState(false);
+  const [showExplanations, setShowExplanations] = useState(true);
+  const changeExplanations = (show: boolean) => {
+    setShowExplanations(show);
+    try { localStorage.setItem("last-jackpot-explanations", String(show)); } catch { /* Storage may be unavailable in private previews. */ }
+  };
+  const [spawnBehavior, setSpawnBehavior] = useState("pursuit");
   useEffect(() => {
     if (!playtesting || rangeMode) return;
     const key = (event: KeyboardEvent) => {
@@ -414,6 +395,7 @@ export default function Home() {
     import("../lib/game/runtime")
       .then(({ GameRuntime }) => {
         if (disposed || !canvas.current) return;
+        try { setShowExplanations(localStorage.getItem("last-jackpot-explanations") !== "false"); } catch {}
         setRangeMode(process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("range"));
         setPlaytesting(
           process.env.NODE_ENV !== "production" &&
@@ -489,7 +471,7 @@ export default function Home() {
   }, [ready, rangeMode]);
   const rangeAction = (action: string) => { runtime.current?.rangeAction(action); if (["targets","pursuit","blast","empty"].includes(action)) {setScenario(action);setGod(false);} if(action === "reset") setGod(false); };
   return (
-    <main className={`game-shell ${active ? "in-game" : ""} ${rangeMode ? "range-workspace" : playtesting ? "development-shell" : ""}`}>
+    <main className={`game-shell ${showExplanations ? "" : "hide-explanations"} ${active ? "in-game" : ""} ${rangeMode ? "range-workspace" : playtesting ? "development-shell" : ""}`}>
       <div className="game-viewport">
       <div className="casino-backdrop" />
       <canvas
@@ -615,7 +597,7 @@ export default function Home() {
                   <small>CRAPS {view.casino.tableId === "craps-b" ? "2" : "1"} · PLACE BETS</small>
                   <strong>{view.casino.holding ? `HOLDING ${view.casino.chip} CHIPS` : "C · TAKE CHIPS IN HAND"}</strong>
                   <div className="bet-number-row">{[4,5,6,8,9,10].map(n=><div key={n}><b>{n}</b><span>{view.casino.bets[n]??0} ON</span><small>+{Math.ceil(view.casino.chip/(n===6||n===8?6:5))*(n===6||n===8?6:5)} CHIPS</small></div>)}</div>
-                  <p>Aim at a printed number + click · R chip value<br/>E put away / roll · X return bets · weapon keys put chips away</p>
+                  <p>Aim at a printed number + click · R chip value<br/>F put away / roll · X return bets · weapon keys put chips away</p>
                   {view.casino.hover && <p className="bet-hover-hint">{view.casino.hover.affordable ? `CLICK · ${view.casino.hover.amount} CHIPS ON ${view.casino.hover.number}` : `NEED ${view.casino.hover.amount} CHIPS`}</p>}
                   <small>4/10 pay 9:5 · 5/9 pay 7:5 · 6/8 pay 7:6<br/>One roll per table each round. Seven clears this table’s bets.</small>
                   {tableDice && <p role="status">{tableDice.resolved ? `${tableDice.values[0]} + ${tableDice.values[1]} · ${view.casino.result}` : "⚄ ⚂ Rolling… bets locked"}</p>}
@@ -624,11 +606,10 @@ export default function Home() {
               {view.casino.nearPainting && view.casino.paintingOpen && !view.casino.speakeasy && <div className="secret-status">THE LOCK · {view.casino.codeProgress} / 8<br/><small>Read the pinned cards left to right. Shoot suit, then number.</small></div>}
               {view.casino.nearMystery && (
                 <div className="secret-status mystery-status">
-                  <strong>THE VELVET FORTUNE</strong>
-                  <MysteryReel reel={view.mysteryReel} />
+                  <strong>THE VELVET CASE</strong>
                   <p>
                     {view.casino.mystery ||
-                      "400 chips · 50% one of ten 1970s house guns / 50% nothing · E spin"}
+                      "400 chips · random firearm · F open · 20 seconds to choose"}
                   </p>
                 </div>
               )}
@@ -833,6 +814,7 @@ export default function Home() {
                   style={{ opacity: view.damage / 0.4 }}
                 />
               )}
+              {view.dialogue && <div className="character-subtitle" role="status">{view.dialogue}</div>}
               {view.message && (
                 <div className="game-message" role="status">
                   {view.message}
@@ -842,7 +824,7 @@ export default function Home() {
                 <div
                   className={`purchase-prompt ${view.prompt.reason ? "unavailable" : ""}`}
                 >
-                  <kbd>E</kbd>
+                  <kbd>F</kbd>
                   <div>
                     <strong>{view.prompt.name}</strong>
                     <span>{view.prompt.reason || view.prompt.detail}</span>
@@ -935,6 +917,10 @@ export default function Home() {
                   style={{ width: `${(100 * view.health) / view.maxHealth}%` }}
                 />
               </div>
+              <div className={`stamina-meter ${view.sprintExhausted ? "exhausted" : ""}`}>
+                <span>{view.sprintExhausted ? "RECOVERING" : "STAMINA"}</span>
+                <progress aria-label="Sprint stamina" value={view.stamina} max={100} />
+              </div>
               <span className="hud-hint">
                 {view.health < view.maxHealth
                   ? "Health recovers when you avoid damage"
@@ -960,7 +946,7 @@ export default function Home() {
               </div>
               {view.casino.holding && (
                 <span className="hud-hint">
-                  CHIPS IN HAND · {view.casino.chip} · E / WEAPON KEY TO EQUIP
+                  CHIPS IN HAND · {view.casino.chip} · F / WEAPON KEY TO EQUIP
                 </span>
               )}
               <span className="hud-hint">
@@ -985,7 +971,7 @@ export default function Home() {
               <span className="hud-hint">
                 {view.mag === 0
                   ? "R TO RELOAD"
-                  : "R RELOAD · E INTERACT · ESC PAUSE"}
+                  : "R RELOAD · F INTERACT · ESC PAUSE"}
               </span>
             </div>
           </div>
@@ -1185,6 +1171,10 @@ export default function Home() {
               }}
             />
           </label>
+          <label className="debug-check">
+            <input type="checkbox" checked={showExplanations} onChange={e => changeExplanations(e.target.checked)} />
+            Show tips & explanation cards
+          </label>
           <Controls />
           {process.env.NODE_ENV !== "production" && (
             <fieldset className="debug-actions">
@@ -1233,11 +1223,13 @@ export default function Home() {
         onPlay={()=>{setDevOpen(false);setSettings(false);void runtime.current?.enter();}}
         onPause={()=>runtime.current?.pause()} onClose={()=>setDevOpen(false)} />}
       {rangeMode && <aside className="range-panel" aria-label="Mechanics test range">
+        <a href="/audio/dialogue/index.html" target="_blank" rel="noreferrer">Listen to Frankie’s voice pilot ↗</a>
         <p className="range-kicker">DEVELOPMENT / SANDBOX</p>
         <h1>Mechanics lab</h1>
         <p>Move freely. Test one variable. Reset and repeat.</p>
         <button className="range-play" disabled={!ready} onClick={() => {if(view.phase === "dead") setGod(false); enter(view.phase === "dead");}}>{active ? "Recapture mouse" : view.phase === "dead" ? "Restart scenario" : "Play scenario"}</button>
         <button onClick={() => runtime.current?.pause()}>Pause / release mouse · Esc</button>
+        <label><input type="checkbox" checked={showExplanations} onChange={e => changeExplanations(e.target.checked)} /> Show tips & explanation cards</label>
         <h2>Scenario</h2>
         <select aria-label="Test scenario" value={scenario} disabled={!ready} onChange={e => rangeAction(e.target.value)}>
           <option value="targets">Weapon range · 5 / 10 / 20 m</option>
@@ -1245,11 +1237,22 @@ export default function Home() {
           <option value="blast">Explosions · cover and self damage</option>
           <option value="empty">Movement · empty greybox</option>
         </select>
-        <p>{scenario === "targets" ? "Three stationary 100 HP zombies. Compare sights, spread, reloads and hit reactions. They can still attack at close range." : scenario === "pursuit" ? "Three active zombies, no automatic waves. Test movement and close combat." : scenario === "blast" ? "G throws a grenade. Compare exposed distance with the tall cover wall. Damage is enabled; nearby blasts can kill." : "Clear floor, low obstacles and full-height cover for movement checks."}</p>
+        <p>{scenario === "targets" ? "Three stationary zombies at the selected round’s health. Compare sights, spread, reloads and hit reactions. They can still attack at close range." : scenario === "pursuit" ? "Three active zombies, no automatic waves. Test movement and close combat." : scenario === "blast" ? "G throws a grenade. Compare exposed distance with the tall cover wall. Damage is enabled; nearby blasts can kill." : "Clear floor, low obstacles and full-height cover for movement checks."}</p>
+        <label>Test round <input type="number" min={1} max={100} value={view.round} onChange={e => rangeAction(`round-health:${e.target.value}`)} /></label>
         <button disabled={!ready} onClick={() => rangeAction("reset")}>Reset this scenario</button>
-        <h2>Loadout</h2>
+        <h2>Add enemies</h2>
+        <select aria-label="Spawn behavior" value={spawnBehavior} onChange={e => setSpawnBehavior(e.target.value)}>
+          <option value="pursuit">Pursuing zombies</option>
+          <option value="stationary">Stationary targets</option>
+        </select>
+        <div className="range-spawn-buttons">
+          {[1,5,10].map(count => <button key={count} disabled={!ready || view.phase === "dead" || view.enemies >= 60} onClick={() => rangeAction(`spawn:${count}:${spawnBehavior}`)}>+{count}</button>)}
+        </div>
+        <p>Add to this run without resetting. Spawns favor space ahead of you. Limit: 60 enemies.</p>
+        <h2>Loadout · 2 guns</h2>
+        <output>{view.owned.filter(w => w.id !== "axe" && w.id !== "stick").map(w => `${w.key} · ${w.label}`).join(" / ")}</output>
         <select aria-label="Range weapon" value={view.weapon} disabled={!ready} onChange={e => rangeAction(`equip:${e.target.value}`)}>
-          {Object.entries(WEAPONS).map(([id,w]) => <option key={id} value={id}>{w.label}</option>)}
+          {Object.entries(WEAPONS).map(([id,w]) => <option key={id} value={id}>{w.label} · {w.damage * w.pellets} damage{w.pellets > 1 ? " (all pellets)" : ""}</option>)}
         </select>
         <button disabled={!ready} onClick={() => rangeAction("refill")}>Restore health, ammo & grenades</button>
         <button disabled={!ready} onClick={() => rangeAction("clear")}>Clear enemies & live grenades</button>
@@ -1257,7 +1260,7 @@ export default function Home() {
         <h2>Live readout</h2>
         <output>{view.phase.toUpperCase()} · {Math.ceil(view.health)} HP<br />{view.enemies} enemies · {view.grenades} grenades<br />{Math.round(view.fps)} FPS · {view.p95.toFixed(1)} ms p95</output>
         <h2>Controls</h2>
-        <p>WASD move · Shift sprint · Mouse aim<br />LMB fire · RMB sights · R reload<br />G grenade · V melee · Q next weapon</p>
+        <p>WASD move · Space sprint · Mouse look<br />LMB fire · Shift / RMB sights · R reload<br />G grenade · V melee · Q / E switch · F interact</p>
         <p>Embedded preview: if mouse capture is unavailable, hold RMB and drag to look. Click the scene before moving.</p>
         <button onClick={()=>window.location.assign(new URL("/?playtest=1", window.location.origin))}>Casino integration tests →</button>
       </aside>}

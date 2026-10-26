@@ -1,0 +1,86 @@
+[
+  {
+    "asset": "casino-deco-casino-wall-sw.glb",
+    "triangles": 12340,
+    "meshes": 8,
+    "bytes": 1085568
+  },
+  {
+    "asset": "casino-deco-casino-wall-sm.glb",
+    "triangles": 9296,
+    "meshes": 8,
+    "bytes": 915324
+  },
+  {
+    "asset": "casino-deco-casino-wall-se.glb",
+    "triangles": 48200,
+    "meshes": 8,
+    "bytes": 2829144
+  },
+  {
+    "asset": "casino-deco-casino-wall-ws.glb",
+    "triangles": 4936,
+    "meshes": 8,
+    "bytes": 653560
+  },
+  {
+    "asset": "casino-deco-casino-wall-wm.glb",
+    "triangles": 9296,
+    "meshes": 8,
+    "bytes": 915324
+  },
+  {
+    "asset": "casino-deco-casino-wall-wn.glb",
+    "triangles": 15384,
+    "meshes": 8,
+    "bytes": 1258196
+  },
+  {
+    "asset": "casino-deco-casino-wall-es.glb",
+    "triangles": 4936,
+    "meshes": 8,
+    "bytes": 651172
+  },
+  {
+    "asset": "casino-deco-casino-wall-en.glb",
+    "triangles": 30192,
+    "meshes": 8,
+    "bytes": 2126996
+  },
+  {
+    "asset": "casino-deco-portal-lounge.glb",
+    "triangles": 25124,
+    "meshes": 6,
+    "bytes": 1648640
+  },
+  {
+    "asset": "casino-deco-gate-lounge.glb",
+    "triangles": 12076,
+    "meshes": 3,
+    "bytes": 540636
+  },
+  {
+    "asset": "casino-deco-portal-vip.glb",
+    "triangles": 28004,
+    "meshes": 6,
+    "bytes": 1721968
+  },
+  {
+    "asset": "casino-deco-gate-vip.glb",
+    "triangles": 9844,
+    "meshes": 3,
+    "bytes": 435144
+  },
+  {
+    "asset": "casino-deco-portal-cashier.glb",
+    "triangles": 24900,
+    "meshes": 6,
+    "bytes": 1641284
+  },
+  {
+    "asset": "casino-deco-gate-cashier.glb",
+    "triangles": 16292,
+    "meshes": 3,
+    "bytes": 775868
+  }
+]

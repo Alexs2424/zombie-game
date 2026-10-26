@@ -1,0 +1,78 @@
+[
+  {
+    "weapon": "pistol",
+    "atSeconds": 0
+  },
+  {
+    "weapon": "shotgun",
+    "atSeconds": 1.55
+  },
+  {
+    "weapon": "smg",
+    "atSeconds": 3.1
+  },
+  {
+    "weapon": "rifle",
+    "atSeconds": 4.05
+  },
+  {
+    "weapon": "revolver",
+    "atSeconds": 5.6
+  },
+  {
+    "weapon": "magnum",
+    "atSeconds": 7.15
+  },
+  {
+    "weapon": "tommy",
+    "atSeconds": 8.7
+  },
+  {
+    "weapon": "doublebarrel",
+    "atSeconds": 9.65
+  },
+  {
+    "weapon": "dual",
+    "atSeconds": 11.2
+  },
+  {
+    "weapon": "machinepistol",
+    "atSeconds": 12.349
+  },
+  {
+    "weapon": "lever",
+    "atSeconds": 13.299
+  },
+  {
+    "weapon": "autoshotgun",
+    "atSeconds": 14.849
+  },
+  {
+    "weapon": "sniper",
+    "atSeconds": 16.399
+  },
+  {
+    "weapon": "lmg",
+    "atSeconds": 17.949
+  },
+  {
+    "weapon": "launcher",
+    "atSeconds": 18.899
+  },
+  {
+    "weapon": "flare",
+    "atSeconds": 20.449
+  },
+  {
+    "weapon": "stick-impact",
+    "atSeconds": 21.999
+  },
+  {
+    "weapon": "axe-impact",
+    "atSeconds": 23.549
+  },
+  {
+    "weapon": "axe-swing",
+    "atSeconds": 25.099
+  }
+]
