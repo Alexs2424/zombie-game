@@ -18,6 +18,13 @@ export function buildHotelRenovation(scene: Scene) {
   const textures: DynamicTexture[] = [];
   const batches = new Map<PBRMaterial, Mesh[]>();
   const loose: Mesh[] = [];
+  const stairFallback: Mesh[] = [];
+  const ceilingFallback: Mesh[] = [];
+  const floorFallback: Mesh[] = [];
+  const detailFallback: Mesh[] = [];
+  let floorDetail = false;
+  let ceilingDetail = false;
+  let stairDetail = false;
   const doors: Mesh[] = [];
   const makeMaterial = (name: string, color: string, metallic = 0, roughness = 0.5) => {
     const m = new PBRMaterial(`hotel renovation ${name}`, scene);
@@ -52,7 +59,12 @@ export function buildHotelRenovation(scene: Scene) {
     mesh.material = m;
     mesh.isPickable = false;
     mesh.receiveShadows = true;
-    if (dynamic) loose.push(mesh);
+    const replacedDetail = /hotel (gathered silk drapery|curtain gilded tieback|reception woven rug|rug border|rug woven diamond|fitted stair carpet runner|runner narrow gold weave|sconce ornamental backplate|sconce curved arm|sconce opal shade)/.test(mesh.name);
+    if (replacedDetail) { detailFallback.push(mesh); loose.push(mesh); }
+    else if (floorDetail) { floorFallback.push(mesh); loose.push(mesh); }
+    else if (ceilingDetail) { ceilingFallback.push(mesh); loose.push(mesh); }
+    else if (stairDetail) { stairFallback.push(mesh); loose.push(mesh); }
+    else if (dynamic) loose.push(mesh);
     else { const list = batches.get(m) ?? []; list.push(mesh); batches.set(m, list); }
     return mesh;
   };
@@ -128,6 +140,7 @@ export function buildHotelRenovation(scene: Scene) {
     doors.push(...part);
   }
 
+  stairDetail = true;
   // Stately supports make the balcony feel grounded; decoration stays inside shared bounds.
   for (const q of HOTEL_RENOVATION_SOLIDS.filter(q => q.id.includes("column"))) {
     box("column square plinth", q.x, .12, q.z, .72, .24, .72, stone);
@@ -147,6 +160,7 @@ export function buildHotelRenovation(scene: Scene) {
     }
   }
 
+  stairDetail = false;
   // Upper wall bays clear the artwork, staff signs, and supply doorway below.
   // Derive the wall tangent and inward normal from the actual lobby polygon.
   for (const [wallIndex,z] of [[6,26],[2,26],[6,40],[2,39]]) {
@@ -173,6 +187,7 @@ export function buildHotelRenovation(scene: Scene) {
   }
 
   // A clear central vista; border marquetry and a reception rug anchor the furniture.
+  floorDetail = true;
   for (let i=0;i<16;i++) {
     const a=i*Math.PI/8,b=(i+1)*Math.PI/8;
     const r1=i%2?1.18:2.7,r2=i%2?2.7:1.18;
@@ -181,6 +196,7 @@ export function buildHotelRenovation(scene: Scene) {
     data.indices=[0,2,1];data.normals=[0,1,0,0,1,0,0,1,0];data.uvs=[.5,.5,0,0,1,1];data.applyToMesh(mesh);
     add(mesh,i%2?gold:green);
   }
+  floorDetail = false;
   box("reception woven rug",-12,.035,22.65,8.9,.015,2.7,green);
   for (const dx of [-4.22,4.22]) box("rug border",-12+dx,.047,22.65,.045,.006,2.32,gold);
   for (const dz of [-1.16,1.16]) box("rug border",-12,.047,22.65+dz,8.47,.006,.045,gold);
@@ -222,6 +238,7 @@ export function buildHotelRenovation(scene: Scene) {
 
   // Real stair treads receive a fitted runner. Curved relief follows the existing guards.
   for (const stairs of HOTEL.stairs) {
+    stairDetail = false;
     for (let i=0;i<28;i++) {
       const t=(i+.5)/28, a=stairPoint(stairs,t,3.04), b=stairPoint(stairs,t,4.96);
       const y=stairs.topY*(i+1)/28+.014;
@@ -229,6 +246,7 @@ export function buildHotelRenovation(scene: Scene) {
       box("fitted stair carpet runner",(a.x+b.x)/2,y,(a.z+b.z)/2,Math.hypot(dx,dz),.018,.39,green,-Math.atan2(dz,dx));
       for (const radius of [3.1,4.9]) { const p=stairPoint(stairs,t,radius); box("runner narrow gold weave",p.x,y+.012,p.z,.05,.008,.35,gold,-Math.atan2(dz,dx)); }
     }
+    stairDetail = true;
     for (const radius of [stairs.innerRadius-.075,stairs.outerRadius+.075]) {
       for (let n=0;n<14;n++) {
         const t=(n+.5)/14,p=stairPoint(stairs,t,radius),angle=Math.PI*t;
@@ -240,6 +258,8 @@ export function buildHotelRenovation(scene: Scene) {
     }
   }
 
+  stairDetail = false;
+  ceilingDetail = true;
   // Gilded ceiling rose with sculpted petals around the existing chandelier.
   const roseX=HOTEL.center.x,roseZ=HOTEL.center.z-2;
   for (const diameter of [2.1,2.35,3.2,3.42]) {
@@ -253,6 +273,7 @@ export function buildHotelRenovation(scene: Scene) {
     petal.scaling.set(.6,.12,.2);petal.rotation.y=-a;
   }
 
+  ceilingDetail = false;
   // Framed mirrors and paired sconces furnish the rear salons without blocking paths.
   for (const x of [-6.9,-1.1]) {
     box("salon antique mirror",x,2.23,45.79,2.7,1.83,.04,mirror);
@@ -288,6 +309,10 @@ export function buildHotelRenovation(scene: Scene) {
   let passageOpen=false,cacheClaimed=false;
   return {
     meshes,
+    replaceDetails() { detailFallback.forEach(mesh => mesh.setEnabled(false)); },
+    replaceFloor() { floorFallback.forEach(mesh => mesh.setEnabled(false)); },
+    replaceCeiling() { ceilingFallback.forEach(mesh => mesh.setEnabled(false)); },
+    replaceStairs() { stairFallback.forEach(mesh => mesh.setEnabled(false)); },
     update(sim:Simulation) {
       if (passageOpen!==sim.hotelMystery.passageOpen) {passageOpen=sim.hotelMystery.passageOpen;doors.forEach(m=>m.setEnabled(!passageOpen));}
       if (cacheClaimed!==sim.hotelMystery.cacheClaimed) {cacheClaimed=sim.hotelMystery.cacheClaimed;cacheLid.rotation.x=cacheClaimed?-.65:0;cacheLid.position.y=cacheClaimed?1.04:.72;}

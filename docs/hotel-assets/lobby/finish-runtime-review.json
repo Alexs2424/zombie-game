@@ -1,0 +1,79 @@
+{
+  "browser": "Chrome 154, headless 1600x900, WebGL2 via Metal, local development server",
+  "focusedTestsPassed": 36,
+  "typecheck": "passed",
+  "productionBuild": "passed; existing size and route-classification notices",
+  "blenderSourcesAudited": 7,
+  "changedGLBsAudited": 6,
+  "runtime": [
+    {
+      "wallReliefMetres": {
+        "backing": 0.09999999828857464,
+        "lowerProjection": 0.05785714456856994,
+        "plasterProjection": 0.03317582588725165
+      },
+      "loaded": [
+        {
+          "kind": "stairs",
+          "meshes": 5
+        },
+        {
+          "kind": "ceiling",
+          "meshes": 6
+        },
+        {
+          "kind": "floor",
+          "meshes": 7
+        },
+        {
+          "kind": "details",
+          "meshes": 9
+        }
+      ],
+      "totalVertices": 4424313
+    },
+    {
+      "surfaceMaterials": 10,
+      "mappedMarbleMeshes": 3,
+      "windowProjectionReady": true
+    },
+    {
+      "walkLoopComplete": true,
+      "seconds": 44.74659999999404,
+      "highestFloor": 4,
+      "finalPosition": {
+        "x": -3.000371847509387,
+        "y": 0,
+        "z": 9.281216905733324,
+        "surfaceId": "ground"
+      },
+      "galleryOpen": false
+    },
+    {
+      "scenario": "hotel chase, three enemies, 12 seconds",
+      "frames": 614,
+      "meanFrameMs": 19.535830618892508,
+      "p95FrameMs": 21.5,
+      "enemies": 3
+    }
+  ],
+  "missingLightingTextures": {
+    "floorMeshes": 7,
+    "liveDaylight": 3.7,
+    "bakedMapsAssigned": 0
+  },
+  "lightingDisposalCycles": [
+    {
+      "loadedTextures": 4,
+      "remainingTextures": 0,
+      "remainingLights": 0
+    },
+    {
+      "loadedTextures": 4,
+      "remainingTextures": 0,
+      "remainingLights": 0
+    }
+  ],
+  "previousRecordedMeanFrameMs": 18.153101361573654,
+  "comparisonLimit": "Separate short local samples; not a controlled cross-device benchmark or steady 60 FPS guarantee."
+}

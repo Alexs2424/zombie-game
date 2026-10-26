@@ -20,7 +20,7 @@ test('mystery reveal never grants or equips before explicit acceptance',()=>{
 });
 test('declining or letting a mystery offer expire preserves the loadout',()=>{
  const s=offer();assert.equal(s.declineMystery(),true);assert.deepEqual(s.firearms,['pistol']);
- const expired=offer();tick(expired,16);assert.equal(expired.mysteryOffer,null);assert.deepEqual(expired.firearms,['pistol']);
+ const expired=offer();tick(expired,21);assert.equal(expired.mysteryOffer,null);assert.deepEqual(expired.firearms,['pistol']);
 });
 test('round health keeps increasing and weapon damage has meaningful kill thresholds',()=>{
  assert.equal(zombieHealth(1),80);assert.equal(zombieHealth(10),260);

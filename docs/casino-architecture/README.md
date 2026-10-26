@@ -96,3 +96,7 @@ without introducing clues, quest conditions or new lore.
 
 **Implemented:** the perimeter, five independently purchased gates, fitted
 surrounds, reverse faces and atomic fallback behavior described above.
+
+## Main integration — 2026-10-26
+
+Merged the completed hotel stack without conflicts. All 296 tests, TypeScript, focused ESLint, production build, the 21-asset casino geometry audit (4,249 samples), and hotel-entry asset audit pass. Existing build notices remain. Prior browser/source checks remain visual evidence; model geometry was unchanged by this merge.

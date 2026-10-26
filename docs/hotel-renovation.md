@@ -10,6 +10,8 @@ Five original Blender assets replace or expand the furnishing set: reception, re
 
 The hotel adds a polished marble floor, compass inlay, reception rug, fitted stair runners, gilded oval railing relief, carved balcony columns, a ceiling rose, tall curtained window bays, sconces, framed reflective panels and plaster ornament above reception. Repeated detail is merged by material. The room retains its open central approach and the existing continuous stair guards.
 
+The subsequent [lobby wall upgrade](hotel-assets/lobby-walls.md) adds profiled plaster panels, green wainscot, and layered architectural moldings to the perimeter shell. That document owns the current wall finish and its verification.
+
 ## Investigation
 
 1. Inspect the reception ledger with **E**. Elias Varga, room 214, is recorded as checked out, but his luggage remains.

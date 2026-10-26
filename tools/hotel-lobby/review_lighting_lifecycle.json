@@ -1,0 +1,14 @@
+[
+  {
+    "action": "new"
+  },
+  {
+    "action": "hotel-lobby"
+  },
+  {
+    "wait": 1800
+  },
+  {
+    "eval": "(async()=>{const r=window.__lastJackpot.renderer;const Scene=r.scene.constructor,V=r.camera.position.constructor;const Key=r.scene.lights.find(l=>l.name==='hotel chandelier pool 0').constructor;const {createHotelFinishLighting}=await import('/lib/game/hotel-finish-lighting.ts');const results=[];for(let i=0;i<2;i++){const scene=new Scene(r.engine);const key=new Key('audit key',new V(0,6,0),new V(0,-1,0),2,1,scene);const finish=createHotelFinishLighting(scene,key);try{await new Promise(resolve=>setTimeout(resolve,800));finish.refresh([]);const loaded=scene.textures.length;finish.dispose();finish.lights.forEach(l=>l.dispose());key.dispose();await new Promise(resolve=>setTimeout(resolve,100));if(scene.textures.length||scene.lights.length)throw Error('Hotel lighting resource leak');results.push({loadedTextures:loaded,remainingTextures:scene.textures.length,remainingLights:scene.lights.length});}finally{scene.dispose();}}return results;})()"
+  }
+]

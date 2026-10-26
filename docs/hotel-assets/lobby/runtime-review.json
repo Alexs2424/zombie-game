@@ -1,0 +1,74 @@
+{
+  "testedBase": "73e44aa",
+  "browser": "Chrome 154, WebGL2 via Metal, headless 1600x900, local development server",
+  "automatedTests": {
+    "passed": 292,
+    "failed": 0
+  },
+  "build": "passed; existing chunk-size and route-classification notices",
+  "typecheck": "passed",
+  "focusedLint": "passed",
+  "blenderSourcesAudited": 7,
+  "runtime": [
+    {
+      "wallReliefMetres": {
+        "backing": 0.09999999828857464,
+        "lowerProjection": 0.05785714456856994,
+        "plasterProjection": 0.03317582588725165
+      },
+      "loaded": [
+        {
+          "kind": "stairs",
+          "meshes": 5
+        },
+        {
+          "kind": "ceiling",
+          "meshes": 6
+        },
+        {
+          "kind": "floor",
+          "meshes": 7
+        },
+        {
+          "kind": "details",
+          "meshes": 8
+        }
+      ],
+      "totalVertices": 4416617
+    },
+    {
+      "walkLoopComplete": true,
+      "seconds": 44.705700000000185,
+      "highestFloor": 4,
+      "finalPosition": {
+        "x": -3.000371847509387,
+        "y": 0,
+        "z": 9.281216905733324,
+        "surfaceId": "ground"
+      },
+      "galleryOpen": false
+    },
+    {
+      "scenario": "hotel chase, three enemies, 12 seconds",
+      "frames": 661,
+      "meanFrameMs": 18.153101361573654,
+      "p95FrameMs": 19.600000000558794,
+      "enemies": 3
+    }
+  ],
+  "limitation": "The 12-second chase sample is a local performance check, not a sustained 60-FPS guarantee or cross-device benchmark.",
+  "staticCaptureAudit": {
+    "idle": {
+      "shadows": 0,
+      "faces": 0
+    },
+    "transitions": {
+      "shadows": 2,
+      "faces": 12
+    },
+    "settled": {
+      "shadows": 0,
+      "faces": 0
+    }
+  }
+}

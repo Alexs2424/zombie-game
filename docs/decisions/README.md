@@ -11,7 +11,8 @@ This folder is the current source of truth for the game's narrative direction. I
 | [Character production design](character-production-design.md) | Detailed silhouettes, faces, clothing, first-person cues, gestures and voice performance |
 | [Characters](characters.md) | Concise cast, appearance and performance direction |
 | [Character backstory bible](character-backstories/README.md) | Detailed biographies, supporting people, human contradictions, relationships and reveal pacing |
-| [Voice direction round 02](voice-direction-round-02.md) | Latest user correction, heightened cast voices, replacement script proposals and access blocker |
+| [Voice direction round 04](voice-direction-round-04.md) | Current all-cast original redesign, theatrical scripts and 18 generated voice auditions |
+| [Voice direction round 02](voice-direction-round-02.md) | Historical user corrections, rejected voices, Chuck preference and resolved access blockers |
 | [Gameplay voice pilot](gameplay-voice-pilot.md) | Six recorded Frankie reactions, implemented triggers, provisional casting and listening instructions |
 | [Voice and dialogue](voice-and-dialogue.md) | AI voice production, auditions, writing and playback rules |
 | [Quests and Easter eggs](quests-and-easter-eggs.md) | Map integration, quest progression, secrets and co-op interaction rules |
@@ -20,6 +21,8 @@ This folder is the current source of truth for the game's narrative direction. I
 | [Voice audition pack](../voice-auditions/README.md) | First complete comic-line batch, generation prompts, preview scripts and access status |
 | [Arsenal reference](../arsenal.md) | Current weapon roster, stats, acquisition, handling and sound direction |
 | [Gun sound direction](../gun-audio/README.md) | Selected B sound bank, source provenance, previews and playback |
+| [Lobby design roadmap](../hotel-assets/lobby-design.md) | Approved Blender asset priorities, visual improvements, and implementation status |
+| [Lobby wall art direction](../hotel-assets/lobby-walls.md) | Current perimeter-wall finish, working visual choices, and verified wall implementation |
 | [Decision log](decision-log.md) | Dated choices, their status and changes in direction |
 
 ## Status vocabulary

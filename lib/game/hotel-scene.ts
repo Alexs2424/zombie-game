@@ -7,12 +7,16 @@ import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { PBRMaterial } from "@babylonjs/core/Materials/PBR/pbrMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
+import type { Light } from "@babylonjs/core/Lights/light";
+import { createHotelFinishLighting } from "./hotel-finish-lighting";
 import { PointLight } from "@babylonjs/core/Lights/pointLight";
 import { SpotLight } from "@babylonjs/core/Lights/spotLight";
 import { HOTEL, HOTEL_RECTS, stairPoint } from "./world";
 import { buildHotelProps } from "./hotel-props";
 import { loadHotelFurniture } from "./hotel-assets";
+import { loadHotelLobbyAsset } from "./hotel-lobby-assets";
 import { loadHotelEntry } from "./hotel-entry-assets";
+import { buildHotelWalls } from "./hotel-wall-scene";
 import { buildHotelRenovation } from "./hotel-renovation-scene";
 import { createHotelLightMembership } from "./hotel-light-membership";
 import { HOTEL_FIXTURES } from "./hotel-fixtures";
@@ -73,10 +77,15 @@ function triangulate(outline: readonly Point[]) {
  */
 export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
   const batches = new Map<StandardMaterial, Mesh[]>();
+  const stairFallback: Mesh[] = [];
+  const ceilingFallback: Mesh[] = [];
+  const floorFallback: Mesh[] = [];
+  let floorDetail = false;
+  let ceilingDetail = false;
   const ownedMeshes: Mesh[] = [];
   const materials: StandardMaterial[] = [];
   const textures: DynamicTexture[] = [];
-  const lights: (PointLight | SpotLight)[] = [];
+  const lights: Light[] = [];
   const material = (name: string, hex: string, glow = 0.045) => {
     const m = new StandardMaterial(`hotel ${name}`, scene);
     m.diffuseColor = Color3.FromHexString(hex);
@@ -166,6 +175,8 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
     mesh.material = m;
     mesh.receiveShadows = true;
     mesh.isPickable = false;
+    if (floorDetail) { floorFallback.push(mesh); ownedMeshes.push(mesh); return mesh; }
+    if (ceilingDetail) { ceilingFallback.push(mesh); ownedMeshes.push(mesh); return mesh; }
     const list = batches.get(m) ?? [];
     list.push(mesh);
     batches.set(m, list);
@@ -424,8 +435,9 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
   }
 
   for (const rect of HOTEL_RECTS) {
-    // These footprints are rendered by buildHotelProps, not as architecture.
+    // Perimeter walls, props, entry assets, and renovation solids have dedicated builders.
     if (
+      rect.id.startsWith("hotel-wall-") ||
       rect.id.startsWith("hotel-prop-") ||
       rect.id === "hotel-entry-lintel" ||
       rect.id === HOTEL_AMMO_CRATE.id ||
@@ -435,83 +447,14 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
     const base = rect.baseY ?? 0;
     const yaw = -(rect.yaw ?? 0);
     if (rect.id.includes("rail")) {
-      box(
-        `${rect.id} guard`,
-        rect.x,
-        base + rect.h / 2,
-        rect.z,
-        rect.w,
-        rect.h,
-        rect.d,
-        teal,
-        yaw,
-      );
-      box(
-        `${rect.id} handrail`,
-        rect.x,
-        base + rect.h - 0.005,
-        rect.z,
-        rect.w + 0.025,
-        0.085,
-        rect.d + 0.045,
-        brass,
-        yaw,
-      );
-      box(
-        `${rect.id} base`,
-        rect.x,
-        base + 0.07,
-        rect.z,
-        rect.w + 0.01,
-        0.14,
-        rect.d + 0.025,
-        dark,
-        yaw,
-      );
-      const axis = rect.yaw ?? 0;
-      const c = Math.cos(axis),
-        s = Math.sin(axis);
-      const count = Math.max(1, Math.round(rect.w / 0.65));
-      for (let i = 0; i < count; i++) {
-        const offset = ((i + 0.5) * rect.w) / count - rect.w / 2;
-        const x = rect.x + c * offset,
-          z = rect.z + s * offset;
-        box(
-          "deco rail baluster",
-          x,
-          base + rect.h / 2,
-          z,
-          0.045,
-          rect.h - 0.09,
-          rect.d + 0.04,
-          brass,
-          yaw,
-        );
-        box(
-          "deco rail collar",
-          x,
-          base + rect.h * 0.63,
-          z,
-          0.17,
-          0.12,
-          rect.d + 0.055,
-          brass,
-          yaw,
-        );
-      }
-      box(
-        "deco rail middle ribbon",
-        rect.x,
-        base + rect.h * 0.35,
-        rect.z,
-        rect.w,
-        0.027,
-        rect.d + 0.025,
-        brass,
-        yaw,
-      );
+      const guard = box(`${rect.id} loading guard`, rect.x, base + rect.h / 2,
+        rect.z, rect.w, rect.h, rect.d, teal, yaw);
+      batches.get(teal)!.splice(batches.get(teal)!.indexOf(guard), 1);
+      guard.freezeWorldMatrix();
+      stairFallback.push(guard); ownedMeshes.push(guard);
       continue;
     }
+
     box(
       rect.id,
       rect.x,
@@ -557,49 +500,6 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
       stone,
       yaw,
     );
-    if (rect.id.startsWith("hotel-wall-")) {
-      box(
-        `${rect.id} upper belt`,
-        rect.x,
-        HOTEL.floorY + 0.16,
-        rect.z,
-        rect.w + 0.05,
-        0.23,
-        rect.d + 0.085,
-        dark,
-        yaw,
-      );
-      box(
-        `${rect.id} upper molding`,
-        rect.x,
-        HOTEL.floorY + 0.31,
-        rect.z,
-        rect.w + 0.065,
-        0.05,
-        rect.d + 0.1,
-        brass,
-        yaw,
-      );
-      const c = Math.cos(rect.yaw ?? 0),
-        s = Math.sin(rect.yaw ?? 0);
-      for (
-        let offset = -rect.w / 2 + 1.3;
-        offset < rect.w / 2 - 0.9;
-        offset += 4
-      ) {
-        box(
-          `${rect.id} upper pilaster`,
-          rect.x + c * offset,
-          HOTEL.floorY + 2.4,
-          rect.z + s * offset,
-          0.18,
-          3.8,
-          rect.d + 0.12,
-          stone,
-          yaw,
-        );
-      }
-    }
   }
 
   for (const stairs of HOTEL.stairs) {
@@ -720,6 +620,7 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
     Math.PI,
   );
 
+  floorDetail = true;
   // A flush central medallion defines the open lobby training space.
   for (const [radius, width, m] of [
     [3.3, 0.055, brass],
@@ -747,6 +648,9 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
     }
   }
 
+  floorDetail = false;
+  floorFallback.forEach(mesh => mesh.freezeWorldMatrix());
+  ceilingDetail = true;
   // Suspended stepped chandeliers and coffered ceilings replace office strips.
   const chandelier = (x: number, z: number, y: number, radius: number) => {
     cylinder(
@@ -860,6 +764,8 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
       cylinder("lounge opal ceiling fixture", x, 3.43, z, 0.89, 0.08, lamp);
     }
 
+  ceilingDetail = false;
+  ceilingFallback.forEach(mesh => mesh.freezeWorldMatrix());
   // Backlit scenic panels give the tall walls scale without adding geometry
   // outside the fixed walkable layout or introducing another shadow map.
   const artTexture = new DynamicTexture(
@@ -1224,12 +1130,11 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
   }
 
   for (const [x, y, z, intensity, range] of [
-    [HOTEL.center.x, 6.6, HOTEL.center.z - 2, 2.3, 24],
-    [HOTEL.center.x, 7.4, upperCenterZ + 0.8, 1.8, 23],
-    [HOTEL.center.x, 2.9, upperCenterZ + 1.5, 0.65, 19],
+    [HOTEL.center.x, 6.6, HOTEL.center.z - 2, 2.45, 23],
+    [HOTEL.center.x, 7.4, upperCenterZ + 0.8, 1.55, 19],
+    [HOTEL.center.x, 2.9, 43.2, 0.95, 15],
     [HOTEL.entrance.x, 3.5, 14, 0.48, 8],
-    [-12, 3.15, 20.4, 0.9, 11],
-    [-4, 2.8, 48.5, 0.45, 15],
+    [-12, 3.15, 20.4, 1.25, 8],
   ]) {
     const light =
       lights.length < 2
@@ -1253,6 +1158,9 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
     lights.push(light);
   }
 
+  const finishLighting = createHotelFinishLighting(scene, lights[0] as SpotLight);
+  lights.push(...finishLighting.lights);
+
   for (const [m, meshes] of batches) {
     // Gate-only materials have no static pieces after their meshes are extracted.
     if (!meshes.length) continue;
@@ -1273,8 +1181,13 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
     merged.freezeWorldMatrix();
     ownedMeshes.push(merged);
   }
+  const walls = buildHotelWalls(scene);
   const renovation = buildHotelRenovation(scene);
   let propMeshes = buildHotelProps(scene);
+  let detailAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
+  let floorAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
+  let ceilingAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
+  let stairAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
   let furniture: Awaited<ReturnType<typeof loadHotelFurniture>> | undefined;
   let entry: Awaited<ReturnType<typeof loadHotelEntry>> | undefined;
   let disposed = false;
@@ -1287,15 +1200,57 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
     propMaterials.forEach((m) => m.dispose(false, true));
   };
   const refreshLights = () => {
-    lightMembership.setStaticMeshes([
+    const staticMeshes = [
       ...ownedMeshes,
       ...renovation.meshes,
+      ...walls.meshes,
+      ...(stairAsset?.meshes ?? []),
+      ...(ceilingAsset?.meshes ?? []),
+      ...(floorAsset?.meshes ?? []),
+      ...(detailAsset?.meshes ?? []),
       ...propMeshes,
       ...(furniture?.lightMeshes ?? []),
       ...(entry?.meshes ?? []),
-    ]);
+    ];
+    lightMembership.setStaticMeshes(staticMeshes);
+    finishLighting.refresh(staticMeshes);
   };
   refreshLights();
+  const detailsReady = loadHotelLobbyAsset(scene, "details").then(loaded => {
+    if (disposed || scene.isDisposed) { loaded.dispose(); return; }
+    detailAsset = loaded;
+    renovation.replaceDetails();
+    refreshLights();
+  }).catch(error => {
+    if (!disposed) console.warn("Hotel textiles unavailable; using existing details.", error);
+  });
+  const floorReady = loadHotelLobbyAsset(scene, "floor").then(loaded => {
+    if (disposed || scene.isDisposed) { loaded.dispose(); return; }
+    floorAsset = loaded;
+    floorFallback.forEach(mesh => mesh.setEnabled(false));
+    renovation.replaceFloor();
+    refreshLights();
+  }).catch(error => {
+    if (!disposed) console.warn("Hotel marble unavailable; using existing floor.", error);
+  });
+  const ceilingReady = loadHotelLobbyAsset(scene, "ceiling").then(loaded => {
+    if (disposed || scene.isDisposed) { loaded.dispose(); return; }
+    ceilingAsset = loaded;
+    ceilingFallback.forEach(mesh => mesh.setEnabled(false));
+    renovation.replaceCeiling();
+    refreshLights();
+  }).catch(error => {
+    if (!disposed) console.warn("Hotel ceiling unavailable; using loading fixtures.", error);
+  });
+  const stairsReady = loadHotelLobbyAsset(scene, "stairs").then(loaded => {
+    if (disposed || scene.isDisposed) { loaded.dispose(); return; }
+    stairAsset = loaded;
+    stairFallback.forEach(mesh => mesh.setEnabled(false));
+    renovation.replaceStairs();
+    refreshLights();
+  }).catch(error => {
+    if (!disposed) console.warn("Hotel stairs unavailable; using solid guards.", error);
+  });
   const furnitureReady = loadHotelFurniture(scene).then((loaded) => {
     if (disposed || scene.isDisposed) {
       loaded.dispose();
@@ -1317,7 +1272,7 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
     entry=loaded;entryFallback.forEach(mesh=>mesh.setEnabled(false));gate.setEnabled(false);
     loaded.setOpen(gateWasOpen);onEntryLoaded?.();refreshLights();
   }).catch(error=>{if(!disposed && !scene.isDisposed) console.warn("Hotel entrance model unavailable; keeping its surround.",error);});
-  const ready=Promise.all([furnitureReady,entryReady]).then(()=>undefined);
+  const ready=Promise.all([detailsReady, floorReady, ceilingReady, stairsReady, furnitureReady,entryReady]).then(()=>undefined);
   let bellCaption = "";
   let jukeWasOn = false;
   let gateWasOpen = false;
@@ -1329,6 +1284,8 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
       gate.setEnabled(!sim.hotel && !entry);
       entry?.setOpen(sim.hotel);
       gatePrice.setEnabled(!sim.hotel);
+      // Refresh the static captures once when the purchase gate changes state.
+      refreshLights();
     }
     const phase = sim.hotelChallenge.phase;
     const lines =
@@ -1390,9 +1347,15 @@ export function buildHotel(scene: Scene, onEntryLoaded?: () => void) {
       if (disposed) return;
       disposed = true;
       lightMembership.dispose();
+      finishLighting.dispose();
+      detailAsset?.dispose();
+      floorAsset?.dispose();
+      ceilingAsset?.dispose();
+      stairAsset?.dispose();
       furniture?.dispose();
       entry?.dispose();
       renovation.dispose();
+      walls.dispose();
       disposeFallback();
       gate.material?.dispose();
       lights.forEach((light) => light.dispose());

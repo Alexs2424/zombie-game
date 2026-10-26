@@ -5,8 +5,8 @@
 **User direction:** Q/E switch guns, carry only two guns, explicitly choose whether
 to take Mystery Box rewards, and differentiate gun power against scaling zombie
 health. **Working choices:** F interacts; third-gun pickups replace the active gun;
-melee tools are separate; Mystery Box offers last 15 seconds and pause with the
-run. Poker/hotel rewards use the same two-gun grant path. Round/damage tuning is
+melee tools are separate; Mystery Box offers originally lasted 15 seconds
+(superseded by the user’s 20-second request below) and pause with the run. Poker/hotel rewards use the same two-gun grant path. Round/damage tuning is
 owned by `docs/combat-balance.md`, and reward behavior by `quests-and-easter-eggs.md`.
 These are implemented mechanics in this change, without new story canon.
 
@@ -262,3 +262,97 @@ Prepared `/audio/dialogue/casting.html` with four original provider preview URLs
 **Working preparation:** retain Chuck Miller for Frankie; screen Charmion for Eve, Kathie for Vivian, and Monty for Voss. These three are new unreviewed candidates selected from character-oriented catalog descriptions. Softness, insufficient huskiness and age mismatch are explicitly flagged for rejection, not hidden by declaring a cast. Leon and Marlowe remain open. Dean, Tatiana and Rosie stay rejected.
 
 Prepared three-beat scripts per candidate (pleasure, anger, quiet admission) in [round 03](../voice-auditions/round-03.json), with exact contexts and delivery notes. New Vivian and Voss lines remain unrecorded proposals grounded in existing biographies. Added `/audio/dialogue/casting-round-03.html` with original remote previews and expandable scripts. No voice generation, downloaded library audio, runtime recasting or account change occurred.
+
+
+## 2026-09-29 — Hotel lobby walls, isolated first art pass
+
+**User direction:** create a second worktree and branch for hotel-lobby model improvements, upgrading the walls first; artistic references can be supplied if needed.
+
+**Working decision:** build on the established Belle Époque ivory, forest-green, and aged-brass palette with raised plaster profiles, recessed lower panels, and layered moldings. Preserve the recently operating hotel setting. Initially selected by the agent, this wall finish was subsequently approved by the user after reviewing the preview (“much better”) and requesting a commit. It does not change the narrative setting or move toward a long-abandoned ruin.
+
+**Implemented and verified on `codex/hotel-lobby-walls`:** procedural perimeter-wall geometry replaces the plain wall boxes/trim. Six merged PBR material meshes receive existing hotel lighting. TypeScript, focused lint, 20 hotel tests, browser views, finite-geometry/light-membership checks, and scene-resource disposal checks pass. No quest, collision, or furniture changes. The [wall asset document](../hotel-assets/lobby-walls.md) owns current detail, reproduction steps, and verification limits.
+
+
+## 2026-09-29 — Proposed lobby fidelity roadmap
+
+**User direction:** continue improving the hotel lobby design with higher-fidelity Blender models.
+
+**Recommendations, not implemented:** prioritize staircase/balcony architecture, then a coordinated chandelier/ceiling pass and marble floor/lighting, followed by seating textiles and close-range fixtures. Preserve the approved wall palette and recently deserted luxury setting. The [lobby design roadmap](../hotel-assets/lobby-design.md) owns these proposals and distinguishes the existing runtime wall geometry from future Blender assets. No new models, lighting, or gameplay changes accompany this design review.
+
+
+## 2026-09-29 — Lobby fidelity stack authorized
+
+The user approved all roadmap improvements, requested a methodical PR stack, and specifically required in-game checks that wall panels project from their backing and the room reads coherently. Work will preserve the approved palette, collision layout, and gameplay. Editable Blender source and runtime exports accompany new models. Each completed layer records its checks in the owning asset documentation.
+
+
+## 2026-09-30 — Stair and balcony architectural treatment
+
+**Implemented working design:** original Blender curved walnut handrails, closed green guard panels with applied brass ornament, turned newels, curved stone spandrels, balcony fascia, and fluted leaf-capital columns. Preserve solid guard behavior and existing route geometry. Closed panels deliberately avoid decorative openings with invisible bullet barriers. The [asset record](../hotel-assets/lobby/README.md) owns source, exports, and validation.
+
+## 2026-09-30 — Coordinated chandelier and ceiling family
+
+**Implemented working design:** tiered brass and cut-crystal fixtures, opal candle lamps, plaster canopy roses, and stepped coffer molding replace the simple ring fixtures and thin dark ceiling beams. Main and dining fixtures share one visual family; the rear salon uses matching shallow opal bowls. Editable Blender source, exported GLB, and game-view verification live in the [fidelity asset record](../hotel-assets/lobby/README.md). No narrative or gameplay changes.
+
+## 2026-09-30 — Fitted marble floor
+
+**Implemented working design:** warm ivory marble slabs with fine joints and original mineral/polish maps, narrow forest-green borders, and a fitted stone compass replace the visually flat floor finish. The finish preserves the simulation floor and sits below existing contact shadows. Sources and game-view validation are recorded in the [fidelity asset record](../hotel-assets/lobby/README.md).
+
+## 2026-09-30 — Hotel light hierarchy and wall relief review
+
+**Implemented working design:** warm architectural lighting with cooler window fill and restrained plaster bounce, plus static room reflections and architectural shadows. Preserve readable paths and the casino's existing exposure. Close wall review confirms the modeled plaster bevels and green panel profiles project from the backing; no flat printed substitute was introduced. Moving quest panels are omitted from frozen captures. Current verification and limits live in the [fidelity asset record](../hotel-assets/lobby/README.md).
+
+## 2026-09-30 — Lobby upholstery, textiles, and fittings
+
+**Implemented working design:** rounded forest upholstery with individual cushions, piping and walnut supports; gathered velvet drapes with warm lining; fitted tread/riser runners; bordered rugs in existing seating groups; and a matching bronze/opal sconce and service-door hardware family. These complete the approved visual scope without moving collision footprints or adding narrative content. Close game review prompted fixes for seating supports and coplanar runner risers. Sources, actual wall-projection measurements, and validation live in the [fidelity asset record](../hotel-assets/lobby/README.md).
+
+**Final integration verification:** rebased the complete lobby stack onto main `73e44aa`, retaining the separate voice/audio decisions. All 292 tests and the production build pass. Browser traversal completes in 44.7 seconds; actual wall projections measure 5.8 cm and 3.3 cm. Seven Blender sources and their exports pass asset audits. Consolidated overlapping rear fill to preserve the eight-light material budget; static room captures update on model replacement and purchase-gate changes. The local short chase sample averages about 55 FPS, not a verified steady 60. Screenshots and exact results are in the [fidelity asset record](../hotel-assets/lobby/README.md).
+
+## 2026-09-30 — Lobby lighting depth and material finish extension
+
+**Established:** user selected the proposed lighting-depth and manufactured/use-worn material passes and requested two additional PRs above the completed lobby stack.
+
+**Working direction:** asymmetrical cool window daylight, localized warm fixtures, soft static architectural floor shading, directional walnut grain, close-range fabric weave, handled brass, and restrained traffic scuffs. Keep the recently maintained hotel; no ruin treatment or narrative changes.
+
+**Implemented in lighting layer:** Cycles floor irradiance modulation, soft window-mullion projection, and retuned hotel light hierarchy, preserving eight sources and casino exposure. Blender source, TypeScript, focused lint, 36 tests, browser lightmap/UV2 checks, and static-capture lifecycle checks pass. Material changes remain pending until the following layer. The [asset record](../hotel-assets/lobby/README.md) owns bake assumptions and verification limits.
+
+## 2026-09-30 — Implement the approved lobby material finish
+
+**Implemented:** original walnut grain/roughness/normal maps aligned to construction pieces and curved handrails; fine upholstery weave; restrained handled-brass patina; and room-space marble polish/scuffs concentrated on traffic routes. Six existing Blender models are updated within their asset budgets. The hotel remains recently maintained, with no debris, new story implications, or collision/layout changes.
+
+**Verified:** six converted GLB audits, seven editable-model source audits, 36 focused hotel/light/gameplay tests, TypeScript, focused lint, production build, close in-game views, 44.75-second traversal, missing-lightmap fallbacks, and lighting resource disposal. The short final chase sample averages about 51 FPS versus about 55 in the prior recorded sample; it is not a steady-60 claim. This completes both approved extension layers. The [asset record](../hotel-assets/lobby/README.md) owns maps, rebuild commands, screenshots, and exact limits.
+
+
+
+
+
+
+
+
+## 2026-09-30 — The Velvet Case replaces the mystery slot cabinet
+
+**Established:** user requested music and sounds, a box that opens and displays
+the weapon, explicit pickup, and return after 20 seconds; a gambling machine is
+not required.
+
+**Working choices:** walnut/brass presentation case with burgundy velvet lining,
+400 chips for a guaranteed random firearm offer, 2.8-second opening and 1.2-second
+closing. Original chime music, latch clicks and wood thuds replace the mystery
+slot sample. The old 50% empty outcome is superseded; other casino games retain
+their existing rules and sounds.
+
+**Implemented and checked:** native Blender source and glTF hinged prop, rising
+weapon, explicit F pickup / X decline, timed return and closing, pause-aware
+spatial sound. Simulation tests cover expiry, no automatic grant, acceptance,
+decline and closing lockout; browser captures verify closed/open/returned poses.
+Sound direction is an original synthesized working choice, not recorded foley or
+a user-approved audition. [Prop and audio notes](../velvet-case.md) own production
+details; [reward rules](quests-and-easter-eggs.md) own current design.
+
+
+## 2026-09-30 — Original redesign of all six voices; custom API access works
+
+**Established:** user added ElevenLabs credits, requested all voices be redesigned to be more unique, and requested more theatrical writing. This supersedes the round-03 library-first plan and satisfies its pending user access notification.
+
+**Working direction:** six distinct original voice descriptions and 18 theatrical acting beats. Frankie keeps gritty musical Jersey character; Eve a smoky commanding contralto; Leon sandy Texas warmth and rising indignation; Vivian a smoky/mobile voice with a jagged laugh; Voss opulent hospitality with a dry burr; Marlowe a papery, reedy tenor, replacing his prior middle-low target. Biographies and accents remain unchanged. Chuck is a positive texture reference, not a cloned voice or final casting exception.
+
+**Verified production:** six successful eleven_ttv_v3 Voice Design calls returned 18 original previews, three per character. Published local audio, exact request/returned text, generated IDs, timestamps, duration/byte/hash metadata and a comparison page. MP3 checks cover all 18. No permanent voices, retries, game bank replacement or new mechanics. User listening and take selection remain pending. [Round 04](voice-direction-round-04.md) is the current owning direction; earlier rounds are historical.

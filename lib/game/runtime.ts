@@ -934,7 +934,7 @@ export class GameRuntime {
     if (action === "mystery-view" && s.speakeasy) {
       s.player = { x: CASINO_SECRET_ANCHORS.mystery.x, z: CASINO_SECRET_ANCHORS.mystery.z + 1.3 };
       s.yaw = Math.PI;
-      s.pitch = -.05;
+      s.pitch = .2;
     }
     if(action.startsWith("key-")) {
       const key=KEYPAD_TARGETS.find(k=>k.key===action.slice(4));
@@ -1085,6 +1085,7 @@ export class GameRuntime {
       }
     }
     this.audio.setActive(this.sim.phase === "playing");
+    this.audio.updateMystery(this.sim.mystery, this.sim.phase === "playing", this.sim.player, this.sim.yaw);
     const ownedWeapons = WEAPON_ORDER.filter(id => this.sim.inventory[id].owned);
     if (this.dialogueSimulation !== this.sim) {
       this.dialogueSimulation = this.sim;
@@ -1206,7 +1207,7 @@ export class GameRuntime {
         nearPainting: s.cashier && Math.hypot(s.player.x - CASINO_SECRET_ANCHORS.painting.x, s.player.z - CASINO_SECRET_ANCHORS.painting.z) < 4,
         paintingOpen: s.paintingOpen,
         codeProgress: s.codeProgress,
-        mystery: s.mysteryOffer ? `${s.weaponName(s.mysteryOffer)} · F take${s.firearms.length >= 2 && !s.inventory[s.mysteryOffer].owned ? ` / replace ${s.weaponName(isMelee(s.weapon) ? s.lastFirearm : s.weapon)}` : ""} · X decline · ${Math.ceil(s.mystery?.offerRemaining ?? 0)}s` : s.mystery?.message ?? "",
+        mystery: s.mysteryOffer ? `${s.weaponName(s.mysteryOffer)} · F take${s.firearms.length >= 2 && !s.inventory[s.mysteryOffer].owned ? ` / replace ${s.weaponName(isMelee(s.weapon) ? s.lastFirearm : s.weapon)}` : ""} · X decline · ${Math.ceil(s.mystery?.offerRemaining ?? 0)}s` : s.mystery && (!s.mystery.resolved || (s.mystery.closingRemaining ?? 0) > 0) ? s.mystery.message : "",
         nearMystery: s.speakeasy && Math.hypot(s.player.x - CASINO_SECRET_ANCHORS.mystery.x, s.player.z - CASINO_SECRET_ANCHORS.mystery.z) < 4,
       },
       grenades: s.grenades,
