@@ -1,3 +1,4 @@
+import { CASE_OPEN_SECONDS, CASE_OFFER_SECONDS, CASE_CLOSE_SECONDS } from "./mystery-case.ts";
 import { RANGE_RECTS } from './test-range-layout.ts';
 /** Pure gameplay state. Rendering, audio, input, and wall-clock time live outside this module. */
 import {
@@ -352,7 +353,7 @@ export const PURCHASES: {
   { id:"stick", ...CASINO_SECRET_ANCHORS.stick, name:"Stickman · craps rake · 3 SWEEPS", detail:"E: take · sweeping melee · breaks after 3 successful hits" },
   { id:"axe", x:AXE_CABINET.x, z:AXE_CABINET.z-.9, name:"Fire Exit · fire axe", detail:"E: take · heavy melee · never breaks" },
   { id:"painting", ...CASINO_SECRET_ANCHORS.painting, name:"The crooked portrait", detail:"A draft slips through the frame. E: slide painting" },
-  { id:"mystery", ...CASINO_SECRET_ANCHORS.mystery, name:"The Velvet Fortune", detail:"400 chips · 50% special weapon · 50% nothing" },
+  { id:"mystery", ...CASINO_SECRET_ANCHORS.mystery, name:"The Velvet Case", detail:"400 chips · random firearm · F open" },
 ];
 export type SpawnRoom = keyof typeof CASINO_SPAWNS | "hotel";
 export const SPAWN_RECORDS: {room: SpawnRoom; position: WorldPosition}[] = [
@@ -449,7 +450,7 @@ export class Simulation {
   set crapsResult(value: string) { this.crapsResults.craps = value; }
   chipValue = 25;
   relics: Partial<Record<WeaponId, boolean>> = {};
-  mystery: { remaining: number; reward: WeaponId | null; resolved: boolean; message: string; offerRemaining?: number; claimed?: boolean } | null = null;
+  mystery: { remaining: number; reward: WeaponId | null; resolved: boolean; message: string; offerRemaining?: number; claimed?: boolean; closingRemaining?: number; taken?: boolean } | null = null;
   tablesAge = 0;
   supply = false;
   cashier = false;
@@ -790,7 +791,8 @@ export class Simulation {
   get mysteryOffer() { return this.mystery?.resolved && !this.mystery.claimed && (this.mystery.offerRemaining ?? 0) > 0 ? this.mystery.reward : null; }
   declineMystery() {
     if (this.phase !== "playing" || !this.mysteryOffer || dist(this.player, CASINO_SECRET_ANCHORS.mystery) > 2.2) return false;
-    this.mystery = null; this.notify("Weapon declined · loadout unchanged"); return true;
+    this.mystery!.claimed = true; this.mystery!.closingRemaining = CASE_CLOSE_SECONDS; this.mystery!.message = "Weapon returned · loadout unchanged";
+    this.notify(this.mystery!.message); return true;
   }
   switchWeapon(w: WeaponId) {
     if (this.phase === "playing") this.stowChips();
@@ -943,7 +945,8 @@ export class Simulation {
     if (id === "mystery") {
       price = this.mysteryOffer ? 0 : PRICES.mystery;
       if (!this.speakeasy) reason = "Find the hidden room";
-      else if (this.mystery && !this.mystery.resolved) reason = "Reels are spinning";
+      else if (this.mystery && !this.mystery.resolved) reason = "The case is opening";
+      else if ((this.mystery?.closingRemaining ?? 0) > 0) reason = "The case is closing";
     }
     if (id === "roulette" || id === "roulette-b") {
       price = PRICES.roulette;
@@ -964,6 +967,7 @@ export class Simulation {
       const reward = this.mysteryOffer;
       this.acquireWeapon(reward);
       this.mystery!.claimed = true;
+      this.mystery!.taken = true; this.mystery!.closingRemaining = CASE_CLOSE_SECONDS;
       this.mystery!.message = `${this.weaponName(reward)} equipped`;
       this.events.push({type:"pickup", weapon:reward});
       this.notify(this.mystery!.message); return true;
@@ -1070,8 +1074,7 @@ export class Simulation {
       return true;
     }
     if (id === "mystery") {
-      const wins = this.random() < .5;
-      this.mystery = {remaining:2.8,reward:wins ? MYSTERY_WEAPONS[Math.min(MYSTERY_WEAPONS.length-1,Math.floor(this.random()*MYSTERY_WEAPONS.length))] : null,resolved:false,message:"The Velvet Fortune is spinning…"};
+      this.mystery = {remaining:CASE_OPEN_SECONDS,reward:MYSTERY_WEAPONS[Math.min(MYSTERY_WEAPONS.length-1,Math.floor(this.random()*MYSTERY_WEAPONS.length))],resolved:false,message:"The Velvet Case is opening…"};
       this.events.push({type:"mysterySpin",position:CASINO_SECRET_ANCHORS.mysteryCabinet});
       return true;
     }
@@ -1593,19 +1596,21 @@ export class Simulation {
         this.mystery.resolved = true;
         const reward=this.mystery.reward;
         if (reward) {
-          this.mystery.offerRemaining = 15;
+          this.mystery.offerRemaining = CASE_OFFER_SECONDS;
           const replacement = this.firearms.length >= 2 && !this.inventory[reward].owned;
           const drop = !isMelee(this.weapon) ? this.weapon : this.lastFirearm;
-          this.mystery.message=`${this.weaponName(reward)} · F take${replacement ? ` / replace ${this.weaponName(drop)}` : ""} · X decline · 15 seconds`;
+          this.mystery.message=`${this.weaponName(reward)} · F take${replacement ? ` / replace ${this.weaponName(drop)}` : ""} · X decline · 20 seconds`;
         } else {this.mystery.message="The house keeps the chips. No weapon this time.";this.events.push({type:"deny"});}
         this.notify(this.mystery.message);
       }
     }
+    if ((this.mystery?.closingRemaining ?? 0) > 0) this.mystery!.closingRemaining = Math.max(0, this.mystery!.closingRemaining! - dt);
     if (this.mysteryOffer && this.mystery) {
       this.mystery.offerRemaining = Math.max(0, this.mystery.offerRemaining! - dt);
       if (!this.mystery.offerRemaining) {
         this.mystery.claimed = true;
-        this.mystery.message = "Offer expired · loadout unchanged";
+        this.mystery.closingRemaining = CASE_CLOSE_SECONDS;
+        this.mystery.message = "Weapon returned to the case · loadout unchanged";
       }
     }
     this.roundCueRemaining = Math.max(0, this.roundCueRemaining - dt);

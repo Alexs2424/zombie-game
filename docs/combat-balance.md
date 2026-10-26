@@ -15,10 +15,12 @@ claims about real firearms. Art and period references remain in the weapon spec.
   refill their existing slot. Melee tools do not count toward the two-gun limit.
 - Wall purchases, poker rewards, Last Service, development grants and the test
   range all use this rule. The range starts with pistol + shotgun.
-- Mystery Box cost/chance remain 400 chips and 50% win. Reveal leaves the current
-  gun and ammo unchanged. F takes the offer for no extra cost; X declines. Offers
-  expire after 15 simulation seconds; pause freezes the timer. Taking a gun with
-  full slots explicitly replaces the gun indicated in the current prompt.
+- [The Velvet Case](velvet-case.md) costs 400 chips and always reveals a random
+  firearm. Reveal leaves the current gun and ammo unchanged. F takes the offer
+  for no extra cost; X declines. Offers expire after 20 simulation seconds; pause
+  freezes the timer. Taking a gun with full slots explicitly replaces the gun
+  indicated in the current prompt. Declined/expired weapons lower into the case
+  before its lid closes; a new purchase is blocked until closing finishes.
 
 ## Round progression
 
