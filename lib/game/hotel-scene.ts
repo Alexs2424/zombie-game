@@ -7,6 +7,8 @@ import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { PBRMaterial } from "@babylonjs/core/Materials/PBR/pbrMaterial";
 import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
+import type { Light } from "@babylonjs/core/Lights/light";
+import { createHotelFinishLighting } from "./hotel-finish-lighting";
 import { PointLight } from "@babylonjs/core/Lights/pointLight";
 import { SpotLight } from "@babylonjs/core/Lights/spotLight";
 import { HOTEL, HOTEL_RECTS, stairPoint } from "./world";
@@ -83,13 +85,13 @@ export function buildHotel(scene: Scene) {
   const ownedMeshes: Mesh[] = [];
   const materials: StandardMaterial[] = [];
   const textures: DynamicTexture[] = [];
-  const lights: (PointLight | SpotLight)[] = [];
+  const lights: Light[] = [];
   const material = (name: string, hex: string, glow = 0.045) => {
     const m = new StandardMaterial(`hotel ${name}`, scene);
     m.diffuseColor = Color3.FromHexString(hex);
     m.emissiveColor = m.diffuseColor.scale(glow);
     m.specularColor = new Color3(0.09, 0.085, 0.075);
-    m.maxSimultaneousLights = 8;
+    m.maxSimultaneousLights = 10;
     materials.push(m);
     return m;
   };
@@ -165,7 +167,7 @@ export function buildHotel(scene: Scene) {
   marbleFloor.metallic = 0;
   marbleFloor.roughness = 0.3;
   marbleFloor.environmentIntensity = 0.65;
-  marbleFloor.maxSimultaneousLights = 8;
+  marbleFloor.maxSimultaneousLights = 10;
   brass.specularColor = new Color3(0.45, 0.36, 0.2);
   brass.specularPower = 48;
 
@@ -1124,7 +1126,7 @@ export function buildHotel(scene: Scene) {
   }
 
   for (const [x, y, z, intensity, range] of [
-    [HOTEL.center.x, 6.6, HOTEL.center.z - 2, 2.3, 24],
+    [HOTEL.center.x, 6.6, HOTEL.center.z - 2, 3.1, 24],
     [HOTEL.center.x, 7.4, upperCenterZ + 0.8, 1.8, 23],
     [HOTEL.center.x, 2.9, upperCenterZ + 1.5, 0.65, 19],
     [HOTEL.entrance.x, 3.5, 14, 0.48, 8],
@@ -1152,6 +1154,9 @@ export function buildHotel(scene: Scene) {
     light.renderPriority = 2;
     lights.push(light);
   }
+
+  const finishLighting = createHotelFinishLighting(scene, lights[0] as SpotLight);
+  lights.push(...finishLighting.lights);
 
   for (const [m, meshes] of batches) {
     const merged = Mesh.MergeMeshes(
@@ -1189,7 +1194,7 @@ export function buildHotel(scene: Scene) {
     propMaterials.forEach((m) => m.dispose(false, true));
   };
   const refreshLights = () => {
-    lightMembership.setStaticMeshes([
+    const staticMeshes = [
       ...ownedMeshes,
       ...renovation.meshes,
       ...walls.meshes,
@@ -1199,7 +1204,9 @@ export function buildHotel(scene: Scene) {
       ...propMeshes,
       ...(furniture?.lightMeshes ?? []),
       ...(entry?.meshes ?? []),
-    ]);
+    ];
+    lightMembership.setStaticMeshes(staticMeshes);
+    finishLighting.refresh(staticMeshes);
   };
   refreshLights();
   const floorReady = loadHotelLobbyAsset(scene, "floor").then(loaded => {
@@ -1323,6 +1330,7 @@ export function buildHotel(scene: Scene) {
       if (disposed) return;
       disposed = true;
       lightMembership.dispose();
+      finishLighting.dispose();
       floorAsset?.dispose();
       ceilingAsset?.dispose();
       stairAsset?.dispose();

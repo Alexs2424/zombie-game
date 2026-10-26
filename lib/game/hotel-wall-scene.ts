@@ -18,7 +18,7 @@ export function buildHotelWalls(scene: Scene) {
     m.albedoColor = Color3.FromHexString(color).toLinearSpace();
     m.roughness = roughness;
     m.metallic = metallic;
-    m.maxSimultaneousLights = 8;
+    m.maxSimultaneousLights = 10;
     materials.push(m);
     return m;
   };
