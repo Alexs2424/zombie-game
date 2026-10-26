@@ -26,3 +26,7 @@ The [fidelity asset record](lobby/README.md) owns completed models, rebuild inst
 The entrance view is organized around the coordinated stairs, balcony, chandelier, ceiling, and stone floor. All passes retain the approved palette and recently maintained appearance, with restrained use wear. The wall foundation is PR #27; the subsequent layers are #29, #30, #31, #32, and the final seating/textile layer.
 
 For each implemented pass: review at player height in the live game, retain editable source, check the actual GLB export, and measure runtime cost. Model silhouettes and bevels; use texture maps for fine surface detail. Verification should remain focused on the assets and systems actually changed.
+
+## Approved finishing extension — implemented
+
+The user selected lighting depth and manufactured/use-worn surfaces as two additional PRs above the original six-layer stack. Lighting PR #36 adds a Cycles floor bake, stronger window direction, and localized warm pools. The following material layer adds directional wood grain, close fabric surface maps, handled-brass wear, and traffic-weighted marble polish. The [implementation record](lobby/README.md) distinguishes the static bake approximation, measured asset budgets, tested behavior, and local performance limits.

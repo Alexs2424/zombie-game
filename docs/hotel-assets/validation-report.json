@@ -26,7 +26,7 @@
     },
     {
       "file": "hotel-armchair.glb",
-      "bytes": 840432,
+      "bytes": 920796,
       "meshes": 4,
       "materials": 4,
       "triangles": 9988,
@@ -42,7 +42,7 @@
           0.5900000333786011
         ]
       ],
-      "embeddedImages": 2,
+      "embeddedImages": 6,
       "uvs": true,
       "validIndices": true,
       "finiteVertices": true,
@@ -50,7 +50,7 @@
     },
     {
       "file": "hotel-booth.glb",
-      "bytes": 1159116,
+      "bytes": 1239484,
       "meshes": 4,
       "materials": 4,
       "triangles": 22008,
@@ -66,7 +66,7 @@
           2.993000030517578
         ]
       ],
-      "embeddedImages": 2,
+      "embeddedImages": 6,
       "uvs": true,
       "validIndices": true,
       "finiteVertices": true,
@@ -350,7 +350,7 @@
     },
     {
       "file": "hotel-sofa.glb",
-      "bytes": 1047216,
+      "bytes": 1127588,
       "meshes": 5,
       "materials": 5,
       "triangles": 18020,
@@ -366,7 +366,7 @@
           0.6650000214576721
         ]
       ],
-      "embeddedImages": 2,
+      "embeddedImages": 6,
       "uvs": true,
       "validIndices": true,
       "finiteVertices": true,

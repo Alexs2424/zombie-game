@@ -1,8 +1,8 @@
 {
   "status": "passed",
   "asset": "hotel-grand-details",
-  "bytes": 4518856,
-  "meshes": 8,
+  "bytes": 4895804,
+  "meshes": 9,
   "vertices": 104748,
   "triangles": 104632,
   "bounds": {

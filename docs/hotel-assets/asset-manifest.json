@@ -79,7 +79,7 @@
     },
     {
       "file": "hotel-sofa.glb",
-      "bytes": 1047216,
+      "bytes": 1127588,
       "mesh_nodes": 5,
       "material_batches": 5,
       "triangles": 18020,
@@ -107,7 +107,7 @@
     },
     {
       "file": "hotel-armchair.glb",
-      "bytes": 840432,
+      "bytes": 920796,
       "mesh_nodes": 4,
       "material_batches": 4,
       "triangles": 9988,
@@ -135,7 +135,7 @@
     },
     {
       "file": "hotel-booth.glb",
-      "bytes": 1159116,
+      "bytes": 1239484,
       "mesh_nodes": 4,
       "material_batches": 4,
       "triangles": 22008,

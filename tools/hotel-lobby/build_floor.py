@@ -14,14 +14,25 @@ def image(name,rgb):
     pixels=np.ones((n,n,4),np.float32);pixels[:,:,:3]=np.clip(rgb,0,1)
     im=bpy.data.images.new(name,n,n);im.pixels.foreach_set(pixels.ravel());im.pack();return im
 albedo=image('Original warm limestone marble veins',np.stack([value,value*.973,value*.914],axis=2))
-r=.34+vein*.08+cloud*.7
-rough=image('Original polish variation',np.stack([r,r,r],axis=2));rough.colorspace_settings.name='Non-Color'
+# Room-space wear follows entrances, reception and the two stair approaches.
+wx=-23+x*38;wz=15+y*36
+traffic=np.exp(-((wx+4)/2.5)**2)*np.exp(-((wz-27)/12)**4)
+for px,pz,sx,sz in [(-12,23,4,1.8),(-15,23,2,2.4),(7,23,2,2.4),(-4,40,7,2)]:
+    traffic=np.maximum(traffic,np.exp(-((wx-px)/sx)**2-((wz-pz)/sz)**2))
+scuffs=np.zeros_like(x)
+for _ in range(95):
+    px=rng.uniform(-17,9);pz=rng.uniform(17,43);angle=rng.uniform(-.5,.5)
+    dx=wx-px;dz=wz-pz;along=dx*np.sin(angle)+dz*np.cos(angle);across=dx*np.cos(angle)-dz*np.sin(angle)
+    scuffs+=np.exp(-(along/rng.uniform(.12,.38))**2-(across/.035)**2)*rng.uniform(.025,.065)
+r=np.clip(.31+traffic*.095+scuffs*traffic+.012*np.sin(wx*17+wz*13),.29,.50)
+rough=image('Original room-space polish wear',np.stack([r,r,r],axis=2));rough.colorspace_settings.name='Non-Color'
 marbles=[]
 for i,hex in enumerate(['#fff9ed','#f8f2e4','#f5edda']):
     m=material('Hotel marble slab '+str(i),hex,.33)
     nodes=m.node_tree.nodes;bsdf=nodes.get('Principled BSDF')
     node=nodes.new('ShaderNodeTexImage');node.image=albedo;m.node_tree.links.new(node.outputs['Color'],bsdf.inputs['Base Color'])
     node=nodes.new('ShaderNodeTexImage');node.image=rough;m.node_tree.links.new(node.outputs['Color'],bsdf.inputs['Roughness'])
+    coords=nodes.new('ShaderNodeUVMap');coords.uv_map='RoomUV';m.node_tree.links.new(coords.outputs['UV'],node.inputs['Vector'])
     marbles.append(m)
 # UV offsets vary the veining on individual slabs while sharing packed maps.
 polygon=[(p['x'],p['z']) for p in json.loads((DOC/'layout.json').read_text())['polygon']]
@@ -44,6 +55,11 @@ for ix in range(22):
         o=mesh('Individually fitted marble slab',verts,faces,marbles[(ix+iz)%3],.003)
         for uv in o.data.uv_layers.active.data:
             a,b=uv.uv;uv.uv=(a*.42+ix*.173,b*.42+iz*.117)
+        room_uv=o.data.uv_layers.new(name='RoomUV')
+        for face in o.data.polygons:
+            for li in face.loop_indices:
+                v=o.data.vertices[o.data.loops[li].vertex_index].co
+                room_uv.data[li].uv=((v.x+23)/38,(-v.y-15)/36)
 # Broad perimeter border consists of inset polygon bands, not raised obstacles.
 def inset(poly,amount):
     result=[]
@@ -72,3 +88,4 @@ for o in PARTS:
         if o.data.polygons[0].normal.z<0:
             bm=bmesh.new();bm.from_mesh(o.data);bmesh.ops.reverse_faces(bm,faces=list(bm.faces));bm.to_mesh(o.data);bm.free()
 export('hotel-grand-floor')
+(DOC/'material-wear.json').write_text(json.dumps({'floorRoughnessRange':[float(r.min()),float(r.max())],'wearFollowsTraffic':True,'scuffMarks':95,'textureResolution':[n,n],'woodGrain':'long axis on straight pieces; arc length on curved rails','fabricWeaveRepeatMetres':.16,'brassWear':'door pulls, escutcheons and kickplates only'},indent=2)+'\n')

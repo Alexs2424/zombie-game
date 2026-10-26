@@ -18,6 +18,13 @@ try {
       const bytes=await readFile(new URL(`../../public/models/${name}.glb`,import.meta.url));
       const gltf=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString());
       for(const image of gltf.images??[]) assert.ok(image.bufferView!==undefined&&!image.uri,'embedded images');
+      for(const material of gltf.materials??[]){
+        if(['Hotel satin walnut','Hotel forest velvet'].includes(material.name)){
+          assert.ok(material.normalTexture,'authored surface normal map');
+          assert.ok(material.pbrMetallicRoughness.metallicRoughnessTexture,'authored surface roughness');
+        }
+        if(material.name.startsWith('Hotel marble slab')) assert.equal(material.pbrMetallicRoughness.metallicRoughnessTexture.texCoord,1,'room-space polish map');
+      }
       const asset=await LoadAssetContainerAsync(bytes,scene,{pluginExtension:'.glb',pluginOptions:{gltf:{skipMaterials:true}}});asset.addAllToScene();
       const meshes=asset.meshes.filter(m=>m.getTotalVertices());let vertices=0,triangles=0;
       const min=new Vector3(Infinity,Infinity,Infinity),max=new Vector3(-Infinity,-Infinity,-Infinity);
@@ -37,6 +44,14 @@ try {
       }
       if(name==='hotel-grand-floor'){
         assert.ok(min.y>=0&&max.y<.027,'floor below furniture contact shadows');
+        for(const mesh of meshes.filter(m=>m.name.includes('marble slab'))){
+          const uv=mesh.getVerticesData('uv2'),p=mesh.getVerticesData('position');
+          assert.equal(uv?.length,mesh.getTotalVertices()*2,'floor wear UV2');
+          for(let i=0;i<p.length/3;i++){
+            const world=Vector3.TransformCoordinates(Vector3.FromArray(p,i*3),mesh.getWorldMatrix());
+            assert.ok(Math.abs(uv[i*2]-(world.x+23)/38)<.0001&&Math.abs(uv[i*2+1]-(1-(world.z-15)/36))<.0001,'baked lighting and wear share room coordinates');
+          }
+        }
         for(const [x,z] of [[-4,30],[-4,32],[0,26],[-12,21],[8,40]]){
           const hit=scene.pickWithRay(new Ray(new Vector3(x,1,z),Vector3.Down(),2),m=>meshes.includes(m));
           assert.ok(hit?.hit&&hit.getNormal(true).y>.99,'upward-facing continuous floor');

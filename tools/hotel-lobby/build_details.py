@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).parent))
 from asset_lib import *
 reset();M=palette();texture(M['fabric'],'fabric');texture(M['wood'],'wood')
+M['handled']=material('Hotel handled brass','#b8a277',.35,.72);texture(M['handled'],'brass')
 lining=material('Hotel curtain warm lining','#aa9472',.83)
 rug=material('Hotel woven moss rug','#414735',.91)
 layout=json.loads((DOC/'layout.json').read_text())
@@ -79,12 +80,12 @@ for spawn in json.loads((DOC/'doors.json').read_text()):
         for offset,width,depth,mat in [(0,.15,.23,'wood'),(.045,.025,.282,'gold')]:
             o=box('Service door profiled casing',at(side*((door['w']+.18)/2+offset),(door['h']+.18)/2,depth),(width,door['h']+.18,.06),M[mat],.012);o.rotation_euler.z=angle
         o=box('Door leaf raised field',at(side*door['w']*.24,door['h']*.55,.184),(door['w']*.36,door['h']*.61,.022),M['green'],.027);o.rotation_euler.z=angle
-    for y,w,h,depth,mat in [(door['h']+.09,door['w']+.36,.18,.23,'wood'),(door['h']+.18,door['w']+.40,.045,.27,'gold'),(.18,door['w']-.12,.23,.185,'gold')]:
+    for y,w,h,depth,mat in [(door['h']+.09,door['w']+.36,.18,.23,'wood'),(door['h']+.18,door['w']+.40,.045,.27,'gold'),(.18,door['w']-.12,.23,.185,'handled')]:
         o=box('Door lintel or kickplate',at(0,y,depth),(w,h,.045),M[mat],.01);o.rotation_euler.z=angle
     for side in [-1,1]:
         u=side*.12
-        o=box('Door oval lock escutcheon',at(u,1.25,.22),(.09,.25,.025),M['gold'],.018);o.rotation_euler.z=angle
-        line('Door shaped pull',[at(u,1.17,.245),at(u,1.19,.285),at(u,1.33,.285),at(u,1.35,.245)],.011,M['gold'])
+        o=box('Door oval lock escutcheon',at(u,1.25,.22),(.09,.25,.025),M['handled'],.018);o.rotation_euler.z=angle
+        line('Door shaped pull',[at(u,1.17,.245),at(u,1.19,.285),at(u,1.33,.285),at(u,1.35,.245)],.011,M['handled'])
 # Ensure single-sheet horizontal cloth faces upward. Double-sided drapes retain thickness.
 for o in PARTS:
     if o.type=='MESH' and len(o.data.vertices)>0 and max(v.co.z for v in o.data.vertices)-min(v.co.z for v in o.data.vertices)<1e-6 and o.data.polygons[0].normal.z<0:
