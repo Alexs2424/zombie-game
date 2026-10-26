@@ -36,12 +36,12 @@ export function casinoRoomName(p: CasinoPoint) {
 }
 
 export const CASINO_DOORS = {
-  lounge: { id: 'lounge', x: -33, z: -2, w: 0.45, d: 4, h: 4.8 },
-  shortcut: { id: 'shortcut', x: -33, z: -14, w: 0.45, d: 4, h: 4.8 },
-  vip: { id: 'vip', x: -23, z: -20, w: 4, d: 0.45, h: 4.8 },
-  vipExit: { id: 'vipExit', x: -11, z: -20, w: 4, d: 0.45, h: 4.8 },
+  lounge: { id: 'lounge', x: -33, z: -2, w: 0.45, d: 4, h: 4 },
+  shortcut: { id: 'shortcut', x: -33, z: -14, w: 0.45, d: 4, h: 4 },
+  vip: { id: 'vip', x: -23, z: -20, w: 4, d: 0.45, h: 4 },
+  vipExit: { id: 'vipExit', x: -11, z: -20, w: 4, d: 0.45, h: 4 },
   supply: { id: 'supply', x: -23, z: 40, w: 0.2, d: 3.4, h: 3.2 },
-  cashier: { id: 'cashier', x: 27, z: -16, w: 0.45, d: 4, h: 4.8 },
+  cashier: { id: 'cashier', x: 27, z: -16, w: 0.45, d: 4, h: 4 },
 } satisfies Record<string, CasinoRect>;
 
 function horizontal(id: string, z: number, minX: number, maxX: number, h = 4.8): CasinoRect {
@@ -78,9 +78,9 @@ export const CASINO_WALLS: CasinoRect[] = [
   // The hotel owns its unchanged west wall below Z=43. Only the supply-room
   // portion beyond that wall needs an additional east enclosure.
   vertical('supply-wall-east', -23, 43, 49),
-  // Close the additional ceiling height above purchased four-metre gates.
+  // Fixed transoms close the facade above the four-metre clear room portals.
   ...(['lounge', 'shortcut', 'vip', 'vipExit', 'cashier'] as const).map(id => ({
-    ...CASINO_DOORS[id], id: `casino-lintel-${id}`, h: 2, baseY: 4.8,
+    ...CASINO_DOORS[id], id: `casino-lintel-${id}`, h: CASINO_ROOMS.casino.ceilingY - CASINO_DOORS[id].h, baseY: CASINO_DOORS[id].h,
   })),
 ];
 

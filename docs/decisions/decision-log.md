@@ -94,6 +94,67 @@ Documentation only; no gameplay, voice generation, or visual assets changed.
 
 **Working interpretation:** make Sin City the stronger reference for noir character stakes—dangerous loyalties, costly personal codes, wounded pride, obsessive choices, and flashes of tenderness. Retain Fallout as a secondary reference for eccentricity and contradiction. Added a per-character noir emphasis to the ensemble bible, preserving the authored histories, surviving families, ordinary speech and distinct voices. No copied characters, plotlines, compulsory inner narration, or new gameplay mechanics.
 
+## 2026-09-29 — Hotel gate and surrounding wall alignment
+
+**Established direction:** the user requested a new branch/worktree to fix the
+hotel gate and adjacent walls shown in their screenshot, using detailed Blender
+models with carefully aligned placement.
+
+**Working art direction:** extend the entrance into a full-height Art Deco facade
+with jade wall panels, walnut dado panels, limestone crowns, restrained marble
+veining and bronze fan/sunburst reliefs. The jade palette was superseded by the
+user-selected smoky oxblood direction below. Treat those reliefs as architectural
+ornaments, without introducing new lore, clues or interaction requirements.
+The owning asset document is [the entrance README](../hotel-assets/entry/README.md).
+
+**Implemented:** the portal, grille and two wall wings are original Blender
+exports with a shared origin. Geometry audits verify the unchanged 4.8 m passage,
+full-height closure and wall joints. The existing 2,000-chip unlock and gate
+removal behavior remain; no opening animation or new quest is claimed.
+
+
+## 2026-09-30 — Smoky oxblood Art Deco facade
+
+**Established direction:** the user selected the proposed smoky oxblood palette
+and requested ornate Art Deco models and walls with professional game polish.
+This supersedes the initial jade color direction for the hotel entrance and
+its north casino wall wings.
+
+**Working execution:** smoky oxblood lacquer (#5B3038), champagne brass
+(#C2A574), dark walnut (#3B2923), warm ivory stone and deeper oxblood reveals.
+Use beveled fan castings, stepped geometric frames, pendants, corner inlays
+and gate escutcheons. Preserve visual hierarchy with quieter fields between
+ornaments. All motifs are architectural, without adding narrative significance.
+
+**Implemented:** regenerated the editable Blender source and all four runtime
+exports; updated the dynamic purchase plaque and loading fallback colors.
+Reduced ornamental bevel/profile tessellation to keep each export within the
+existing asset budgets. The owning [entrance documentation](../hotel-assets/entry/README.md)
+records material choices, coordinates, reproduction and visual verification.
+
+
+## 2026-09-30 — Cohesive casino perimeter and room gates
+
+**Established direction:** the user rejected an isolated upgraded wall next to
+unchanged main-room wallpaper. Extend the smoky oxblood, ornate Art Deco work
+around the complete casino, thoughtfully position the models, and create gates
+for its other room entrances. Playtest and inspect the actual game.
+
+**Working execution:** share the north facade's material, relief and moulding
+family across all remaining wall spans. Use fan/chevron lounge grilles, diamond
+High Roller grilles and a finer Cashier security weave. Lower these five clear
+door heads to 4 m while preserving their 4 m widths, positions, independent
+unlocks and prices. This makes room for finished reverse signs below adjoining
+ceilings; fixed transoms close the main room up to 6.8 m. No new narrative or
+quest significance is assigned to the motifs.
+
+**Implemented:** original editable Blender architecture and fourteen new exports,
+complete wall cladding, five fitted entrances with reverse faces, coordinated
+sconces/coves, an architectural casino nameboard and adjusted wall-display depth.
+The collision transoms follow the new heights. Geometry audits verify perimeter
+closure and doorway clearance; browser checks exercise purchases and traversal.
+The owning [casino architecture document](../casino-architecture/README.md)
+records the current scope, asset budgets, rebuild process and playtest evidence.
 
 ## 2026-09-29 — Detailed narrative production documentation
 

@@ -1,0 +1,14 @@
+{
+  "purchased": {
+    "hotel": true,
+    "chips": 10000,
+    "gate": false,
+    "portal": true,
+    "price": false
+  },
+  "fallback": {
+    "enabled": true,
+    "partial": 0
+  },
+  "errors": []
+}
