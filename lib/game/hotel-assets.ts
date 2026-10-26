@@ -38,7 +38,7 @@ export async function loadHotelFurniture(scene: Scene) {
             const lit = material as typeof material & {
               maxSimultaneousLights?: number;
             };
-            if ("maxSimultaneousLights" in lit) lit.maxSimultaneousLights = 10;
+            if ("maxSimultaneousLights" in lit) lit.maxSimultaneousLights = 8;
           }
           for (const fixture of HOTEL_FIXTURES.filter((f) => f.kind === kind)) {
             const root = new TransformNode(`${fixture.id} Blender`, scene);

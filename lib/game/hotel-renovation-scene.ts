@@ -21,6 +21,7 @@ export function buildHotelRenovation(scene: Scene) {
   const stairFallback: Mesh[] = [];
   const ceilingFallback: Mesh[] = [];
   const floorFallback: Mesh[] = [];
+  const detailFallback: Mesh[] = [];
   let floorDetail = false;
   let ceilingDetail = false;
   let stairDetail = false;
@@ -30,7 +31,7 @@ export function buildHotelRenovation(scene: Scene) {
     m.albedoColor = Color3.FromHexString(color).toLinearSpace();
     m.metallic = metallic;
     m.roughness = roughness;
-    m.maxSimultaneousLights = 10;
+    m.maxSimultaneousLights = 8;
     materials.push(m);
     return m;
   };
@@ -58,7 +59,9 @@ export function buildHotelRenovation(scene: Scene) {
     mesh.material = m;
     mesh.isPickable = false;
     mesh.receiveShadows = true;
-    if (floorDetail) { floorFallback.push(mesh); loose.push(mesh); }
+    const replacedDetail = /hotel (gathered silk drapery|curtain gilded tieback|reception woven rug|rug border|rug woven diamond|fitted stair carpet runner|runner narrow gold weave|sconce ornamental backplate|sconce curved arm|sconce opal shade)/.test(mesh.name);
+    if (replacedDetail) { detailFallback.push(mesh); loose.push(mesh); }
+    else if (floorDetail) { floorFallback.push(mesh); loose.push(mesh); }
     else if (ceilingDetail) { ceilingFallback.push(mesh); loose.push(mesh); }
     else if (stairDetail) { stairFallback.push(mesh); loose.push(mesh); }
     else if (dynamic) loose.push(mesh);
@@ -306,6 +309,7 @@ export function buildHotelRenovation(scene: Scene) {
   let passageOpen=false,cacheClaimed=false;
   return {
     meshes,
+    replaceDetails() { detailFallback.forEach(mesh => mesh.setEnabled(false)); },
     replaceFloor() { floorFallback.forEach(mesh => mesh.setEnabled(false)); },
     replaceCeiling() { ceilingFallback.forEach(mesh => mesh.setEnabled(false)); },
     replaceStairs() { stairFallback.forEach(mesh => mesh.setEnabled(false)); },

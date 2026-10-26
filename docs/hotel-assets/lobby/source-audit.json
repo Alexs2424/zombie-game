@@ -19,5 +19,33 @@
     "editableParts": 494,
     "evaluatedVertices": 40320,
     "packedImages": 2
+  },
+  {
+    "asset": "hotel-grand-details",
+    "status": "passed",
+    "editableParts": 678,
+    "evaluatedVertices": 57624,
+    "packedImages": 2
+  },
+  {
+    "asset": "hotel-sofa",
+    "status": "passed",
+    "editableParts": 34,
+    "evaluatedVertices": 9138,
+    "packedImages": 2
+  },
+  {
+    "asset": "hotel-armchair",
+    "status": "passed",
+    "editableParts": 23,
+    "evaluatedVertices": 5076,
+    "packedImages": 4
+  },
+  {
+    "asset": "hotel-booth",
+    "status": "passed",
+    "editableParts": 45,
+    "evaluatedVertices": 11382,
+    "packedImages": 6
   }
 ]

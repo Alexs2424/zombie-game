@@ -26,49 +26,51 @@
     },
     {
       "file": "hotel-armchair.glb",
-      "bytes": 238404,
+      "bytes": 840432,
       "meshes": 4,
       "materials": 4,
-      "triangles": 3500,
+      "triangles": 9988,
       "boundsBabylon": [
         [
-          -0.6000000238418579,
+          -0.5949999690055847,
           0,
-          -0.5850000381469727
+          -0.5789999961853027
         ],
         [
-          0.6000000238418579,
-          1.0751999616622925,
-          0.5960000157356262
+          0.5949999690055847,
+          1.090218186378479,
+          0.5900000333786011
         ]
       ],
       "embeddedImages": 2,
       "uvs": true,
       "validIndices": true,
-      "finiteVertices": true
+      "finiteVertices": true,
+      "audit": "tools/hotel-lobby/validate.mjs"
     },
     {
       "file": "hotel-booth.glb",
-      "bytes": 273932,
+      "bytes": 1159116,
       "meshes": 4,
       "materials": 4,
-      "triangles": 4364,
+      "triangles": 22008,
       "boundsBabylon": [
         [
-          -0.9399999976158142,
-          -4.3213367462158203e-7,
-          -2.955000162124634
+          -0.9700000286102295,
+          0,
+          -2.993000030517578
         ],
         [
-          0.9360004663467407,
-          1.3500003814697266,
-          2.955000162124634
+          0.9589999914169312,
+          1.360032558441162,
+          2.993000030517578
         ]
       ],
       "embeddedImages": 2,
       "uvs": true,
       "validIndices": true,
-      "finiteVertices": true
+      "finiteVertices": true,
+      "audit": "tools/hotel-lobby/validate.mjs"
     },
     {
       "file": "hotel-coffee-table.glb",
@@ -125,7 +127,7 @@
       "boundsBabylon": [
         [
           -0.5571066737174988,
-          1.4901161193847656e-8,
+          1.4901161193847656e-08,
           -0.3798174560070038
         ],
         [
@@ -348,26 +350,27 @@
     },
     {
       "file": "hotel-sofa.glb",
-      "bytes": 278704,
-      "meshes": 4,
-      "materials": 4,
-      "triangles": 4468,
+      "bytes": 1047216,
+      "meshes": 5,
+      "materials": 5,
+      "triangles": 18020,
       "boundsBabylon": [
         [
-          -1.8999998569488525,
+          -1.8949999809265137,
           0,
-          -0.6600000262260437
+          -0.6539999842643738
         ],
         [
-          1.8999998569488525,
-          1.0751999616622925,
-          0.6499999761581421
+          1.8949999809265137,
+          1.0986841917037964,
+          0.6650000214576721
         ]
       ],
       "embeddedImages": 2,
       "uvs": true,
       "validIndices": true,
-      "finiteVertices": true
+      "finiteVertices": true,
+      "audit": "tools/hotel-lobby/validate.mjs"
     },
     {
       "file": "tommy.glb",

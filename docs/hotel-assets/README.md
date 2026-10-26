@@ -1,6 +1,6 @@
 # Grand Hotel original assets
 
-The [lobby design roadmap](lobby-design.md) records proposed next Blender and visual upgrades.
+The [lobby design roadmap](lobby-design.md) records the approved upgrade sequence. The [fidelity asset record](lobby/README.md) owns the new architecture, lighting, textiles, and seating. Current sofa, armchair, and booth sources are in `assets/source/`; their older sources in this directory are historical and superseded.
 
 The runtime-authored architectural wall pass is documented in [Lobby wall upgrade](lobby-walls.md), including art direction, source, and visual verification.
 
@@ -13,7 +13,7 @@ Furniture uses metres, a floor-centred origin, and its authored collision footpr
 | hotel-reception | 6 | Bevelled walnut cabinet, green marble, brass flutes, leather Deco panels, GRAND HOTEL lettering, room-key cubbies, register and service bell |
 | hotel-jukebox | 7 | Arched walnut cabinet, illuminated horseshoe bands, brass speaker grille, pearl buttons, song cards and coin slot |
 | hotel-dining-table | 8 | Two turned pedestals, six padded chairs, stitched cushions, linen runner, gold-rim plates, cutlery, stemware and floral centrepiece |
-| hotel-sofa / hotel-armchair | 4 each | Rolled arms, individual velvet cushions, sewn piping, button tufts, walnut arm veneers and brass feet |
+| hotel-sofa / hotel-armchair | 5 / 4 | Rolled arms, individual velvet cushions, sewn piping, button tufts, walnut arm veneers and brass feet |
 | hotel-booth | 4 | Long channeled banquette, individual seat cushions, walnut end caps and brass footrail |
 | hotel-luggage-cart | 5 | Arched brass trolley, casters, three strapped vintage cases and handles |
 | hotel-host-stand | 5 | Marble-topped walnut podium, GH emblem and reservation folio; no bell, since the runtime owns the challenge bell |
@@ -38,4 +38,4 @@ Match the existing weapon loader: origin at receiver, **+Y up**, **+Z muzzle**, 
 node tools/hotel-assets/validate_assets.mjs
 ```
 
-Use `-- --only reception,jukebox` to rebuild selected assets; use `hands` for the fitted hands. `preview_assets.py` makes the four documentation previews without modifying public model files. Blender requires normal host access on this machine because its background startup crashes inside the filesystem sandbox. No GPU rendering is used.
+Current seating rebuilds with `tools/hotel-lobby/build_seating.py` (optionally `-- --only sofa`, `armchair`, or `booth`). The legacy generator skips these assets to preserve the newer models. Use `-- --only reception,jukebox` to rebuild selected legacy assets; use `hands` for the fitted hands. `preview_assets.py` makes the four documentation previews without modifying public model files. Blender requires normal host access on this machine because its background startup crashes inside the filesystem sandbox. No GPU rendering is used.
