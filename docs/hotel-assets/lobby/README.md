@@ -65,3 +65,35 @@ The lighting layer uses asymmetric cool window light with an original soft mulli
 Rebuild with `/Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup --threads 4 --python tools/hotel-lobby/bake_lighting.py`. The editable lighting scene is `assets/source/hotel-lighting-bake.blend`, with packed source/output images. `lighting-bake.json` and `lighting-source-audit.json` record measured output. `review_depth.json` drives wide, close, reception, and balcony views using the existing browser driver.
 
 Validation: TypeScript, focused ESLint, 36 hotel/light/gameplay tests, and Blender source audit pass. Chrome confirms all seven floor material meshes have loaded light maps and UV2; idle captures remain zero, and gate close/open produces two shadow updates and twelve reflection faces before returning to zero. No collision or gameplay layout changes. Performance is measured again on the completed two-layer extension.
+
+
+
+## Main integration — 2026-10-25
+
+After #27 merged, integrated `main` (`c2de5b7`) into the stairs branch. The only conflict was concurrent decision-log additions; retained both the stair treatment and newer gameplay/voice decisions. No runtime or model conflict edits were needed.
+
+Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, and the actual Babylon GLB geometry/bounds/UV/index/stair-clearance/guard audit pass. Existing build notices remain. Prior Chrome views and Blender-source audit above remain the visual/source evidence; those checks were not repeated for this documentation-only conflict resolution.
+
+## Ceiling integration with main — 2026-10-25
+
+After #29 merged, integrated `main` (`5b537ca`) into the ceiling branch. Resolved concurrent additions in the decision log and this asset record by retaining both histories. No runtime or model conflict edits were needed.
+
+Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, and actual Babylon ceiling GLB finite-geometry/UV/index/bounds/budget validation pass. Existing build notices remain. The earlier Chrome views and Blender-source audit remain the visual/source evidence; those checks were not repeated for documentation-only conflict resolution.
+
+## Marble integration with main — 2026-10-25
+
+After #30 merged, integrated `main` (`649c749`) into the marble branch. Resolved concurrent additions in the decision log and this asset record by retaining both histories. No runtime or model conflict edits were needed.
+
+Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, and actual Babylon floor GLB geometry/UV/index/bounds/budget validation pass, including upward-facing floor samples and the 27 mm finish-height limit. Existing build notices remain. Earlier Chrome views and Blender-source audit remain the visual/source evidence; those checks were not repeated for documentation-only conflict resolution.
+
+## Lighting integration with main — 2026-10-25
+
+Integrated main after #31; retained both histories in the decision log and asset record. No runtime conflict edits. All 295 tests, TypeScript, focused ESLint, and production build pass. Existing build notices remain. Prior browser lighting/resource checks remain the visual evidence; not repeated for documentation-only conflict resolution.
+
+## Textiles integration with main — 2026-10-25
+
+Integrated main after #32. Retained decision histories and previous integration records while keeping the updated capture/light-budget description. No runtime/model conflict edits. All 295 tests, TypeScript, focused ESLint, production build, and four seating/detail GLB audits pass. Existing build notices remain. Prior Chrome/source checks remain the visual evidence; not repeated for documentation-only conflict resolution.
+
+## Lighting-depth integration with main — 2026-10-25
+
+Integrated main after #34; retained both documentation histories. No runtime conflict edits. All 295 tests, TypeScript, focused ESLint, and production build pass. Existing build notices remain. Prior browser lightmap/lifecycle and Blender-source checks remain the visual evidence; not repeated for documentation-only conflict resolution.
