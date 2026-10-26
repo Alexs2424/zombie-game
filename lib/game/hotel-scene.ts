@@ -1126,11 +1126,11 @@ export function buildHotel(scene: Scene) {
   }
 
   for (const [x, y, z, intensity, range] of [
-    [HOTEL.center.x, 6.6, HOTEL.center.z - 2, 3.1, 24],
-    [HOTEL.center.x, 7.4, upperCenterZ + 0.8, 1.8, 23],
-    [HOTEL.center.x, 2.9, 44.5, 0.75, 19],
+    [HOTEL.center.x, 6.6, HOTEL.center.z - 2, 2.45, 23],
+    [HOTEL.center.x, 7.4, upperCenterZ + 0.8, 1.55, 19],
+    [HOTEL.center.x, 2.9, 43.2, 0.95, 15],
     [HOTEL.entrance.x, 3.5, 14, 0.48, 8],
-    [-12, 3.15, 20.4, 0.9, 11],
+    [-12, 3.15, 20.4, 1.25, 8],
   ]) {
     const light =
       lights.length < 2

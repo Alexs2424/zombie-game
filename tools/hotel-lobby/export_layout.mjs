@@ -7,5 +7,7 @@ await writeFile(new URL('layout.json', dir), JSON.stringify({
   stairs: HOTEL.stairs,
   rails: HOTEL_RECTS.filter(rect => rect.id.startsWith('hotel-upper-rail')),
   polygon: HOTEL.lobbyPolygon,
+  upperPolygon: HOTEL.upperPolygon,
+  ceilingY: HOTEL.ceilingY,
 }, null, 2) + '\n');
 await writeFile(new URL('doors.json', dir), JSON.stringify(HOTEL_SPAWNS, null, 2) + '\n');

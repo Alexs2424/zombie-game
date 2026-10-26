@@ -54,6 +54,19 @@ All 292 automated tests pass after rebasing onto `73e44aa` from main and the pro
 
 The final real movement loop completed in 44.7 seconds, reached the 4 m balcony, descended both stair routes across the tour, and returned to the casino. The gallery remained locked as expected. A 12-second, three-enemy chase sample at 1600×900 in headless Chrome/Metal averaged 18.15 ms per frame (about 55 FPS), with a 19.6 ms 95th percentile. This is a local short sample, not a sustained 60-FPS or cross-device claim. See [runtime review](runtime-review.json).
 
+## Lighting depth — second approved stack, layer 1
+
+The user requested a two-PR extension above #34: lighting depth, then manufactured surfaces and restrained use wear. The approved palette and recently maintained hotel remain current.
+
+The lighting layer uses asymmetric cool window light with an original soft mullion projection, more localized warm reception/dining pools, and reduced uniform hemispheric fill. It retains eight hotel sources and the shared AO/bloom/ACES pipeline; casino exposure is unchanged. The existing architectural shadow map and reflection capture remain static.
+
+`bake_lighting.py` uses Cycles CPU (48 samples, five bounces) to bake floor diffuse irradiance from the real stair/column geometry and shared room/mezzanine shell. Its 1024px linear PNG is normalized to a bounded 0.52–1.0 light multiplier, preserving floor color and readable shadows. It is deliberately an art-directed static modulation, not additive emissive light or a full-room physically calibrated bake. It excludes furniture, doors, quest objects, and actors. Runtime world-space UV2 covers X -23…15 and Z 15…51; live texture UVs remain intact. The existing live floor lighting remains available if the bake fails to load. All map references and textures are released on disposal.
+
+Rebuild with `/Applications/Blender.app/Contents/MacOS/Blender --background --factory-startup --threads 4 --python tools/hotel-lobby/bake_lighting.py`. The editable lighting scene is `assets/source/hotel-lighting-bake.blend`, with packed source/output images. `lighting-bake.json` and `lighting-source-audit.json` record measured output. `review_depth.json` drives wide, close, reception, and balcony views using the existing browser driver.
+
+Validation: TypeScript, focused ESLint, 36 hotel/light/gameplay tests, and Blender source audit pass. Chrome confirms all seven floor material meshes have loaded light maps and UV2; idle captures remain zero, and gate close/open produces two shadow updates and twelve reflection faces before returning to zero. No collision or gameplay layout changes. Performance is measured again on the completed two-layer extension.
+
+
 
 ## Main integration — 2026-10-25
 
@@ -80,3 +93,7 @@ Integrated main after #31; retained both histories in the decision log and asset
 ## Textiles integration with main — 2026-10-25
 
 Integrated main after #32. Retained decision histories and previous integration records while keeping the updated capture/light-budget description. No runtime/model conflict edits. All 295 tests, TypeScript, focused ESLint, production build, and four seating/detail GLB audits pass. Existing build notices remain. Prior Chrome/source checks remain the visual evidence; not repeated for documentation-only conflict resolution.
+
+## Lighting-depth integration with main — 2026-10-25
+
+Integrated main after #34; retained both documentation histories. No runtime conflict edits. All 295 tests, TypeScript, focused ESLint, and production build pass. Existing build notices remain. Prior browser lightmap/lifecycle and Blender-source checks remain the visual evidence; not repeated for documentation-only conflict resolution.
