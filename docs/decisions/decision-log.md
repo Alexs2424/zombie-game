@@ -232,6 +232,11 @@ The user approved all roadmap improvements, requested a methodical PR stack, and
 
 **Implemented working design:** tiered brass and cut-crystal fixtures, opal candle lamps, plaster canopy roses, and stepped coffer molding replace the simple ring fixtures and thin dark ceiling beams. Main and dining fixtures share one visual family; the rear salon uses matching shallow opal bowls. Editable Blender source, exported GLB, and game-view verification live in the [fidelity asset record](../hotel-assets/lobby/README.md). No narrative or gameplay changes.
 
+## 2026-09-30 — Fitted marble floor
+
+**Implemented working design:** warm ivory marble slabs with fine joints and original mineral/polish maps, narrow forest-green borders, and a fitted stone compass replace the visually flat floor finish. The finish preserves the simulation floor and sits below existing contact shadows. Sources and game-view validation are recorded in the [fidelity asset record](../hotel-assets/lobby/README.md).
+
+
 
 
 ## 2026-09-30 — The Velvet Case replaces the mystery slot cabinet

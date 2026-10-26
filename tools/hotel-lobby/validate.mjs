@@ -27,6 +27,13 @@ try {
         min.minimizeInPlace(mesh.getBoundingInfo().boundingBox.minimumWorld);max.maximizeInPlace(mesh.getBoundingInfo().boundingBox.maximumWorld);
       }
       assert.ok(meshes.length<=10&&triangles<400000&&bytes.length<16*1024*1024,'asset budget');
+      if(name==='hotel-grand-floor'){
+        assert.ok(min.y>=0&&max.y<.027,'floor below furniture contact shadows');
+        for(const [x,z] of [[-4,30],[-4,32],[0,26],[-12,21],[8,40]]){
+          const hit=scene.pickWithRay(new Ray(new Vector3(x,1,z),Vector3.Down(),2),m=>meshes.includes(m));
+          assert.ok(hit?.hit&&hit.getNormal(true).y>.99,'upward-facing continuous floor');
+        }
+      }
       if(name==='hotel-grand-stairs'){
         assert.ok(min.x>-23&&max.x<15&&min.y>=-.001&&max.y<5.4,`stairs inside hotel bounds: ${min.asArray()} to ${max.asArray()}`);
         for(const stair of HOTEL.stairs) for(const t of [.08,.3,.5,.7,.92]){

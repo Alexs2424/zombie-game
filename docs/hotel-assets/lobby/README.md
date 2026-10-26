@@ -26,6 +26,13 @@ Verification: TypeScript, focused ESLint, 20 hotel/navigation/light tests, Blend
 
 Rebuild with `build_ceiling.py`; pass `hotel-grand-ceiling` to the GLB validator and source auditor. Old fixtures/rose remain as loading fallbacks and are hidden only after successful import. TypeScript, focused lint, Blender source/GLB audits, and Chrome entrance, chandelier-upward, and dining-ceiling reviews pass. No extra runtime lights are introduced in this layer.
 
+## Marble floor — implemented
+
+`hotel-grand-floor.blend` / `.glb` add individually fitted, beveled marble slabs, thin joints, embedded original mineral-color and polish maps, an inset green perimeter border, and a flush stone compass. The visible finish is 1–25 mm above the unchanged simulation floor and remains below furniture contact-shadow planes. Previous compass overlays are hidden after successful loading.
+
+Rebuild with `build_floor.py`. The validator checks top-facing floor samples and a maximum finish height below 27 mm, in addition to the common GLB checks. TypeScript, targeted lint, Blender source audit, actual GLB validation, and Chrome entrance/close-floor review pass. This layer changes surface detail; reflection and light tuning follow in the lighting PR.
+
+
 
 ## Main integration — 2026-10-25
 
@@ -38,3 +45,9 @@ Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, 
 After #29 merged, integrated `main` (`5b537ca`) into the ceiling branch. Resolved concurrent additions in the decision log and this asset record by retaining both histories. No runtime or model conflict edits were needed.
 
 Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, and actual Babylon ceiling GLB finite-geometry/UV/index/bounds/budget validation pass. Existing build notices remain. The earlier Chrome views and Blender-source audit remain the visual/source evidence; those checks were not repeated for documentation-only conflict resolution.
+
+## Marble integration with main — 2026-10-25
+
+After #30 merged, integrated `main` (`649c749`) into the marble branch. Resolved concurrent additions in the decision log and this asset record by retaining both histories. No runtime or model conflict edits were needed.
+
+Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, and actual Babylon floor GLB geometry/UV/index/bounds/budget validation pass, including upward-facing floor samples and the 27 mm finish-height limit. Existing build notices remain. Earlier Chrome views and Blender-source audit remain the visual/source evidence; those checks were not repeated for documentation-only conflict resolution.

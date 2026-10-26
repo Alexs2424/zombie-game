@@ -12,5 +12,12 @@
     "editableParts": 1241,
     "evaluatedVertices": 61728,
     "packedImages": 0
+  },
+  {
+    "asset": "hotel-grand-floor",
+    "status": "passed",
+    "editableParts": 494,
+    "evaluatedVertices": 40320,
+    "packedImages": 2
   }
 ]
