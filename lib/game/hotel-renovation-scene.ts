@@ -19,6 +19,8 @@ export function buildHotelRenovation(scene: Scene) {
   const batches = new Map<PBRMaterial, Mesh[]>();
   const loose: Mesh[] = [];
   const stairFallback: Mesh[] = [];
+  const ceilingFallback: Mesh[] = [];
+  let ceilingDetail = false;
   let stairDetail = false;
   const doors: Mesh[] = [];
   const makeMaterial = (name: string, color: string, metallic = 0, roughness = 0.5) => {
@@ -54,7 +56,8 @@ export function buildHotelRenovation(scene: Scene) {
     mesh.material = m;
     mesh.isPickable = false;
     mesh.receiveShadows = true;
-    if (stairDetail) { stairFallback.push(mesh); loose.push(mesh); }
+    if (ceilingDetail) { ceilingFallback.push(mesh); loose.push(mesh); }
+    else if (stairDetail) { stairFallback.push(mesh); loose.push(mesh); }
     else if (dynamic) loose.push(mesh);
     else { const list = batches.get(m) ?? []; list.push(mesh); batches.set(m, list); }
     return mesh;
@@ -248,6 +251,7 @@ export function buildHotelRenovation(scene: Scene) {
   }
 
   stairDetail = false;
+  ceilingDetail = true;
   // Gilded ceiling rose with sculpted petals around the existing chandelier.
   const roseX=HOTEL.center.x,roseZ=HOTEL.center.z-2;
   for (const diameter of [2.1,2.35,3.2,3.42]) {
@@ -261,6 +265,7 @@ export function buildHotelRenovation(scene: Scene) {
     petal.scaling.set(.6,.12,.2);petal.rotation.y=-a;
   }
 
+  ceilingDetail = false;
   // Framed mirrors and paired sconces furnish the rear salons without blocking paths.
   for (const x of [-6.9,-1.1]) {
     box("salon antique mirror",x,2.23,45.79,2.7,1.83,.04,mirror);
@@ -296,6 +301,7 @@ export function buildHotelRenovation(scene: Scene) {
   let passageOpen=false,cacheClaimed=false;
   return {
     meshes,
+    replaceCeiling() { ceilingFallback.forEach(mesh => mesh.setEnabled(false)); },
     replaceStairs() { stairFallback.forEach(mesh => mesh.setEnabled(false)); },
     update(sim:Simulation) {
       if (passageOpen!==sim.hotelMystery.passageOpen) {passageOpen=sim.hotelMystery.passageOpen;doors.forEach(m=>m.setEnabled(!passageOpen));}

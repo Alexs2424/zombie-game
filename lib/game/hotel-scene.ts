@@ -76,6 +76,8 @@ function triangulate(outline: readonly Point[]) {
 export function buildHotel(scene: Scene) {
   const batches = new Map<StandardMaterial, Mesh[]>();
   const stairFallback: Mesh[] = [];
+  const ceilingFallback: Mesh[] = [];
+  let ceilingDetail = false;
   const ownedMeshes: Mesh[] = [];
   const materials: StandardMaterial[] = [];
   const textures: DynamicTexture[] = [];
@@ -169,6 +171,7 @@ export function buildHotel(scene: Scene) {
     mesh.material = m;
     mesh.receiveShadows = true;
     mesh.isPickable = false;
+    if (ceilingDetail) { ceilingFallback.push(mesh); ownedMeshes.push(mesh); return mesh; }
     const list = batches.get(m) ?? [];
     list.push(mesh);
     batches.set(m, list);
@@ -637,6 +640,7 @@ export function buildHotel(scene: Scene) {
     }
   }
 
+  ceilingDetail = true;
   // Suspended stepped chandeliers and coffered ceilings replace office strips.
   const chandelier = (x: number, z: number, y: number, radius: number) => {
     cylinder(
@@ -750,6 +754,8 @@ export function buildHotel(scene: Scene) {
       cylinder("lounge opal ceiling fixture", x, 3.43, z, 0.89, 0.08, lamp);
     }
 
+  ceilingDetail = false;
+  ceilingFallback.forEach(mesh => mesh.freezeWorldMatrix());
   // Backlit scenic panels give the tall walls scale without adding geometry
   // outside the fixed walkable layout or introducing another shadow map.
   const artTexture = new DynamicTexture(
@@ -1162,6 +1168,7 @@ export function buildHotel(scene: Scene) {
   const walls = buildHotelWalls(scene);
   const renovation = buildHotelRenovation(scene);
   let propMeshes = buildHotelProps(scene);
+  let ceilingAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
   let stairAsset: Awaited<ReturnType<typeof loadHotelLobbyAsset>> | undefined;
   let furniture: Awaited<ReturnType<typeof loadHotelFurniture>> | undefined;
   let entry: Awaited<ReturnType<typeof loadHotelEntry>> | undefined;
@@ -1180,12 +1187,22 @@ export function buildHotel(scene: Scene) {
       ...renovation.meshes,
       ...walls.meshes,
       ...(stairAsset?.meshes ?? []),
+      ...(ceilingAsset?.meshes ?? []),
       ...propMeshes,
       ...(furniture?.lightMeshes ?? []),
       ...(entry?.meshes ?? []),
     ]);
   };
   refreshLights();
+  const ceilingReady = loadHotelLobbyAsset(scene, "ceiling").then(loaded => {
+    if (disposed || scene.isDisposed) { loaded.dispose(); return; }
+    ceilingAsset = loaded;
+    ceilingFallback.forEach(mesh => mesh.setEnabled(false));
+    renovation.replaceCeiling();
+    refreshLights();
+  }).catch(error => {
+    if (!disposed) console.warn("Hotel ceiling unavailable; using loading fixtures.", error);
+  });
   const stairsReady = loadHotelLobbyAsset(scene, "stairs").then(loaded => {
     if (disposed || scene.isDisposed) { loaded.dispose(); return; }
     stairAsset = loaded;
@@ -1216,7 +1233,7 @@ export function buildHotel(scene: Scene) {
     entry=loaded;entryFallback.forEach(mesh=>mesh.setEnabled(false));gate.setEnabled(false);
     loaded.setOpen(gateWasOpen);refreshLights();
   }).catch(error=>{if(!disposed && !scene.isDisposed) console.warn("Hotel entrance model unavailable; keeping its surround.",error);});
-  const ready=Promise.all([stairsReady, furnitureReady,entryReady]).then(()=>undefined);
+  const ready=Promise.all([ceilingReady, stairsReady, furnitureReady,entryReady]).then(()=>undefined);
   let bellCaption = "";
   let jukeWasOn = false;
   let gateWasOpen = false;
@@ -1289,6 +1306,7 @@ export function buildHotel(scene: Scene) {
       if (disposed) return;
       disposed = true;
       lightMembership.dispose();
+      ceilingAsset?.dispose();
       stairAsset?.dispose();
       furniture?.dispose();
       entry?.dispose();

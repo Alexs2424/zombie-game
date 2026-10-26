@@ -20,8 +20,21 @@ node --experimental-strip-types tools/hotel-lobby/validate.mjs hotel-grand-stair
 
 Verification: TypeScript, focused ESLint, 20 hotel/navigation/light tests, Blender source audit, and Babylon GLB validation pass. Chrome entrance, stair-detail, and balcony views were inspected. Images remain in ignored `outputs/hotel-stack/`. Sustained performance is checked at the completed stack rather than inferred from a Blender render.
 
+## Chandelier and ceiling — implemented
+
+`hotel-grand-ceiling.blend` / `.glb` add one signature chandelier and two smaller matching fixtures with swept brass arms, socketed opal lamps, faceted pear drops, crystal festoons, stepped crowns, and turned suspension. Plaster ceiling roses and stepped coffer outlines share the wall palette; clipped perimeter cells follow the octagonal room. Four matching low salon bowls replace the simple discs. The original ceiling slab stays in place.
+
+Rebuild with `build_ceiling.py`; pass `hotel-grand-ceiling` to the GLB validator and source auditor. Old fixtures/rose remain as loading fallbacks and are hidden only after successful import. TypeScript, focused lint, Blender source/GLB audits, and Chrome entrance, chandelier-upward, and dining-ceiling reviews pass. No extra runtime lights are introduced in this layer.
+
+
 ## Main integration — 2026-10-25
 
 After #27 merged, integrated `main` (`c2de5b7`) into the stairs branch. The only conflict was concurrent decision-log additions; retained both the stair treatment and newer gameplay/voice decisions. No runtime or model conflict edits were needed.
 
 Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, and the actual Babylon GLB geometry/bounds/UV/index/stair-clearance/guard audit pass. Existing build notices remain. Prior Chrome views and Blender-source audit above remain the visual/source evidence; those checks were not repeated for this documentation-only conflict resolution.
+
+## Ceiling integration with main — 2026-10-25
+
+After #29 merged, integrated `main` (`5b537ca`) into the ceiling branch. Resolved concurrent additions in the decision log and this asset record by retaining both histories. No runtime or model conflict edits were needed.
+
+Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, and actual Babylon ceiling GLB finite-geometry/UV/index/bounds/budget validation pass. Existing build notices remain. The earlier Chrome views and Blender-source audit remain the visual/source evidence; those checks were not repeated for documentation-only conflict resolution.
