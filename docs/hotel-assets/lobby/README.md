@@ -53,3 +53,30 @@ Run `node tools/weapon-1970s/shoot.mjs outputs/hotel-stack/final @tools/hotel-lo
 All 292 automated tests pass after rebasing onto `73e44aa` from main and the production build succeeds. The build retains the framework's chunk-size and route-classification notices. Blender audits cover all seven current sources. In-game wall rays measure approximately 5.8 cm lower-panel molding projection and 3.3 cm plaster molding projection beyond the structural wall face.
 
 The final real movement loop completed in 44.7 seconds, reached the 4 m balcony, descended both stair routes across the tour, and returned to the casino. The gallery remained locked as expected. A 12-second, three-enemy chase sample at 1600×900 in headless Chrome/Metal averaged 18.15 ms per frame (about 55 FPS), with a 19.6 ms 95th percentile. This is a local short sample, not a sustained 60-FPS or cross-device claim. See [runtime review](runtime-review.json).
+
+
+## Main integration — 2026-10-25
+
+After #27 merged, integrated `main` (`c2de5b7`) into the stairs branch. The only conflict was concurrent decision-log additions; retained both the stair treatment and newer gameplay/voice decisions. No runtime or model conflict edits were needed.
+
+Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, and the actual Babylon GLB geometry/bounds/UV/index/stair-clearance/guard audit pass. Existing build notices remain. Prior Chrome views and Blender-source audit above remain the visual/source evidence; those checks were not repeated for this documentation-only conflict resolution.
+
+## Ceiling integration with main — 2026-10-25
+
+After #29 merged, integrated `main` (`5b537ca`) into the ceiling branch. Resolved concurrent additions in the decision log and this asset record by retaining both histories. No runtime or model conflict edits were needed.
+
+Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, and actual Babylon ceiling GLB finite-geometry/UV/index/bounds/budget validation pass. Existing build notices remain. The earlier Chrome views and Blender-source audit remain the visual/source evidence; those checks were not repeated for documentation-only conflict resolution.
+
+## Marble integration with main — 2026-10-25
+
+After #30 merged, integrated `main` (`649c749`) into the marble branch. Resolved concurrent additions in the decision log and this asset record by retaining both histories. No runtime or model conflict edits were needed.
+
+Post-merge checks: all 295 tests, TypeScript, focused ESLint, production build, and actual Babylon floor GLB geometry/UV/index/bounds/budget validation pass, including upward-facing floor samples and the 27 mm finish-height limit. Existing build notices remain. Earlier Chrome views and Blender-source audit remain the visual/source evidence; those checks were not repeated for documentation-only conflict resolution.
+
+## Lighting integration with main — 2026-10-25
+
+Integrated main after #31; retained both histories in the decision log and asset record. No runtime conflict edits. All 295 tests, TypeScript, focused ESLint, and production build pass. Existing build notices remain. Prior browser lighting/resource checks remain the visual evidence; not repeated for documentation-only conflict resolution.
+
+## Textiles integration with main — 2026-10-25
+
+Integrated main after #32. Retained decision histories and previous integration records while keeping the updated capture/light-budget description. No runtime/model conflict edits. All 295 tests, TypeScript, focused ESLint, production build, and four seating/detail GLB audits pass. Existing build notices remain. Prior Chrome/source checks remain the visual evidence; not repeated for documentation-only conflict resolution.
